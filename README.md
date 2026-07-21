@@ -33,4 +33,3 @@ Most of the discussion relating to this addon takes place on our [Discord](https
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/thecoalitiongroup)
 
 <img src="http://coalitiongroup.net/coalition.png">
-![Discord Banner 1](https://discordapp.com/api/guilds/237991125523103747/widget.png?style=banner1)
