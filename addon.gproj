@@ -4,5 +4,6 @@ GameProject {
  TITLE "COALITION Lobby"
  Dependencies {
   "58D0FB3206B6F859"
+  "6624E618B9058265"
  }
 }
