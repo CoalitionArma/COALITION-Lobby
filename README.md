@@ -1,5 +1,5 @@
 # COALITION Lobby
-An Arma Reforger addon that provides the mission lobby and slotting system used by [COALITION](https://discord.gg/the-coalition) for our events. It's designed to function off of a dependency like [COALITION Reforger Framework](https://github.com/CoalitionArma/Coalition-Reforger-Framework).
+An Arma Reforger addon that provides the mission lobby and slotting system used by [COALITION](https://coalitiongroup.net) for our events. It's designed to function off of a dependency like [COALITION Reforger Framework](https://github.com/CoalitionArma/Coalition-Reforger-Framework).
 
 ## Features
 - **Slotting system**: squads, teams, crews and specialist roles are defined as data-driven `CRF_SlottingGroup` configs (see `Configs/SlottingGroups`), each with its own roster of `CRF_EGearRole` slots.
