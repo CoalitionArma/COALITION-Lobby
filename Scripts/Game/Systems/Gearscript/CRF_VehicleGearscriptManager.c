@@ -1,26 +1,44 @@
+
+//! Component class for CRF_VehicleGearscriptManager.
+//! This will need a rewrite in the future most likely
 class CRF_VehicleGearscriptManagerClass : ScriptComponentClass
 {
 }
 
+//! Applies faction-appropriate weapon, ammunition, and item loadouts to vehicles (in particular
+//! supply trucks), using the same gear script/vehicle gear script config resources as
+//! CRF_GearscriptManager. Also tracks per-vehicle-prefab supply costs and replicates them to
+//! clients via CRF_RplBroadcastManager, and reassigns queued vehicles to the nearest player's
+//! faction once one becomes available.
 class CRF_VehicleGearscriptManager : ScriptComponent
 {
+	//! Per-prefab supply cost of a fully-loaded vehicle, computed once and cached.
 	protected ref map<ResourceName, int> m_mVehicleSupplyCosts = new map<ResourceName, int>;
 	protected SCR_EntityCatalogManagerComponent m_CatalogManager; // PERFORMANCE OPTIMIZATION
+	//! All vehicles this manager has spawned and is tracking.
 	protected ref array<Vehicle> m_aSpawnedVehicles = {};
+	//! Vehicles awaiting a faction assignment because no player was found within range when spawned;
+	//! retried each EOnFrame tick via FindFactionByClosestPlayer.
 	protected ref array<IEntity> m_VehiclesInQueue = {};
 
 	// Shared resource caching helper (also used by CRF_GearscriptManager) instead of a second
-	// hand-rolled map<ResourceName, Resource> - PERFORMANCE OPTIMIZATION
+	// hand-rolled map<ResourceName, Resource>
 	protected ref CRF_ResourceCache m_ResourceCache = new CRF_ResourceCache();
 
 	// These are pure facts about a static prefab resource (does it disable, how much ammo does its
 	// magazine hold, is its GL round HE) that never change mid-mission, so memoize them instead of
-	// re-walking the prefab's component sources on every vehicle spawn/refit - PERFORMANCE OPTIMIZATION
+	// re-walking the prefab's component sources on every vehicle spawn/refit
+	//! Cache of ResourceName -> "is this weapon prefab disposable" (see ComputeIsWeaponDisposable).
 	protected ref map<ResourceName, bool> m_mIsWeaponDisposableCache = new map<ResourceName, bool>();
+	//! Cache of ResourceName -> magazine's MaxAmmo (see ComputeMagazineCount).
 	protected ref map<ResourceName, int> m_mMagazineCountCache = new map<ResourceName, int>();
+	//! Cache of ResourceName -> "is this grenade launcher round HE" (see ComputeIsGLHE).
 	protected ref map<ResourceName, bool> m_mIsGLHECache = new map<ResourceName, bool>();
-	
+
 	//------------------------------------------------------------------------------------------------
+	//! Caches the entity catalog manager and, outside Workbench on non-console builds, enables
+	//! per-frame updates so queued vehicles can be assigned a faction as players come into range.
+	//! \param[in] owner The entity this component is attached to
 	override void OnPostInit(IEntity owner)
 	{
 		super.OnPostInit(owner);
@@ -29,7 +47,7 @@ class CRF_VehicleGearscriptManager : ScriptComponent
 		if (!GetGame().InPlayMode())
 			return;
 		
-		m_CatalogManager = SCR_EntityCatalogManagerComponent.GetInstance(); // Cache catalog manager - PERFORMANCE OPTIMIZATION
+		m_CatalogManager = SCR_EntityCatalogManagerComponent.GetInstance(); // Cache catalog manager
 		#ifdef WORKBENCH
 		#else
 		if (!System.IsConsoleApp())
@@ -39,21 +57,27 @@ class CRF_VehicleGearscriptManager : ScriptComponent
 	}	
 	
 	//------------------------------------------------------------------------------------------------
+	//! Returns every vehicle currently tracked by this manager.
+	//! \return Array of tracked vehicle entities
 	array<Vehicle> GetSpawnedVehicleArray()
 	{
 		return m_aSpawnedVehicles;
 	}
-	
+
 	//------------------------------------------------------------------------------------------------
+	//! Registers a vehicle as tracked, if it isn't already.
+	//! \param[in] vehicle The vehicle to add
 	void AddVehicleToSpawnedArray(Vehicle vehicle)
 	{
 		if (m_aSpawnedVehicles.Contains(vehicle))
 			return;
-		
+
 		m_aSpawnedVehicles.Insert(vehicle);
 	}
-	
+
 	//------------------------------------------------------------------------------------------------
+	//! Stops tracking a vehicle, if it currently is tracked.
+	//! \param[in] vehicle The vehicle to remove
 	void RemoveVehicleFromSpawnedArray(Vehicle vehicle)
 	{
 		if (!m_aSpawnedVehicles.Contains(vehicle))
@@ -86,7 +110,7 @@ class CRF_VehicleGearscriptManager : ScriptComponent
 	//! \return an array of ints representing the supply values in the same order as the items put in
 	array<int> GetSupplyValuesForItems(array<ResourceName> items)
 	{
-		// Pre-allocate array capacity - PERFORMANCE OPTIMIZATION
+		// Pre-allocate array capacity
 		array<int> itemSupply = new array<int>();
 		itemSupply.Reserve(items.Count());
 		
@@ -103,11 +127,11 @@ class CRF_VehicleGearscriptManager : ScriptComponent
 		
 		factionManager.GetFactionsList(factions);
 		
-		// Pre-allocate catalogs array - PERFORMANCE OPTIMIZATION
+		// Pre-allocate catalogs array
 		array<ref SCR_EntityCatalog> itemCatalogs = new array<ref SCR_EntityCatalog>();
 		itemCatalogs.Reserve(factions.Count());
 		
-		// Use cached catalog manager - PERFORMANCE OPTIMIZATION
+		// Use cached catalog manager
 		if (!m_CatalogManager)
 			m_CatalogManager = SCR_EntityCatalogManagerComponent.GetInstance();
 		
@@ -135,14 +159,20 @@ class CRF_VehicleGearscriptManager : ScriptComponent
 		return itemSupply;
 	}
 	
-	//------------------------------------------------------------------------------------------------
-	//! Frame logic for vehicles getting the closest available faction to fill their inventory with that factiosn gear
+	//! Accumulated time since the last queued-vehicle sweep in EOnFrame; reset every 5 seconds.
 	float m_fUpdateBuffer = 0;
+
+	//------------------------------------------------------------------------------------------------
+	//! Every 5 seconds, retries CRF_VehicleSpawner-spawned vehicles waiting in m_VehiclesInQueue for
+	//! a nearby player faction (see FindFactionByClosestPlayer), removing each from the queue once
+	//! a faction is found and its gear applied.
+	//! \param[in] owner The entity this component is attached to
+	//! \param[in] timeSlice Time in seconds since the last frame
 	override void EOnFrame(IEntity owner, float timeSlice)
 	{
 		if (m_fUpdateBuffer >= 5)
 		{
-			// Pre-allocate array capacity - PERFORMANCE OPTIMIZATION
+			// Pre-allocate array capacity
 			array<IEntity> vehiclesToRemove = new array<IEntity>();
 			vehiclesToRemove.Reserve(m_VehiclesInQueue.Count());
 			
@@ -178,7 +208,7 @@ class CRF_VehicleGearscriptManager : ScriptComponent
 		IEntity closestPlayer;
 		string factionKey = "";
 		
-		// Cache GetGame() reference - PERFORMANCE OPTIMIZATION
+		// Cache GetGame() reference
 		ArmaReforgerScripted game = GetGame();
 		if (!game)
 			return false;
@@ -199,7 +229,7 @@ class CRF_VehicleGearscriptManager : ScriptComponent
 			if (!ChimeraCharacter.Cast(aiPlayer))
 				continue;
 			
-			// Cache component lookup - PERFORMANCE OPTIMIZATION
+			// Cache component lookup
 			FactionAffiliationComponent factionComp = FactionAffiliationComponent.Cast(aiPlayer.FindComponent(FactionAffiliationComponent));
 			if (!factionComp)
 				continue;
@@ -317,7 +347,9 @@ class CRF_VehicleGearscriptManager : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	// Get vehicle resupply cost from map
+	//! Looks up the cached supply cost for a vehicle prefab.
+	//! \param[in] resource The vehicle's prefab resource name
+	//! \return The cached supply cost, or 0 if it hasn't been calculated yet
 	int GetTruckResupplyCost(ResourceName resource)
 	{
 		return m_mVehicleSupplyCosts.Get(resource);
@@ -338,7 +370,7 @@ class CRF_VehicleGearscriptManager : ScriptComponent
 		if (!vehicle)
 			return;
 		
-		// Cache GetGame() reference - PERFORMANCE OPTIMIZATION
+		// Cache GetGame() reference
 		ChimeraGame game = GetGame();
 		
 		//Lets find a faction, if there is none start looking for one in the loop.
@@ -359,7 +391,7 @@ class CRF_VehicleGearscriptManager : ScriptComponent
 				if (!ChimeraCharacter.Cast(aiPlayer))
 					continue;
 				
-				// Cache component lookup - PERFORMANCE OPTIMIZATION
+				// Cache component lookup
 				FactionAffiliationComponent factionComp = FactionAffiliationComponent.Cast(aiPlayer.FindComponent(FactionAffiliationComponent));
 				
 				if (!closestPlayer)
@@ -624,7 +656,10 @@ class CRF_VehicleGearscriptManager : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	// Client-side: Add vehicle cost entry (called by RPC handler in broadcast manager)
+	//! Client-side: records a vehicle's supply cost as received via RPC from CRF_RplBroadcastManager,
+	//! rather than computing it locally.
+	//! \param[in] vehicleResource The vehicle's prefab resource name
+	//! \param[in] supplyCost The supply cost broadcast by the server
 	void AddVehicleCostClient(ResourceName vehicleResource, int supplyCost)
 	{
 		m_mVehicleSupplyCosts.Set(vehicleResource, supplyCost);
@@ -1016,6 +1051,10 @@ class CRF_VehicleGearscriptManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Uncached implementation backing IsWeaponDisposable: inspects the weapon prefab's
+	//! SCR_MuzzleInMagComponent for its "Disposable" flag.
+	//! \param[in] weapon The resource name of the weapon to check
+	//! \return true if the weapon is disposable, false otherwise
 	protected bool ComputeIsWeaponDisposable(ResourceName weapon)
 	{
 		Resource weaponLoaded = GetCachedResource(weapon);
@@ -1065,6 +1104,10 @@ class CRF_VehicleGearscriptManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Uncached implementation backing GetMagazineCount: reads MaxAmmo off the magazine prefab's
+	//! MagazineComponent.
+	//! \param[in] resource The magazine resource name
+	//! \return The maximum number of bullets in the magazine, or 0 if not found
 	protected int ComputeMagazineCount(ResourceName resource)
 	{
 		Resource magazine = GetCachedResource(resource);
@@ -1194,6 +1237,10 @@ class CRF_VehicleGearscriptManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Uncached implementation backing IsGLHE: a grenade launcher round is treated as HE if its
+	//! CollisionTriggerComponent is enabled (only explosive rounds have this enabled).
+	//! \param[in] glToCheck Resource name of the grenade launcher round
+	//! \return true if the round is HE, false otherwise
 	protected bool ComputeIsGLHE(ResourceName glToCheck)
 	{
 		Resource glLoaded = GetCachedResource(glToCheck);
@@ -1346,9 +1393,9 @@ class CRF_VehicleGearscriptManager : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	//! Used as a bridge to spawn the vehicle and register it in this manager from the vehicle spawner
+	//! Used as a bridge to spawn the vehicle and register it in this manager from the vehicle spawner.
+	//! Subtracts a respawn ticket first if the spawner is on a respawn timer.
 	//! \param[in] spawner the vehicle spawner that spawned this vehicle
-	//! \return fuckall
 	void SpawnVehicle(CRF_VehicleSpawner spawner)
 	{
 		if (!spawner.m_sFactionKey)
@@ -1374,10 +1421,10 @@ class CRF_VehicleGearscriptManager : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	//! Sets the vehicle in the vehicle spawner for internal tracking purposes
+	//! Sets the vehicle in the vehicle spawner for internal tracking purposes, and copies the
+	//! spawner's faction/loadout-override settings onto the spawned Vehicle.
 	//! \param[in] vehicleEntity the newly spawned vehicle to register in the spawner
 	//! \param[in] spawner the vehicle spawner we are registering this vehicle in
-	//! \return an array of ints representing the supply values in the same order as the items put in
 	void SetVehicle(IEntity vehicleEntity, CRF_VehicleSpawner spawner)
 	{
 		spawner.m_eVehicle = vehicleEntity;
@@ -1399,12 +1446,18 @@ class CRF_VehicleGearscriptManager : ScriptComponent
 	
 	//------------------------------------------------------------------------------------------------
 	protected static CRF_VehicleGearscriptManager m_sInstance;
+
+	//! Registers this component as the singleton instance.
+	//! \param[in] src Entity component source
+	//! \param[in] ent The entity this component is being attached to
+	//! \param[in] parent The parent entity, if any
 	void CRF_VehicleGearscriptManager(IEntityComponentSource src, IEntity ent, IEntity parent)
 	{
 		m_sInstance = this;
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Clears the singleton instance if this is still the registered instance.
 	void ~CRF_VehicleGearscriptManager()
 	{
 		if (m_sInstance == this)
@@ -1412,6 +1465,8 @@ class CRF_VehicleGearscriptManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Returns the active CRF_VehicleGearscriptManager instance.
+	//! \return The singleton instance, or null if none is initialized
 	static CRF_VehicleGearscriptManager GetInstance()
 	{
 		return m_sInstance;
