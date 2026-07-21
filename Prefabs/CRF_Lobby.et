@@ -1,0 +1,68 @@
+CRF_Gamemode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" {
+ ID "E8D085D4ACC2A8BA"
+ components {
+  CRF_GamemodeManager "{08737F0BC197D17B}" {
+   components {
+    CRF_SlottingManager "{648A2C806975F045}" {
+    }
+   }
+  }
+  CRF_SlotLottery "{552CC18E1EE495A1}" {
+  }
+  CRF_RplBroadcastManager "{F8C7F964D247E1FC}" {
+  }
+  CRF_MenuManager "{69BDF7146EDEDD6B}" {
+  }
+  CRF_PermissionManager "{29E6F45854919E1D}" {
+  }
+  CRF_GearscriptManager "{CC4C76702575BD1C}" {
+  }
+  SCR_AdditionalGameModeSettingsComponent "{CD5CE4298EFC3DD8}" {
+   m_bEnableTeamKillPunishment 0
+  }
+  SCR_DataCollectorComponent "{AF86E7E2ABF47144}" {
+   Enabled 0
+   m_aModules {
+    SCR_DataCollectorCrimesModule "{09CA1EE134B259AF}" {
+    }
+   }
+  }
+  SCR_GameModeHealthSettings "{EC18789FD1432BA0}" {
+   m_fDOTScale 0.5
+   m_fRegenScale 0.75
+   m_bPermitUnconsciousVON 0
+   m_fRegenerationDelay 30
+   m_fRegenerationScale 0.6
+  }
+  SCR_InitWeatherComponent "{ED5D8456C7D0214C}" {
+  }
+  SCR_NametagConfigComponent "{276061459212D0E9}" {
+  }
+  SCR_NightModeGameModeComponent "{C584F0089BFFED93}" {
+   m_bAllowGlobalNightMode 1
+  }
+  SCR_NotificationSenderComponent "{A444A0B61467D1AA}" {
+   m_iKillFeedType DISABLED
+  }
+  SCR_ReconnectComponent "{50BFC1DBF8CFBD15}" {
+   Enabled 0
+  }
+  SCR_RespawnSystemComponent "{8AA60D1BFC03B7D6}" {
+   m_SpawnLogic SCR_SpawnLogic "{C3CAD8967ADA6890}" {
+   }
+   m_sLoadingLayout ""
+  }
+  SCR_TimeAndWeatherHandlerComponent "{9C79F4B967B20DE1}" {
+   m_bUsePredefineStartingTimeAndWeather 1
+   m_aStartingWeatherAndTime {
+    SCR_TimeAndWeatherState "{858D1EBDBCD7B8EB}" {
+     m_sWeatherPresetName "Clear"
+     m_iStartingHour 18
+    }
+   }
+  }
+ }
+ coords 0 0 0
+ m_bAutoPlayerRespawn 0
+ m_bAllowFactionChange 0
+}
