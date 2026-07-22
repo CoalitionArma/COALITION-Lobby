@@ -47,7 +47,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 	string m_sOutroWinningFaction = "";
 
 	// Area Timer state — replicated to clients via BroadcastAreaTimerUpdate
-	CRF_EAreaTimerState m_eAreaTimerState;
+	// - !FIX CRF_EAreaTimerState m_eAreaTimerState;
 	int m_iAreaTimerCountdown;
 	string m_sAreaTimerFaction;
 	string m_sAreaTimerZoneLabel;
@@ -115,6 +115,206 @@ class CRF_RplBroadcastManager : ScriptComponent
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 BROADCAST METHODS (lobby-scoped)
 //=============================================================================================================================================================================================================================================================================================================================================================
+
+	//------------------------------------------------------------------------------------------------
+	void PopUpNotification(float life, string titleText, string subtitleText = "", string sound = "", string titleTextParam1 = "", string titleTextParam2 = "")
+	{
+		// Telemetry: float + 5 strings
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Float();
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(titleText);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(subtitleText);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(sound);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(titleTextParam1);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(titleTextParam2);
+		LogTelemetry("PopUpNotification", bytes);
+		
+		#ifdef WORKBENCH
+		RpcDo_PopUpNotification(life, titleText, subtitleText, sound, titleTextParam1, titleTextParam2);
+		#else
+		Rpc(RpcDo_PopUpNotification, life, titleText, subtitleText, sound, titleTextParam1, titleTextParam2);
+		#endif
+	}
+
+	
+	//------------------------------------------------------------------------------------------------
+	void SendAdminMessage(string data, int playerID, bool ticketExists)
+	{
+		// Telemetry: string + int
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(data);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int();
+		LogTelemetry("SendAdminMessage", bytes);
+		
+		#ifdef WORKBENCH
+		RpcDo_SendAdminMessage(data, playerID, ticketExists);
+		#else
+		Rpc(RpcDo_SendAdminMessage, data, playerID, ticketExists);
+		#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void GetOpenTickets(int playerID)
+	{
+		#ifdef WORKBENCH
+		RpcDo_GetOpenTickets(playerID, CRF_AdminMenuManager.GetInstance().GetOpenTickets());
+		#else
+		Rpc(RpcDo_GetOpenTickets, playerID, CRF_AdminMenuManager.GetInstance().GetOpenTickets());
+		#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void GetTicketMessages(int playerID, int ticketID)
+	{
+		#ifdef WORKBENCH
+		RpcDo_GetTicketMessages(playerID, CRF_AdminMenuManager.GetInstance().GetTicketMessages(ticketID));
+		#else
+		Rpc(RpcDo_GetTicketMessages, playerID, CRF_AdminMenuManager.GetInstance().GetTicketMessages(ticketID));
+		#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Several handlers below (ReplyAdminMessage, CloseAdminTicket, NotifiyTicketAssigned,
+	//! TeleportPlayers) call this as a same-class helper. Also duplicated on the lobby-side
+	//! broadcast manager for its own slotting/gear-swap admin logging.
+	void LogAdminAction(string data, int playerId, bool sendToPlayer)
+	{
+		// Telemetry: string + int + bool
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(data);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int();
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
+		LogTelemetry("LogAdminAction", bytes);
+
+		#ifdef WORKBENCH
+		RpcDo_LogAdminAction(data, playerId, sendToPlayer);
+		#else
+		Rpc(RpcDo_LogAdminAction, data, playerId, sendToPlayer);
+		#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void ReplyAdminMessage(string data, int playerId, int adminID, bool logAction)
+	{
+		// Telemetry: string + 2 ints + bool
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(data);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2;
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
+		LogTelemetry("ReplyAdminMessage", bytes);
+		
+		#ifdef WORKBENCH
+		RpcDo_ReplyAdminMessage(data, playerId, adminID, logAction);
+		#else
+		Rpc(RpcDo_ReplyAdminMessage, data, playerId, adminID, logAction);
+		#endif
+	}
+
+	
+	//------------------------------------------------------------------------------------------------
+	void CloseAdminTicket(int ticketID, int adminID, bool logAction)
+	{
+		// Telemetry: 2 ints + bool
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2;
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
+		LogTelemetry("CloseAdminTicket", bytes);
+		
+		#ifdef WORKBENCH
+		RpcDo_CloseAdminTicket(ticketID, adminID, logAction);
+		#else
+		Rpc(RpcDo_CloseAdminTicket, ticketID, adminID, logAction);
+		#endif
+	}
+
+	
+	//------------------------------------------------------------------------------------------------
+	void NotifiyTicketAssigned(int ticketID, int adminID, bool logAction)
+	{
+		// Telemetry: 2 ints + bool
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2;
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
+		LogTelemetry("NotifiyTicketAssigned", bytes);
+		
+		#ifdef WORKBENCH
+		RpcDo_NotifiyTicketAssigned(ticketID, adminID, logAction);
+		#else
+		Rpc(RpcDo_NotifiyTicketAssigned, ticketID, adminID, logAction);
+		#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void RefreshAdminMenuLists()
+	{
+		#ifdef WORKBENCH
+		RpcDo_RefreshAdminMenuLists();
+		#else
+		Rpc(RpcDo_RefreshAdminMenuLists);
+		#endif
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	void SendCharacterLoadingScreen(int playerId)
+	{
+		// Telemetry: int
+		LogTelemetry("SendCharacterLoadingScreen", CRF_BandwidthTelemetryManager.EstimateSize_Int());
+		
+		#ifdef WORKBENCH
+		RpcDo_SendCharacterLoadingScreen(playerId);
+		#else
+		Rpc(RpcDo_SendCharacterLoadingScreen, playerId);
+		#endif
+	}
+
+
+	//------------------------------------------------------------------------------------------------
+	void InitilizePlayerBroadcast(int playerId, RplId playerCharID)
+	{
+		// Telemetry: int + RplId
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int();
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_RplId();
+		LogTelemetry("InitilizePlayerBroadcast", bytes);
+		
+		#ifdef WORKBENCH
+		RpcDo_InitilizePlayerBroadcast(playerId, playerCharID);
+		#else
+		Rpc(RpcDo_InitilizePlayerBroadcast, playerId, playerCharID);
+		#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SendHint(string data, int playerId = -1, string factionKey = "")
+	{
+		// Telemetry: 2 strings + int
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(data);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(factionKey);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int();
+		LogTelemetry("SendHint", bytes);
+		
+		#ifdef WORKBENCH
+		RpcDo_SendHint(data, playerId, factionKey);
+		#else
+		Rpc(RpcDo_SendHint, data, playerId, factionKey);
+		#endif
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	void TeleportPlayers(int playerId1, int playerId2, bool logAction)
+	{
+		IEntity player2Char = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId2);
+		
+		if(player2Char)
+		{
+			vector player2Origin = player2Char.GetOrigin();
+			
+			// Telemetry: 2 ints + vector + bool
+			int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2;
+			bytes += CRF_BandwidthTelemetryManager.EstimateSize_Vector();
+			bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
+			LogTelemetry("TeleportPlayers", bytes);
+		
+			#ifdef WORKBENCH
+			RpcDo_TeleportPlayers(playerId1, playerId2, player2Origin, logAction);
+			#else
+			Rpc(RpcDo_TeleportPlayers, playerId1, playerId2, player2Origin, logAction);
+			#endif
+		};
+	}
 
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -330,23 +530,6 @@ class CRF_RplBroadcastManager : ScriptComponent
 		RpcDo_HolsterGun(playerID);
 		#else
 		Rpc(RpcDo_HolsterGun, playerID);
-		#endif
-	}
-
-	
-	//------------------------------------------------------------------------------------------------
-	void LogAdminAction(string data, int playerId, bool sendToPlayer)
-	{
-		// Telemetry: string + int + bool
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(data);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int();
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
-		LogTelemetry("LogAdminAction", bytes);
-		
-		#ifdef WORKBENCH
-		RpcDo_LogAdminAction(data, playerId, sendToPlayer);
-		#else
-		Rpc(RpcDo_LogAdminAction, data, playerId, sendToPlayer);
 		#endif
 	}
 
@@ -708,25 +891,6 @@ class CRF_RplBroadcastManager : ScriptComponent
 		#endif
 	}
 
-	//------------------------------------------------------------------------------------------------
-	//! CRF_SlotLottery: display a hint message to a specific player or faction.
-	//! Also used directly by CRF gameplay systems (PropHunt, admin RPC replies) — kept duplicated
-	//! on both broadcast managers rather than moved, since both sides genuinely need it.
-	void SendHint(string data, int playerId = -1, string factionKey = "")
-	{
-		// Telemetry: 2 strings + int
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(data);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(factionKey);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int();
-		LogTelemetry("SendHint", bytes);
-
-		#ifdef WORKBENCH
-		RpcDo_SendHint(data, playerId, factionKey);
-		#else
-		Rpc(RpcDo_SendHint, data, playerId, factionKey);
-		#endif
-	}
-
 
 	//------------------------------------------------------------------------------------------------
 	void BroadcastSpectatorDamageReport(int victimPlayerId, string victimName, int attackerPlayerId, string attackerName, float damageValue, float rangeMeters, string damageType, string hitZone, string bodyRegion, bool fatal, int worldTime)
@@ -777,7 +941,233 @@ class CRF_RplBroadcastManager : ScriptComponent
 
 		return value;
 	}
+	
+	//------------------------------------------------------------------------------------------------
+	//! FactionManager: Update SR radio channels
+	void UpdateFactionChannelsSR(string factionId, array<string> channels)
+	{
+		// Telemetry: factionId string + array of strings
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(factionId);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_StringArray(channels);
+		LogTelemetry("UpdateFactionChannelsSR", bytes);
+		
+		#ifdef WORKBENCH
+		RpcDo_UpdateFactionChannelsSR(factionId, channels);
+		#else
+		Rpc(RpcDo_UpdateFactionChannelsSR, factionId, channels);
+		#endif
+	}
 
+	
+	//------------------------------------------------------------------------------------------------
+	//! FactionManager: Update LR radio channels
+	void UpdateFactionChannelsLR(string factionId, array<string> channels)
+	{
+		// Telemetry: factionId string + array of strings
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(factionId);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_StringArray(channels);
+		LogTelemetry("UpdateFactionChannelsLR", bytes);
+		
+		#ifdef WORKBENCH
+		RpcDo_UpdateFactionChannelsLR(factionId, channels);
+		#else
+		Rpc(RpcDo_UpdateFactionChannelsLR, factionId, channels);
+		#endif
+	}
+	
+//=============================================================================================================================================================================================================================================================================================================================================================
+//	 REPLICATION METHODS
+//=============================================================================================================================================================================================================================================================================================================================================================
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_PopUpNotification(float life, string titleText, string subtitleText, string sound, string titleTextParam1, string titleTextParam2)
+	{
+		if (!sound.IsEmpty())
+			AudioSystem.PlaySound(sound);
+	
+		SCR_PopUpNotification.GetInstance().PopupMsg(string.Format(titleText, titleTextParam1, titleTextParam2), life, subtitleText);
+	}
+
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_SendAdminMessage(string data, int playerID, bool ticketExists)
+	{
+		if (!SCR_Global.IsAdmin() && !m_PermissionManager.IsModerator())
+			return;
+		
+		string playerName = GetGame().GetPlayerManager().GetPlayerName(playerID);
+		SCR_ChatComponent chatComponent = GetLocalChatComponent();
+		if (!chatComponent)
+			return;
+
+		// If it's an admin just show the message in chat
+		if (SCR_Global.IsAdmin(playerID) || m_PermissionManager.IsModerator(playerID))
+		{
+			// Don't double show message
+			if (GetGame().GetPlayerController().GetPlayerId() == playerID)
+				return;
+			
+			chatComponent.ShowMessage(string.Format("Admin - %1: %2", playerName, data));
+		} else {
+			// Check if it's a new ticket and let admins know
+			if (!ticketExists)
+				chatComponent.ShowMessage(string.Format("%1 has created a ticket", playerName));
+			
+			// Show the player's message in admin chat
+			chatComponent.ShowMessage(string.Format("%1: %2", playerName, data));
+		}
+	}
+
+	
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_GetOpenTickets(int playerID, array<int> tickets)
+	{
+		if (!IsLocalPlayer(playerID))
+			return;
+		
+		// Check if the top menu is the admin menu
+		MenuBase topMenu = GetGame().GetMenuManager().GetTopMenu();
+		if (!topMenu)
+			return;
+			
+		if (!topMenu.IsInherited(CRF_AdminMenu))
+			return;
+			
+		// Repopulate menu components
+		CRF_AdminMenu adminMenu = CRF_AdminMenu.Cast(topMenu);
+		if (adminMenu.GetCurrentOpenTab() == "Tickets")
+		{
+			adminMenu.PopulateOpenTicketList(tickets);
+		}
+		
+	}
+
+	
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_GetTicketMessages(int playerID, array<ref CRF_TicketMessageData> messages)
+	{
+		if (!IsLocalPlayer(playerID))
+			return;
+		
+		// Check if the top menu is the admin menu
+		MenuBase topMenu = GetGame().GetMenuManager().GetTopMenu();
+		if (!topMenu)
+			return;
+			
+		if (!topMenu.IsInherited(CRF_AdminMenu))
+			return;
+			
+		// Repopulate menu components
+		CRF_AdminMenu adminMenu = CRF_AdminMenu.Cast(topMenu);
+		if (adminMenu.GetCurrentOpenTab() == "Tickets")
+		{
+			adminMenu.PopulateTicketMessages(messages);
+		}
+	}
+
+	
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_LogAdminAction(string data, int playerId, bool sendToPlayer)
+	{
+		// Add the log to the admin menu logs
+		if (SCR_Global.IsAdmin() || m_PermissionManager.IsModerator())
+		{
+			m_AdminMenuManager.StoreAdminLogs(data);
+		}
+
+		// Only send the log to target player if required
+		if (sendToPlayer)
+		{
+			if (!IsLocalPlayer(playerId))
+				return;
+
+			SCR_ChatComponent chatComponent = GetLocalChatComponent();
+			if (!chatComponent)
+				return;
+
+			// Show the target player the log messages
+			chatComponent.ShowMessage(data);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_ReplyAdminMessage(string data, int playerId, int adminID, bool logAction)
+	{
+		if (logAction)
+			LogAdminAction(string.Format("Reply to %1: %2", 
+				GetGame().GetPlayerManager().GetPlayerName(playerId), data), 
+				playerId, 
+				false);
+			
+		if (!IsLocalPlayer(playerId))
+			return;
+
+		SCR_ChatComponent chatComponent = GetLocalChatComponent();
+		if (!chatComponent)
+			return;
+
+		chatComponent.ShowMessage(string.Format("Admin: %1", data));
+	}
+
+	
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_CloseAdminTicket(int ticketID, int adminID, bool logAction)
+	{
+		string adminName = GetGame().GetPlayerManager().GetPlayerName(adminID);
+		string playerName = GetGame().GetPlayerManager().GetPlayerName(ticketID);
+		
+		if (logAction)
+			LogAdminAction(string.Format("%1 closed %2's ticket", adminName, playerName), -1, false);
+		
+		if (!SCR_Global.IsAdmin() && !m_PermissionManager.IsModerator())
+			return;
+		
+		SCR_ChatComponent chatComponent = GetLocalChatComponent();
+		if (!chatComponent)
+			return;
+		
+		// Display an admin closed a ticket
+		chatComponent.ShowMessage(string.Format("%1 closed %2's ticket", adminName, playerName));
+	}
+
+	
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_NotifiyTicketAssigned(int ticketID, int adminID, bool logAction)
+	{
+		string adminName = GetGame().GetPlayerManager().GetPlayerName(adminID);
+		string playerName = GetGame().GetPlayerManager().GetPlayerName(ticketID);
+		
+		if (logAction)
+			LogAdminAction(string.Format("%1 assigned to %2's ticket", adminName, playerName), -1, false);
+		
+		if (!SCR_Global.IsAdmin() && !m_PermissionManager.IsModerator())
+			return;
+		
+		SCR_ChatComponent chatComponent = GetLocalChatComponent();
+		if (!chatComponent)
+			return;
+
+		// Display an admin assigned them self to the ticket
+		chatComponent.ShowMessage(string.Format("%1 assigned to %2's ticket", adminName, playerName));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_RefreshAdminMenuLists()
+	{
+		if (!SCR_Global.IsAdmin() && !m_PermissionManager.IsModerator())
+			return;
+		
+		m_AdminMenuManager.GetInstance().RefreshLists();
+	}
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
@@ -814,33 +1204,6 @@ class CRF_RplBroadcastManager : ScriptComponent
 		// Force player to holster gun
 		characterController.SelectWeapon(null);
 	}
-
-	
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	void RpcDo_LogAdminAction(string data, int playerId, bool sendToPlayer)
-	{
-		// Add the log to the admin menu logs
-		if (SCR_Global.IsAdmin() || m_PermissionManager.IsModerator())
-		{	
-			m_AdminMenuManager.StoreAdminLogs(data);
-		}
-		
-		// Only send the log to target player if required
-		if (sendToPlayer)
-		{
-			if (!IsLocalPlayer(playerId))
-				return;
-
-			SCR_ChatComponent chatComponent = GetLocalChatComponent();
-			if (!chatComponent)
-				return;
-			
-			// Show the target player the log messages
-			chatComponent.ShowMessage(data);
-		}
-	}
-
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
@@ -1297,12 +1660,88 @@ class CRF_RplBroadcastManager : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_BroadcastSpectatorDamageReport(int victimPlayerId, int attackerPlayerId, float damageValue, float rangeMeters, bool fatal, int worldTime, string packedData)
+	{
+		array<string> parts = {};
+		packedData.Split("|", parts, false);
+
+		string victimName = GetSpectatorDamageReportPart(parts, 0, "Unknown");
+		string attackerName = GetSpectatorDamageReportPart(parts, 1, "Environment");
+		string damageType = GetSpectatorDamageReportPart(parts, 2, "Unknown");
+		string hitZone = GetSpectatorDamageReportPart(parts, 3, "Unknown");
+		string bodyRegion = GetSpectatorDamageReportPart(parts, 4, "Unknown");
+
+		CRF_SpectatorDamageReportStore.InsertEvent(victimPlayerId, victimName, attackerPlayerId, attackerName, damageValue, rangeMeters, damageType, hitZone, bodyRegion, fatal, worldTime);
+
+		CRF_SpectatorMenu spectatorMenu = CRF_SpectatorMenu.Cast(GetGame().GetMenuManager().GetTopMenu());
+		if (spectatorMenu)
+			spectatorMenu.RefreshDamageReport();
+	}
+
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_MarkSpectatorDamageReportFatal(int victimPlayerId)
+	{
+		CRF_SpectatorDamageReportStore.MarkLatestVictimEventFatal(victimPlayerId);
+
+		CRF_SpectatorMenu spectatorMenu = CRF_SpectatorMenu.Cast(GetGame().GetMenuManager().GetTopMenu());
+		if (spectatorMenu)
+			spectatorMenu.RefreshDamageReport();
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	// FactionManager: Update SR channels on all clients
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_UpdateFactionChannelsSR(string factionId, array<string> channels)
+	{
+		SCR_FactionManager factionManager = SCR_FactionManager.Cast(GetGame().GetFactionManager());
+		if (factionManager)
+			factionManager.UpdateChannelsSRClient(factionId, channels);
+	}
+
+	
+	//------------------------------------------------------------------------------------------------
+	// FactionManager: Update LR channels on all clients
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_UpdateFactionChannelsLR(string factionId, array<string> channels)
+	{
+		SCR_FactionManager factionManager = SCR_FactionManager.Cast(GetGame().GetFactionManager());
+		if (factionManager)
+			factionManager.UpdateChannelsLRClient(factionId, channels);
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_TeleportPlayers(int playerId1, int playerId2, vector player2Origin, bool logAction)
+	{
+		if (logAction)
+		{
+			string player1Name = GetGame().GetPlayerManager().GetPlayerName(playerId1);
+			string player2Name = GetGame().GetPlayerManager().GetPlayerName(playerId2);
+			LogAdminAction(string.Format("%1 was teleported to %2", player1Name, player2Name), playerId1, true);
+		}
+		
+		if (!IsLocalPlayer(playerId1))
+			return;
+	
+		// Find a safe spot near the destination
+		vector finalSpawnLocation = vector.Zero;
+		SCR_WorldTools.FindEmptyTerrainPosition(finalSpawnLocation, player2Origin, 3);
+		
+		// Perform the teleportation
+		SCR_Global.TeleportLocalPlayer(finalSpawnLocation, SCR_EPlayerTeleportedReason.FAST_TRAVEL);
+	}
+
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	void RpcDo_SendHint(string data, int playerId, string factionKey)
 	{
 		// Check if this hint is for this specific player
 		if (playerId != -1 && !IsLocalPlayer(playerId))
 			return;
-
+		
 		// Check player faction — if no faction is set yet (e.g. Workbench startup)
 		// only skip the hint when a specific faction filter was requested.
 		SCR_Faction localFaction = SCR_Faction.Cast(SCR_FactionManager.SGetLocalPlayerFaction());
@@ -1318,7 +1757,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 		Widget widget = GetGame().GetWorkspace().CreateWidgets("{43FC66BA3D85E9C7}UI/layouts/Hint/hint.layout");
 		if (!widget)
 			return;
-
+		
 		// Update player controller with hint
 		CRF_PlayerControllerManager playerControllerComp = CRF_PlayerControllerManager.GetInstance();
 		if (!playerControllerComp)
@@ -1348,38 +1787,27 @@ class CRF_RplBroadcastManager : ScriptComponent
 		}
 
 		hint.ShowHint(data, 8000);
-	}
-
+	}	
+	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	void RpcDo_BroadcastSpectatorDamageReport(int victimPlayerId, int attackerPlayerId, float damageValue, float rangeMeters, bool fatal, int worldTime, string packedData)
+	void RpcDo_SendCharacterLoadingScreen(int playerId)
 	{
-		array<string> parts = {};
-		packedData.Split("|", parts, false);
+		if (SCR_PlayerController.GetLocalPlayerId() != playerId)
+			return;
+		
+		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.CRF_CharacterLoading);
+	};
 
-		string victimName = GetSpectatorDamageReportPart(parts, 0, "Unknown");
-		string attackerName = GetSpectatorDamageReportPart(parts, 1, "Environment");
-		string damageType = GetSpectatorDamageReportPart(parts, 2, "Unknown");
-		string hitZone = GetSpectatorDamageReportPart(parts, 3, "Unknown");
-		string bodyRegion = GetSpectatorDamageReportPart(parts, 4, "Unknown");
-
-		CRF_SpectatorDamageReportStore.InsertEvent(victimPlayerId, victimName, attackerPlayerId, attackerName, damageValue, rangeMeters, damageType, hitZone, bodyRegion, fatal, worldTime);
-
-		CRF_SpectatorMenu spectatorMenu = CRF_SpectatorMenu.Cast(GetGame().GetMenuManager().GetTopMenu());
-		if (spectatorMenu)
-			spectatorMenu.RefreshDamageReport();
-	}
-
-
+	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	void RpcDo_MarkSpectatorDamageReportFatal(int victimPlayerId)
+	void RpcDo_InitilizePlayerBroadcast(int playerId, RplId playerCharID)
 	{
-		CRF_SpectatorDamageReportStore.MarkLatestVictimEventFatal(victimPlayerId);
+		if (!IsLocalPlayer(playerId))
+			return;
 
-		CRF_SpectatorMenu spectatorMenu = CRF_SpectatorMenu.Cast(GetGame().GetMenuManager().GetTopMenu());
-		if (spectatorMenu)
-			spectatorMenu.RefreshDamageReport();
+		CRF_PlayerControllerManager.GetInstance().InitilizePlayerClient(playerCharID);
 	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================

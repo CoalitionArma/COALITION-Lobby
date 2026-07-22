@@ -61,6 +61,9 @@ class CRF_PlayerController : SCR_PlayerController
 		{
 			m_fTimeOfLastRespawn = GetGame().GetWorld().GetWorldTime();
 
+			// - !FIX
+			/*
+			
 			SCR_MapMarkerManagerComponent mapMarkerManager = SCR_MapMarkerManagerComponent.GetInstance();
 			//Let the entity init before we update global markers (For faction check purposes)
 			if (mapMarkerManager)
@@ -94,6 +97,7 @@ class CRF_PlayerController : SCR_PlayerController
 				
 				bushComp.RegisterEntity();
 			}
+			*/
 		}
 	}
 	

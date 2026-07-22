@@ -27,11 +27,11 @@ modded class SCR_VONController
 	//------------------------------------------------------------------------------------------------
 	override protected bool ActivateVON(notnull SCR_VONEntry entry, EVONTransmitType transmitType = EVONTransmitType.NONE)
 	{
-		MenuBase topMenu = GetGame().GetMenuManager().GetTopMenu();
-		if (topMenu)
-			if(topMenu.IsInherited(CRF_Outro))
-				return false;
-		return super.ActivateVON(entry, transmitType);
+		// - !FIXMenuBase topMenu = GetGame().GetMenuManager().GetTopMenu();
+		// - !FIXif (topMenu)
+		// - !FIX	if(topMenu.IsInherited(CRF_Outro))
+		// - !FIX		return false;
+		// - !FIXreturn super.ActivateVON(entry, transmitType);
 	}
 	
 	//------------------------------------------------------------------------------------------------

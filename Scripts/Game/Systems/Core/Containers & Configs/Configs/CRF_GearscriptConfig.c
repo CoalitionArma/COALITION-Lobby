@@ -11,8 +11,8 @@ class CRF_GearScriptContainer
 	[Attribute("", UIWidgets.Hidden)]
 	ResourceName m_rGearScript;
 	
-	[Attribute("false", UIWidgets.Hidden)]
-	bool m_bEnableShareableMarkers;
+	// - !FIX [Attribute("false", UIWidgets.Hidden)]
+	// - !FIX bool m_bEnableShareableMarkers;
   
  	[Attribute("true", UIWidgets.Hidden)]
 	bool m_bEnableBFT;
@@ -29,11 +29,11 @@ class CRF_GearScriptContainer
 	//------------------------------------------------------------------------------------------------
 	// Vars considered "advanced" and not set by plugin
 	
-	[Attribute("{E6555DA2F31B0EC0}Configs/Gearscripts/Additional Configs/CRF_Global_SightArsenal_Regular.conf", UIWidgets.ResourceNamePicker, desc: "Gearscript applied to all entities on this faction", "conf class=CRF_SightArsenalConfig")]
-	ResourceName m_rSightArsenal;
+	// - !FIX [Attribute("{E6555DA2F31B0EC0}Configs/Gearscripts/Additional Configs/CRF_Global_SightArsenal_Regular.conf", UIWidgets.ResourceNamePicker, desc: "Gearscript applied to all entities on this faction", "conf class=CRF_SightArsenalConfig")]
+	// - !FIX ResourceName m_rSightArsenal;
 	
-	[Attribute("{9D8E5FA08331042D}Configs/Gearscripts/Additional Configs/CRF_Global_SightArsenal_Magnified.conf", UIWidgets.ResourceNamePicker, desc: "Gearscript applied to all entities on this faction", "conf class=CRF_SightArsenalConfig")]
-	ResourceName m_rMagnifiedSightArsenal;
+	// - !FIX [Attribute("{9D8E5FA08331042D}Configs/Gearscripts/Additional Configs/CRF_Global_SightArsenal_Magnified.conf", UIWidgets.ResourceNamePicker, desc: "Gearscript applied to all entities on this faction", "conf class=CRF_SightArsenalConfig")]
+	// - !FIX ResourceName m_rMagnifiedSightArsenal;
 	
 	[Attribute("{2E2626C733070162}Configs/Gearscripts/Additional Configs/CRF_Global_VehicleGearscriptValues.conf", UIWidgets.ResourceNamePicker, desc: "Gearscript applied to all vehicles on this faction", "conf class=CRF_VehicleGearscriptConfig")]
 	ResourceName m_rVehicleGearscriptValues;
@@ -53,17 +53,17 @@ class CRF_GearScriptContainer
 	[Attribute()] 
 	ref array<ResourceName> m_aAdditonalItemsForSupplyArsenal;
 	
-	[Attribute("true", UIWidgets.CheckBox)]
-	bool m_bEnableMiniArsenal;
+	// - !FIX [Attribute("true", UIWidgets.CheckBox)]
+	// - !FIX bool m_bEnableMiniArsenal;
 	
-	[Attribute("true", UIWidgets.CheckBox)]
-	bool m_bEnableMiniWeaponArsenal;
+	// - !FIX [Attribute("true", UIWidgets.CheckBox)]
+	// - !FIX bool m_bEnableMiniWeaponArsenal;
 	
-	[Attribute("true", UIWidgets.CheckBox)]
-	bool m_bEnableSightArsenal;
+	// - !FIX [Attribute("true", UIWidgets.CheckBox)]
+	// - !FIX bool m_bEnableSightArsenal;
 	
-	[Attribute("false", UIWidgets.CheckBox)]
-	bool m_bEnableMagnifiedOptics;
+	// - !FIX [Attribute("false", UIWidgets.CheckBox)]
+	// - !FIX bool m_bEnableMagnifiedOptics;
 	
 	[Attribute(uiwidget: "resourcePickerThumbnail", params: "et")]
 	ResourceName m_rShortRangeRadioPrefab;
@@ -92,8 +92,8 @@ class CRF_SimplifiedGearScriptContainer
 	[Attribute("true", UIWidgets.CheckBox)]
 	bool m_bEnableRTORadios;
 	
-	[Attribute("false", UIWidgets.CheckBox)]
-	bool m_bEnableShareableMarkers;
+	// - !FIX [Attribute("false", UIWidgets.CheckBox)]
+	// - !FIX bool m_bEnableShareableMarkers;
   
  	[Attribute("true", UIWidgets.CheckBox)]
 	bool m_bEnableBFT;

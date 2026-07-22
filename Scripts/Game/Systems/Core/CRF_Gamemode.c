@@ -203,7 +203,7 @@ class CRF_Gamemode : SCR_BaseGameMode
 	protected CRF_SlottingManager m_SlottingManager;
 	protected CRF_GearscriptManager m_GearscriptManager;
 	protected CRF_RplBroadcastManager m_RplBroadcastManager;
-	protected CRF_LoggingManager m_LoggingManager;
+	// - !FIX protected CRF_LoggingManager m_LoggingManager;
 	protected CRF_GarbageManager m_GarbageManager;
 	
 	[RplProp()]
