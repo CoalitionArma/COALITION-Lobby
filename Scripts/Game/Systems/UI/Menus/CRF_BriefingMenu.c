@@ -82,6 +82,7 @@ class CRF_PreviewMenu: ChimeraMenuBase
 		m_bFocusOnDescription = false;
 		SetupDefaultFocus();
 
+#ifdef CRF
 		// Fetch community tags + ranks so they appear in the player list
 		CRF_CommunityTagManager tagMgr = CRF_CommunityTagManager.GetInstance();
 		if (tagMgr)
@@ -92,6 +93,7 @@ class CRF_PreviewMenu: ChimeraMenuBase
 			tagMgr.GetOnPlayerRosterChanged().Remove(OnPlayerRosterChanged);
 			tagMgr.GetOnPlayerRosterChanged().Insert(OnPlayerRosterChanged);
 		}
+#endif
 	}
 	
 	/**
@@ -401,12 +403,15 @@ class CRF_PreviewMenu: ChimeraMenuBase
 			string playerTag = "";
 			int playerXp = -1;
 			string playerTrack = "enlisted";
+			
+#ifdef CRF
 			if (CRF_CommunityTagManager.GetInstance())
 			{
 				playerTag = CRF_CommunityTagManager.GetInstance().GetPlayerTag(player);
 				playerXp = CRF_CommunityTagManager.GetInstance().GetPlayerXp(player);
 				playerTrack = CRF_CommunityTagManager.GetInstance().GetPlayerRankTrack(player);
 			}
+#endif
 
 			int index = m_cPlayerListBoxComponent.AddItem(
 				displayName, 
@@ -514,12 +519,14 @@ class CRF_PreviewMenu: ChimeraMenuBase
 	{
 		super.OnMenuClose();
 
+#ifdef CRF
 		CRF_CommunityTagManager tagMgr = CRF_CommunityTagManager.GetInstance();
 		if (tagMgr)
 		{
 			tagMgr.GetOnPlayerInfoUpdated().Remove(OnPlayerInfoUpdated);
 			tagMgr.GetOnPlayerRosterChanged().Remove(OnPlayerRosterChanged);
 		}
+#endif
 
 		// Reset map opened state so the map is re-opened if the menu is reopened
 		m_bMapOpened = false;
