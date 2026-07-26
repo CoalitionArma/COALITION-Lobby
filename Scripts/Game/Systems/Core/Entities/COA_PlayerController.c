@@ -82,7 +82,7 @@ class COA_PlayerController : SCR_PlayerController
 
 			if (from)
 			{
-				COA_BushMovementComponent bushComp = COA_BushMovementComponent.Cast(from.FindComponent(COA_BushMovementComponent));
+				CRF_BushMovementComponent bushComp = CRF_BushMovementComponent.Cast(from.FindComponent(CRF_BushMovementComponent));
 				if (!bushComp)
 					return;
 				
@@ -91,7 +91,7 @@ class COA_PlayerController : SCR_PlayerController
 			
 			if (to)
 			{
-				COA_BushMovementComponent bushComp = COA_BushMovementComponent.Cast(to.FindComponent(COA_BushMovementComponent));
+				CRF_BushMovementComponent bushComp = CRF_BushMovementComponent.Cast(to.FindComponent(CRF_BushMovementComponent));
 				if (!bushComp)
 					return;
 				

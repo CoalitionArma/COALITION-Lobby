@@ -339,7 +339,7 @@ class COA_Gamemode : SCR_BaseGameMode
 					SetGameState(SCR_EGameModeState.GAME);
 					ApplyMissionTimeScale();
 #ifdef COALITION_REFORGER_FRAMEWORK
-					foreach (Vehicle vehicle : COA_VehicleGearscriptManager.GetInstance().GetSpawnedVehicleArray())
+					foreach (Vehicle vehicle : CRF_VehicleGearscriptManager.GetInstance().GetSpawnedVehicleArray())
 					{
 						if (!vehicle)
 							continue;
@@ -353,7 +353,7 @@ class COA_Gamemode : SCR_BaseGameMode
 					// Flush all player stats BEFORE SetGameState
 					
 #ifdef COALITION_REFORGER_FRAMEWORK
-					COA_ServerStatsManager statsManager = COA_ServerStatsManager.GetInstance();
+					CRF_ServerStatsManager statsManager = CRF_ServerStatsManager.GetInstance();
 					if (statsManager)
 						statsManager.NotifyMissionEnded();
 #endif
@@ -366,7 +366,7 @@ class COA_Gamemode : SCR_BaseGameMode
 					if (rplBroadcastManager)
 					{
 						string winningFaction = "";
-						COA_LoggingManager loggingManager = COA_LoggingManager.GetInstance();
+						CRF_LoggingManager loggingManager = CRF_LoggingManager.GetInstance();
 						if (loggingManager)
 							winningFaction = loggingManager.GetWinningFaction();
 						rplBroadcastManager.BroadcastOutro(winningFaction);
@@ -457,7 +457,7 @@ class COA_Gamemode : SCR_BaseGameMode
 				m_PermissionManager.SetPlayerStatus(iPlayerID, "mod");
 			
 #ifdef COALITION_REFORGER_FRAMEWORK
-			if (COA_DonatorConfig.IsDonator(playerGUID))
+			if (CRF_DonatorConfig.IsDonator(playerGUID))
 				m_PermissionManager.SetPlayerStatus(iPlayerID, "don");
 #endif
 		}

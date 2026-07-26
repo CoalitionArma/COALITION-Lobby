@@ -50,7 +50,7 @@ class COA_VehicleSpawner: BaseGameTriggerEntity
 			m_iVehicleSpawnerIndex = m_RespawnManager.InsertVehicle(this);
 		
 #ifdef COALITION_REFORGER_FRAMEWORK
-		COA_VehicleGearscriptManager.GetInstance().SpawnVehicle(this);
+		CRF_VehicleGearscriptManager.GetInstance().SpawnVehicle(this);
 #else
 		vector pos[4];
 		this.GetTransform(pos);
@@ -73,7 +73,7 @@ class COA_VehicleSpawner: BaseGameTriggerEntity
 		if (m_bWaitingToRespawn && m_fTimer <= 0)
 		{
 #ifdef COALITION_REFORGER_FRAMEWORK
-			COA_VehicleGearscriptManager.GetInstance().SpawnVehicle(this);
+			CRF_VehicleGearscriptManager.GetInstance().SpawnVehicle(this);
 #else
 			vector pos[4];
 			this.GetTransform(pos);

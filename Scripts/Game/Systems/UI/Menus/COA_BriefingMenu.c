@@ -84,7 +84,7 @@ class COA_PreviewMenu: ChimeraMenuBase
 
 #ifdef COALITION_REFORGER_FRAMEWORK
 		// Fetch community tags + ranks so they appear in the player list
-		COA_CommunityTagManager tagMgr = COA_CommunityTagManager.GetInstance();
+		CRF_CommunityTagManager tagMgr = CRF_CommunityTagManager.GetInstance();
 		if (tagMgr)
 		{
 			tagMgr.FetchPlayerInfo();
@@ -405,11 +405,11 @@ class COA_PreviewMenu: ChimeraMenuBase
 			string playerTrack = "enlisted";
 			
 #ifdef COALITION_REFORGER_FRAMEWORK
-			if (COA_CommunityTagManager.GetInstance())
+			if (CRF_CommunityTagManager.GetInstance())
 			{
-				playerTag = COA_CommunityTagManager.GetInstance().GetPlayerTag(player);
-				playerXp = COA_CommunityTagManager.GetInstance().GetPlayerXp(player);
-				playerTrack = COA_CommunityTagManager.GetInstance().GetPlayerRankTrack(player);
+				playerTag = CRF_CommunityTagManager.GetInstance().GetPlayerTag(player);
+				playerXp = CRF_CommunityTagManager.GetInstance().GetPlayerXp(player);
+				playerTrack = CRF_CommunityTagManager.GetInstance().GetPlayerRankTrack(player);
 			}
 #endif
 
@@ -520,7 +520,7 @@ class COA_PreviewMenu: ChimeraMenuBase
 		super.OnMenuClose();
 
 #ifdef COALITION_REFORGER_FRAMEWORK
-		COA_CommunityTagManager tagMgr = COA_CommunityTagManager.GetInstance();
+		CRF_CommunityTagManager tagMgr = CRF_CommunityTagManager.GetInstance();
 		if (tagMgr)
 		{
 			tagMgr.GetOnPlayerInfoUpdated().Remove(OnPlayerInfoUpdated);

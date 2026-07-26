@@ -87,15 +87,8 @@ COA_Gamemode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" {
  m_bAllowFactionChange 0
  m_aMissionDescriptors {
   COA_MissionDescriptor "{632771FB5C619E1C}" {
-   m_sTitle "Welcome / How to Play"
-   m_sTextData "Welcome to a COALITION Session."\
-   ""\
-   "If this is your first time here, please join the discord:"\
-   "Escape -> Server Message -> Join Discord"\
-   ""\
-   "COALITION hosts one-life missions every Friday. Each session will have, at minimum, 3 missions a night."\
-   ""\
-   "Anyone can join the mission, but after a mission starts, join in progress (JIP) is disabled and you must wait until the next mission to take part."\
+   m_sTitle "Welcome To Coalition Lobby"
+   m_sTextData "Welcome to a COALITION Lobby Session."\
    ""\
    "If the mission has not started yet, please take time to familiarize yourself with the rest of the briefing and then hold U to select a slot."\
    ""\
@@ -191,25 +184,25 @@ COA_Gamemode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" {
   }
  }
  m_BLUFORGearScriptSettings COA_GearScriptContainer "{64570ACB9B419A7B}" {
-  m_rGearScript "{D3B6188EF875E2C4}Configs/Gearscripts/Standard/80s/COA_GS_US80s.conf"
+  m_rGearScript "{D3B6188EF875E2C4}Configs/Gearscripts/Standard/COA_GS_US80s.conf"
   m_rShortRangeRadioPrefab "{E82129A6CC014808}Prefabs/Items/Equipment/Radios/Radio_ANPRC152.et"
   m_rLongRangeRadioPrefab "{C204374F722D5229}Prefabs/Items/Equipment/Radios/Radio_ANPRC117.et"
   m_rRTORadiosPrefab "{C204374F722D5229}Prefabs/Items/Equipment/Radios/Radio_ANPRC117.et"
  }
  m_OPFORGearScriptSettings COA_GearScriptContainer "{64570ACB9B11EAAD}" {
-  m_rGearScript "{83E186D97FF79DCF}Configs/Gearscripts/Standard/80s/COA_GS_USSR80s.conf"
+  m_rGearScript "{83E186D97FF79DCF}Configs/Gearscripts/Standard/COA_GS_USSR80s.conf"
   m_rShortRangeRadioPrefab "{D26BF3EB28C8B72C}Prefabs/Items/Equipment/Radios/Radio_R187.et"
   m_rLongRangeRadioPrefab "{421001C003F947AF}Prefabs/Items/Equipment/Radios/Radio_R168.et"
   m_rRTORadiosPrefab "{421001C003F947AF}Prefabs/Items/Equipment/Radios/Radio_R168.et"
  }
  m_INDFORGearScriptSettings COA_GearScriptContainer "{64570ACB9AE1C9ED}" {
-  m_rGearScript "{9F4A0C3FCDF3F6DE}Configs/Gearscripts/Standard/80s/COA_GS_FIA.conf"
+  m_rGearScript "{9F4A0C3FCDF3F6DE}Configs/Gearscripts/Standard/COA_GS_FIA.conf"
   m_rShortRangeRadioPrefab "{D26BF3EB28C8B72C}Prefabs/Items/Equipment/Radios/Radio_R187.et"
   m_rLongRangeRadioPrefab "{421001C003F947AF}Prefabs/Items/Equipment/Radios/Radio_R168.et"
   m_rRTORadiosPrefab "{421001C003F947AF}Prefabs/Items/Equipment/Radios/Radio_R168.et"
  }
  m_CIVILIANGearScriptSettings COA_GearScriptContainer "{64570ACB9A9C5C52}" {
-  m_rGearScript "{6FFD426FE0C1079B}Configs/Gearscripts/Standard/80s/COA_GS_CIV.conf"
+  m_rGearScript "{6FFD426FE0C1079B}Configs/Gearscripts/Standard/COA_GS_CIV.conf"
   m_bEnableLeadershipRadios 0
   m_bEnableGIRadios 0
   m_bEnableRTORadios 0
@@ -217,11 +210,11 @@ COA_Gamemode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" {
  {
   PerceptionManager "6445176B75D36372" : "{028DAEAD63E056BE}Prefabs/World/Game/PerceptionManager.et" {
    ID "64443AC8FCA0C42D"
-   coords 0 0 0
+   coords 0 0 -1.5
   }
   SCR_FactionManager "5EA8C932C68D400F" : "{4A188E44289B9A50}Prefabs/MP/Managers/Factions/FactionManager_Editor.et" {
    ID "632A77473B3CC3A8"
-   coords 0.799 0.748 0.974
+   coords 0 0 -1.5
    Factions {
     SCR_Faction "{56DEAC40D2DBC8B1}" {
      UIInfo SCR_FactionUIInfo "{528C961236B7DCD3}" {
@@ -2192,21 +2185,21 @@ COA_Gamemode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" {
   }
   RadioManagerEntity : "{B8E09FAB91C4ECCD}Prefabs/Systems/Radio/RadioManager.et" {
    ID "632771FB44BBF8E1"
-   coords -26.061 38.454 -1.92
+   coords -1.5 0 0
   }
   ScriptedChatEntity : "{F69BC912AC8236F9}Prefabs/MP/ScriptedChatEntity.et" {
    ID "632771FB44BBF8D8"
-   coords -318.139 54.389 2.396
+   coords 1.5 0 0
    "Default channel" "Group"
   }
   SCR_EditorSettingsEntity {
    ID "632771FB44BBD90B"
-   coords 0.828 -0.125 0.558
+   coords 0 0 0
    m_bIsUnlimitedEditorLegal 1
   }
   SCR_LoadoutManager : "{B54D08AEA74A5354}Prefabs/MP/Managers/Loadouts/LoadoutManager_Editor.et" {
    ID "632771FB44BBFB73"
-   coords 0.828 -0.125 0.558
+   coords 0 0 1.5
   }
  }
 }

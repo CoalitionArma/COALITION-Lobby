@@ -2160,7 +2160,7 @@ class COA_AdminMenu : ChimeraMenuBase
 		}
 		
 #ifdef COALITION_REFORGER_FRAMEWORK
-		bool m_bVAARRecordingEnabled = COA_VAAR_GamemodeComponent.GetInstance().m_bRecording;
+		bool m_bVAARRecordingEnabled = CRF_VAAR_GamemodeComponent.GetInstance().m_bRecording;
 		Widget VAARRecordingEnabledButton = m_wMenuContent.FindAnyWidget("ToggleVAARButton");
 		TextWidget VAARRecordingEnabledText = TextWidget.Cast(VAARRecordingEnabledButton.FindWidget("ActionButtonText"));
 		if (m_bVAARRecordingEnabled)

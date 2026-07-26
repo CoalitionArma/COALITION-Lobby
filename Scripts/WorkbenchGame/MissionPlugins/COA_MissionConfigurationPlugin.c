@@ -429,27 +429,27 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 
 		array<string> activeComponents = {};
 
-		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, COA_AttritionGamemodeComponent) >= 0)
+		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, CRF_AttritionGamemodeComponent) >= 0)
 			activeComponents.Insert("Attrition");
-		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, COA_FrontlineGamemodeManager) >= 0)
+		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, CRF_FrontlineGamemodeManager) >= 0)
 			activeComponents.Insert("Frontline");
-		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, COA_HighValueTargetGamemodeManager) >= 0)
+		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, CRF_HighValueTargetGamemodeManager) >= 0)
 			activeComponents.Insert("High Value Target");
-		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, COA_InsurgencyGamemodeManager) >= 0)
+		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, CRF_InsurgencyGamemodeManager) >= 0)
 			activeComponents.Insert("Insurgency");
-		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, COA_RaidGamemodeComponent) >= 0)
+		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, CRF_RaidGamemodeComponent) >= 0)
 			activeComponents.Insert("Raid");
-		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, COA_RallyGamemodeComponent) >= 0)
+		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, CRF_RallyGamemodeComponent) >= 0)
 			activeComponents.Insert("Rally");
-		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, COA_RushGamemodeManager) >= 0)
+		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, CRF_RushGamemodeManager) >= 0)
 			activeComponents.Insert("Rush");
-		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, COA_SearchAndDestroyGamemodeManager) >= 0)
+		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, CRF_SearchAndDestroyGamemodeManager) >= 0)
 			activeComponents.Insert("Search And Destroy");
-		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, COA_LooterGamemodeComponent) >= 0)
+		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, CRF_LooterGamemodeComponent) >= 0)
 			activeComponents.Insert("Looter");
-		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, COA_PropHuntGamemode) >= 0)
+		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, CRF_PropHuntGamemode) >= 0)
 			activeComponents.Insert("Prop Hunt");
-		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, COA_SupplyExtractionGamemodeManager) >= 0)
+		if (SCR_BaseContainerTools.FindComponentIndex(entitySource, CRF_SupplyExtractionGamemodeManager) >= 0)
 			activeComponents.Insert("Supply Extraction");
 
 		string componentList = "None detected";

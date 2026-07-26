@@ -119,7 +119,7 @@ class COA_SlottingMenu: ChimeraMenuBase
 
 #ifdef COALITION_REFORGER_FRAMEWORK
 		// Fetch community tags + ranks and register for updates when they arrive
-		COA_CommunityTagManager tagMgr = COA_CommunityTagManager.GetInstance();
+		CRF_CommunityTagManager tagMgr = CRF_CommunityTagManager.GetInstance();
 		if (tagMgr)
 		{
 			tagMgr.FetchPlayerInfo();
@@ -672,7 +672,7 @@ class COA_SlottingMenu: ChimeraMenuBase
 
 #ifdef COALITION_REFORGER_FRAMEWORK
 		// Unregister from community tag/rank updates
-		COA_CommunityTagManager tagMgr = COA_CommunityTagManager.GetInstance();
+		CRF_CommunityTagManager tagMgr = CRF_CommunityTagManager.GetInstance();
 		if (tagMgr)
 		{
 			tagMgr.GetOnPlayerInfoUpdated().Remove(RefreshTagsAndRanks);
@@ -955,7 +955,7 @@ class COA_SlottingMenu: ChimeraMenuBase
 	//! Called when the async tag/rank fetch completes; avoids a full rebuild of the slot list.
 	protected void RefreshTagsAndRanks()
 	{
-		COA_CommunityTagManager tagMgr = COA_CommunityTagManager.GetInstance();
+		CRF_CommunityTagManager tagMgr = CRF_CommunityTagManager.GetInstance();
 		if (!tagMgr)
 			return;
 
@@ -1107,8 +1107,8 @@ class COA_SlottingMenu: ChimeraMenuBase
 				string playerName = GetGame().GetPlayerManager().GetPlayerName(currentPlayerId);
 				string playerTag = "";
 #ifdef COALITION_REFORGER_FRAMEWORK
-				if (COA_CommunityTagManager.GetInstance())
-					playerTag = COA_CommunityTagManager.GetInstance().GetPlayerTag(currentPlayerId);
+				if (CRF_CommunityTagManager.GetInstance())
+					playerTag = CRF_CommunityTagManager.GetInstance().GetPlayerTag(currentPlayerId);
 #endif
 				
 				elem.SetPlayerText(playerName);
@@ -1486,11 +1486,11 @@ class COA_SlottingMenu: ChimeraMenuBase
 		string playerTag = "";
 		int orbatPlayerXp = -1;
 		string orbatPlayerTrack = "enlisted";
-		if (COA_CommunityTagManager.GetInstance())
+		if (CRF_CommunityTagManager.GetInstance())
 		{
-			playerTag = COA_CommunityTagManager.GetInstance().GetPlayerTag(slotData.GetSlotCurrentPlayerId());
-			orbatPlayerXp = COA_CommunityTagManager.GetInstance().GetPlayerXp(slotData.GetSlotCurrentPlayerId());
-			orbatPlayerTrack = COA_CommunityTagManager.GetInstance().GetPlayerRankTrack(slotData.GetSlotCurrentPlayerId());
+			playerTag = CRF_CommunityTagManager.GetInstance().GetPlayerTag(slotData.GetSlotCurrentPlayerId());
+			orbatPlayerXp = CRF_CommunityTagManager.GetInstance().GetPlayerXp(slotData.GetSlotCurrentPlayerId());
+			orbatPlayerTrack = CRF_CommunityTagManager.GetInstance().GetPlayerRankTrack(slotData.GetSlotCurrentPlayerId());
 		}
 		m_cOrbatListBoxComponent.GetCRFElementComponent(orbatIndex).SetPlayerText(playerName);
 		m_cOrbatListBoxComponent.GetCRFElementComponent(orbatIndex).SetTagText(playerTag);
@@ -1590,11 +1590,11 @@ class COA_SlottingMenu: ChimeraMenuBase
 			string playerTag = "";
 			int unslottedXp = -1;
 			string unslottedTrack = "enlisted";
-			if (COA_CommunityTagManager.GetInstance())
+			if (CRF_CommunityTagManager.GetInstance())
 			{
-				playerTag = COA_CommunityTagManager.GetInstance().GetPlayerTag(playerId);
-				unslottedXp = COA_CommunityTagManager.GetInstance().GetPlayerXp(playerId);
-				unslottedTrack = COA_CommunityTagManager.GetInstance().GetPlayerRankTrack(playerId);
+				playerTag = CRF_CommunityTagManager.GetInstance().GetPlayerTag(playerId);
+				unslottedXp = CRF_CommunityTagManager.GetInstance().GetPlayerXp(playerId);
+				unslottedTrack = CRF_CommunityTagManager.GetInstance().GetPlayerRankTrack(playerId);
 			}
 #endif
 			int index = m_cUnslotPlayerListBoxComponent.AddItemAndIconPlayer(
@@ -1952,11 +1952,11 @@ class COA_SlottingMenu: ChimeraMenuBase
 		string playerTag = "";
 		int playerXp = -1;
 		string playerTrack = "enlisted";
-		if (COA_CommunityTagManager.GetInstance())
+		if (CRF_CommunityTagManager.GetInstance())
 		{
-			playerTag = COA_CommunityTagManager.GetInstance().GetPlayerTag(playerId);
-			playerXp = COA_CommunityTagManager.GetInstance().GetPlayerXp(playerId);
-			playerTrack = COA_CommunityTagManager.GetInstance().GetPlayerRankTrack(playerId);
+			playerTag = CRF_CommunityTagManager.GetInstance().GetPlayerTag(playerId);
+			playerXp = CRF_CommunityTagManager.GetInstance().GetPlayerXp(playerId);
+			playerTrack = CRF_CommunityTagManager.GetInstance().GetPlayerRankTrack(playerId);
 		}
 #endif
 

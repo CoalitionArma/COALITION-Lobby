@@ -40,7 +40,7 @@ class COA_SafestartManager : ScriptComponent
 	protected SCR_PopUpNotification m_PopUpNotification = null;
 	
 #ifdef COALITION_REFORGER_FRAMEWORK
-	protected COA_LoggingManager m_Logging;
+	protected CRF_LoggingManager m_Logging;
 #endif
 	
 	protected COA_Gamemode m_Gamemode;
@@ -78,7 +78,7 @@ class COA_SafestartManager : ScriptComponent
 		{
 			// Initialize server components
 #ifdef COALITION_REFORGER_FRAMEWORK
-			m_Logging = COA_LoggingManager.Cast(m_Gamemode.FindComponent(COA_LoggingManager));
+			m_Logging = CRF_LoggingManager.Cast(m_Gamemode.FindComponent(COA_LoggingManager));
 #endif
 			SetEventMask(GetGame().GetGameMode(), EntityEvent.FIXEDFRAME);
 		};

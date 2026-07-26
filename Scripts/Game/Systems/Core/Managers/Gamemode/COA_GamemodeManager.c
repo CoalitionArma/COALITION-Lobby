@@ -144,7 +144,7 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		if (!playerManager || !playerManager.IsPlayerConnected(playerId))
 			return;
 
-		COA_ServerStatsManager statsManager = COA_ServerStatsManager.GetInstance();
+		CRF_ServerStatsManager statsManager = CRF_ServerStatsManager.GetInstance();
 		IEntity playerEntity = null;
 
 		Managed replicatedItem = Replication.FindItem(playerEntityRplId);

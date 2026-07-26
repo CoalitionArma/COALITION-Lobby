@@ -112,7 +112,7 @@ class COA_PlayerChatCommandManager : ScriptComponent
 			return;
 		}
 
-		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.COA_JIPForwardDeployMenu);
+		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.CRF_JIPForwardDeployMenu);
 	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -326,7 +326,7 @@ class COA_PlayerChatCommandManager : ScriptComponent
 			
 #ifdef COALITION_REFORGER_FRAMEWORK
 			// Set the winning faction in the logging manager
-			COA_LoggingManager loggingManager = COA_LoggingManager.GetInstance();
+			CRF_LoggingManager loggingManager = CRF_LoggingManager.GetInstance();
 			if (loggingManager)
 			{
 				// Show confirmation message

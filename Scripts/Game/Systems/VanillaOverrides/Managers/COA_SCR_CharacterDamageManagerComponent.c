@@ -58,7 +58,7 @@ modded class SCR_CharacterDamageManagerComponent
 		
 #ifdef COALITION_REFORGER_FRAMEWORK
 		// Get data collector to track damage
-		COA_LoggingManager loggingManager = COA_LoggingManager.GetInstance();
+		CRF_LoggingManager loggingManager = CRF_LoggingManager.GetInstance();
 		if (!loggingManager)
 			return;
 		
