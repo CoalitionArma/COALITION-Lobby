@@ -13,5 +13,7 @@ MetaFileClass {
   }
   AudioProjectResourceClass PS5 : PC {
   }
+  AudioProjectResourceClass Xbox : PC {
+  }
  }
 }

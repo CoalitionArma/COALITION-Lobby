@@ -13,5 +13,7 @@ MetaFileClass {
   }
   PNGResourceClass HEADLESS : "{BEAF5CD0C438676E}Configs/System/ResourceTypes/HEADLESS/TextureColorMap.conf" {
   }
+  PNGResourceClass Xbox : PC {
+  }
  }
 }
