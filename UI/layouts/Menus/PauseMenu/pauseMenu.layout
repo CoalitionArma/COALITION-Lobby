@@ -104,7 +104,7 @@ FrameWidgetClass {
        Slot LayoutSlot "{58CE98844C814511}" {
         Padding 0 0 0 0
        }
-       Texture "{0D268ACAFD5410F7}UI/images/Icons/Coalition2_BCA.edds"
+       Texture "{19769D9272BEC68A}UI/Images/Coalition/coalitionlarge.edds"
        Size 300 300
       }
      }
