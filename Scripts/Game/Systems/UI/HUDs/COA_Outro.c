@@ -1,8 +1,3 @@
-modded enum ChimeraMenuPreset
-{
-	COA_Outro
-}
-
 class COA_Outro: ChimeraMenuBase
 {
 	#ifdef COALITION_REFORGER_FRAMEWORK
