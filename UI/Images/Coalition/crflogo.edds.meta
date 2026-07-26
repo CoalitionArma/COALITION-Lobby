@@ -13,7 +13,5 @@ MetaFileClass {
   }
   PNGResourceClass PS5 : PC {
   }
-  PNGResourceClass Xbox : PC {
-  }
  }
 }

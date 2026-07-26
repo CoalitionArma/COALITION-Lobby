@@ -1305,14 +1305,6 @@ FrameWidgetClass {
     OffsetBottom 0
    }
    {
-    FrameWidgetClass "{5EF6A5155C38226C}" {
-     Prefab "{5EF6A5155C38226C}"
-     {
-      RenderTargetWidgetClass "{5EF6A5155C382273}" {
-       Prefab "{5EF6A5155C382273}"
-      }
-     }
-    }
     MapWidgetClass "{000000009C582FB6}" {
      Prefab "{000000009C582FB6}"
     }

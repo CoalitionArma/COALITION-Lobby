@@ -1,8 +1,6 @@
 Vehicle : "{4597626AF36C0858}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320.et" {
  ID "0000000000000001"
  components {
-  CRF_SupplyArsenalComponent "{66C4598285AA55C6}" {
-  }
   SCR_EditableVehicleComponent "{50DEB7C26B5EB312}" {
    m_UIInfo SCR_EditableVehicleUIInfo "{5298E609432D192D}" {
     Name "#AR-Vehicle_Ural4320_Ammo_Name"

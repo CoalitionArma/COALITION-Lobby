@@ -13,7 +13,5 @@ MetaFileClass {
   }
   FNTResourceClass HEADLESS : PC {
   }
-  FNTResourceClass Xbox : PC {
-  }
  }
 }

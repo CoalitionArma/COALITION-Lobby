@@ -1,8 +1,6 @@
 Vehicle : "{92264FF932676C13}Prefabs/Vehicles/Wheeled/M923A1/M923A1_ammo.et" {
  ID "BBCBA43A9778AE21"
  components {
-  CRF_SupplyArsenalComponent "{66C45982893B73C5}" {
-  }
   MeshObject "{51DAA09FEFBFC0E7}" {
    Materials {
     MaterialAssignClass "{65990AF0D903AE60}" {

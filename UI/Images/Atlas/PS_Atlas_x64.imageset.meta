@@ -13,7 +13,5 @@ MetaFileClass {
   }
   ImageSetResourceClass PS5 : PC {
   }
-  ImageSetResourceClass Xbox : PC {
-  }
  }
 }

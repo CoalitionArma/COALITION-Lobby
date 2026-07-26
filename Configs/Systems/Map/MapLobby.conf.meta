@@ -13,7 +13,5 @@ MetaFileClass {
   }
   CONFResourceClass PS5 : PC {
   }
-  CONFResourceClass Xbox : PC {
-  }
  }
 }
