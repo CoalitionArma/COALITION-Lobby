@@ -39,7 +39,7 @@ class CRF_SafestartManager : ScriptComponent
 
 	protected SCR_PopUpNotification m_PopUpNotification = null;
 	
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 	protected CRF_LoggingManager m_Logging;
 #endif
 	
@@ -77,7 +77,7 @@ class CRF_SafestartManager : ScriptComponent
 		if (RplSession.Mode() != RplMode.Client) // Supports both workbench and dedi
 		{
 			// Initialize server components
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 			m_Logging = CRF_LoggingManager.Cast(m_Gamemode.FindComponent(CRF_LoggingManager));
 #endif
 			SetEventMask(GetGame().GetGameMode(), EntityEvent.FIXEDFRAME);
@@ -684,7 +684,7 @@ class CRF_SafestartManager : ScriptComponent
 
 			DeactivateSafeStartEHs();
 
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 			// Send notification message
 			if (m_Logging)
 				m_Logging.GameStarted();
@@ -703,7 +703,7 @@ class CRF_SafestartManager : ScriptComponent
 			GetGame().GetCallqueue().CallLater(DelayChangeSafeStartDisabled, 250);
 			
 			DeleteAllSafestartZones();
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 			CRF_ForwardDeployManager.GetInstance().DeleteAllForwardDeployZones();
 #endif
 			

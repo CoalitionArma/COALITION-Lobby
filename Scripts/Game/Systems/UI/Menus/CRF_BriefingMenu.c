@@ -82,7 +82,7 @@ class CRF_PreviewMenu: ChimeraMenuBase
 		m_bFocusOnDescription = false;
 		SetupDefaultFocus();
 
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 		// Fetch community tags + ranks so they appear in the player list
 		CRF_CommunityTagManager tagMgr = CRF_CommunityTagManager.GetInstance();
 		if (tagMgr)
@@ -404,7 +404,7 @@ class CRF_PreviewMenu: ChimeraMenuBase
 			int playerXp = -1;
 			string playerTrack = "enlisted";
 			
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 			if (CRF_CommunityTagManager.GetInstance())
 			{
 				playerTag = CRF_CommunityTagManager.GetInstance().GetPlayerTag(player);
@@ -519,7 +519,7 @@ class CRF_PreviewMenu: ChimeraMenuBase
 	{
 		super.OnMenuClose();
 
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 		CRF_CommunityTagManager tagMgr = CRF_CommunityTagManager.GetInstance();
 		if (tagMgr)
 		{

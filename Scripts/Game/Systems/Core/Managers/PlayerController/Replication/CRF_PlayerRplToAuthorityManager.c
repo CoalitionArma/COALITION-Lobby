@@ -105,14 +105,12 @@ class CRF_PlayerRplToAuthorityManager : ScriptComponent
 		Rpc(RpcAsk_RequestInitilizePlayer, playerId); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void ToggleSideReady(string setReady, string playerName, bool adminForced)
 	{
 		Rpc(RpcAsk_ToggleSideReady, setReady, playerName, adminForced); 
 	}
-
-
+	
 	//------------------------------------------------------------------------------------------------
 	void RequestAdvanceGamemodeState(bool overriden, string winningFaction = "")
 	{
@@ -127,14 +125,12 @@ class CRF_PlayerRplToAuthorityManager : ScriptComponent
 			Rpc(RpcAsk_RequestAdvanceSlottingPhase); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void UpdateSlotPlayerID(int slotId, int playerId)
 	{
 		Rpc(RpcAsk_UpdateSlotPlayerID, slotId, playerId);
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void UpdateSlotLockedState(int slotId, bool input)
 	{
@@ -142,7 +138,6 @@ class CRF_PlayerRplToAuthorityManager : ScriptComponent
 		Rpc(RpcAsk_UpdateSlotLockedState, slotId, input);
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void UpdateGroupLockedState(RplId groupRplId, bool input)
 	{
@@ -150,7 +145,6 @@ class CRF_PlayerRplToAuthorityManager : ScriptComponent
 		Rpc(RpcAsk_UpdateGroupLockedState, groupRplId, input); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void UpdateSlotDeathState(int slotId, bool input)
 	{
@@ -158,7 +152,6 @@ class CRF_PlayerRplToAuthorityManager : ScriptComponent
 		Rpc(RpcAsk_UpdateSlotDeathState, slotId, input);
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void UpdateSlotRole(int slotId, CRF_EGearRole role)
 	{
@@ -166,7 +159,6 @@ class CRF_PlayerRplToAuthorityManager : ScriptComponent
 		Rpc(RpcAsk_UpdateSlotRole, slotId, role);
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void UpdateSlotGroup(int slotId, RplId groupRplId)
 	{
@@ -174,7 +166,6 @@ class CRF_PlayerRplToAuthorityManager : ScriptComponent
 		Rpc(RpcAsk_UpdateSlotGroup, slotId, groupRplId);
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void UpdateSlotCharacter(int slotId, RplId charId)
 	{
@@ -182,96 +173,66 @@ class CRF_PlayerRplToAuthorityManager : ScriptComponent
 		Rpc(RpcAsk_UpdateSlotCharacter, slotId, charId);
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void RespawnPlayer(int playerId, int spawnPointID)
 	{
 		Rpc(RpcAsk_RespawnPlayer, playerId, spawnPointID); 
 	}	
 
-	
 	//------------------------------------------------------------------------------------------------
 	void RequestToJoinChannel(int channel, int requestId)
 	{
 		Rpc(RpcAsk_RequestToJoinChannel, channel, requestId); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void CheckVONRegister(int playerId)
 	{
 		Rpc(RpcAsk_CheckVONRegister, playerId); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void CreateChannel(int playerId)
 	{
 		Rpc(RpcAsk_CreateChannel, playerId); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void JoinChannel(int playerId, int channel)
 	{
 		Rpc(RpcAsk_JoinChannel, playerId, channel); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void SpawnOnGroup(int playerId, int playerIDToSpawnOn, int groupID, bool logAction)
 	{
 		Rpc(RpcAsk_SpawnOnGroup, playerId, playerIDToSpawnOn, groupID, logAction); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void ResetGear(int playerId, ResourceName prefab, bool logAction)
 	{
 		Rpc(RpcAsk_ResetGear, playerId, prefab, logAction); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void UpdateGearSet(string faction, ResourceName path)
 	{
 		Rpc(RpcAsk_UpdateGearSet, faction, path); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void MoveSpecCamToSlot(int slotID, int playerID)
 	{
 		Rpc(RpcAsk_MoveSpecCamToSlot, slotID, playerID);
 	}
 
-	
-	//------------------------------------------------------------------------------------------------
-	void RegisterPlayerForLottery(int playerId, string factionKey, string squadFilter)
-	{
-		Rpc(RpcAsk_RegisterPlayerForLottery, playerId, factionKey, squadFilter);
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	void RunSlotLottery(int requestingPlayerId)
-	{
-		Rpc(RpcAsk_RunSlotLottery, requestingPlayerId);
-	}
-
-	
-	//------------------------------------------------------------------------------------------------
-	void ClearSlotLottery(int requestingPlayerId)
-	{
-		Rpc(RpcAsk_ClearSlotLottery, requestingPlayerId);
-	}
-	
 	//------------------------------------------------------------------------------------------------
 	void SendAdminMessage(string data, int playerID)
 	{
 		Rpc(RpcAsk_SendAdminMessage, data, playerID); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void ReplyAdminMessage(string data, int playerId, int adminID, bool logAction)
 	{
@@ -279,28 +240,24 @@ class CRF_PlayerRplToAuthorityManager : ScriptComponent
 			Rpc(RpcAsk_ReplyAdminMessage, data, playerId, adminID, logAction); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void CloseAdminTicket(int ticketID, int adminID, bool logAction)
 	{
 		Rpc(RpcAsk_CloseAdminTicket, ticketID, adminID, logAction); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void AssignAdminTicket(int ticketID, int adminID, bool logAction)
 	{
 		Rpc(RpcAsk_AssignAdminTicket, ticketID, adminID, logAction); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void GetOpenTickets(int playerID)
 	{
 		Rpc(RpcAsk_GetOpenTickets, playerID); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void GetTicketMessages(int playerID, int ticketID)
 	{
@@ -313,35 +270,30 @@ class CRF_PlayerRplToAuthorityManager : ScriptComponent
 		Rpc(RpcAsk_TeleportPlayers, playerId1, playerId2, logAction); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void SendHint(string data, int playerId = -1, string factionKey = "")
 	{
 		Rpc(RpcAsk_SendHint, data, playerId, factionKey); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void Heal(int playerId, bool logAction, bool isVehicle = false)
 	{
 		Rpc(RpcAsk_Heal, playerId, logAction, isVehicle); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void LogAdminAction(string data, int playerId, bool sendToPlayer) 
 	{
 		Rpc(RpcAsk_LogAdminAction, data, playerId, sendToPlayer); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void UpdateTimer(int delta) 
 	{
 		Rpc(RpcAsk_UpdateTimer, delta); 
 	}	
 
-	
 	//------------------------------------------------------------------------------------------------
 	void UpdateTicket(string action, FactionKey faction, int delta) 
 	{
@@ -354,7 +306,6 @@ class CRF_PlayerRplToAuthorityManager : ScriptComponent
 		Rpc(RpcAsk_RespawnFaction, faction, logAction); 
 	}
 
-	
 	//------------------------------------------------------------------------------------------------
 	void AddItem(int playerId, string prefab, bool logAction)
 	{
@@ -378,7 +329,6 @@ class CRF_PlayerRplToAuthorityManager : ScriptComponent
 	{
 		Rpc(RpcAsk_ToggleWaveRespawn);
 	}
-
 	
 	//------------------------------------------------------------------------------------------------
 	void ToggleRespawn()
@@ -390,6 +340,12 @@ class CRF_PlayerRplToAuthorityManager : ScriptComponent
 	void TogglePlayerListening(int playerId, bool input)
 	{
 		Rpc(RpcAsk_TogglePlayerLisntening, playerId, input);
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	void RequestForwardDeploy(vector cursorWorldPos, string factionKey, int playerId)
+	{
+		Rpc(RpcAsk_RequestForwardDeploy, cursorWorldPos, factionKey, playerId);
 	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -897,37 +853,6 @@ class CRF_PlayerRplToAuthorityManager : ScriptComponent
 				
 		m_RplBroadcastManager.MoveSpecCamToSlot(slotPos, playerId);
 	}
-
-	
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_RegisterPlayerForLottery(int playerId, string factionKey, string squadFilter)
-	{
-		CRF_SlotLottery slotLottery = CRF_SlotLottery.GetInstance();
-		if (slotLottery)
-			slotLottery.RegisterPlayerForLottery_Server(playerId, factionKey, squadFilter);
-	}
-
-
-	
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_RunSlotLottery(int requestingPlayerId)
-	{
-		CRF_SlotLottery slotLottery = CRF_SlotLottery.GetInstance();
-		if (slotLottery)
-			slotLottery.RunSlotLottery_Server(requestingPlayerId);
-	}
-
-	
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_ClearSlotLottery(int requestingPlayerId)
-	{
-		CRF_SlotLottery slotLottery = CRF_SlotLottery.GetInstance();
-		if (slotLottery)
-			slotLottery.ClearSlotLottery_Server(requestingPlayerId);
-	}
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
@@ -1269,6 +1194,103 @@ class CRF_PlayerRplToAuthorityManager : ScriptComponent
 		CVON_VONGameModeComponent cvon = CVON_VONGameModeComponent.GetInstance();
 		if (cvon)
 			cvon.TogglePlayerListening(playerId, input);
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_RequestForwardDeploy(vector cursorWorldPos, string factionKey, int playerId)
+	{
+		LogTelemetry("RpcAsk_RequestForwardDeploy", CRF_BandwidthTelemetryManager.EstimateSize_Vector() + CRF_BandwidthTelemetryManager.EstimateSize_String(factionKey) + CRF_BandwidthTelemetryManager.EstimateSize_Int());
+		IEntity polyzone;
+		cursorWorldPos[1] = SCR_TerrainHelper.GetTerrainY(cursorWorldPos);
+		foreach (IEntity zone: CRF_ForwardDeployManager.GetInstance().GetForwardDeployZones())
+		{
+			CRF_PolyZone zoneComp = CRF_PolyZone.Cast(zone.FindComponent(CRF_PolyZone));
+			if (!zoneComp)
+				continue;
+			
+			if (!zoneComp.IsInsidePolygon(Vector(cursorWorldPos[0], 0, cursorWorldPos[2])))
+				continue;
+			
+			if (!zoneComp.m_aVisibleForFactions.Contains(factionKey))
+				continue;
+			
+			polyzone = zone;
+			break;
+		}
+		
+		if (!polyzone)
+		{
+			CRF_PlayerRplToOwnerManager.GetInstance().ForwardDeployRequestRejected();
+			return;
+		}
+		
+		array<IEntity> teleportedVehicles = {};
+		array<AIAgent> players = {};
+		array<IEntity> entities = {};
+		
+		SCR_GroupsManagerComponent groupMan = SCR_GroupsManagerComponent.GetInstance();
+		SCR_AIGroup playerGroup = groupMan.GetPlayerGroup(playerId);
+		if (!playerGroup)
+		{
+		    CRF_PlayerRplToOwnerManager.GetInstance().ForwardDeployRequestRejected();
+		    return;
+		}
+		playerGroup.GetAgents(players);
+		foreach (AIAgent agent : players)
+		{
+			IEntity entity = agent.GetControlledEntity();
+			if (!entity)
+				continue;
+				
+			SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(entity);
+			if (!character)
+				continue;
+			
+			entities.Insert(entity);
+		}
+		foreach (IEntity entity: entities)
+		{
+			int currentPlayerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(entity);
+			if (currentPlayerId <= 0)
+				continue;
+			SCR_CompartmentAccessComponent compartmentAccess = SCR_CompartmentAccessComponent.Cast(entity.FindComponent(SCR_CompartmentAccessComponent));
+			if (compartmentAccess)
+			{
+				IEntity vehicle = compartmentAccess.GetVehicle();
+				
+				if (vehicle)
+				{
+					SCR_BaseCompartmentManagerComponent compartmentMan = SCR_BaseCompartmentManagerComponent.Cast(vehicle.FindComponent(SCR_BaseCompartmentManagerComponent));
+					array<BaseCompartmentSlot> slots = {};
+					compartmentMan.GetCompartments(slots);
+					//Check if majority of the vic is the same group, if not don't teleport.
+					int amountInGroup = 0;
+					int amountNotInGroup = 0;
+					foreach (BaseCompartmentSlot slot: slots)
+					{
+						if (!slot.IsOccupied())
+							continue;
+						
+						if (!slot.GetOccupant().FindComponent(FactionAffiliationComponent))
+							continue;
+						
+						if (entities.Contains(slot.GetOccupant()))
+							amountInGroup++;
+						else
+							amountNotInGroup++;
+					}
+					if (amountInGroup < amountNotInGroup)
+						continue; 
+					if (teleportedVehicles.Contains(vehicle))
+						continue;
+					teleportedVehicles.Insert(vehicle);
+					CRF_ForwardDeployManager.GetInstance().CreateForwardDeployRequest(currentPlayerId, cursorWorldPos);
+					continue;
+				}
+			}
+			CRF_ForwardDeployManager.GetInstance().CreateForwardDeployRequest(currentPlayerId, cursorWorldPos);
+		}
 	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================

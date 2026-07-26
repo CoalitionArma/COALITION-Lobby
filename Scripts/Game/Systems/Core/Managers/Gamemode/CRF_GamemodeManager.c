@@ -115,7 +115,7 @@ class CRF_GamemodeManager : SCR_BaseGameModeComponent
 				// Notify the CRF-native stats manager so it begins tracking this player.
 				// Retry briefly in case component init/replication order delays availability.
 				
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 				TryNotifyStatsManager(playerId, playerRplComp.Id(), 0);
 #endif
 			}
@@ -132,7 +132,7 @@ class CRF_GamemodeManager : SCR_BaseGameModeComponent
 		return true;
 	}
 
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 	//------------------------------------------------------------------------------------------------
 	//! Resolve delayed stats-manager availability and delayed replicated-entity availability.
 	protected void TryNotifyStatsManager(int playerId, RplId playerEntityRplId, int attempt)

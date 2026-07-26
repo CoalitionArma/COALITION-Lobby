@@ -11,7 +11,7 @@ class CRF_GearScriptContainer
 	[Attribute("", UIWidgets.Hidden)]
 	ResourceName m_rGearScript;
 	
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 	[Attribute("false", UIWidgets.Hidden)]
 	bool m_bEnableShareableMarkers;
 #endif
@@ -31,7 +31,7 @@ class CRF_GearScriptContainer
 	//------------------------------------------------------------------------------------------------
 	// Vars considered "advanced" and not set by plugin
 	
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 	[Attribute("{E6555DA2F31B0EC0}Configs/Gearscripts/Additional Configs/CRF_Global_SightArsenal_Regular.conf", UIWidgets.ResourceNamePicker, desc: "Gearscript applied to all entities on this faction", "conf class=CRF_SightArsenalConfig")]
 	ResourceName m_rSightArsenal;
 	
@@ -96,7 +96,7 @@ class CRF_SimplifiedGearScriptContainer
 	[Attribute("true", UIWidgets.CheckBox)]
 	bool m_bEnableRTORadios;
 	
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 	[Attribute("false", UIWidgets.CheckBox)]
 	bool m_bEnableShareableMarkers;
 #endif

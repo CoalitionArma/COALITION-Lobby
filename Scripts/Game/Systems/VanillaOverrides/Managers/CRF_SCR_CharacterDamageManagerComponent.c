@@ -56,7 +56,7 @@ modded class SCR_CharacterDamageManagerComponent
 		if (!killerEntity)
 			return;
 		
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 		// Get data collector to track damage
 		CRF_LoggingManager loggingManager = CRF_LoggingManager.GetInstance();
 		if (!loggingManager)

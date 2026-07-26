@@ -1919,7 +1919,7 @@ class CRF_AdminMenu : ChimeraMenuBase
 		SCR_ButtonTextComponent toggleRespawn = SCR_ButtonTextComponent.Cast(m_wMenuContent.FindAnyWidget("EnableRespawnButton").FindHandler(SCR_ButtonTextComponent));
 		toggleRespawn.m_OnClicked.Insert(ToggleRespawn);
 		
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 		//Toggle VAAR Recording
 		SCR_ButtonTextComponent toggleVAARRecording = SCR_ButtonTextComponent.Cast(m_wMenuContent.FindAnyWidget("ToggleVAARButton").FindHandler(SCR_ButtonTextComponent));
 		toggleVAARRecording.m_OnClicked.Insert(ToggleVAARRecording);
@@ -1958,7 +1958,7 @@ class CRF_AdminMenu : ChimeraMenuBase
 		ctx.ReadValue("", m_gearsetlist);
 	}
 	
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 	void ToggleVAARRecording()
 	{
 		CRF_PlayerRplToAuthorityManager.GetInstance().ToggleVAARRecording();
@@ -2159,7 +2159,7 @@ class CRF_AdminMenu : ChimeraMenuBase
 			respawnEnabledText.SetColorInt(Color.RED);
 		}
 		
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 		bool m_bVAARRecordingEnabled = CRF_VAAR_GamemodeComponent.GetInstance().m_bRecording;
 		Widget VAARRecordingEnabledButton = m_wMenuContent.FindAnyWidget("ToggleVAARButton");
 		TextWidget VAARRecordingEnabledText = TextWidget.Cast(VAARRecordingEnabledButton.FindWidget("ActionButtonText"));

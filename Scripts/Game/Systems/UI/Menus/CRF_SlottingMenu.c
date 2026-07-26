@@ -117,7 +117,7 @@ class CRF_SlottingMenu: ChimeraMenuBase
 		// Register for surgical per-slot player-ID updates (no full rebuild needed)
 		CRF_SlottingManager.GetInstance().GetOnSlotChanged().Insert(UpdateSlotInPlace);
 
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 		// Fetch community tags + ranks and register for updates when they arrive
 		CRF_CommunityTagManager tagMgr = CRF_CommunityTagManager.GetInstance();
 		if (tagMgr)
@@ -670,7 +670,7 @@ class CRF_SlottingMenu: ChimeraMenuBase
 		CRF_SlottingManager.GetInstance().GetOnSlottingUpdate().Remove(UpdateSlots);
 		CRF_SlottingManager.GetInstance().GetOnSlotChanged().Remove(UpdateSlotInPlace);
 
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 		// Unregister from community tag/rank updates
 		CRF_CommunityTagManager tagMgr = CRF_CommunityTagManager.GetInstance();
 		if (tagMgr)
@@ -946,7 +946,7 @@ class CRF_SlottingMenu: ChimeraMenuBase
 		}
 	}
 	
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 	/**
 	 * Updates the slot display UI with current data
 	 * Shows available slots for the selected faction
@@ -1106,7 +1106,7 @@ class CRF_SlottingMenu: ChimeraMenuBase
 			{
 				string playerName = GetGame().GetPlayerManager().GetPlayerName(currentPlayerId);
 				string playerTag = "";
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 				if (CRF_CommunityTagManager.GetInstance())
 					playerTag = CRF_CommunityTagManager.GetInstance().GetPlayerTag(currentPlayerId);
 #endif
@@ -1404,7 +1404,7 @@ class CRF_SlottingMenu: ChimeraMenuBase
 				{
 					string playerName = GetGame().GetPlayerManager().GetPlayerName(slotData.GetSlotCurrentPlayerId());
 					
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 					string playerTag = "";
 					int slotPlayerXp = -1;
 					string slotPlayerTrack = "enlisted";
@@ -1482,7 +1482,7 @@ class CRF_SlottingMenu: ChimeraMenuBase
 		
 		// Set player text
 		string playerName = GetGame().GetPlayerManager().GetPlayerName(slotData.GetSlotCurrentPlayerId());
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 		string playerTag = "";
 		int orbatPlayerXp = -1;
 		string orbatPlayerTrack = "enlisted";
@@ -1586,7 +1586,7 @@ class CRF_SlottingMenu: ChimeraMenuBase
 			
 			// Add player to unslotted list
 			string playerName = GetGame().GetPlayerManager().GetPlayerName(playerId);
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 			string playerTag = "";
 			int unslottedXp = -1;
 			string unslottedTrack = "enlisted";
@@ -1615,7 +1615,7 @@ class CRF_SlottingMenu: ChimeraMenuBase
 			CRF_ListBoxElementComponent crfComp = CRF_ListBoxElementComponent.Cast(comp);
 			if (crfComp)
 			{
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 				crfComp.SetTagText(playerTag);
 				crfComp.SetRankChevron(unslottedXp, unslottedTrack);
 #endif
@@ -1948,7 +1948,7 @@ class CRF_SlottingMenu: ChimeraMenuBase
 			playerIconResource = EMPTY_RESOURCE;
 			
 		string displayName = GetGame().GetPlayerManager().GetPlayerName(playerId);
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 		string playerTag = "";
 		int playerXp = -1;
 		string playerTrack = "enlisted";
@@ -1970,7 +1970,7 @@ class CRF_SlottingMenu: ChimeraMenuBase
 		// Apply appropriate color based on player status
 		SCR_ListBoxElementComponent comp = m_cPlayerListBoxComponent.GetElementComponent(listIndex);
 		
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 		CRF_ListBoxElementComponent crfComp = CRF_ListBoxElementComponent.Cast(comp);
 		if (crfComp)
 		{

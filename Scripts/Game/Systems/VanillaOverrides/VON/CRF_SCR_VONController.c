@@ -27,7 +27,7 @@ modded class SCR_VONController
 	//------------------------------------------------------------------------------------------------
 	override protected bool ActivateVON(notnull SCR_VONEntry entry, EVONTransmitType transmitType = EVONTransmitType.NONE)
 	{
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 		MenuBase topMenu = GetGame().GetMenuManager().GetTopMenu();
 		if (topMenu)
 			if(topMenu.IsInherited(CRF_Outro))

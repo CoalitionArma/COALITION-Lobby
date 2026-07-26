@@ -161,7 +161,7 @@ modded class SCR_VONController
 	//------------------------------------------------------------------------------------------------
 	override void ActivateCVON(CVON_EVONTransmitType transmitType = CVON_EVONTransmitType.NONE)
 	{
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 		MenuBase topMenu = GetGame().GetMenuManager().GetTopMenu();
 		if (topMenu)
 			if(topMenu.IsInherited(CRF_Outro))

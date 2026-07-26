@@ -101,211 +101,6 @@ class CRF_RplBroadcastManager : ScriptComponent
 	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================
-//	 BROADCAST METHODS (lobby-scoped)
-//=============================================================================================================================================================================================================================================================================================================================================================
-
-	//------------------------------------------------------------------------------------------------
-	void PopUpNotification(float life, string titleText, string subtitleText = "", string sound = "", string titleTextParam1 = "", string titleTextParam2 = "")
-	{
-		// Telemetry: float + 5 strings
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Float();
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(titleText);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(subtitleText);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(sound);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(titleTextParam1);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(titleTextParam2);
-		LogTelemetry("PopUpNotification", bytes);
-		
-		#ifdef WORKBENCH
-		RpcDo_PopUpNotification(life, titleText, subtitleText, sound, titleTextParam1, titleTextParam2);
-		#else
-		Rpc(RpcDo_PopUpNotification, life, titleText, subtitleText, sound, titleTextParam1, titleTextParam2);
-		#endif
-	}
-
-	
-	//------------------------------------------------------------------------------------------------
-	void SendAdminMessage(string data, int playerID, bool ticketExists)
-	{
-		// Telemetry: string + int
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(data);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int();
-		LogTelemetry("SendAdminMessage", bytes);
-		
-		#ifdef WORKBENCH
-		RpcDo_SendAdminMessage(data, playerID, ticketExists);
-		#else
-		Rpc(RpcDo_SendAdminMessage, data, playerID, ticketExists);
-		#endif
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void GetOpenTickets(int playerID)
-	{
-		#ifdef WORKBENCH
-		RpcDo_GetOpenTickets(playerID, CRF_AdminMenuManager.GetInstance().GetOpenTickets());
-		#else
-		Rpc(RpcDo_GetOpenTickets, playerID, CRF_AdminMenuManager.GetInstance().GetOpenTickets());
-		#endif
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void GetTicketMessages(int playerID, int ticketID)
-	{
-		#ifdef WORKBENCH
-		RpcDo_GetTicketMessages(playerID, CRF_AdminMenuManager.GetInstance().GetTicketMessages(ticketID));
-		#else
-		Rpc(RpcDo_GetTicketMessages, playerID, CRF_AdminMenuManager.GetInstance().GetTicketMessages(ticketID));
-		#endif
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Several handlers below (ReplyAdminMessage, CloseAdminTicket, NotifiyTicketAssigned,
-	//! TeleportPlayers) call this as a same-class helper. Also duplicated on the lobby-side
-	//! broadcast manager for its own slotting/gear-swap admin logging.
-	void LogAdminAction(string data, int playerId, bool sendToPlayer)
-	{
-		// Telemetry: string + int + bool
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(data);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int();
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
-		LogTelemetry("LogAdminAction", bytes);
-
-		#ifdef WORKBENCH
-		RpcDo_LogAdminAction(data, playerId, sendToPlayer);
-		#else
-		Rpc(RpcDo_LogAdminAction, data, playerId, sendToPlayer);
-		#endif
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void ReplyAdminMessage(string data, int playerId, int adminID, bool logAction)
-	{
-		// Telemetry: string + 2 ints + bool
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(data);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2;
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
-		LogTelemetry("ReplyAdminMessage", bytes);
-		
-		#ifdef WORKBENCH
-		RpcDo_ReplyAdminMessage(data, playerId, adminID, logAction);
-		#else
-		Rpc(RpcDo_ReplyAdminMessage, data, playerId, adminID, logAction);
-		#endif
-	}
-
-	
-	//------------------------------------------------------------------------------------------------
-	void CloseAdminTicket(int ticketID, int adminID, bool logAction)
-	{
-		// Telemetry: 2 ints + bool
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2;
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
-		LogTelemetry("CloseAdminTicket", bytes);
-		
-		#ifdef WORKBENCH
-		RpcDo_CloseAdminTicket(ticketID, adminID, logAction);
-		#else
-		Rpc(RpcDo_CloseAdminTicket, ticketID, adminID, logAction);
-		#endif
-	}
-
-	
-	//------------------------------------------------------------------------------------------------
-	void NotifiyTicketAssigned(int ticketID, int adminID, bool logAction)
-	{
-		// Telemetry: 2 ints + bool
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2;
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
-		LogTelemetry("NotifiyTicketAssigned", bytes);
-		
-		#ifdef WORKBENCH
-		RpcDo_NotifiyTicketAssigned(ticketID, adminID, logAction);
-		#else
-		Rpc(RpcDo_NotifiyTicketAssigned, ticketID, adminID, logAction);
-		#endif
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void RefreshAdminMenuLists()
-	{
-		#ifdef WORKBENCH
-		RpcDo_RefreshAdminMenuLists();
-		#else
-		Rpc(RpcDo_RefreshAdminMenuLists);
-		#endif
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	void SendCharacterLoadingScreen(int playerId)
-	{
-		// Telemetry: int
-		LogTelemetry("SendCharacterLoadingScreen", CRF_BandwidthTelemetryManager.EstimateSize_Int());
-		
-		#ifdef WORKBENCH
-		RpcDo_SendCharacterLoadingScreen(playerId);
-		#else
-		Rpc(RpcDo_SendCharacterLoadingScreen, playerId);
-		#endif
-	}
-
-
-	//------------------------------------------------------------------------------------------------
-	void InitilizePlayerBroadcast(int playerId, RplId playerCharID)
-	{
-		// Telemetry: int + RplId
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int();
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_RplId();
-		LogTelemetry("InitilizePlayerBroadcast", bytes);
-		
-		#ifdef WORKBENCH
-		RpcDo_InitilizePlayerBroadcast(playerId, playerCharID);
-		#else
-		Rpc(RpcDo_InitilizePlayerBroadcast, playerId, playerCharID);
-		#endif
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void SendHint(string data, int playerId = -1, string factionKey = "")
-	{
-		// Telemetry: 2 strings + int
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(data);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(factionKey);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int();
-		LogTelemetry("SendHint", bytes);
-		
-		#ifdef WORKBENCH
-		RpcDo_SendHint(data, playerId, factionKey);
-		#else
-		Rpc(RpcDo_SendHint, data, playerId, factionKey);
-		#endif
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	void TeleportPlayers(int playerId1, int playerId2, bool logAction)
-	{
-		IEntity player2Char = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId2);
-		
-		if(player2Char)
-		{
-			vector player2Origin = player2Char.GetOrigin();
-			
-			// Telemetry: 2 ints + vector + bool
-			int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2;
-			bytes += CRF_BandwidthTelemetryManager.EstimateSize_Vector();
-			bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
-			LogTelemetry("TeleportPlayers", bytes);
-		
-			#ifdef WORKBENCH
-			RpcDo_TeleportPlayers(playerId1, playerId2, player2Origin, logAction);
-			#else
-			Rpc(RpcDo_TeleportPlayers, playerId1, playerId2, player2Origin, logAction);
-			#endif
-		};
-	}
-
-	
-//=============================================================================================================================================================================================================================================================================================================================================================
 //	 BATCHING METHODS
 //=============================================================================================================================================================================================================================================================================================================================================================
 	
@@ -491,6 +286,209 @@ class CRF_RplBroadcastManager : ScriptComponent
 	bool IsBatchingEnabled()
 	{
 		return m_bBatchingEnabled;
+	}
+	
+//=============================================================================================================================================================================================================================================================================================================================================================
+//	 AUTHORITY REPLICATION ACCESSORS
+//=============================================================================================================================================================================================================================================================================================================================================================
+	
+	//------------------------------------------------------------------------------------------------
+	void PopUpNotification(float life, string titleText, string subtitleText = "", string sound = "", string titleTextParam1 = "", string titleTextParam2 = "")
+	{
+		// Telemetry: float + 5 strings
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Float();
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(titleText);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(subtitleText);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(sound);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(titleTextParam1);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(titleTextParam2);
+		LogTelemetry("PopUpNotification", bytes);
+		
+		#ifdef WORKBENCH
+		RpcDo_PopUpNotification(life, titleText, subtitleText, sound, titleTextParam1, titleTextParam2);
+		#else
+		Rpc(RpcDo_PopUpNotification, life, titleText, subtitleText, sound, titleTextParam1, titleTextParam2);
+		#endif
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	void SendAdminMessage(string data, int playerID, bool ticketExists)
+	{
+		// Telemetry: string + int
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(data);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int();
+		LogTelemetry("SendAdminMessage", bytes);
+		
+		#ifdef WORKBENCH
+		RpcDo_SendAdminMessage(data, playerID, ticketExists);
+		#else
+		Rpc(RpcDo_SendAdminMessage, data, playerID, ticketExists);
+		#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void GetOpenTickets(int playerID)
+	{
+		#ifdef WORKBENCH
+		RpcDo_GetOpenTickets(playerID, CRF_AdminMenuManager.GetInstance().GetOpenTickets());
+		#else
+		Rpc(RpcDo_GetOpenTickets, playerID, CRF_AdminMenuManager.GetInstance().GetOpenTickets());
+		#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void GetTicketMessages(int playerID, int ticketID)
+	{
+		#ifdef WORKBENCH
+		RpcDo_GetTicketMessages(playerID, CRF_AdminMenuManager.GetInstance().GetTicketMessages(ticketID));
+		#else
+		Rpc(RpcDo_GetTicketMessages, playerID, CRF_AdminMenuManager.GetInstance().GetTicketMessages(ticketID));
+		#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Several handlers below (ReplyAdminMessage, CloseAdminTicket, NotifiyTicketAssigned,
+	//! TeleportPlayers) call this as a same-class helper. Also duplicated on the lobby-side
+	//! broadcast manager for its own slotting/gear-swap admin logging.
+	void LogAdminAction(string data, int playerId, bool sendToPlayer)
+	{
+		// Telemetry: string + int + bool
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(data);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int();
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
+		LogTelemetry("LogAdminAction", bytes);
+
+		#ifdef WORKBENCH
+		RpcDo_LogAdminAction(data, playerId, sendToPlayer);
+		#else
+		Rpc(RpcDo_LogAdminAction, data, playerId, sendToPlayer);
+		#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void ReplyAdminMessage(string data, int playerId, int adminID, bool logAction)
+	{
+		// Telemetry: string + 2 ints + bool
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(data);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2;
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
+		LogTelemetry("ReplyAdminMessage", bytes);
+		
+		#ifdef WORKBENCH
+		RpcDo_ReplyAdminMessage(data, playerId, adminID, logAction);
+		#else
+		Rpc(RpcDo_ReplyAdminMessage, data, playerId, adminID, logAction);
+		#endif
+	}
+
+	
+	//------------------------------------------------------------------------------------------------
+	void CloseAdminTicket(int ticketID, int adminID, bool logAction)
+	{
+		// Telemetry: 2 ints + bool
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2;
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
+		LogTelemetry("CloseAdminTicket", bytes);
+		
+		#ifdef WORKBENCH
+		RpcDo_CloseAdminTicket(ticketID, adminID, logAction);
+		#else
+		Rpc(RpcDo_CloseAdminTicket, ticketID, adminID, logAction);
+		#endif
+	}
+
+	
+	//------------------------------------------------------------------------------------------------
+	void NotifiyTicketAssigned(int ticketID, int adminID, bool logAction)
+	{
+		// Telemetry: 2 ints + bool
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2;
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
+		LogTelemetry("NotifiyTicketAssigned", bytes);
+		
+		#ifdef WORKBENCH
+		RpcDo_NotifiyTicketAssigned(ticketID, adminID, logAction);
+		#else
+		Rpc(RpcDo_NotifiyTicketAssigned, ticketID, adminID, logAction);
+		#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void RefreshAdminMenuLists()
+	{
+		#ifdef WORKBENCH
+		RpcDo_RefreshAdminMenuLists();
+		#else
+		Rpc(RpcDo_RefreshAdminMenuLists);
+		#endif
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	void SendCharacterLoadingScreen(int playerId)
+	{
+		// Telemetry: int
+		LogTelemetry("SendCharacterLoadingScreen", CRF_BandwidthTelemetryManager.EstimateSize_Int());
+		
+		#ifdef WORKBENCH
+		RpcDo_SendCharacterLoadingScreen(playerId);
+		#else
+		Rpc(RpcDo_SendCharacterLoadingScreen, playerId);
+		#endif
+	}
+
+
+	//------------------------------------------------------------------------------------------------
+	void InitilizePlayerBroadcast(int playerId, RplId playerCharID)
+	{
+		// Telemetry: int + RplId
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int();
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_RplId();
+		LogTelemetry("InitilizePlayerBroadcast", bytes);
+		
+		#ifdef WORKBENCH
+		RpcDo_InitilizePlayerBroadcast(playerId, playerCharID);
+		#else
+		Rpc(RpcDo_InitilizePlayerBroadcast, playerId, playerCharID);
+		#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SendHint(string data, int playerId = -1, string factionKey = "")
+	{
+		// Telemetry: 2 strings + int
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(data);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(factionKey);
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int();
+		LogTelemetry("SendHint", bytes);
+		
+		#ifdef WORKBENCH
+		RpcDo_SendHint(data, playerId, factionKey);
+		#else
+		Rpc(RpcDo_SendHint, data, playerId, factionKey);
+		#endif
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	void TeleportPlayers(int playerId1, int playerId2, bool logAction)
+	{
+		IEntity player2Char = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId2);
+		
+		if(player2Char)
+		{
+			vector player2Origin = player2Char.GetOrigin();
+			
+			// Telemetry: 2 ints + vector + bool
+			int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2;
+			bytes += CRF_BandwidthTelemetryManager.EstimateSize_Vector();
+			bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
+			LogTelemetry("TeleportPlayers", bytes);
+		
+			#ifdef WORKBENCH
+			RpcDo_TeleportPlayers(playerId1, playerId2, player2Origin, logAction);
+			#else
+			Rpc(RpcDo_TeleportPlayers, playerId1, playerId2, player2Origin, logAction);
+			#endif
+		};
 	}
 
 	
@@ -929,6 +927,81 @@ class CRF_RplBroadcastManager : ScriptComponent
 		#else
 		Rpc(RpcDo_UpdateFactionChannelsLR, factionId, channels);
 		#endif
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	void CreateGroupLeaderMarker(int playerId, string groupName)
+	{
+		// Telemetry: int + string
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int();
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(groupName);
+		LogTelemetry("CreateGroupLeaderMarker", bytes);
+		
+		#ifdef WORKBENCH
+		RpcDo_CreateGroupLeaderMarker(playerId, groupName);
+		#else
+		Rpc(RpcDo_CreateGroupLeaderMarker, playerId, groupName);
+		#endif
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	void RemoveGroupLeaderMarker(int playerId)
+	{
+		// Telemetry: int
+		LogTelemetry("RemoveGroupLeaderMarker", CRF_BandwidthTelemetryManager.EstimateSize_Int());
+		
+		#ifdef WORKBENCH
+		RpcDo_RemoveGroupLeaderMarker(playerId);
+		#else
+		Rpc(RpcDo_RemoveGroupLeaderMarker, playerId);
+		#endif
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	void ClearAllGroupLeaderMarkers()
+	{
+		// Telemetry: no parameters
+		LogTelemetry("ClearAllGroupLeaderMarkers", 0);
+		
+		#ifdef WORKBENCH
+		RpcDo_ClearAllGroupLeaderMarkers();
+		#else
+		Rpc(RpcDo_ClearAllGroupLeaderMarkers);
+		#endif
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	void RequestGroupLeaderMarkerState()
+	{
+		// Telemetry: int
+		LogTelemetry("RequestGroupLeaderMarkerState", CRF_BandwidthTelemetryManager.EstimateSize_Int());
+		
+		#ifdef WORKBENCH
+		RpcDo_RequestGroupLeaderMarkerState(SCR_PlayerController.GetLocalPlayerId());
+		#else
+		Rpc(RpcDo_RequestGroupLeaderMarkerState, SCR_PlayerController.GetLocalPlayerId());
+		#endif
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	void CreateGroupLeaderMarkerForPlayer(int targetPlayerId, int leaderPlayerId, string groupName)
+	{
+		// Telemetry: 2 ints + string
+		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2;
+		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(groupName);
+		LogTelemetry("CreateGroupLeaderMarkerForPlayer", bytes);
+		
+		#ifdef WORKBENCH
+		RpcDo_CreateGroupLeaderMarkerForPlayer(targetPlayerId, leaderPlayerId, groupName);
+		#else
+		Rpc(RpcDo_CreateGroupLeaderMarkerForPlayer, targetPlayerId, leaderPlayerId, groupName);
+		#endif
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	void BroadcastVehiclePosUpdate(vector pos, int playerId)
+	{
+		Rpc(RpcDo_BroadcastVehiclePosUpdate, pos, playerId);
 	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -1738,6 +1811,72 @@ class CRF_RplBroadcastManager : ScriptComponent
 			return;
 
 		CRF_PlayerControllerManager.GetInstance().InitilizePlayerClient(playerCharID);
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_CreateGroupLeaderMarker(int playerId, string groupName)
+	{
+		CRF_GroupLeaderMarkerManager markerManager = CRF_GroupLeaderMarkerManager.GetInstance();
+		if (markerManager)
+		{
+			markerManager.CreateMarkerForPlayerRPC(playerId, groupName);
+		}
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_RemoveGroupLeaderMarker(int playerId)
+	{
+		CRF_GroupLeaderMarkerManager markerManager = CRF_GroupLeaderMarkerManager.GetInstance();
+		if (markerManager)
+		{
+			markerManager.RemoveMarkerForPlayerRPC(playerId);
+		}
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_ClearAllGroupLeaderMarkers()
+	{
+		CRF_GroupLeaderMarkerManager markerManager = CRF_GroupLeaderMarkerManager.GetInstance();
+		if (markerManager)
+		{
+			markerManager.ClearAllMarkersRPC();
+		}
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	void RpcDo_RequestGroupLeaderMarkerState(int requestingPlayerId)
+	{
+		CRF_GroupLeaderMarkerManager markerManager = CRF_GroupLeaderMarkerManager.GetInstance();
+		if (markerManager)
+		{
+			markerManager.SendCurrentStateToClient(requestingPlayerId);
+		}
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_CreateGroupLeaderMarkerForPlayer(int targetPlayerId, int leaderPlayerId, string groupName)
+	{
+		// Only create marker for the target player
+		if (SCR_PlayerController.GetLocalPlayerId() != targetPlayerId)
+			return;
+		
+		CRF_GroupLeaderMarkerManager markerManager = CRF_GroupLeaderMarkerManager.GetInstance();
+		if (markerManager)
+		{
+			markerManager.CreateMarkerForPlayerRPC(leaderPlayerId, groupName);
+		}
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_BroadcastVehiclePosUpdate(vector pos, int playerId)
+	{
+		SCR_Global.TeleportPlayer(playerId, pos, SCR_EPlayerTeleportedReason.NONE);
 	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================

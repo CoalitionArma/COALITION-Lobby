@@ -20,7 +20,7 @@ class CRF_VehicleSpawner: BaseGameTriggerEntity
 	[Attribute("10", desc: "How many tickets is drained every time this spawns", category: "CRF Vehicle Spawning")] 
 	int m_iTicketsPerRespawn;
 	
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 	[Attribute("1", desc: "Should we add ammo to this vehicle", category: "CRF Vehicle Spawning")] 
 	bool m_bShouldAddAmmo;
 
@@ -63,7 +63,7 @@ class CRF_VehicleSpawner: BaseGameTriggerEntity
 		if (m_RespawnManager)
 			m_iVehicleSpawnerIndex = m_RespawnManager.InsertVehicle(this);
 		
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 		CRF_VehicleGearscriptManager.GetInstance().SpawnVehicle(this);
 #else
 		vector pos[4];
@@ -86,7 +86,7 @@ class CRF_VehicleSpawner: BaseGameTriggerEntity
 		
 		if (m_bWaitingToRespawn && m_fTimer <= 0)
 		{
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 			CRF_VehicleGearscriptManager.GetInstance().SpawnVehicle(this);
 #else
 			vector pos[4];

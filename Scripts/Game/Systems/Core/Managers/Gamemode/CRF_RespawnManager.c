@@ -487,7 +487,7 @@ class CRF_RespawnManager : ScriptComponent
 			m_iRespawnWaveCurrentTime = m_iCurrentTimeToRespawn;
 			m_iLocalTimeToRespawn = m_iCurrentTimeToRespawn;
 
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 			RespawnAllVehicles();
 #endif
 		}
@@ -873,12 +873,12 @@ class CRF_RespawnManager : ScriptComponent
 			RespawnPlayer(playerId);
 		}
 		
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 		RespawnSideVehicles(faction);
 #endif
 	}
 	
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 	//------------------------------------------------------------------------------------------------
 	void RespawnAllVehicles()
 	{
