@@ -19,7 +19,7 @@ Vehicle : "{4597626AF36C0858}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320.et" {
      TRAIT_REPAIRING TRAIT_SUPPLYSTORAGE_LARGE TRAIT_VEHICLE_REARMING
     }
     m_aAutoLabels {
-     FACTION_CRF_OPFOR SIZE_M VEHICLE_TRUCK
+     FACTION_COA_OPFOR SIZE_M VEHICLE_TRUCK
     }
     m_EntityBudgetCost {
      SCR_EntityBudgetValue "{5EDC86E4AF8908B6}" {

@@ -15,7 +15,7 @@ Vehicle : "{36BDCC88B17B3BFA}Prefabs/Vehicles/Wheeled/M923A1/M923A1_command.et" 
     m_Image "{7D5BB592D13883B8}UI/Textures/EditorPreviews/Vehicles/Wheeled/M923A1/M923A1_command_MERDC.edds"
     m_sFaction "BLUFOR"
     m_aAutoLabels {
-     FACTION_CRF_BLUFOR SIZE_M VEHICLE_TRUCK
+     FACTION_COA_BLUFOR SIZE_M VEHICLE_TRUCK
     }
     m_EntityBudgetCost {
      SCR_EntityBudgetValue "{5EF07CF50B7A126F}" {
