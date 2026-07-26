@@ -181,6 +181,7 @@ modded enum ChimeraMenuPreset : ScriptMenuPresetEnum
 	COA_SlottingMenu,
 	COA_SpectatorMenu,
 	COA_CharacterLoading,
+	COA_Outro,
 }
 
 //------------------------------------------------------------------------------------
