@@ -30,12 +30,14 @@ class COA_PlayerController : SCR_PlayerController
 			return false;
 	}
 	
+#ifdef COALITION_REFORGER_FRAMEWORK
 	//------------------------------------------------------------------------------------------------
 	//! Opens the JIP forward deploy menu - see the OnControlledEntityChanged gate below for when this fires.
 	protected void OpenJIPForwardDeployMenu()
 	{
 		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.CRF_JIPForwardDeployMenu);
 	}
+#endif
 
 	//------------------------------------------------------------------------------------------------
 	override void OnControlledEntityChanged(IEntity from, IEntity to)

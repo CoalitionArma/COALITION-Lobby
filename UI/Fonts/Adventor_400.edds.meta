@@ -13,7 +13,5 @@ MetaFileClass {
   }
   TGAResourceClass HEADLESS : "{D20F8633D63483FA}configs/ResourceTypes/HEADLESS/TextureFonts.conf" {
   }
-  TGAResourceClass Xbox : PC {
-  }
  }
 }

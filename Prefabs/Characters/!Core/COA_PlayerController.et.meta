@@ -13,7 +13,5 @@ MetaFileClass {
   }
   EntityTemplateResourceClass PS5 : PC {
   }
-  EntityTemplateResourceClass Xbox : PC {
-  }
  }
 }
