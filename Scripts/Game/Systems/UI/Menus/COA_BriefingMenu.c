@@ -107,7 +107,7 @@ class COA_PreviewMenu: ChimeraMenuBase
 			GetGame().GetInputManager().AddActionListener("VONDirect", EActionTrigger.UP, Action_VONOff);
 		}
 		GetGame().GetInputManager().AddActionListener("MenuBack", EActionTrigger.DOWN, Action_Exit);
-		GetGame().GetInputManager().AddActionListener("ChatToggle", EActionTrigger.DOWN, Action_OnChatToggleAction);
+		GetGame().GetInputManager().AddActionListener("COA_ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
 
 		// Controller Y button / keyboard Tab jumps focus between the Players list and Mission Description list
 		GetGame().GetInputManager().AddActionListener("COA_BriefingSwitchPanel", EActionTrigger.DOWN, Action_SwitchPanel);
@@ -548,7 +548,7 @@ class COA_PreviewMenu: ChimeraMenuBase
 			GetGame().GetInputManager().RemoveActionListener("VONDirect", EActionTrigger.UP, Action_VONOff);
 		}
 		GetGame().GetInputManager().RemoveActionListener("MenuBack", EActionTrigger.DOWN, Action_Exit);
-		GetGame().GetInputManager().RemoveActionListener("ChatToggle", EActionTrigger.DOWN, Action_OnChatToggleAction);
+		GetGame().GetInputManager().RemoveActionListener("COA_ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
 		GetGame().GetInputManager().RemoveActionListener("COA_BriefingSwitchPanel", EActionTrigger.DOWN, Action_SwitchPanel);
 
 		// Clear widget references and event handlers to prevent invisible blocking
@@ -814,7 +814,7 @@ class COA_PreviewMenu: ChimeraMenuBase
 	/**
 	 * Toggles chat panel
 	 */
-	void Action_OnChatToggleAction()
+	void Action_OnCOA_ChatToggleAction()
 	{
 		if (!m_ChatPanel)
 			return;

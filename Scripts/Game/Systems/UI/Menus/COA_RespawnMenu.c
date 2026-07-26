@@ -130,7 +130,7 @@ class COA_RespawnMenu: ChimeraMenuBase
 			inputManager.AddActionListener("VONDirect", EActionTrigger.UP, Action_VONOff);
 		}
 		inputManager.AddActionListener("MenuBack", EActionTrigger.DOWN, Action_Exit);
-		inputManager.AddActionListener("ChatToggle", EActionTrigger.DOWN, Action_OnChatToggleAction);
+		inputManager.AddActionListener("COA_ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
 	}	
 	
 	/**
@@ -214,7 +214,7 @@ class COA_RespawnMenu: ChimeraMenuBase
 			inputManager.RemoveActionListener("VONDirect", EActionTrigger.UP, Action_VONOff);
 		}
 		inputManager.RemoveActionListener("MenuBack", EActionTrigger.DOWN, Action_Exit);
-		inputManager.RemoveActionListener("ChatToggle", EActionTrigger.DOWN, Action_OnChatToggleAction);
+		inputManager.RemoveActionListener("COA_ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
 	}	
 	
 	/**
@@ -330,7 +330,7 @@ class COA_RespawnMenu: ChimeraMenuBase
 	/**
 	 * Toggles the chat panel when chat key is pressed
 	 */
-	void Action_OnChatToggleAction()
+	void Action_OnCOA_ChatToggleAction()
 	{
 		if (!m_ChatPanel)
 			return;

@@ -148,7 +148,7 @@ class COA_SlottingMenu: ChimeraMenuBase
 			GetGame().GetInputManager().AddActionListener("VONDirect", EActionTrigger.UP, Action_VONOff);
 		}
 		GetGame().GetInputManager().AddActionListener("MenuBack", EActionTrigger.DOWN, Action_Exit);
-		GetGame().GetInputManager().AddActionListener("ChatToggle", EActionTrigger.DOWN, Action_OnChatToggleAction);
+		GetGame().GetInputManager().AddActionListener("COA_ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
 
 		// Controller shoulder-button faction cycling (also bound to [ and ] on keyboard)
 		GetGame().GetInputManager().AddActionListener("COA_SlottingFactionNext", EActionTrigger.DOWN, Action_CycleFactionNext);
@@ -687,7 +687,7 @@ class COA_SlottingMenu: ChimeraMenuBase
 			GetGame().GetInputManager().RemoveActionListener("VONDirect", EActionTrigger.UP, Action_VONOff);
 		}
 		GetGame().GetInputManager().RemoveActionListener("MenuBack", EActionTrigger.DOWN, Action_Exit);
-		GetGame().GetInputManager().RemoveActionListener("ChatToggle", EActionTrigger.DOWN, Action_OnChatToggleAction);
+		GetGame().GetInputManager().RemoveActionListener("COA_ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
 
 		GetGame().GetInputManager().RemoveActionListener("COA_SlottingFactionNext", EActionTrigger.DOWN, Action_CycleFactionNext);
 		GetGame().GetInputManager().RemoveActionListener("COA_SlottingFactionPrev", EActionTrigger.DOWN, Action_CycleFactionPrev);
@@ -2370,7 +2370,7 @@ class COA_SlottingMenu: ChimeraMenuBase
 	 * Handles chat toggle action
 	 * Opens chat panel when chat key is pressed
 	 */
-	void Action_OnChatToggleAction()
+	void Action_OnCOA_ChatToggleAction()
 	{
 		if (!m_ChatPanel)
 			return;
