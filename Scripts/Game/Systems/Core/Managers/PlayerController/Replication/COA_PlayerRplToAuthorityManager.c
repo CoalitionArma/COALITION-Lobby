@@ -23,7 +23,6 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	protected COA_RplBroadcastManager m_RplBroadcastManager;
 	protected COA_BandwidthTelemetryManager m_TelemetryManager;
 	protected SCR_GroupsManagerComponent m_GroupsManagerComponent;
-	protected SCR_MapMarkerManagerComponent m_MapMarkerManager;
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 MANAGER INITIALIZATION
@@ -55,7 +54,6 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		m_RplBroadcastManager = COA_RplBroadcastManager.GetInstance();
 		m_TelemetryManager = COA_BandwidthTelemetryManager.GetInstance();
 		m_GroupsManagerComponent = SCR_GroupsManagerComponent.GetInstance();
-		m_MapMarkerManager = SCR_MapMarkerManagerComponent.GetInstance();
 	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================

@@ -11,7 +11,7 @@ COA_PlayerController : "{225E51284CC95CFA}Prefabs/Characters/Core/DefaultPlayerC
     }
     COA_PlayerKeybindManager "{68C4425E8D77A8DA}" {
     }
-    CRF_LoneWolfPenaltyManager "{68D8E3872715A0C9}" {
+    COA_LoneWolfPenaltyManager "{68D8E3872715A0C9}" {
      m_fCohesionCheckInterval 1
      m_aWhitelistedRoles {
       MEDICAL_OFFICER MEDIC
