@@ -386,7 +386,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		// Set winning faction on the server where the log file handle exists
 		if (winningFaction != "")
 		{
-#ifdef CRF
+#ifdef COALITION_REFORGER_FRAMEWORK
 			COA_LoggingManager loggingManager = COA_LoggingManager.GetInstance();
 			if (loggingManager)
 				loggingManager.SetWinningFaction(winningFaction, "manual");
