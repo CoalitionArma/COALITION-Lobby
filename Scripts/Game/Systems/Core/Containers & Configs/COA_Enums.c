@@ -181,11 +181,6 @@ modded enum ChimeraMenuPreset : ScriptMenuPresetEnum
 	COA_SlottingMenu,
 	COA_SpectatorMenu,
 	COA_CharacterLoading,
-	COA_GungameStart,
-	COA_GunGameEnd,
-	COA_RallyResults,
-	COA_PropHuntTransformMenu,
-	COA_JIPForwardDeployMenu
 }
 
 //------------------------------------------------------------------------------------
@@ -305,27 +300,4 @@ enum COA_EPolyZoneEffectHUDType
 	RestrictedZone,
 	ScreenBlure,
 	TriggerCapture,
-}
-
-//------------------------------------------------------------------------------------
-// Enumeration for vehicle gear script
-//------------------------------------------------------------------------------------
-enum COA_EVehicleGearScriptType
-{
-	Rifle,
-	RifleUGL,
-	Carbine,
-	Pistol,
-	AR,
-	MMG,
-	HMG,
-	AT,
-	MAT,
-	HAT,
-	AA,
-	Sniper,
-	HEGrenade,
-	SmokeGrenade,
-	HEGL,
-	SmokeGl
 }

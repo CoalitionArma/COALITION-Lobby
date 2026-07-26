@@ -20,20 +20,6 @@ class COA_VehicleSpawner: BaseGameTriggerEntity
 	[Attribute("10", desc: "How many tickets is drained every time this spawns", category: "CRF Vehicle Spawning")] 
 	int m_iTicketsPerRespawn;
 	
-#ifdef COALITION_REFORGER_FRAMEWORK
-	[Attribute("1", desc: "Should we add ammo to this vehicle", category: "CRF Vehicle Spawning")] 
-	bool m_bShouldAddAmmo;
-
-	[Attribute("", desc: "Loadout values applied to this vehicle", "conf class=COA_VehicleGearScriptLoadout", category: "CRF Vehicle Spawning")] 
-	ref COA_VehicleGearScriptLoadout m_OverridedVehicleLoadout;
-	
-	[Attribute(category: "CRF Vehicle Spawning")] 
-	ref array<ref COA_VehicleGearscriptOverride> m_aVehicleGearscriptOverrides;
-	
-	[Attribute(category: "CRF Vehicle Spawning")] 
-	ref array<ref COA_VehicleGearScriptAdditionalItem> m_aAdditionalVehicleItems;
-#endif
-	
 	COA_RespawnManager m_RespawnManager;
 	Faction m_Faction;
 	IEntity m_eVehicle;

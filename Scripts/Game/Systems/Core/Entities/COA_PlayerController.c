@@ -34,7 +34,7 @@ class COA_PlayerController : SCR_PlayerController
 	//! Opens the JIP forward deploy menu - see the OnControlledEntityChanged gate below for when this fires.
 	protected void OpenJIPForwardDeployMenu()
 	{
-		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.COA_JIPForwardDeployMenu);
+		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.CRF_JIPForwardDeployMenu);
 	}
 
 	//------------------------------------------------------------------------------------------------

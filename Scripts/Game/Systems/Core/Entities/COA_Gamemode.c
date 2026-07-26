@@ -167,22 +167,6 @@ class COA_Gamemode : SCR_BaseGameMode
 	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all civ players", category: "CRF Gearscript Settings - Advanced")]
 	ref COA_GearScriptContainer m_CIVILIANGearScriptSettings;
 	[RplProp()] ResourceName m_rCIVILIANCurrentGearScript;
-
-#ifdef COALITION_REFORGER_FRAMEWORK
-	// Vehicle Gearscript Enable/Disable per Side
-	//------------------------------------------------------------------------------------
-	[Attribute("true", UIWidgets.CheckBox, desc: "Enable vehicle gearscript for BLUFOR vehicles", category: "CRF Gearscript Settings - Advanced")]
-	bool m_bBLUFORVehicleGearscriptEnabled;
-
-	[Attribute("true", UIWidgets.CheckBox, desc: "Enable vehicle gearscript for OPFOR vehicles", category: "CRF Gearscript Settings - Advanced")]
-	bool m_bOPFORVehicleGearscriptEnabled;
-
-	[Attribute("true", UIWidgets.CheckBox, desc: "Enable vehicle gearscript for INDFOR vehicles", category: "CRF Gearscript Settings - Advanced")]
-	bool m_bINDFORVehicleGearscriptEnabled;
-
-	[Attribute("true", UIWidgets.CheckBox, desc: "Enable vehicle gearscript for CIV vehicles", category: "CRF Gearscript Settings - Advanced")]
-	bool m_bCIVILIANVehicleGearscriptEnabled;
-#endif
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 RUNTIME VARIABLES
@@ -205,10 +189,6 @@ class COA_Gamemode : SCR_BaseGameMode
 	protected COA_SlottingManager m_SlottingManager;
 	protected COA_GearscriptManager m_GearscriptManager;
 	protected COA_RplBroadcastManager m_RplBroadcastManager;
-	
-#ifdef COALITION_REFORGER_FRAMEWORK
-	protected COA_LoggingManager m_LoggingManager;
-#endif
 	
 	protected COA_GarbageManager m_GarbageManager;
 	
@@ -257,16 +237,8 @@ class COA_Gamemode : SCR_BaseGameMode
 			m_rCIVILIANCurrentGearScript = m_CIVILIANGearScriptSettings.m_rGearScript;
 
 		// Load configs on dedicated server
-		if (RplSession.Mode() == RplMode.Dedicated) {
+		if (RplSession.Mode() == RplMode.Dedicated)
 			COA_ModeratorConfig.LoadConfig();
-#ifdef COALITION_REFORGER_FRAMEWORK
-			COA_DonatorConfig.LoadConfig();
-			COA_BugReportConfig.LoadConfig();
-
-			// Initialize sight arsenal registry for optimized RPC
-			COA_SightArsenalRegistry.InitializeRegistry();
-#endif
-		}
 
 		// Initialize all manager references
 		m_RespawnManager = COA_RespawnManager.GetInstance();
@@ -275,9 +247,6 @@ class COA_Gamemode : SCR_BaseGameMode
 		m_SlottingManager = COA_SlottingManager.GetInstance();
 		m_GearscriptManager = COA_GearscriptManager.GetInstance();
 		m_RplBroadcastManager = COA_RplBroadcastManager.GetInstance();
-#ifdef COALITION_REFORGER_FRAMEWORK
-		m_LoggingManager = COA_LoggingManager.GetInstance();
-#endif
 		m_GarbageManager = COA_GarbageManager.GetInstance();
 
 		// Frame events enabled on-demand when batch processing starts
@@ -772,22 +741,6 @@ class COA_Gamemode : SCR_BaseGameMode
 		Replication.BumpMe();
 	}
 	
-#ifdef COALITION_REFORGER_FRAMEWORK
-	//------------------------------------------------------------------------------------------------
-	bool DoesFactionShareMarker(string factionKey)
-	{
-		switch (factionKey)
-		{
-			case "BLUFOR": 	return m_BLUFORGearScriptSettings.m_bEnableShareableMarkers;
-			case "OPFOR": 	return m_OPFORGearScriptSettings.m_bEnableShareableMarkers;
-			case "INDFOR": 	return m_INDFORGearScriptSettings.m_bEnableShareableMarkers;
-			case "CIV": 	return m_CIVILIANGearScriptSettings.m_bEnableShareableMarkers;
-		}
-		
-		return true;
-	}
-#endif
-	
 	//------------------------------------------------------------------------------------------------
 	//! Get gearscript resource for a faction
 	//! \param[in] factionKey Faction identifier (BLUFOR, OPFOR, etc.)
@@ -845,24 +798,6 @@ class COA_Gamemode : SCR_BaseGameMode
 
 		return false;
 	}
-
-#ifdef COALITION_REFORGER_FRAMEWORK
-	//------------------------------------------------------------------------------------------------
-	//! Returns true when the vehicle gearscript system is enabled for the given faction.
-	//! Returns true by default for unknown factions.
-	//! \param[in] factionKey Faction identifier (BLUFOR, OPFOR, INDFOR, CIV)
-	bool IsVehicleGearscriptEnabled(FactionKey factionKey)
-	{
-		switch (factionKey)
-		{
-			case "BLUFOR": return m_bBLUFORVehicleGearscriptEnabled;
-			case "OPFOR":  return m_bOPFORVehicleGearscriptEnabled;
-			case "INDFOR": return m_bINDFORVehicleGearscriptEnabled;
-			case "CIV":    return m_bCIVILIANVehicleGearscriptEnabled;
-		}
-		return true;
-	}
-#endif
 
 	//------------------------------------------------------------------------------------------------
 	//! Get Side BFT boolean value
