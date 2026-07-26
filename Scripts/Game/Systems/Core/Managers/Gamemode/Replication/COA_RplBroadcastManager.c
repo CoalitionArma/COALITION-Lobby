@@ -1,18 +1,18 @@
-class CRF_RplBroadcastManagerClass : ScriptComponentClass {}
+class COA_RplBroadcastManagerClass : ScriptComponentClass {}
 
 //------------------------------------------------------------------------------------------------
 // Container for queued slot update
 //------------------------------------------------------------------------------------------------
-class CRF_SlotUpdateBatch
+class COA_SlotUpdateBatch
 {
 	int m_iSlotId;
-	CRF_ESlotUpdateField m_eFieldType;
+	COA_ESlotUpdateField m_eFieldType;
 	int m_iIntValue;
 	RplId m_RplIdValue;
 	bool m_bBoolValue;
 	
 	//------------------------------------------------------------------------------------------------
-	void CRF_SlotUpdateBatch(int slotId, CRF_ESlotUpdateField fieldType)
+	void COA_SlotUpdateBatch(int slotId, COA_ESlotUpdateField fieldType)
 	{
 		m_iSlotId = slotId;
 		m_eFieldType = fieldType;
@@ -22,21 +22,21 @@ class CRF_SlotUpdateBatch
 //------------------------------------------------------------------------------------------------
 // Broadcast Manager responsible for handling server-client communications (lobby-scoped: slotting, spawn points, vehicle supply cost, spectator damage reports/cam, VON channel requests, gear-swap admin log)
 //------------------------------------------------------------------------------------------------
-class CRF_RplBroadcastManager : ScriptComponent
+class COA_RplBroadcastManager : ScriptComponent
 {
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 RUNTIME VARIABLES
 //=============================================================================================================================================================================================================================================================================================================================================================
 	
 	// Manager references
-	protected CRF_PermissionManager m_PermissionManager;
-	protected CRF_RespawnManager m_RespawnManager;
-	protected CRF_MenuManager m_MenuManager;
-	protected CRF_AdminMenuManager m_AdminMenuManager;
-	protected CRF_BandwidthTelemetryManager m_TelemetryManager;
+	protected COA_PermissionManager m_PermissionManager;
+	protected COA_RespawnManager m_RespawnManager;
+	protected COA_MenuManager m_MenuManager;
+	protected COA_AdminMenuManager m_AdminMenuManager;
+	protected COA_BandwidthTelemetryManager m_TelemetryManager;
 	
 	// Batching system for slot updates
-	protected ref array<ref CRF_SlotUpdateBatch> m_aPendingSlotUpdates = new array<ref CRF_SlotUpdateBatch>();
+	protected ref array<ref COA_SlotUpdateBatch> m_aPendingSlotUpdates = new array<ref COA_SlotUpdateBatch>();
 	protected bool m_bBatchingEnabled = true;
 	protected bool m_bFlushScheduled = false;
 	
@@ -56,11 +56,11 @@ class CRF_RplBroadcastManager : ScriptComponent
 	protected void InitializeManagerReferences()
 	{
 		// Cache all manager references to avoid repeated GetInstance() calls
-		m_PermissionManager = CRF_PermissionManager.GetInstance();
-		m_RespawnManager = CRF_RespawnManager.GetInstance();
-		m_MenuManager = CRF_MenuManager.GetInstance();
-		m_AdminMenuManager = CRF_AdminMenuManager.GetInstance();
-		m_TelemetryManager = CRF_BandwidthTelemetryManager.GetInstance();
+		m_PermissionManager = COA_PermissionManager.GetInstance();
+		m_RespawnManager = COA_RespawnManager.GetInstance();
+		m_MenuManager = COA_MenuManager.GetInstance();
+		m_AdminMenuManager = COA_AdminMenuManager.GetInstance();
+		m_TelemetryManager = COA_BandwidthTelemetryManager.GetInstance();
 	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -76,7 +76,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 			
 		// Ensure telemetry manager is cached
 		if (!m_TelemetryManager)
-			m_TelemetryManager = CRF_BandwidthTelemetryManager.GetInstance();
+			m_TelemetryManager = COA_BandwidthTelemetryManager.GetInstance();
 			
 		if (m_TelemetryManager)
 			m_TelemetryManager.LogRPC(rpcName, estimatedBytes);
@@ -106,7 +106,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 	
 	//------------------------------------------------------------------------------------------------
 	//! Queue a slot update for batching
-	protected void QueueSlotUpdate(CRF_SlotUpdateBatch batch)
+	protected void QueueSlotUpdate(COA_SlotUpdateBatch batch)
 	{
 		if (!Replication.IsServer())
 			return;
@@ -115,7 +115,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 		// If so, replace it (latest value wins)
 		for (int i = m_aPendingSlotUpdates.Count() - 1; i >= 0; i--)
 		{
-			CRF_SlotUpdateBatch existing = m_aPendingSlotUpdates[i];
+			COA_SlotUpdateBatch existing = m_aPendingSlotUpdates[i];
 			if (existing.m_iSlotId == batch.m_iSlotId && existing.m_eFieldType == batch.m_eFieldType)
 			{
 				m_aPendingSlotUpdates.Remove(i);
@@ -147,35 +147,35 @@ class CRF_RplBroadcastManager : ScriptComponent
 			return;
 		
 		// Process all pending updates
-		foreach (CRF_SlotUpdateBatch batch : m_aPendingSlotUpdates)
+		foreach (COA_SlotUpdateBatch batch : m_aPendingSlotUpdates)
 		{
 			switch (batch.m_eFieldType)
 			{
-				case CRF_ESlotUpdateField.PLAYER_ID:
+				case COA_ESlotUpdateField.PLAYER_ID:
 					SendSlotPlayerIdUpdate(batch.m_iSlotId, batch.m_iIntValue);
 					break;
 				
-				case CRF_ESlotUpdateField.CHARACTER:
+				case COA_ESlotUpdateField.CHARACTER:
 					SendSlotCharacterUpdate(batch.m_iSlotId, batch.m_RplIdValue);
 					break;
 				
-				case CRF_ESlotUpdateField.GROUP:
+				case COA_ESlotUpdateField.GROUP:
 					SendSlotGroupUpdate(batch.m_iSlotId, batch.m_RplIdValue);
 					break;
 				
-				case CRF_ESlotUpdateField.LOCKED:
+				case COA_ESlotUpdateField.LOCKED:
 					SendSlotLockedUpdate(batch.m_iSlotId, batch.m_bBoolValue);
 					break;
 				
-				case CRF_ESlotUpdateField.DEATH:
+				case COA_ESlotUpdateField.DEATH:
 					SendSlotDeathUpdate(batch.m_iSlotId, batch.m_bBoolValue);
 					break;
 				
-				case CRF_ESlotUpdateField.ROLE:
+				case COA_ESlotUpdateField.ROLE:
 					SendSlotRoleUpdate(batch.m_iSlotId, batch.m_iIntValue);
 					break;
 
-				case CRF_ESlotUpdateField.RESPAWNS_REMAINING:
+				case COA_ESlotUpdateField.RESPAWNS_REMAINING:
 					SendSlotRespawnsRemainingUpdate(batch.m_iSlotId, batch.m_iIntValue);
 					break;
 			}
@@ -247,7 +247,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 
 	
 	//------------------------------------------------------------------------------------------------
-	protected void SendSlotRoleUpdate(int slotId, CRF_EGearRole role)
+	protected void SendSlotRoleUpdate(int slotId, COA_EGearRole role)
 	{
 		LogTelemetry("UpdateSlotRoleDelta", 8);
 		#ifdef WORKBENCH
@@ -296,12 +296,12 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void PopUpNotification(float life, string titleText, string subtitleText = "", string sound = "", string titleTextParam1 = "", string titleTextParam2 = "")
 	{
 		// Telemetry: float + 5 strings
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Float();
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(titleText);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(subtitleText);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(sound);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(titleTextParam1);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(titleTextParam2);
+		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Float();
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_String(titleText);
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_String(subtitleText);
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_String(sound);
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_String(titleTextParam1);
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_String(titleTextParam2);
 		LogTelemetry("PopUpNotification", bytes);
 		
 		#ifdef WORKBENCH
@@ -315,8 +315,8 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void SendAdminMessage(string data, int playerID, bool ticketExists)
 	{
 		// Telemetry: string + int
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(data);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int();
+		int bytes = COA_BandwidthTelemetryManager.EstimateSize_String(data);
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_Int();
 		LogTelemetry("SendAdminMessage", bytes);
 		
 		#ifdef WORKBENCH
@@ -330,9 +330,9 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void GetOpenTickets(int playerID)
 	{
 		#ifdef WORKBENCH
-		RpcDo_GetOpenTickets(playerID, CRF_AdminMenuManager.GetInstance().GetOpenTickets());
+		RpcDo_GetOpenTickets(playerID, COA_AdminMenuManager.GetInstance().GetOpenTickets());
 		#else
-		Rpc(RpcDo_GetOpenTickets, playerID, CRF_AdminMenuManager.GetInstance().GetOpenTickets());
+		Rpc(RpcDo_GetOpenTickets, playerID, COA_AdminMenuManager.GetInstance().GetOpenTickets());
 		#endif
 	}
 
@@ -340,9 +340,9 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void GetTicketMessages(int playerID, int ticketID)
 	{
 		#ifdef WORKBENCH
-		RpcDo_GetTicketMessages(playerID, CRF_AdminMenuManager.GetInstance().GetTicketMessages(ticketID));
+		RpcDo_GetTicketMessages(playerID, COA_AdminMenuManager.GetInstance().GetTicketMessages(ticketID));
 		#else
-		Rpc(RpcDo_GetTicketMessages, playerID, CRF_AdminMenuManager.GetInstance().GetTicketMessages(ticketID));
+		Rpc(RpcDo_GetTicketMessages, playerID, COA_AdminMenuManager.GetInstance().GetTicketMessages(ticketID));
 		#endif
 	}
 
@@ -353,9 +353,9 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void LogAdminAction(string data, int playerId, bool sendToPlayer)
 	{
 		// Telemetry: string + int + bool
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(data);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int();
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
+		int bytes = COA_BandwidthTelemetryManager.EstimateSize_String(data);
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_Int();
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
 		LogTelemetry("LogAdminAction", bytes);
 
 		#ifdef WORKBENCH
@@ -369,9 +369,9 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void ReplyAdminMessage(string data, int playerId, int adminID, bool logAction)
 	{
 		// Telemetry: string + 2 ints + bool
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(data);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2;
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
+		int bytes = COA_BandwidthTelemetryManager.EstimateSize_String(data);
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_Int() * 2;
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
 		LogTelemetry("ReplyAdminMessage", bytes);
 		
 		#ifdef WORKBENCH
@@ -386,8 +386,8 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void CloseAdminTicket(int ticketID, int adminID, bool logAction)
 	{
 		// Telemetry: 2 ints + bool
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2;
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
+		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int() * 2;
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
 		LogTelemetry("CloseAdminTicket", bytes);
 		
 		#ifdef WORKBENCH
@@ -402,8 +402,8 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void NotifiyTicketAssigned(int ticketID, int adminID, bool logAction)
 	{
 		// Telemetry: 2 ints + bool
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2;
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
+		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int() * 2;
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
 		LogTelemetry("NotifiyTicketAssigned", bytes);
 		
 		#ifdef WORKBENCH
@@ -427,7 +427,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void SendCharacterLoadingScreen(int playerId)
 	{
 		// Telemetry: int
-		LogTelemetry("SendCharacterLoadingScreen", CRF_BandwidthTelemetryManager.EstimateSize_Int());
+		LogTelemetry("SendCharacterLoadingScreen", COA_BandwidthTelemetryManager.EstimateSize_Int());
 		
 		#ifdef WORKBENCH
 		RpcDo_SendCharacterLoadingScreen(playerId);
@@ -441,8 +441,8 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void InitilizePlayerBroadcast(int playerId, RplId playerCharID)
 	{
 		// Telemetry: int + RplId
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int();
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_RplId();
+		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int();
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_RplId();
 		LogTelemetry("InitilizePlayerBroadcast", bytes);
 		
 		#ifdef WORKBENCH
@@ -456,9 +456,9 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void SendHint(string data, int playerId = -1, string factionKey = "")
 	{
 		// Telemetry: 2 strings + int
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(data);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(factionKey);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int();
+		int bytes = COA_BandwidthTelemetryManager.EstimateSize_String(data);
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_String(factionKey);
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_Int();
 		LogTelemetry("SendHint", bytes);
 		
 		#ifdef WORKBENCH
@@ -478,9 +478,9 @@ class CRF_RplBroadcastManager : ScriptComponent
 			vector player2Origin = player2Char.GetOrigin();
 			
 			// Telemetry: 2 ints + vector + bool
-			int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2;
-			bytes += CRF_BandwidthTelemetryManager.EstimateSize_Vector();
-			bytes += CRF_BandwidthTelemetryManager.EstimateSize_Bool();
+			int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int() * 2;
+			bytes += COA_BandwidthTelemetryManager.EstimateSize_Vector();
+			bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
 			LogTelemetry("TeleportPlayers", bytes);
 		
 			#ifdef WORKBENCH
@@ -496,7 +496,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void Closemap(int playerID)
 	{
 		// Telemetry: int
-		LogTelemetry("Closemap", CRF_BandwidthTelemetryManager.EstimateSize_Int());
+		LogTelemetry("Closemap", COA_BandwidthTelemetryManager.EstimateSize_Int());
 		
 		#ifdef WORKBENCH
 		RpcDo_Closemap(playerID);
@@ -510,7 +510,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void HolsterGun(int playerID)
 	{
 		// Telemetry: int
-		LogTelemetry("HolsterGun", CRF_BandwidthTelemetryManager.EstimateSize_Int());
+		LogTelemetry("HolsterGun", COA_BandwidthTelemetryManager.EstimateSize_Int());
 		
 		#ifdef WORKBENCH
 		RpcDo_HolsterGun(playerID);
@@ -526,7 +526,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 		Print(string.Format("[VON] Server notifying player %1 of join request from player %2 for channel %3", targetPlayerId, requesterId, channel), LogLevel.NORMAL);
 		
 		// Telemetry: 3 ints
-		LogTelemetry("NotifyChannelJoinRequest", CRF_BandwidthTelemetryManager.EstimateSize_Int() * 3);
+		LogTelemetry("NotifyChannelJoinRequest", COA_BandwidthTelemetryManager.EstimateSize_Int() * 3);
 		
 		#ifdef WORKBENCH
 		RpcDo_NotifyChannelJoinRequest(targetPlayerId, requesterId, channel);
@@ -540,7 +540,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void Deny(int playerId, int requestId)
 	{
 		// Telemetry: 2 ints
-		LogTelemetry("Deny", CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2);
+		LogTelemetry("Deny", COA_BandwidthTelemetryManager.EstimateSize_Int() * 2);
 		
 		#ifdef WORKBENCH
 		RpcDo_Deny(playerId, requestId);
@@ -554,7 +554,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void NotifyRequestAccepted(int requesterId)
 	{
 		// Telemetry: int
-		LogTelemetry("NotifyRequestAccepted", CRF_BandwidthTelemetryManager.EstimateSize_Int());
+		LogTelemetry("NotifyRequestAccepted", COA_BandwidthTelemetryManager.EstimateSize_Int());
 		
 		#ifdef WORKBENCH
 		RpcDo_NotifyRequestAccepted(requesterId);
@@ -568,7 +568,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void NotifyRequestDenied(int requesterId)
 	{
 		// Telemetry: int
-		LogTelemetry("NotifyRequestDenied", CRF_BandwidthTelemetryManager.EstimateSize_Int());
+		LogTelemetry("NotifyRequestDenied", COA_BandwidthTelemetryManager.EstimateSize_Int());
 		
 		#ifdef WORKBENCH
 		RpcDo_NotifyRequestDenied(requesterId);
@@ -582,8 +582,8 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void MoveSpecCamToSlot(vector slotPos, int playerId)
 	{
 		// Telemetry: vector + int
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Vector();
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_Int();
+		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Vector();
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_Int();
 		LogTelemetry("MoveSpecCamToSlot", bytes);
 		
 		#ifdef WORKBENCH
@@ -609,7 +609,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 		
 		if (m_bBatchingEnabled)
 		{
-			CRF_SlotUpdateBatch batch = new CRF_SlotUpdateBatch(slotId, CRF_ESlotUpdateField.PLAYER_ID);
+			COA_SlotUpdateBatch batch = new COA_SlotUpdateBatch(slotId, COA_ESlotUpdateField.PLAYER_ID);
 			batch.m_iIntValue = playerId;
 			QueueSlotUpdate(batch);
 		}
@@ -629,7 +629,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 		
 		if (m_bBatchingEnabled)
 		{
-			CRF_SlotUpdateBatch batch = new CRF_SlotUpdateBatch(slotId, CRF_ESlotUpdateField.CHARACTER);
+			COA_SlotUpdateBatch batch = new COA_SlotUpdateBatch(slotId, COA_ESlotUpdateField.CHARACTER);
 			batch.m_RplIdValue = characterId;
 			QueueSlotUpdate(batch);
 		}
@@ -649,7 +649,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 		
 		if (m_bBatchingEnabled)
 		{
-			CRF_SlotUpdateBatch batch = new CRF_SlotUpdateBatch(slotId, CRF_ESlotUpdateField.GROUP);
+			COA_SlotUpdateBatch batch = new COA_SlotUpdateBatch(slotId, COA_ESlotUpdateField.GROUP);
 			batch.m_RplIdValue = groupId;
 			QueueSlotUpdate(batch);
 		}
@@ -669,7 +669,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 		
 		if (m_bBatchingEnabled)
 		{
-			CRF_SlotUpdateBatch batch = new CRF_SlotUpdateBatch(slotId, CRF_ESlotUpdateField.LOCKED);
+			COA_SlotUpdateBatch batch = new COA_SlotUpdateBatch(slotId, COA_ESlotUpdateField.LOCKED);
 			batch.m_bBoolValue = isLocked;
 			QueueSlotUpdate(batch);
 		}
@@ -689,7 +689,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 		
 		if (m_bBatchingEnabled)
 		{
-			CRF_SlotUpdateBatch batch = new CRF_SlotUpdateBatch(slotId, CRF_ESlotUpdateField.DEATH);
+			COA_SlotUpdateBatch batch = new COA_SlotUpdateBatch(slotId, COA_ESlotUpdateField.DEATH);
 			batch.m_bBoolValue = isDead;
 			QueueSlotUpdate(batch);
 		}
@@ -722,14 +722,14 @@ class CRF_RplBroadcastManager : ScriptComponent
 	
 	//------------------------------------------------------------------------------------------------
 	//! SlottingManager: Update slot role (~8 bytes)
-	void UpdateSlotRoleDelta(int slotId, CRF_EGearRole role)
+	void UpdateSlotRoleDelta(int slotId, COA_EGearRole role)
 	{
 		if (!Replication.IsServer())
 			return;
 
 		if (m_bBatchingEnabled)
 		{
-			CRF_SlotUpdateBatch batch = new CRF_SlotUpdateBatch(slotId, CRF_ESlotUpdateField.ROLE);
+			COA_SlotUpdateBatch batch = new COA_SlotUpdateBatch(slotId, COA_ESlotUpdateField.ROLE);
 			batch.m_iIntValue = role;
 			QueueSlotUpdate(batch);
 		}
@@ -749,7 +749,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 
 		if (m_bBatchingEnabled)
 		{
-			CRF_SlotUpdateBatch batch = new CRF_SlotUpdateBatch(slotId, CRF_ESlotUpdateField.RESPAWNS_REMAINING);
+			COA_SlotUpdateBatch batch = new COA_SlotUpdateBatch(slotId, COA_ESlotUpdateField.RESPAWNS_REMAINING);
 			batch.m_iIntValue = remaining;
 			QueueSlotUpdate(batch);
 		}
@@ -761,7 +761,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 
 	
 	//------------------------------------------------------------------------------------------------
-	void UpdateSlotData(CRF_SlotData slotData)
+	void UpdateSlotData(COA_SlotData slotData)
 	{
 		if (!Replication.IsServer())
 			return;
@@ -790,7 +790,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 
 	
 	//------------------------------------------------------------------------------------------------
-	void UpdateSpawnPointData(CRF_SpawnPointData spawnPointData)
+	void UpdateSpawnPointData(COA_SpawnPointData spawnPointData)
 	{
 		if (!Replication.IsServer())
 			return;
@@ -835,11 +835,11 @@ class CRF_RplBroadcastManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! CRF_Gamemode: Display the respawn screen to a specific player after their respawn timer starts
+	//! COA_Gamemode: Display the respawn screen to a specific player after their respawn timer starts
 	void SendRespawnScreen(int playerId)
 	{
 		// Telemetry: int
-		LogTelemetry("SendRespawnScreen", CRF_BandwidthTelemetryManager.EstimateSize_Int());
+		LogTelemetry("SendRespawnScreen", COA_BandwidthTelemetryManager.EstimateSize_Int());
 
 		#ifdef WORKBENCH
 		RpcDo_SendRespawnScreen(playerId);
@@ -901,8 +901,8 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void UpdateFactionChannelsSR(string factionId, array<string> channels)
 	{
 		// Telemetry: factionId string + array of strings
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(factionId);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_StringArray(channels);
+		int bytes = COA_BandwidthTelemetryManager.EstimateSize_String(factionId);
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_StringArray(channels);
 		LogTelemetry("UpdateFactionChannelsSR", bytes);
 		
 		#ifdef WORKBENCH
@@ -918,8 +918,8 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void UpdateFactionChannelsLR(string factionId, array<string> channels)
 	{
 		// Telemetry: factionId string + array of strings
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_String(factionId);
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_StringArray(channels);
+		int bytes = COA_BandwidthTelemetryManager.EstimateSize_String(factionId);
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_StringArray(channels);
 		LogTelemetry("UpdateFactionChannelsLR", bytes);
 		
 		#ifdef WORKBENCH
@@ -933,8 +933,8 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void CreateGroupLeaderMarker(int playerId, string groupName)
 	{
 		// Telemetry: int + string
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int();
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(groupName);
+		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int();
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_String(groupName);
 		LogTelemetry("CreateGroupLeaderMarker", bytes);
 		
 		#ifdef WORKBENCH
@@ -948,7 +948,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void RemoveGroupLeaderMarker(int playerId)
 	{
 		// Telemetry: int
-		LogTelemetry("RemoveGroupLeaderMarker", CRF_BandwidthTelemetryManager.EstimateSize_Int());
+		LogTelemetry("RemoveGroupLeaderMarker", COA_BandwidthTelemetryManager.EstimateSize_Int());
 		
 		#ifdef WORKBENCH
 		RpcDo_RemoveGroupLeaderMarker(playerId);
@@ -974,7 +974,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void RequestGroupLeaderMarkerState()
 	{
 		// Telemetry: int
-		LogTelemetry("RequestGroupLeaderMarkerState", CRF_BandwidthTelemetryManager.EstimateSize_Int());
+		LogTelemetry("RequestGroupLeaderMarkerState", COA_BandwidthTelemetryManager.EstimateSize_Int());
 		
 		#ifdef WORKBENCH
 		RpcDo_RequestGroupLeaderMarkerState(SCR_PlayerController.GetLocalPlayerId());
@@ -987,8 +987,8 @@ class CRF_RplBroadcastManager : ScriptComponent
 	void CreateGroupLeaderMarkerForPlayer(int targetPlayerId, int leaderPlayerId, string groupName)
 	{
 		// Telemetry: 2 ints + string
-		int bytes = CRF_BandwidthTelemetryManager.EstimateSize_Int() * 2;
-		bytes += CRF_BandwidthTelemetryManager.EstimateSize_String(groupName);
+		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int() * 2;
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_String(groupName);
 		LogTelemetry("CreateGroupLeaderMarkerForPlayer", bytes);
 		
 		#ifdef WORKBENCH
@@ -1062,11 +1062,11 @@ class CRF_RplBroadcastManager : ScriptComponent
 		if (!topMenu)
 			return;
 			
-		if (!topMenu.IsInherited(CRF_AdminMenu))
+		if (!topMenu.IsInherited(COA_AdminMenu))
 			return;
 			
 		// Repopulate menu components
-		CRF_AdminMenu adminMenu = CRF_AdminMenu.Cast(topMenu);
+		COA_AdminMenu adminMenu = COA_AdminMenu.Cast(topMenu);
 		if (adminMenu.GetCurrentOpenTab() == "Tickets")
 		{
 			adminMenu.PopulateOpenTicketList(tickets);
@@ -1077,7 +1077,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	void RpcDo_GetTicketMessages(int playerID, array<ref CRF_TicketMessageData> messages)
+	void RpcDo_GetTicketMessages(int playerID, array<ref COA_TicketMessageData> messages)
 	{
 		if (!IsLocalPlayer(playerID))
 			return;
@@ -1087,11 +1087,11 @@ class CRF_RplBroadcastManager : ScriptComponent
 		if (!topMenu)
 			return;
 			
-		if (!topMenu.IsInherited(CRF_AdminMenu))
+		if (!topMenu.IsInherited(COA_AdminMenu))
 			return;
 			
 		// Repopulate menu components
-		CRF_AdminMenu adminMenu = CRF_AdminMenu.Cast(topMenu);
+		COA_AdminMenu adminMenu = COA_AdminMenu.Cast(topMenu);
 		if (adminMenu.GetCurrentOpenTab() == "Tickets")
 		{
 			adminMenu.PopulateTicketMessages(messages);
@@ -1241,14 +1241,14 @@ class CRF_RplBroadcastManager : ScriptComponent
 		if (!IsLocalPlayer(playerId))
 			return;
 
-		CRF_SpectatorMenu specMenu = CRF_SpectatorMenu.Cast(GetGame().GetMenuManager().GetTopMenu());
+		COA_SpectatorMenu specMenu = COA_SpectatorMenu.Cast(GetGame().GetMenuManager().GetTopMenu());
 		if (!specMenu)
 			return;
 
 		// Find and mark the request for deletion
 		foreach (Widget request : specMenu.m_aRequest)
 		{
-			CRF_ListBoxElementComponent comp = CRF_ListBoxElementComponent.Cast(request.FindHandler(CRF_ListBoxElementComponent));
+			COA_ListBoxElementComponent comp = COA_ListBoxElementComponent.Cast(request.FindHandler(COA_ListBoxElementComponent));
 			if (!comp)
 				continue;
 
@@ -1318,7 +1318,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 		Print(string.Format("[VON] Top menu: %1", topMenu), LogLevel.NORMAL);
 
 		// Try to get the spectator menu with retry logic
-		CRF_SpectatorMenu specMenu = CRF_SpectatorMenu.Cast(topMenu);
+		COA_SpectatorMenu specMenu = COA_SpectatorMenu.Cast(topMenu);
 		if (!specMenu)
 		{
 			Print(string.Format("[VON] Spectator menu not available (topMenu=%1), retrying in 100ms", topMenu), LogLevel.NORMAL);
@@ -1352,7 +1352,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 		specMenu.m_aRequest.Insert(compWidget);
 		
 		// Configure the request component
-		CRF_ListBoxElementComponent comp = CRF_ListBoxElementComponent.Cast(compWidget.FindHandler(CRF_ListBoxElementComponent));
+		COA_ListBoxElementComponent comp = COA_ListBoxElementComponent.Cast(compWidget.FindHandler(COA_ListBoxElementComponent));
 		if (!comp)
 		{
 			Print(string.Format("[VON] Failed to get list box component"), LogLevel.ERROR);
@@ -1399,19 +1399,19 @@ class CRF_RplBroadcastManager : ScriptComponent
 		if (!topMenu)
 			return;
 			
-		if (!topMenu.IsInherited(CRF_SpectatorMenu))
+		if (!topMenu.IsInherited(COA_SpectatorMenu))
 			return;
 			
-		CRF_SpectatorMenu spectatorMenu = CRF_SpectatorMenu.Cast(topMenu);
+		COA_SpectatorMenu spectatorMenu = COA_SpectatorMenu.Cast(topMenu);
 		spectatorMenu.SelectSpec();
 	}
 
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	void RpcDo_UpdateSlotData(CRF_SlotData slotData)
+	void RpcDo_UpdateSlotData(COA_SlotData slotData)
 	{
-		CRF_SlottingManager slottingManager = CRF_SlottingManager.GetInstance();
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
 		if (slottingManager)
 			slottingManager.UpdateSlotDataClient(slotData);
 	}
@@ -1426,11 +1426,11 @@ class CRF_RplBroadcastManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	void RpcDo_UpdateSlotPlayerIdDelta(int slotId, int playerId)
 	{
-		CRF_SlottingManager slottingManager = CRF_SlottingManager.GetInstance();
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
 		if (!slottingManager)
 			return;
 		
-		CRF_SlotData slotData = slottingManager.GetSlotData(slotId);
+		COA_SlotData slotData = slottingManager.GetSlotData(slotId);
 		if (slotData)
 		{
 			slotData.SetSlotCurrentPlayerId(playerId);
@@ -1448,11 +1448,11 @@ class CRF_RplBroadcastManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	void RpcDo_UpdateSlotCharacterDelta(int slotId, RplId characterId)
 	{
-		CRF_SlottingManager slottingManager = CRF_SlottingManager.GetInstance();
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
 		if (!slottingManager)
 			return;
 		
-		CRF_SlotData slotData = slottingManager.GetSlotData(slotId);
+		COA_SlotData slotData = slottingManager.GetSlotData(slotId);
 		if (slotData)
 		{
 			slotData.SetSlotCurrentCharacter(characterId);
@@ -1470,11 +1470,11 @@ class CRF_RplBroadcastManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	void RpcDo_UpdateSlotGroupDelta(int slotId, RplId groupId)
 	{
-		CRF_SlottingManager slottingManager = CRF_SlottingManager.GetInstance();
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
 		if (!slottingManager)
 			return;
 		
-		CRF_SlotData slotData = slottingManager.GetSlotData(slotId);
+		COA_SlotData slotData = slottingManager.GetSlotData(slotId);
 		if (slotData)
 		{
 			slotData.SetSlotCurrentGroup(groupId);
@@ -1490,13 +1490,13 @@ class CRF_RplBroadcastManager : ScriptComponent
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	void RpcDo_UpdateSlotRoleDelta(int slotId, CRF_EGearRole role)
+	void RpcDo_UpdateSlotRoleDelta(int slotId, COA_EGearRole role)
 	{
-		CRF_SlottingManager slottingManager = CRF_SlottingManager.GetInstance();
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
 		if (!slottingManager)
 			return;
 		
-		CRF_SlotData slotData = slottingManager.GetSlotData(slotId);
+		COA_SlotData slotData = slottingManager.GetSlotData(slotId);
 		if (slotData)
 		{
 			slotData.SetSlotRole(role);
@@ -1514,11 +1514,11 @@ class CRF_RplBroadcastManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	void RpcDo_UpdateSlotLockedDelta(int slotId, bool isLocked)
 	{
-		CRF_SlottingManager slottingManager = CRF_SlottingManager.GetInstance();
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
 		if (!slottingManager)
 			return;
 		
-		CRF_SlotData slotData = slottingManager.GetSlotData(slotId);
+		COA_SlotData slotData = slottingManager.GetSlotData(slotId);
 		if (slotData)
 		{
 			slotData.SetIsLockedSlot(isLocked);
@@ -1536,11 +1536,11 @@ class CRF_RplBroadcastManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	void RpcDo_UpdateSlotDeathDelta(int slotId, bool isDead)
 	{
-		CRF_SlottingManager slottingManager = CRF_SlottingManager.GetInstance();
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
 		if (!slottingManager)
 			return;
 
-		CRF_SlotData slotData = slottingManager.GetSlotData(slotId);
+		COA_SlotData slotData = slottingManager.GetSlotData(slotId);
 		if (slotData)
 		{
 			slotData.SetIsDeadSlot(isDead);
@@ -1558,11 +1558,11 @@ class CRF_RplBroadcastManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	void RpcDo_UpdateSlotRespawnsRemainingDelta(int slotId, int remaining)
 	{
-		CRF_SlottingManager slottingManager = CRF_SlottingManager.GetInstance();
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
 		if (!slottingManager)
 			return;
 
-		CRF_SlotData slotData = slottingManager.GetSlotData(slotId);
+		COA_SlotData slotData = slottingManager.GetSlotData(slotId);
 		if (slotData)
 		{
 			slotData.SetSlotRespawnsRemaining(remaining);
@@ -1581,11 +1581,11 @@ class CRF_RplBroadcastManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	void RpcDo_UpdateSlotKillerNameDelta(int slotId, string killerName)
 	{
-		CRF_SlottingManager slottingManager = CRF_SlottingManager.GetInstance();
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
 		if (!slottingManager)
 			return;
 		
-		CRF_SlotData slotData = slottingManager.GetSlotData(slotId);
+		COA_SlotData slotData = slottingManager.GetSlotData(slotId);
 		if (slotData)
 			slotData.SetKillerName(killerName);
 	}
@@ -1595,7 +1595,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	void RpcDo_RemoveSlot(int slotId)
 	{
-		CRF_SlottingManager slottingManager = CRF_SlottingManager.GetInstance();
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
 		if (slottingManager)
 			slottingManager.RemoveSlotClient(slotId);
 	}
@@ -1603,9 +1603,9 @@ class CRF_RplBroadcastManager : ScriptComponent
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	void RpcDo_UpdateSpawnPointData(CRF_SpawnPointData spawnPointData)
+	void RpcDo_UpdateSpawnPointData(COA_SpawnPointData spawnPointData)
 	{
-		CRF_RespawnManager respawnManager = CRF_RespawnManager.GetInstance();
+		COA_RespawnManager respawnManager = COA_RespawnManager.GetInstance();
 		if (respawnManager)
 			respawnManager.UpdateSpawnPointDataClient(spawnPointData);
 	}
@@ -1615,7 +1615,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	void RpcDo_RemoveSpawnPoint(int spawnPointId)
 	{
-		CRF_RespawnManager respawnManager = CRF_RespawnManager.GetInstance();
+		COA_RespawnManager respawnManager = COA_RespawnManager.GetInstance();
 		if (respawnManager)
 			respawnManager.RemoveSpawnPointClient(spawnPointId);
 	}
@@ -1625,7 +1625,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	void RpcDo_NotifySlottingPhaseChanged()
 	{
-		CRF_SlottingManager slottingManager = CRF_SlottingManager.GetInstance();
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
 		if (!slottingManager)
 			return;
 		
@@ -1634,7 +1634,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 		if (invoker)
 			invoker.Invoke();
 		
-		Print("[CRF_RplBroadcastManager] Slotting phase changed - UI updated", LogLevel.VERBOSE);
+		Print("[COA_RplBroadcastManager] Slotting phase changed - UI updated", LogLevel.VERBOSE);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1654,7 +1654,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 		GetGame().GetMenuManager().CloseAllMenus();
 
 		// Open respawn menu
-		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.CRF_RespawnMenu);
+		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.COA_RespawnMenu);
 
 		// Set up respawn timers
 		m_RespawnManager.m_iLocalTimeToRespawn = m_RespawnManager.m_iCurrentTimeToRespawn;
@@ -1674,9 +1674,9 @@ class CRF_RplBroadcastManager : ScriptComponent
 		string hitZone = GetSpectatorDamageReportPart(parts, 3, "Unknown");
 		string bodyRegion = GetSpectatorDamageReportPart(parts, 4, "Unknown");
 
-		CRF_SpectatorDamageReportStore.InsertEvent(victimPlayerId, victimName, attackerPlayerId, attackerName, damageValue, rangeMeters, damageType, hitZone, bodyRegion, fatal, worldTime);
+		COA_SpectatorDamageReportStore.InsertEvent(victimPlayerId, victimName, attackerPlayerId, attackerName, damageValue, rangeMeters, damageType, hitZone, bodyRegion, fatal, worldTime);
 
-		CRF_SpectatorMenu spectatorMenu = CRF_SpectatorMenu.Cast(GetGame().GetMenuManager().GetTopMenu());
+		COA_SpectatorMenu spectatorMenu = COA_SpectatorMenu.Cast(GetGame().GetMenuManager().GetTopMenu());
 		if (spectatorMenu)
 			spectatorMenu.RefreshDamageReport();
 	}
@@ -1686,9 +1686,9 @@ class CRF_RplBroadcastManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	void RpcDo_MarkSpectatorDamageReportFatal(int victimPlayerId)
 	{
-		CRF_SpectatorDamageReportStore.MarkLatestVictimEventFatal(victimPlayerId);
+		COA_SpectatorDamageReportStore.MarkLatestVictimEventFatal(victimPlayerId);
 
-		CRF_SpectatorMenu spectatorMenu = CRF_SpectatorMenu.Cast(GetGame().GetMenuManager().GetTopMenu());
+		COA_SpectatorMenu spectatorMenu = COA_SpectatorMenu.Cast(GetGame().GetMenuManager().GetTopMenu());
 		if (spectatorMenu)
 			spectatorMenu.RefreshDamageReport();
 	}
@@ -1762,7 +1762,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 			return;
 		
 		// Update player controller with hint
-		CRF_PlayerControllerManager playerControllerComp = CRF_PlayerControllerManager.GetInstance();
+		COA_PlayerControllerManager playerControllerComp = COA_PlayerControllerManager.GetInstance();
 		if (!playerControllerComp)
 		{
 			delete widget;
@@ -1771,7 +1771,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 
 		if (playerControllerComp.m_wSavedHintWidget)
 		{
-			CRF_Hint previousHint = CRF_Hint.Cast(playerControllerComp.m_wSavedHintWidget.FindHandler(CRF_Hint));
+			COA_Hint previousHint = COA_Hint.Cast(playerControllerComp.m_wSavedHintWidget.FindHandler(COA_Hint));
 			if (previousHint)
 				previousHint.DestroyHint();
 			else
@@ -1781,7 +1781,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 		playerControllerComp.m_wSavedHintWidget = widget;
 
 		// Display the hint
-		CRF_Hint hint = CRF_Hint.Cast(widget.FindHandler(CRF_Hint));
+		COA_Hint hint = COA_Hint.Cast(widget.FindHandler(COA_Hint));
 		if (!hint)
 		{
 			playerControllerComp.m_wSavedHintWidget = null;
@@ -1799,7 +1799,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 		if (SCR_PlayerController.GetLocalPlayerId() != playerId)
 			return;
 		
-		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.CRF_CharacterLoading);
+		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.COA_CharacterLoading);
 	};
 
 	
@@ -1810,14 +1810,14 @@ class CRF_RplBroadcastManager : ScriptComponent
 		if (!IsLocalPlayer(playerId))
 			return;
 
-		CRF_PlayerControllerManager.GetInstance().InitilizePlayerClient(playerCharID);
+		COA_PlayerControllerManager.GetInstance().InitilizePlayerClient(playerCharID);
 	}
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	void RpcDo_CreateGroupLeaderMarker(int playerId, string groupName)
 	{
-		CRF_GroupLeaderMarkerManager markerManager = CRF_GroupLeaderMarkerManager.GetInstance();
+		COA_GroupLeaderMarkerManager markerManager = COA_GroupLeaderMarkerManager.GetInstance();
 		if (markerManager)
 		{
 			markerManager.CreateMarkerForPlayerRPC(playerId, groupName);
@@ -1828,7 +1828,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	void RpcDo_RemoveGroupLeaderMarker(int playerId)
 	{
-		CRF_GroupLeaderMarkerManager markerManager = CRF_GroupLeaderMarkerManager.GetInstance();
+		COA_GroupLeaderMarkerManager markerManager = COA_GroupLeaderMarkerManager.GetInstance();
 		if (markerManager)
 		{
 			markerManager.RemoveMarkerForPlayerRPC(playerId);
@@ -1839,7 +1839,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	void RpcDo_ClearAllGroupLeaderMarkers()
 	{
-		CRF_GroupLeaderMarkerManager markerManager = CRF_GroupLeaderMarkerManager.GetInstance();
+		COA_GroupLeaderMarkerManager markerManager = COA_GroupLeaderMarkerManager.GetInstance();
 		if (markerManager)
 		{
 			markerManager.ClearAllMarkersRPC();
@@ -1850,7 +1850,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	void RpcDo_RequestGroupLeaderMarkerState(int requestingPlayerId)
 	{
-		CRF_GroupLeaderMarkerManager markerManager = CRF_GroupLeaderMarkerManager.GetInstance();
+		COA_GroupLeaderMarkerManager markerManager = COA_GroupLeaderMarkerManager.GetInstance();
 		if (markerManager)
 		{
 			markerManager.SendCurrentStateToClient(requestingPlayerId);
@@ -1865,7 +1865,7 @@ class CRF_RplBroadcastManager : ScriptComponent
 		if (SCR_PlayerController.GetLocalPlayerId() != targetPlayerId)
 			return;
 		
-		CRF_GroupLeaderMarkerManager markerManager = CRF_GroupLeaderMarkerManager.GetInstance();
+		COA_GroupLeaderMarkerManager markerManager = COA_GroupLeaderMarkerManager.GetInstance();
 		if (markerManager)
 		{
 			markerManager.CreateMarkerForPlayerRPC(leaderPlayerId, groupName);
@@ -1883,21 +1883,21 @@ class CRF_RplBroadcastManager : ScriptComponent
 //	 STATIC ACCESSORS
 //=============================================================================================================================================================================================================================================================================================================================================================
 
-	protected static CRF_RplBroadcastManager m_sInstance;
-	void CRF_RplBroadcastManager(IEntityComponentSource src, IEntity ent, IEntity parent)
+	protected static COA_RplBroadcastManager m_sInstance;
+	void COA_RplBroadcastManager(IEntityComponentSource src, IEntity ent, IEntity parent)
 	{
 		m_sInstance = this;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void ~CRF_RplBroadcastManager()
+	void ~COA_RplBroadcastManager()
 	{
 		if (m_sInstance == this)
 			m_sInstance = null;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static CRF_RplBroadcastManager GetInstance()
+	static COA_RplBroadcastManager GetInstance()
 	{
 		return m_sInstance;
 	}
