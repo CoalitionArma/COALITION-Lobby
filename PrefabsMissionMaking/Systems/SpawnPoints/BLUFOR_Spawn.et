@@ -29,7 +29,6 @@ COA_StaticSpawnPoint {
     Name "BLUFOR SPAWN"
    }
    m_bStatic 0
-   m_bGME_IsVisible 0
    m_sColor 0.071 0.192 0.561 1
    m_fSizeCoef 0.8
   }

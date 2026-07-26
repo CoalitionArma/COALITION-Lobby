@@ -1,8 +1,6 @@
 COA_PlayerController : "{225E51284CC95CFA}Prefabs/Characters/Core/DefaultPlayerControllerMP.et" {
  ID "1A9BA6BEFA06E3B1"
  components {
-  CRF_ParachutePlayerComponent "{68A90AB4BC5E81E4}" {
-  }
   COA_PlayerControllerManager "{65654A2A31C3BDEA}" {
    components {
     COA_PlayerCameraManager "{68C4425E85C0BE04}" {
@@ -10,15 +8,6 @@ COA_PlayerController : "{225E51284CC95CFA}Prefabs/Characters/Core/DefaultPlayerC
     COA_PlayerChatCommandManager "{68C4425E800CB3F6}" {
     }
     COA_PlayerKeybindManager "{68C4425E8D77A8DA}" {
-    }
-    CRF_LoneWolfPenaltyManager "{68D8E3872715A0C9}" {
-     m_fCohesionCheckInterval 1
-     m_aWhitelistedRoles {
-      MEDICAL_OFFICER MEDIC
-     }
-     m_aWhitelistedFactions {
-      CIV
-     }
     }
     COA_PlayerMenuManager "{68C4425E8FB6F16D}" {
     }
@@ -48,11 +37,6 @@ COA_PlayerController : "{225E51284CC95CFA}Prefabs/Characters/Core/DefaultPlayerC
      m_LayoutPath "{B9A11E3F0DADF929}UI/Map/HUD/PolyZoneHUD.layout"
      m_eLayer OVERLAY
     }
-    CRF_Frontline_HUD "{620F1A2B7F5F1C54}" {
-     m_LayoutPath "{57C8559AEDAEFF2D}UI/layouts/CRF_Frontline_HUD.layout"
-     m_eLayer ALWAYS_TOP
-     m_eShow 110
-    }
     COA_SafeStartDisplay "{61303B9E05796EC7}" {
      m_LayoutPath "{533092FF68C19D59}UI/layouts/COA_SafeStartDisplay.layout"
      m_eLayer OVERLAY
@@ -68,28 +52,10 @@ COA_PlayerController : "{225E51284CC95CFA}Prefabs/Characters/Core/DefaultPlayerC
      m_eLayer ALWAYS_TOP
      m_eShow 119
     }
-    CRF_SearchAndDestroyDisplay "{61303B9EA39FC27F}" {
-     m_LayoutPath "{5985DF4F166BDEB9}UI/layouts/CRF_S&D_Display.layout"
-     m_eLayer ALWAYS_TOP
-     m_eShow 118
-    }
-    CRF_MapStagingComponentDisplay "{61303B9EA39FC280}" {
-     m_LayoutPath "{A597F5CD1D996DD3}UI/layouts/CRF_MapStagingComponentDisplay.layout"
-     m_eLayer ALWAYS_TOP
-     m_eShow 118
-    }
-    CRF_BattleRoyaleComponentDisplay "{61303B9EA39FC281}" {
-     m_LayoutPath "{A597F5CD1D996DD4}UI/layouts/CRF_BattleRoyaleComponentDisplay.layout"
-     m_eLayer ALWAYS_TOP
-     m_eShow 118
-    }
     SCR_ScenarioFrameworkTriggerCountdownDisplay "{61B2C5720492B2C9}" {
      m_LayoutPath "{47864BB47AB0B1F4}UI/layouts/HUD/CampaignMP/CampaignMainHUD.layout"
      m_eLayer ALWAYS_TOP
      m_bAdaptiveOpacity 1
-    }
-    CRF_AreaTimerDisplay "{69B445EC3FAC8428}" {
-     m_LayoutPath "{E7A6684951B3FC05}UI/layouts/HUD/AreaTimer/CRF_AreaTimerDisplay.layout"
     }
    }
   }

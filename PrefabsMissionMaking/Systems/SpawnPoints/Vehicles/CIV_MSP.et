@@ -489,19 +489,6 @@ COA_VehicleSpawnPoint {
     4 3 0.5 0.1 0.1
    }
   }
-  RHS_GroupMaterialController "{66B4D32648D68489}" {
-   Enabled 0
-   m_aGroups {
-    RHS_MaterialGroupProperties "{66B4D32648D68480}" {
-     m_sGroupName "LABELS"
-     m_iNumberOfTextures 13
-     m_bRandomize 1
-    }
-   }
-  }
-  RHS_RadioSourceComponent "{66B4D32648D684F1}" {
-   m_iSignalType Static
-  }
   RigidBody "{66B4D32648D68527}" {
    Mass 7970
    CenterOfMass 0 0.15 0.7
@@ -2096,11 +2083,6 @@ COA_VehicleSpawnPoint {
     }
    }
   }
-  WCS_Armament_GroundVehicleInfraredEmitterComponent "{66B4D32648D6A348}" {
-   m_vPosition 0 1.566 2.671
-  }
-  WCS_Armament_RadarReflectorComponent "{66B4D32648D6A3B1}" {
-  }
   SlotManagerComponent "{66B4D32648D6A153}" {
    Slots {
     RegisteringComponentSlotInfo window_01 {
@@ -3270,25 +3252,6 @@ COA_VehicleSpawnPoint {
        }
       }
      }
-    }
-    WCS_FlipVehicleUserAction "{66B4D32648D6B4A7}" {
-     ParentContextList {
-      "flip"
-     }
-     VisibilityRange -1
-     Duration 5
-     m_bLoopAction 0
-     m_bLowerWeaponOnUse 1
-     m_eShownInVehicleState NOT_IN_VEHICLE
-    }
-    WCS_PushVehicleUserAction "{66B4D32648D6B4AD}" {
-     ParentContextList {
-      "flip"
-     }
-     Duration 2.5
-     m_bLoopAction 0
-     m_bLowerWeaponOnUse 1
-     m_eShownInVehicleState NOT_IN_VEHICLE
     }
     SCR_UnflipVehicleAction "{66B4D32648D6B53E}" {
      ParentContextList {

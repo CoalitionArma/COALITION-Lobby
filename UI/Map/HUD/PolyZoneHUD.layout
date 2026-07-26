@@ -1,7 +1,7 @@
 FrameWidgetClass {
  Name "RestrictionZoneWarning"
- Color 1 1 1 1
  "Ignore Cursor" 1
+ Color 1 1 1 1
  {
   OverlayWidgetClass "{60D306CB65DCE7C5}" {
    Name "ScreenBlure"

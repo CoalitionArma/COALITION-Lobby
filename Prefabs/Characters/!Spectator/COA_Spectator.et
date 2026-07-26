@@ -167,9 +167,6 @@ COA_SpectatorCharacter : "{D7EB93B0550FD158}Prefabs/Characters/!Core/COA_Player.
     }
    }
   }
-  RHS_ThermalSlotManagerComponent "{60D6F4C7C990A7BB}" {
-   Enabled 0
-  }
   CharacterAnimationComponent "{520EA1D2F659C994}" {
    components {
     SCR_CharacterBuoyancyComponent "{5EDCE7B429F7D056}" {

@@ -300,9 +300,6 @@ COA_VehicleSpawnPoint {
     4 2 1 0.5 0.25 0.1 0.1
    }
   }
-  RHS_RadioSourceComponent "{66B4D32790D811D7}" {
-   m_iSignalType Static
-  }
   RigidBody "{66B4D32790D81119}" {
    Mass 9802
    CenterOfMass 0 0.15 -0.4
@@ -668,7 +665,7 @@ COA_VehicleSpawnPoint {
      ENTITYTYPE_VEHICLE TRAIT_RADIO TRAIT_ARSENAL TRAIT_SUPPLYSTORAGE_LARGE
     }
     m_aAutoLabels {
-     FACTION_COA_BLUFOR SIZE_M VEHICLE_TRUCK FACTION_RHS_USAF
+     FACTION_COA_BLUFOR SIZE_M VEHICLE_TRUCK NONE
     }
     m_EntityBudgetCost {
      SCR_EntityBudgetValue "{66B4D32790D81820}" {
@@ -1893,11 +1890,6 @@ COA_VehicleSpawnPoint {
     }
    }
   }
-  WCS_Armament_GroundVehicleInfraredEmitterComponent "{66B4D32790D8F17F}" {
-   m_vPosition 0 1.679 2.588
-  }
-  WCS_Armament_RadarReflectorComponent "{66B4D32790D8F285}" {
-  }
   SlotManagerComponent "{66B4D32790D8F370}" {
    Slots {
     RegisteringComponentSlotInfo window_right {
@@ -2949,25 +2941,6 @@ COA_VehicleSpawnPoint {
        }
       }
      }
-    }
-    WCS_FlipVehicleUserAction "{66B4D32790D8FDF7}" {
-     ParentContextList {
-      "flip"
-     }
-     VisibilityRange -1
-     Duration 5
-     m_bLoopAction 0
-     m_bLowerWeaponOnUse 1
-     m_eShownInVehicleState NOT_IN_VEHICLE
-    }
-    WCS_PushVehicleUserAction "{66B4D32790D8FDFB}" {
-     ParentContextList {
-      "flip"
-     }
-     Duration 2.5
-     m_bLoopAction 0
-     m_bLowerWeaponOnUse 1
-     m_eShownInVehicleState NOT_IN_VEHICLE
     }
     SCR_UnflipVehicleAction "{66B4D32790D8FD69}" {
      ParentContextList {

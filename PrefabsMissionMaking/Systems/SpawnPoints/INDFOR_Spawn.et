@@ -29,7 +29,6 @@ COA_StaticSpawnPoint {
     Name "INDFOR SPAWN"
    }
    m_bStatic 0
-   m_bGME_IsVisible 0
    m_sColor 0.071 0.561 0.192 1
    m_fSizeCoef 0.8
   }

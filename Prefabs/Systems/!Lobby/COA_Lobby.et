@@ -8,8 +8,6 @@ COA_Gamemode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" {
     COA_BandwidthTelemetryManager "{66D522D8D6A2859C}" {
      m_iSummaryInterval 300
     }
-    COA_CommunityTagManager "{69651E07695B82A0}" {
-    }
     COA_ForwardDeployManager "{68C4424EC250E62B}" {
     }
     COA_GameTimerManager "{68C34EF052F2A86D}" {
@@ -20,11 +18,7 @@ COA_Gamemode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" {
     }
     COA_GroupLeaderMarkerManager "{686A3E86B81A4662}" {
     }
-    COA_LoggingManager "{65654A2C50A1F78D}" {
-    }
     COA_MenuManager "{652A3313EB733550}" {
-    }
-    COA_MissionValidatorManager "{686A3E855DC73533}" {
     }
     COA_PermissionManager "{68C34EF02CB41BD0}" {
     }
@@ -34,17 +28,9 @@ COA_Gamemode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" {
     }
     COA_SafestartManager "{652A33131ACE2DC1}" {
     }
-    COA_ServerStatsManager "{697D4B11063F1CAE}" {
-    }
     COA_SlottingManager "{6535438600F2A9C0}" {
     }
-    COA_VehicleGearscriptManager "{68C32757EC663DF4}" {
-    }
    }
-  }
-  COA_SlotLottery "{6966101F0044D13B}" {
-  }
-  COA_VAAR_GamemodeComponent "{692D60493093033D}" {
   }
   CVON_VONGameModeComponent "{6624E607CC6D4CC8}" {
    m_sFreqConfig "{8FE52CD7F8502E24}Configs/Systems/FreqConfigs/CFCFrequencyConfig.conf"
@@ -99,7 +85,6 @@ COA_Gamemode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" {
  PlayerControllerPrefab "{4E5DAC62A374950F}Prefabs/Characters/!Core/COA_PlayerController.et"
  m_bAutoPlayerRespawn 0
  m_bAllowFactionChange 0
- m_eGME_GlobalAISkill VETERAN
  m_aMissionDescriptors {
   COA_MissionDescriptor "{632771FB5C619E1C}" {
    m_sTitle "Welcome / How to Play"
@@ -207,33 +192,18 @@ COA_Gamemode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" {
  }
  m_BLUFORGearScriptSettings COA_GearScriptContainer "{64570ACB9B419A7B}" {
   m_rGearScript "{D3B6188EF875E2C4}Configs/Gearscripts/Standard/80s/COA_GS_US80s.conf"
-  m_VehicleLoadout COA_VehicleGearScriptLoadout "{66949415A1D79F8B}" {
-  }
-  m_aSupplyTrucks {
-   "{C8D62059548EC894}Prefabs/Vehicles/Wheeled/M923A1/BLUFOR/BLUFOR_AMMO.et" "{0CA6F84C835A080E}Prefabs/Vehicles/Wheeled/M923A1/BLUFOR/MERDC/BLUFOR_AMMO_MERDC.et" "{FF65607D073A8981}Prefabs/Vehicles/Wheeled/M923A1/BLUFOR/BLUFOR_ARSENAL.et" "{FC3AB83990745796}Prefabs/Vehicles/Wheeled/M923A1/BLUFOR/MERDC/BLUFOR_ARSENAL_MERDC.et"
-  }
   m_rShortRangeRadioPrefab "{E82129A6CC014808}Prefabs/Items/Equipment/Radios/Radio_ANPRC152.et"
   m_rLongRangeRadioPrefab "{C204374F722D5229}Prefabs/Items/Equipment/Radios/Radio_ANPRC117.et"
   m_rRTORadiosPrefab "{C204374F722D5229}Prefabs/Items/Equipment/Radios/Radio_ANPRC117.et"
  }
  m_OPFORGearScriptSettings COA_GearScriptContainer "{64570ACB9B11EAAD}" {
   m_rGearScript "{83E186D97FF79DCF}Configs/Gearscripts/Standard/80s/COA_GS_USSR80s.conf"
-  m_VehicleLoadout COA_VehicleGearScriptLoadout "{66949415A257C198}" {
-  }
-  m_aSupplyTrucks {
-   "{8759EDBCF78920B7}Prefabs/Vehicles/Wheeled/Ural4320/OPFOR/OPFOR_AMMO.et" "{3927510D48AB7EB5}Prefabs/Vehicles/Wheeled/Ural4320/OPFOR/OPFOR_ARSENAL.et"
-  }
   m_rShortRangeRadioPrefab "{D26BF3EB28C8B72C}Prefabs/Items/Equipment/Radios/Radio_R187.et"
   m_rLongRangeRadioPrefab "{421001C003F947AF}Prefabs/Items/Equipment/Radios/Radio_R168.et"
   m_rRTORadiosPrefab "{421001C003F947AF}Prefabs/Items/Equipment/Radios/Radio_R168.et"
  }
  m_INDFORGearScriptSettings COA_GearScriptContainer "{64570ACB9AE1C9ED}" {
   m_rGearScript "{9F4A0C3FCDF3F6DE}Configs/Gearscripts/Standard/80s/COA_GS_FIA.conf"
-  m_VehicleLoadout COA_VehicleGearScriptLoadout "{669494159DB67D8D}" {
-  }
-  m_aSupplyTrucks {
-   "{DF75A01974E8FD17}Prefabs/Vehicles/Wheeled/Ural4320/INDFOR/INDFOR_AMMO.et" "{9712B926F1FD286E}Prefabs/Vehicles/Wheeled/Ural4320/INDFOR/INDFOR_ARSENAL.et"
-  }
   m_rShortRangeRadioPrefab "{D26BF3EB28C8B72C}Prefabs/Items/Equipment/Radios/Radio_R187.et"
   m_rLongRangeRadioPrefab "{421001C003F947AF}Prefabs/Items/Equipment/Radios/Radio_R168.et"
   m_rRTORadiosPrefab "{421001C003F947AF}Prefabs/Items/Equipment/Radios/Radio_R168.et"
@@ -243,8 +213,6 @@ COA_Gamemode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" {
   m_bEnableLeadershipRadios 0
   m_bEnableGIRadios 0
   m_bEnableRTORadios 0
-  m_VehicleLoadout COA_VehicleGearScriptLoadout "{669494159C990589}" {
-  }
  }
  {
   PerceptionManager "6445176B75D36372" : "{028DAEAD63E056BE}Prefabs/World/Game/PerceptionManager.et" {
@@ -614,7 +582,7 @@ COA_Gamemode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" {
      m_sFactionFlag "{BB790255945032F8}UI/Images/SpecImages/Spec_Eye_BCR.edds"
      m_FactionFlagMaterial "{E3BB2EF7F600DD28}Assets/Props/Fabric/Flags/Data/Flag_2_3_CIVILIAN.emat"
      m_FactionLabel FACTION_CIV
-     m_aFriendlyFactionsIds + {
+     m_aFriendlyFactionsIds {
       "USSR" "FIA" "BLUFOR" "OPFOR" "INDFOR" "CIV"
      }
      m_iFactionRadioFrequency 58000
