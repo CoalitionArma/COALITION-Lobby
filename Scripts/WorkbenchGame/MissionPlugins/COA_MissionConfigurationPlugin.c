@@ -24,8 +24,10 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 	[Attribute("<Author>", "auto", "", category: "CRF Mission Config - Mission Info")]
 	protected string m_sMissionAuthor;
 	
+#ifdef COALITION_REFORGER_FRAMEWORK
 	[Attribute("", "auto", "Your BI account GUID for automatic admin privileges (auto-filled from workbench)", category: "CRF Mission Config - Mission Info")]
 	protected string m_sMissionAuthorGUID;
+#endif
 	
 	[Attribute(uiwidget: UIWidgets.SearchComboBox, enums: ParamEnumArray.FromEnum(COA_EGamemode), category: "CRF Mission Config - Mission Info")]
 	COA_EGamemode m_MissionMode;
@@ -43,6 +45,7 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 	{
 		m_sMissionAuthor = "<Author>";
 		
+#ifdef COALITION_REFORGER_FRAMEWORK
 		// Auto-fill GUID from currently logged-in Workbench user
 		BackendApi backendApi = GetGame().GetBackendApi();
 		if (backendApi)
@@ -57,6 +60,7 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 		{
 			m_sMissionAuthorGUID = "<AuthorGUID - Backend not available>";
 		}
+#endif
 		
 		m_MissionMode = COA_EGamemode.TVT;
 		m_sMissionName = "<Name>";
@@ -77,6 +81,7 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 		return false;
 	}
 
+#ifdef COALITION_REFORGER_FRAMEWORK
 	//------------------------------------------------------------------------------------------------
 	//! Re-shows the synopsis preview (and re-copies it to the clipboard) without regenerating the
 	//! mission config - lets a mission maker re-open the synopsis after closing the window, without
@@ -118,6 +123,7 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 
 		return false;
 	}
+#endif
 
 	//------------------------------------------------------------------------------------------------
 	[ButtonAttribute("Generate Mission Config", true)]
@@ -128,7 +134,7 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 		string worldPath;
 
 		//--- Get mission header from the template config (can't use the class directly, it's engine-controlled class that cannot have reference in script)
-		Resource templateResource = Resource.Load("{3D094352621EA88C}!Missions/COA_BaseMissionConfig.conf");
+		Resource templateResource = Resource.Load("{3D094352621EA88C}Missions/COA_BaseMissionConfig.conf");
 		BaseContainer missionHeaderContainer = templateResource.GetResource().ToBaseContainer();
 
 		WorldEditor worldEditor = Workbench.GetModule(WorldEditor);
@@ -144,7 +150,11 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 		string fullWorldPath = worldMeta.GetResourceID();
 		missionHeaderContainer.Set("World", fullWorldPath);
 		missionHeaderContainer.Set("m_sAuthor", m_sMissionAuthor);
+		
+#ifdef COALITION_REFORGER_FRAMEWORK
 		missionHeaderContainer.Set("m_sAuthorGUID", m_sMissionAuthorGUID);
+#endif	
+	
 		missionHeaderContainer.Set("m_sGameMode", missionMode);
 		missionHeaderContainer.Set("m_sDescription", m_sMissionDescription);
 		missionHeaderContainer.Set("m_iMapMarkerLimitPerPlayer", 256);
@@ -225,15 +235,30 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 		Workbench.GetAbsolutePath(missionHeaderPath, missionHeaderAbsPath, false);
 		resourceManager.RegisterResourceFile(missionHeaderAbsPath, false);
 
+#ifdef COALITION_REFORGER_FRAMEWORK
 		//--- Build the mission synopsis and hand it to the mission maker via clipboard + a preview window
 		//--- (NOT written to disk - a file here would get committed and bundled into the mod itself, which we don't want.
 		//--- The mission maker pastes this into the PR description instead.)
 		string missionDisplayName = string.Format("CRF %1%2 %3", missionMode, missionPlayercount, m_sMissionName);
 		ShowMissionSynopsis(gamemode, entitySource, missionDisplayName, missionTerrain, missionMode, missionPlayercount);
+#endif
 
 		return true;
 	}
+	
+	//------------------------------------------------------------------------------------------------
+	protected int GetPlayerCount(array<ref COA_SlottingGroup> factionSlots)
+	{
+		int missionPlayercount;
 
+		foreach (ref COA_SlottingGroup slotGroup : factionSlots)
+			foreach(COA_EGearRole role : slotGroup.m_aSlots)
+				missionPlayercount++;
+
+		return missionPlayercount;
+	}
+
+#ifdef COALITION_REFORGER_FRAMEWORK
 	//------------------------------------------------------------------------------------------------
 	//! Builds the synopsis, copies it to the clipboard, and opens the read-only preview dialog.
 	protected void ShowMissionSynopsis(COA_Gamemode gamemode, IEntitySource entitySource, string missionDisplayName, string missionTerrain, string missionMode, int missionPlayercount)
@@ -250,19 +275,6 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 			"This synopsis has already been copied to your clipboard - create your PR and paste it into your PR description now. \n\n You may open the synopsis again via the 'Show Mission Synopsis' button in the Workbench plugin, without regenerating the mission config.",
 			synopsisDialog);
 	}
-
-	//------------------------------------------------------------------------------------------------
-	protected int GetPlayerCount(array<ref COA_SlottingGroup> factionSlots)
-	{
-		int missionPlayercount;
-
-		foreach (ref COA_SlottingGroup slotGroup : factionSlots)
-			foreach(COA_EGearRole role : slotGroup.m_aSlots)
-				missionPlayercount++;
-
-		return missionPlayercount;
-	}
-
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 MISSION SYNOPSIS
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -423,7 +435,6 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 	//! single authored COA_EGamemode label. A mission can stack more than one (e.g. Rally + Attrition).
 	protected void AppendGameModeComponentSection(array<string> lines, COA_Gamemode gamemode, IEntitySource entitySource, string missionMode)
 	{
-#ifdef COALITION_REFORGER_FRAMEWORK
 		lines.Insert("## Game Mode Components");
 		lines.Insert(string.Format("- Selected Mode: %1", missionMode));
 
@@ -462,7 +473,6 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 
 		lines.Insert(string.Format("- Active Components: %1", componentList));
 		lines.Insert("");
-#endif
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -628,6 +638,7 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 			lines.Insert(roleLine);
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------------------------

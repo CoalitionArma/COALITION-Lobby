@@ -14,7 +14,7 @@ class COA_MissionWorldCreationPlugin : WorkbenchPlugin
 	{
 		if (!Workbench.ScriptDialog(
 		"Mission Layer Generator", 
-		"This Automatically generates the missions layers to keep consistancy across all CRF missions", 
+		"This Automatically generates the missions layers to keep consistancy across all Coalition Lobby missions", 
 		this))
 			return;
 	}
