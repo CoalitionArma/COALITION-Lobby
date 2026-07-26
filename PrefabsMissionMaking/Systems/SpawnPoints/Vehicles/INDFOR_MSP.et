@@ -1,4 +1,4 @@
-CRF_VehicleSpawnPoint {
+COA_VehicleSpawnPoint {
  ID "66B4D3266CA9AC28"
  components {
   EventHandlerManagerComponent "{66B4D32661F254FA}" {
@@ -865,7 +865,7 @@ CRF_VehicleSpawnPoint {
      ENTITYTYPE_VEHICLE TRAIT_RADIO TRAIT_ARSENAL TRAIT_SUPPLYSTORAGE_LARGE
     }
     m_aAutoLabels {
-     FACTION_CRF_INDFOR SIZE_M VEHICLE_TRUCK
+     FACTION_COA_INDFOR SIZE_M VEHICLE_TRUCK
     }
     m_EntityBudgetCost {
      SCR_EntityBudgetValue "{66B4D32661F27C37}" {
@@ -3586,7 +3586,7 @@ CRF_VehicleSpawnPoint {
  }
  coords 0 0 0
  m_eVehicleType COMM_TRUCK
- m_SpawnPointSettings CRF_SpawnPointData "{68E15E4EBA0A10D2}" {
+ m_SpawnPointSettings COA_SpawnPointData "{68E15E4EBA0A10D2}" {
   m_sSpawnPointName "MSP"
   m_iSpawnPointFaction INDFOR
   m_iSpawnPointRadius 6

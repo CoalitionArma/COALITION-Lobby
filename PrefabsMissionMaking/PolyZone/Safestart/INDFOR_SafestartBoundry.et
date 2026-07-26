@@ -1,7 +1,7 @@
 PolylineShapeEntity {
  ID "6586537E5441D009"
  components {
-  CRF_PolyZone "{6586537E5441D07A}" {
+  COA_PolyZone "{6586537E5441D07A}" {
    m_cPolygonColor 0 0.502 0.125 0.176
    m_cPolygonBorderColor 0 0.502 0.125 1
    m_fPolygonBorderWidth 6
@@ -21,7 +21,7 @@ PolylineShapeEntity {
  IsClosed 1
  LineColor 0 0.502 0.1255 1
  {
-  CRF_ManualMarker {
+  COA_ManualMarker {
    ID "65885AB995B4F699"
    coords 0 0 0
    m_sImageSet "{E23427CAC80DA8B7}UI/Textures/Icons/icons_mapMarkersUI.imageset"
@@ -31,10 +31,10 @@ PolylineShapeEntity {
    m_sDescription "INDFOR Safe Start Area"
    m_iZOrder 10
   }
-  CRF_PolyZoneTrigger {
+  COA_PolyZoneTrigger {
    ID "6586537E5441D074"
    components {
-    CRF_PolyZoneMeshComponent "{6586537E5441D05B}" {
+    COA_PolyZoneMeshComponent "{6586537E5441D05B}" {
      m_fHeight 345
      m_fUndergroundHeight 400
      m_Material "{B57778D641C08057}Assets/Editor/VirtualArea/INDFORBoundry.emat"
@@ -56,7 +56,7 @@ PolylineShapeEntity {
    ClassesFilter {
     "SCR_ChimeraCharacter"
    }
-   m_polyZoneEffect CRF_PolyZoneEffectRestricted "{6586537E5441D04B}" {
+   m_polyZoneEffect COA_PolyZoneEffectRestricted "{6586537E5441D04B}" {
     m_fKillTime 10
    }
    m_bReversed 1

@@ -1,7 +1,7 @@
 PolylineShapeEntity : "{8AE1D02BC25C93C5}PrefabsMissionMaking/PolyZone/Safestart/BLUFOR_SafestartBoundry.et" {
  ID "65865377C721CC48"
  components {
-  CRF_PolyZone "{65865377C721CCB0}" {
+  COA_PolyZone "{65865377C721CCB0}" {
    m_bIsSafestartBorder 0
    m_bIsForwardDeployZone 1
   }

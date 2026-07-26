@@ -1,7 +1,7 @@
 PolylineShapeEntity {
  ID "6586537D9DECC16E"
  components {
-  CRF_PolyZone "{6586537D9DECC156}" {
+  COA_PolyZone "{6586537D9DECC156}" {
    m_cPolygonColor 0.25 0 0.503 0.176
    m_cPolygonBorderColor 0.251 0 0.502 1
    m_fPolygonBorderWidth 6
@@ -21,7 +21,7 @@ PolylineShapeEntity {
  IsClosed 1
  LineColor 0.251 0 0.502 1
  {
-  CRF_ManualMarker {
+  COA_ManualMarker {
    ID "65885ABE4C9EEBA5"
    coords 0 0 0
    m_sImageSet "{E23427CAC80DA8B7}UI/Textures/Icons/icons_mapMarkersUI.imageset"
@@ -34,10 +34,10 @@ PolylineShapeEntity {
    }
    m_iZOrder 10
   }
-  CRF_PolyZoneTrigger {
+  COA_PolyZoneTrigger {
    ID "6586537D9DECC16D"
    components {
-    CRF_PolyZoneMeshComponent "{6586537D9DECC1B7}" {
+    COA_PolyZoneMeshComponent "{6586537D9DECC1B7}" {
      m_fHeight 345
      m_fUndergroundHeight 400
      m_Material "{92E45624495C0978}Assets/Editor/VirtualArea/CIVBoundry.emat"
@@ -58,7 +58,7 @@ PolylineShapeEntity {
    ClassesFilter {
     "SCR_ChimeraCharacter"
    }
-   m_polyZoneEffect CRF_PolyZoneEffectRestricted "{6586537D9DECC1B9}" {
+   m_polyZoneEffect COA_PolyZoneEffectRestricted "{6586537D9DECC1B9}" {
     m_fKillTime 10
    }
    m_bReversed 1

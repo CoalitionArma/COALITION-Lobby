@@ -1,4 +1,4 @@
-CRF_StaticSpawnPoint {
+COA_StaticSpawnPoint {
  ID "50C6D20663830070"
  components {
   MeshObject "{645911A160C1D2EB}" {
@@ -41,7 +41,7 @@ CRF_StaticSpawnPoint {
     m_Image "{2F23E25348144FAE}UI/Textures/FieldManual/MPModes/Conflict/Tiles/respawn_UI.edds"
     m_sFaction "OPFOR"
     m_aAuthoredLabels {
-     ENTITYTYPE_SYSTEM FACTION_CRF_OPFOR
+     ENTITYTYPE_SYSTEM FACTION_COA_OPFOR
     }
     m_aAutoLabels {
      ENTITYTYPE_SYSTEM
@@ -79,12 +79,12 @@ CRF_StaticSpawnPoint {
  Flags 0x400 0
  coords 0 0 0
  m_bIsDefaultSpawn 1
- m_SpawnPointSettings CRF_SpawnPointData "{68E15E4D5B91B8E5}" {
+ m_SpawnPointSettings COA_SpawnPointData "{68E15E4D5B91B8E5}" {
   m_iSpawnPointFaction OPFOR
   m_iSpawnPointRadius 16
  }
  {
-  CRF_ManualMarker : "{10F92A3FD09DA1C5}PrefabsMissionMaking/Markers/SpawnMarkers/OPFOR_SpawnMarker.et" {
+  COA_ManualMarker : "{10F92A3FD09DA1C5}PrefabsMissionMaking/Markers/SpawnMarkers/OPFOR_SpawnMarker.et" {
    ID "68682AC1849E53AF"
    coords 0 0 0
   }

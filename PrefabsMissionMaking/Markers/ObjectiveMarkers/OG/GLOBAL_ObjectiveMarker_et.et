@@ -1,7 +1,7 @@
-CRF_ManualMarker {
+COA_ManualMarker {
  ID "686768B9EA6AB580"
  components {
-  CRF_EditableMarkerComponent "{686768B9EA6AB5F6}" {
+  COA_EditableMarkerComponent "{686768B9EA6AB5F6}" {
    m_EntityType SYSTEM
    m_UIInfo SCR_EditableDescriptorUIInfo "{686768B9EA6AB5FB}" {
     Name "#PS-EditableEntity_MapMarker"

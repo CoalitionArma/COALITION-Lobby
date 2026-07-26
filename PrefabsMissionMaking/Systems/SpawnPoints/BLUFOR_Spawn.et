@@ -1,4 +1,4 @@
-CRF_StaticSpawnPoint {
+COA_StaticSpawnPoint {
  ID "50C6D20663830070"
  components {
   MeshObject "{645911BD734B5E66}" {
@@ -41,7 +41,7 @@ CRF_StaticSpawnPoint {
     m_Image "{2F23E25348144FAE}UI/Textures/FieldManual/MPModes/Conflict/Tiles/respawn_UI.edds"
     m_sFaction "BLUFOR"
     m_aAuthoredLabels {
-     ENTITYTYPE_SYSTEM FACTION_CRF_BLUFOR
+     ENTITYTYPE_SYSTEM FACTION_COA_BLUFOR
     }
     m_aAutoLabels {
      ENTITYTYPE_SYSTEM
@@ -79,11 +79,11 @@ CRF_StaticSpawnPoint {
  Flags 0x400 0
  coords 0 0 0
  m_bIsDefaultSpawn 1
- m_SpawnPointSettings CRF_SpawnPointData "{68E15E4C4DE26D17}" {
+ m_SpawnPointSettings COA_SpawnPointData "{68E15E4C4DE26D17}" {
   m_iSpawnPointRadius 16
  }
  {
-  CRF_ManualMarker : "{E256B56F799AEB41}PrefabsMissionMaking/Markers/SpawnMarkers/BLUFOR_SpawnMarker.et" {
+  COA_ManualMarker : "{E256B56F799AEB41}PrefabsMissionMaking/Markers/SpawnMarkers/BLUFOR_SpawnMarker.et" {
    ID "68682AC1B6C9C4BC"
    coords 0 0 0
   }

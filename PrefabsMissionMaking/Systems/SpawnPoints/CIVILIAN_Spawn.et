@@ -1,4 +1,4 @@
-CRF_StaticSpawnPoint {
+COA_StaticSpawnPoint {
  ID "50C6D20663830070"
  components {
   MeshObject "{645911A168BE4336}" {
@@ -41,7 +41,7 @@ CRF_StaticSpawnPoint {
     m_Image "{2F23E25348144FAE}UI/Textures/FieldManual/MPModes/Conflict/Tiles/respawn_UI.edds"
     m_sFaction "CIV"
     m_aAuthoredLabels {
-     ENTITYTYPE_SYSTEM FACTION_CRF_CIV
+     ENTITYTYPE_SYSTEM FACTION_COA_CIV
     }
     m_aAutoLabels {
      ENTITYTYPE_SYSTEM
@@ -79,12 +79,12 @@ CRF_StaticSpawnPoint {
  Flags 0x400 0
  coords 0 0 0
  m_bIsDefaultSpawn 1
- m_SpawnPointSettings CRF_SpawnPointData "{68E15E4D22A22580}" {
+ m_SpawnPointSettings COA_SpawnPointData "{68E15E4D22A22580}" {
   m_iSpawnPointFaction CIV
   m_iSpawnPointRadius 16
  }
  {
-  CRF_ManualMarker : "{CC041EDE06E4A0C3}PrefabsMissionMaking/Markers/SpawnMarkers/CIVILIAN_SpawnMarker.et" {
+  COA_ManualMarker : "{CC041EDE06E4A0C3}PrefabsMissionMaking/Markers/SpawnMarkers/CIVILIAN_SpawnMarker.et" {
    ID "68682AC1B261B1FF"
    coords 0 0 0
   }

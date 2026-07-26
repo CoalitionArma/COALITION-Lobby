@@ -1359,7 +1359,7 @@ FrameWidgetClass {
       SCR_ListBoxComponent "{566C9415BAA54E1B}" {
        Enabled 0
       }
-      CRF_ListboxComponent "{647D65687737A8F1}" {
+      COA_ListboxComponent "{647D65687737A8F1}" {
       }
      }
      {
@@ -1514,7 +1514,7 @@ FrameWidgetClass {
       SCR_ListBoxComponent "{566C9415BAA54E1B}" {
        Enabled 0
       }
-      CRF_ListboxComponent "{647E436DB4EEB762}" {
+      COA_ListboxComponent "{647E436DB4EEB762}" {
       }
      }
      {
