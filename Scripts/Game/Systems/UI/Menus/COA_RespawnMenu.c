@@ -130,7 +130,7 @@ class COA_RespawnMenu: ChimeraMenuBase
 			inputManager.AddActionListener("VONDirect", EActionTrigger.UP, Action_VONOff);
 		}
 		inputManager.AddActionListener("MenuBack", EActionTrigger.DOWN, Action_Exit);
-		inputManager.AddActionListener("COA_ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
+		inputManager.AddActionListener("ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
 	}	
 	
 	/**
@@ -214,7 +214,7 @@ class COA_RespawnMenu: ChimeraMenuBase
 			inputManager.RemoveActionListener("VONDirect", EActionTrigger.UP, Action_VONOff);
 		}
 		inputManager.RemoveActionListener("MenuBack", EActionTrigger.DOWN, Action_Exit);
-		inputManager.RemoveActionListener("COA_ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
+		inputManager.RemoveActionListener("ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
 	}	
 	
 	/**

@@ -223,11 +223,11 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			inputManager.AddActionListener("VONDirect", EActionTrigger.DOWN, Action_VONon);
 			inputManager.AddActionListener("VONDirect", EActionTrigger.UP, Action_VONOff);
 		}
-		inputManager.AddActionListener("COA_ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
+		inputManager.AddActionListener("ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
 		inputManager.AddActionListener("MenuBack", EActionTrigger.DOWN, Action_Exit);
-		inputManager.AddActionListener("COA_GadgetMap", EActionTrigger.DOWN, Action_ToggleMap);
-		inputManager.AddActionListener("COA_ManualCameraTeleport", EActionTrigger.DOWN, Action_ManualCameraTeleport);
-		inputManager.AddActionListener("COA_EditorToggleUI", EActionTrigger.DOWN, HideUI);
+		inputManager.AddActionListener("GadgetMap", EActionTrigger.DOWN, Action_ToggleMap);
+		inputManager.AddActionListener("ManualCameraTeleport", EActionTrigger.DOWN, Action_ManualCameraTeleport);
+		inputManager.AddActionListener("EditorToggleUI", EActionTrigger.DOWN, HideUI);
 		inputManager.AddActionListener("COA_ShowDamageReport", EActionTrigger.DOWN, Action_ToggleDamageReport);
 		inputManager.AddActionListener("COA_SpecNVG", EActionTrigger.DOWN, ToggleNVGs);
 		inputManager.AddActionListener("COA_SpecToggleCamMode", EActionTrigger.DOWN, ToggleCameraMode);
@@ -2181,11 +2181,11 @@ class COA_SpectatorMenu: ChimeraMenuBase
 				inputManager.RemoveActionListener("VONDirect", EActionTrigger.DOWN, Action_VONon);
 				inputManager.RemoveActionListener("VONDirect", EActionTrigger.UP, Action_VONOff);
 			}
-			inputManager.RemoveActionListener("COA_ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
+			inputManager.RemoveActionListener("ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
 			inputManager.RemoveActionListener("MenuBack", EActionTrigger.DOWN, Action_Exit);
-			inputManager.RemoveActionListener("COA_GadgetMap", EActionTrigger.DOWN, Action_ToggleMap);
-			inputManager.RemoveActionListener("COA_ManualCameraTeleport", EActionTrigger.DOWN, Action_ManualCameraTeleport);
-			inputManager.RemoveActionListener("COA_EditorToggleUI", EActionTrigger.DOWN, HideUI);
+			inputManager.RemoveActionListener("GadgetMap", EActionTrigger.DOWN, Action_ToggleMap);
+			inputManager.RemoveActionListener("ManualCameraTeleport", EActionTrigger.DOWN, Action_ManualCameraTeleport);
+			inputManager.RemoveActionListener("EditorToggleUI", EActionTrigger.DOWN, HideUI);
 			inputManager.RemoveActionListener("COA_ShowDamageReport", EActionTrigger.DOWN, Action_ToggleDamageReport);
 			inputManager.RemoveActionListener("COA_SpecNVG", EActionTrigger.DOWN, ToggleNVGs);
 			inputManager.RemoveActionListener("COA_SpecToggleCamMode", EActionTrigger.DOWN, ToggleCameraMode);

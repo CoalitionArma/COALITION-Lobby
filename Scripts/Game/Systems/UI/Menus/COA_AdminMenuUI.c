@@ -213,7 +213,7 @@ class COA_AdminMenu : ChimeraMenuBase
 		if (wChatPanel)
 			m_ChatPanel = SCR_ChatPanel.Cast(wChatPanel.FindHandler(SCR_ChatPanel));
 
-		GetGame().GetInputManager().AddActionListener("COA_ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
+		GetGame().GetInputManager().AddActionListener("ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
 
 		m_ChatPanel.SetAlwaysVisible(true);
 		m_ChatPanel.ExpandMessageLines(20); // Increase the amount of message lines
@@ -228,7 +228,7 @@ class COA_AdminMenu : ChimeraMenuBase
 		super.OnMenuClose();
 
 		SCR_UISoundEntity.SoundEvent(SCR_SoundEvent.SOUND_FE_HUD_PAUSE_MENU_CLOSE);
-		GetGame().GetInputManager().RemoveActionListener("COA_ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
+		GetGame().GetInputManager().RemoveActionListener("ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
 		
 		if (m_wMenuContent)
 			delete m_wMenuContent;
