@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{A5611A238BBC5042}Configs/Identities/North America/COA_CharacterIdentity_Europe.conf"
+ Name "{A5611A238BBC5042}Configs/Identities/Europe/COA_CharacterIdentity_Europe.conf"
  Configurations {
   CONFResourceClass PC {
   }
