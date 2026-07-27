@@ -138,9 +138,9 @@ class COA_GearscriptManager : ScriptComponent
 
 		if (!inventory || !inventoryManager)
 		{
-			string errorMsg = string.Format("Entity %1 is missing required inventory components (SCR_CharacterInventoryStorageComponent or SCR_InventoryStorageManagerComponent)", entity);
-			
 #ifdef COALITION_REFORGER_FRAMEWORK
+			string errorMsg = string.Format("Entity %1 is missing required inventory components (SCR_CharacterInventoryStorageComponent or SCR_InventoryStorageManagerComponent)", entity);
+	
 			// Use MissionValidatorManager in Workbench, fallback to Print in game
 			#ifdef WORKBENCH
 			COA_MissionValidatorManager validator = COA_MissionValidatorManager.GetInstance();

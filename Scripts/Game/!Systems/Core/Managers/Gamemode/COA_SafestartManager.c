@@ -703,9 +703,8 @@ class COA_SafestartManager : ScriptComponent
 			GetGame().GetCallqueue().CallLater(DelayChangeSafeStartDisabled, 250);
 			
 			DeleteAllSafestartZones();
-#ifdef COALITION_REFORGER_FRAMEWORK
+			
 			COA_ForwardDeployManager.GetInstance().DeleteAllForwardDeployZones();
-#endif
 			
 			//ClearEventMask(GetGame().GetGameMode(), EntityEvent.FIXEDFRAME);
 		}

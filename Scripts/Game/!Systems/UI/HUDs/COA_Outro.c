@@ -1,9 +1,12 @@
 class COA_Outro: ChimeraMenuBase
 {
-	#ifdef COALITION_REFORGER_FRAMEWORK
 	protected static const ResourceName STATS_LAYOUT = "{7CDA3F81B4920E56}UI/layouts/HUD/Intro/COA_AARStats.layout";
 	protected Widget              m_wAARStatsRoot;
+	
+#ifdef COALITION_REFORGER_FRAMEWORK
 	protected ref COA_AARStatsHUD m_pAARStatsHUD;
+#endif
+	
 	protected float               m_fStatsFadeElapsed;
 	protected bool                m_bFadingStats;
 
@@ -36,7 +39,11 @@ class COA_Outro: ChimeraMenuBase
 		TextWidget.Cast(GetRootWidget().FindAnyWidget("TitleText")).SetText(SanitizeMissionName(GetGame().GetMissionName()));
 		AudioSystem.SetMasterVolume(AudioSystem.SFX, 0);
 		GetGame().GetCallqueue().CallLater(SubTitle, 3000, false);
+		
+#ifdef COALITION_REFORGER_FRAMEWORK
 		GetGame().GetCallqueue().CallLater(CreateStatsPanel, 5000, false);
+#endif
+		
 		GetGame().GetInputManager().AddActionListener("MenuBack", EActionTrigger.DOWN, Action_Exit);
 		COA_Gamemode.GetInstance().m_bIsInEndCredits = true;
 	}
@@ -45,6 +52,7 @@ class COA_Outro: ChimeraMenuBase
 	{
 		AudioSystem.SetMasterVolume(AudioSystem.SFX, 100);
 		GetGame().GetInputManager().RemoveActionListener("MenuBack", EActionTrigger.DOWN, Action_Exit);
+#ifdef COALITION_REFORGER_FRAMEWORK
 		GetGame().GetCallqueue().Remove(CreateStatsPanel);
 		if (m_pAARStatsHUD)
 		{
@@ -56,6 +64,7 @@ class COA_Outro: ChimeraMenuBase
 			m_wAARStatsRoot.RemoveFromHierarchy();
 			m_wAARStatsRoot = null;
 		}
+#endif
 		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.COA_Outro);
 	}
 	
@@ -86,6 +95,7 @@ class COA_Outro: ChimeraMenuBase
 		return "";
 	}
 	
+#ifdef COALITION_REFORGER_FRAMEWORK
 	override void OnMenuUpdate(float tDelta)
 	{
 		AudioSystem.SetMasterVolume(AudioSystem.SFX, 0);
@@ -114,6 +124,7 @@ class COA_Outro: ChimeraMenuBase
 		m_fStatsFadeElapsed = 0;
 		m_bFadingStats = true;
 	}
+#endif
 
 	void Action_Exit()
 	{
@@ -126,5 +137,4 @@ class COA_Outro: ChimeraMenuBase
 	{
 		ArmaReforgerScripted.OpenPauseMenu();
 	}
-	#endif
 }

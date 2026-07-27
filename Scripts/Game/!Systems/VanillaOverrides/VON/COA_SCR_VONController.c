@@ -27,12 +27,10 @@ modded class SCR_VONController
 	//------------------------------------------------------------------------------------------------
 	override protected bool ActivateVON(notnull SCR_VONEntry entry, EVONTransmitType transmitType = EVONTransmitType.NONE)
 	{
-#ifdef COALITION_REFORGER_FRAMEWORK
 		MenuBase topMenu = GetGame().GetMenuManager().GetTopMenu();
 		if (topMenu)
 			if(topMenu.IsInherited(COA_Outro))
 				return false;
-#endif
 		return super.ActivateVON(entry, transmitType);
 	}
 	

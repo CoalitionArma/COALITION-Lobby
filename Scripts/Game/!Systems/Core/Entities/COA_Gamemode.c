@@ -360,18 +360,18 @@ class COA_Gamemode : SCR_BaseGameMode
 
 					SetGameState(SCR_EGameModeState.POSTGAME);
 
-#ifdef COALITION_REFORGER_FRAMEWORK
 					// Open the outro screen on all clients, passing winning faction so clients can display it
 					COA_RplBroadcastManager rplBroadcastManager = COA_RplBroadcastManager.GetInstance();
 					if (rplBroadcastManager)
 					{
 						string winningFaction = "";
+#ifdef COALITION_REFORGER_FRAMEWORK
 						CRF_LoggingManager loggingManager = CRF_LoggingManager.GetInstance();
 						if (loggingManager)
 							winningFaction = loggingManager.GetWinningFaction();
+#endif
 						rplBroadcastManager.BroadcastOutro(winningFaction);
 					}
-#endif
 					break;
 				}
 			}	
