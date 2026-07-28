@@ -14,60 +14,6 @@ modded class SCR_CharacterDamageManagerComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	protected void COA_HandleDamageTracking(notnull BaseDamageEffect damageEffect)
-	{
-		// Only run on server
-		if (RplSession.Mode() != RplMode.Dedicated && RplSession.Mode() != RplMode.Listen)
-			return;
-		
-		// Get victim player ID
-		IEntity victim = GetOwner();
-		if (!victim)
-			return;
-			
-		int victimId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(victim);
-		if (victimId <= 0)
-			return; // Not a player
-			
-		// Get damage type
-		int damageType = damageEffect.GetDamageType();
-		
-		// Get killer entity
-		IEntity killerEntity = null;
-		int killerId = -1;
-		
-		// Get instigator information
-		Instigator instigator = damageEffect.GetInstigator();
-		if (instigator)
-		{
-			// Try to get player ID from instigator
-			killerId = instigator.GetInstigatorPlayerID();
-			
-			// If we have a player ID, get their entity
-			if (killerId > 0)
-				killerEntity = GetGame().GetPlayerManager().GetPlayerControlledEntity(killerId);
-				
-			// If instigator isn't a player but has an entity reference, use it
-			if (!killerEntity && instigator.GetInstigatorEntity())
-				killerEntity = instigator.GetInstigatorEntity();
-		}
-		
-		// If we still don't have a killer entity, return
-		if (!killerEntity)
-			return;
-		
-#ifdef COALITION_REFORGER_FRAMEWORK
-		// Get data collector to track damage
-		CRF_LoggingManager loggingManager = CRF_LoggingManager.GetInstance();
-		if (!loggingManager)
-			return;
-		
-		// Forward damage to the logging manager for weapon tracking
-		loggingManager.PlayerTookDamage(victimId, killerEntity, damageType);
-#endif
-	}
-	
-	//------------------------------------------------------------------------------------------------
 	//!	Invoked when damage state changes.
 	protected override void OnDamageStateChanged(EDamageState newState, EDamageState previousDamageState, bool isJIP)
 	{
@@ -103,7 +49,6 @@ modded class SCR_CharacterDamageManagerComponent
 			if (lastValidDamageEffect)
 			{
 				m_eFatalDamageEffect = lastValidDamageEffect;
-				COA_HandleDamageTracking(lastValidDamageEffect);
 				COA_MarkLatestSpectatorDamageReportFatal();
 			}
 		}

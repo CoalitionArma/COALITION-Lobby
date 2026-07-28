@@ -1919,12 +1919,6 @@ class COA_AdminMenu : ChimeraMenuBase
 		SCR_ButtonTextComponent toggleRespawn = SCR_ButtonTextComponent.Cast(m_wMenuContent.FindAnyWidget("EnableRespawnButton").FindHandler(SCR_ButtonTextComponent));
 		toggleRespawn.m_OnClicked.Insert(ToggleRespawn);
 		
-#ifdef COALITION_REFORGER_FRAMEWORK
-		//Toggle VAAR Recording
-		SCR_ButtonTextComponent toggleVAARRecording = SCR_ButtonTextComponent.Cast(m_wMenuContent.FindAnyWidget("ToggleVAARButton").FindHandler(SCR_ButtonTextComponent));
-		toggleVAARRecording.m_OnClicked.Insert(ToggleVAARRecording);
-#endif
-		
 		//Setting Respawn Time Button
 		EditBoxWidget.Cast(m_wMenuContent.FindAnyWidget("TicketsInput")).SetText(COA_RespawnManager.GetInstance().m_iCurrentTimeToRespawn.ToString());
 		SCR_ButtonTextComponent setRespawnTime = SCR_ButtonTextComponent.Cast(m_wMenuContent.FindAnyWidget("SetRespawnTimeButton").FindHandler(SCR_ButtonTextComponent));
@@ -1957,13 +1951,6 @@ class COA_AdminMenu : ChimeraMenuBase
 		
 		ctx.ReadValue("", m_gearsetlist);
 	}
-	
-#ifdef COALITION_REFORGER_FRAMEWORK
-	void ToggleVAARRecording()
-	{
-		COA_PlayerRplToAuthorityManager.GetInstance().ToggleVAARRecording();
-	}
-#endif
 	
 	/**
 	 * Add time delta based on the button name that was clicked
@@ -2158,22 +2145,6 @@ class COA_AdminMenu : ChimeraMenuBase
 			respawnEnabledText.SetText("Respawns Disabled");
 			respawnEnabledText.SetColorInt(Color.RED);
 		}
-		
-#ifdef COALITION_REFORGER_FRAMEWORK
-		bool m_bVAARRecordingEnabled = CRF_VAAR_GamemodeComponent.GetInstance().m_bRecording;
-		Widget VAARRecordingEnabledButton = m_wMenuContent.FindAnyWidget("ToggleVAARButton");
-		TextWidget VAARRecordingEnabledText = TextWidget.Cast(VAARRecordingEnabledButton.FindWidget("ActionButtonText"));
-		if (m_bVAARRecordingEnabled)
-		{
-			VAARRecordingEnabledText.SetText("Recording Enabled");
-			VAARRecordingEnabledText.SetColorInt(Color.GREEN);
-		}
-		else
-		{
-			VAARRecordingEnabledText.SetText("Recording Disabled");
-			VAARRecordingEnabledText.SetColorInt(Color.RED);
-		}
-#endif
 	}
 	
 	//-----------------------------------------------------------------------------

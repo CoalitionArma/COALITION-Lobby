@@ -11,18 +11,6 @@ modded class SCR_PlayerControllerCommandingComponent
 		COA_GamemodeManager gamemodeManager = COA_GamemodeManager.GetInstance();
 		if (!gamemodeManager)
 			return super.AddElementsFromCategoryToMap(category, parentCategory);
-
-#ifdef COALITION_REFORGER_FRAMEWORK
-		SCR_MapMarkerMenuEntry shareMenuEntry = new SCR_MapMarkerMenuEntry();
-		shareMenuEntry.SetName("Share Map Markers");
-		shareMenuEntry.GetOnPerform().Insert(ShareMapMarkers);
-		shareMenuEntry.SetIcon("{F7E8D4834A3AFF2F}UI/Imagesets/Conflict/conflict-icons-bw.imageset", "FrequencyBig");
-		
-		if (!m_MapContextualMenu)
-			return super.AddElementsFromCategoryToMap(category, parentCategory);
-
-		m_MapContextualMenu.InsertCustomRadialEntry(shareMenuEntry, parentCategory);
-#endif
 		
 		int playerId = SCR_PlayerController.GetLocalPlayerId();
 		SCR_GroupsManagerComponent groupsManager = SCR_GroupsManagerComponent.GetInstance();
@@ -53,15 +41,6 @@ modded class SCR_PlayerControllerCommandingComponent
 		m_MapContextualMenu.InsertCustomRadialEntry(menuEntry, parentCategory);
 		return super.AddElementsFromCategoryToMap(category, parentCategory);
 	}
-	
-#ifdef COALITION_REFORGER_FRAMEWORK
-	void ShareMapMarkers()
-	{
-		COA_PlayerRplToAuthorityManager rplManager = COA_PlayerRplToAuthorityManager.GetInstance();
-		if (rplManager)
-			rplManager.ShareMapMarkers();
-	}
-#endif
 	
 	void CheckIfValidSpawn()
 	{

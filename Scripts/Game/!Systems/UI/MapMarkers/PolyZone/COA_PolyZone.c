@@ -101,12 +101,10 @@ class COA_PolyZone : ScriptComponent
 		if (m_bIsSafestartBorder && Replication.IsServer() && COA_SafestartManager.GetInstance())
 			COA_SafestartManager.GetInstance().AddSafestartZone(owner);
 		
-#ifdef COALITION_REFORGER_FRAMEWORK
 		//Clients track this too so we don't have to ask the server to see if theres any active forward deploy zones
 		//Needed for checking if we need to add the action in the map
 		if (m_bIsForwardDeployZone && COA_ForwardDeployManager.GetInstance())
 			COA_ForwardDeployManager.GetInstance().AddForwardDeployZone(owner);
-#endif
 	}
 	
 	//------------------------------------------------------------------------------------------------

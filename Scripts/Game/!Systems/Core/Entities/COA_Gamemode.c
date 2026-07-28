@@ -338,39 +338,18 @@ class COA_Gamemode : SCR_BaseGameMode
 				case COA_EGamemodeState.GAME: {
 					SetGameState(SCR_EGameModeState.GAME);
 					ApplyMissionTimeScale();
-#ifdef COALITION_REFORGER_FRAMEWORK
-					foreach (Vehicle vehicle : CRF_VehicleGearscriptManager.GetInstance().GetSpawnedVehicleArray())
-					{
-						if (!vehicle)
-							continue;
-						vehicle.SpawnVehiclePassengers();
-					}
-#endif
 					break;
 				}
 				
 				case COA_EGamemodeState.AAR: {
 					// Flush all player stats BEFORE SetGameState
-					
-#ifdef COALITION_REFORGER_FRAMEWORK
-					CRF_ServerStatsManager statsManager = CRF_ServerStatsManager.GetInstance();
-					if (statsManager)
-						statsManager.NotifyMissionEnded();
-#endif
-
 					SetGameState(SCR_EGameModeState.POSTGAME);
 
 					// Open the outro screen on all clients, passing winning faction so clients can display it
 					COA_RplBroadcastManager rplBroadcastManager = COA_RplBroadcastManager.GetInstance();
 					if (rplBroadcastManager)
 					{
-						string winningFaction = "";
-#ifdef COALITION_REFORGER_FRAMEWORK
-						CRF_LoggingManager loggingManager = CRF_LoggingManager.GetInstance();
-						if (loggingManager)
-							winningFaction = loggingManager.GetWinningFaction();
-#endif
-						rplBroadcastManager.BroadcastOutro(winningFaction);
+						rplBroadcastManager.BroadcastOutro("");
 					}
 					break;
 				}
@@ -438,28 +417,11 @@ class COA_Gamemode : SCR_BaseGameMode
 		
 		// Check if player is the mission designer and grant admin chat
 		SCR_MissionHeader missionHeader = SCR_MissionHeader.Cast(GetGame().GetMissionHeader());
-		
-#ifdef COALITION_REFORGER_FRAMEWORK
-		if (missionHeader && missionHeader.m_sAuthorGUID && !missionHeader.m_sAuthorGUID.IsEmpty() && !playerGUID.IsEmpty())
-		{
-			// Compare player's BI account GUID with mission author's GUID
-			if (playerGUID == missionHeader.m_sAuthorGUID)
-			{
-				// Grant session admin (admin chat) to mission designer
-				GetGame().GetPlayerManager().GivePlayerRole(iPlayerID, EPlayerRole.SESSION_ADMINISTRATOR);
-			}
-		}
-#endif
 
 		// Check if player is a moderator/donator and set privileges
 		if (!playerGUID.IsEmpty()) {
 			if (COA_ModeratorConfig.IsModerator(playerGUID))
 				m_PermissionManager.SetPlayerStatus(iPlayerID, "mod");
-			
-#ifdef COALITION_REFORGER_FRAMEWORK
-			if (CRF_DonatorConfig.IsDonator(playerGUID))
-				m_PermissionManager.SetPlayerStatus(iPlayerID, "don");
-#endif
 		}
 	}
 	

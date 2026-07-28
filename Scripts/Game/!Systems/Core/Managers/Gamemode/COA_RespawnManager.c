@@ -486,10 +486,6 @@ class COA_RespawnManager : ScriptComponent
 		{
 			m_iRespawnWaveCurrentTime = m_iCurrentTimeToRespawn;
 			m_iLocalTimeToRespawn = m_iCurrentTimeToRespawn;
-
-#ifdef COALITION_REFORGER_FRAMEWORK
-			RespawnAllVehicles();
-#endif
 		}
 		
 		if (!m_bSuppressReplication)
@@ -872,86 +868,7 @@ class COA_RespawnManager : ScriptComponent
 
 			RespawnPlayer(playerId);
 		}
-		
-#ifdef COALITION_REFORGER_FRAMEWORK
-		RespawnSideVehicles(faction);
-#endif
 	}
-	
-#ifdef COALITION_REFORGER_FRAMEWORK
-	//------------------------------------------------------------------------------------------------
-	void RespawnAllVehicles()
-	{
-		//Makes my life 20x easier
-		array<string> factionKeys = {"BLUFOR", "OPFOR", "INDFOR", "CIV"};
-		foreach (string faction: factionKeys)
-		{
-			//Vehicle respawn logic (without additional ticket operations)
-			foreach (COA_VehicleSpawner vehicle: m_aVehicleSpawners)
-			{
-				if (vehicle.m_sFactionKey != faction)
-					continue;
-				
-				//Do we have enough tickets and are they not at 0.
-				if (GetFactionTickets(faction) != 0 && GetFactionTickets(faction) < vehicle.m_iTicketsPerRespawn)
-					continue;
-				
-				//Is the vehicle non existant anymore
-				if (!vehicle.m_eVehicle && vehicle.m_bShouldRespawnOnSideRespawn)
-				{
-					CRF_VehicleGearscriptManager.GetInstance().SpawnVehicle(vehicle);
-					continue;
-				}
-				
-				//Vehicle is not vehicling wth
-				if (!vehicle.m_eVehicle.FindComponent(SCR_VehicleDamageManagerComponent))
-					continue;
-				
-				SCR_VehicleDamageManagerComponent vehicleDamageManager = SCR_VehicleDamageManagerComponent.Cast(vehicle.m_eVehicle.FindComponent(SCR_VehicleDamageManagerComponent));
-				if (vehicleDamageManager.GetState() != EDamageState.DESTROYED)
-					continue;
-				
-				//Vehicle is destroyed respawn it.
-				CRF_VehicleGearscriptManager.GetInstance().SpawnVehicle(vehicle);
-				continue;
-			}
-		}
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	void RespawnSideVehicles(FactionKey faction)
-	{
-		//Vehicle respawn logic (without additional ticket operations)
-		foreach (COA_VehicleSpawner vehicle: m_aVehicleSpawners)
-		{
-			if (vehicle.m_sFactionKey != faction)
-				continue;
-			
-			//Do we have enough tickets and are they not at 0.
-			if (GetFactionTickets(faction) != 0 && GetFactionTickets(faction) < vehicle.m_iTicketsPerRespawn)
-				continue;
-			
-			//Is the vehicle non existant anymore
-			if (!vehicle.m_eVehicle && vehicle.m_bShouldRespawnOnSideRespawn)
-			{
-				CRF_VehicleGearscriptManager.GetInstance().SpawnVehicle(vehicle);
-				continue;
-			}
-			
-			//Vehicle is not vehicling wth
-			if (!vehicle.m_eVehicle.FindComponent(SCR_VehicleDamageManagerComponent))
-				continue;
-			
-			SCR_VehicleDamageManagerComponent vehicleDamageManager = SCR_VehicleDamageManagerComponent.Cast(vehicle.m_eVehicle.FindComponent(SCR_VehicleDamageManagerComponent));
-			if (vehicleDamageManager.GetState() != EDamageState.DESTROYED)
-				continue;
-			
-			//Vehicle is destroyed respawn it.
-			CRF_VehicleGearscriptManager.GetInstance().SpawnVehicle(vehicle);
-			continue;
-		}
-	}
-#endif
 
 	//------------------------------------------------------------------------------------------------
 	void RespawnPlayer(int playerId, int spawnPointID = -1, RplId entityRplID = RplId.Invalid())

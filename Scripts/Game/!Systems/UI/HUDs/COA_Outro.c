@@ -3,10 +3,6 @@ class COA_Outro: ChimeraMenuBase
 	protected static const ResourceName STATS_LAYOUT = "{7CDA3F81B4920E56}UI/layouts/HUD/Intro/COA_AARStats.layout";
 	protected Widget              m_wAARStatsRoot;
 	
-#ifdef COALITION_REFORGER_FRAMEWORK
-	protected ref COA_AARStatsHUD m_pAARStatsHUD;
-#endif
-	
 	protected float               m_fStatsFadeElapsed;
 	protected bool                m_bFadingStats;
 
@@ -39,11 +35,6 @@ class COA_Outro: ChimeraMenuBase
 		TextWidget.Cast(GetRootWidget().FindAnyWidget("TitleText")).SetText(SanitizeMissionName(GetGame().GetMissionName()));
 		AudioSystem.SetMasterVolume(AudioSystem.SFX, 0);
 		GetGame().GetCallqueue().CallLater(SubTitle, 3000, false);
-		
-#ifdef COALITION_REFORGER_FRAMEWORK
-		GetGame().GetCallqueue().CallLater(CreateStatsPanel, 5000, false);
-#endif
-		
 		GetGame().GetInputManager().AddActionListener("MenuBack", EActionTrigger.DOWN, Action_Exit);
 		COA_Gamemode.GetInstance().m_bIsInEndCredits = true;
 	}
@@ -52,19 +43,6 @@ class COA_Outro: ChimeraMenuBase
 	{
 		AudioSystem.SetMasterVolume(AudioSystem.SFX, 100);
 		GetGame().GetInputManager().RemoveActionListener("MenuBack", EActionTrigger.DOWN, Action_Exit);
-#ifdef COALITION_REFORGER_FRAMEWORK
-		GetGame().GetCallqueue().Remove(CreateStatsPanel);
-		if (m_pAARStatsHUD)
-		{
-			m_pAARStatsHUD.Cleanup();
-			m_pAARStatsHUD = null;
-		}
-		if (m_wAARStatsRoot)
-		{
-			m_wAARStatsRoot.RemoveFromHierarchy();
-			m_wAARStatsRoot = null;
-		}
-#endif
 		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.COA_Outro);
 	}
 	
@@ -94,37 +72,6 @@ class COA_Outro: ChimeraMenuBase
 		if (faction == "CIV")     return "CIVILIAN VICTORY";
 		return "";
 	}
-	
-#ifdef COALITION_REFORGER_FRAMEWORK
-	override void OnMenuUpdate(float tDelta)
-	{
-		AudioSystem.SetMasterVolume(AudioSystem.SFX, 0);
-		if (m_bFadingStats && m_wAARStatsRoot)
-		{
-			m_fStatsFadeElapsed += tDelta;
-			float opacity = Math.Clamp(m_fStatsFadeElapsed / 2.0, 0.0, 1.0);
-			m_wAARStatsRoot.SetOpacity(opacity);
-			if (opacity >= 1.0)
-				m_bFadingStats = false;
-		}
-	}
-	
-	protected void CreateStatsPanel()
-	{
-		SCR_HUDManagerComponent hudManager = GetGame().GetHUDManager();
-		if (!hudManager)
-			return;
-
-		m_wAARStatsRoot = hudManager.CreateLayout(STATS_LAYOUT, EHudLayers.ALWAYS_TOP, 0);
-		if (!m_wAARStatsRoot)
-			return;
-
-		m_wAARStatsRoot.SetOpacity(0);
-		m_pAARStatsHUD = new COA_AARStatsHUD(m_wAARStatsRoot);
-		m_fStatsFadeElapsed = 0;
-		m_bFadingStats = true;
-	}
-#endif
 
 	void Action_Exit()
 	{

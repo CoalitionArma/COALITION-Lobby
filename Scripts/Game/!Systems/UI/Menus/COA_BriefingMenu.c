@@ -81,19 +81,6 @@ class COA_PreviewMenu: ChimeraMenuBase
 		// Give a widget default focus so controller D-pad/stick navigation has somewhere to start
 		m_bFocusOnDescription = false;
 		SetupDefaultFocus();
-
-#ifdef COALITION_REFORGER_FRAMEWORK
-		// Fetch community tags + ranks so they appear in the player list
-		CRF_CommunityTagManager tagMgr = CRF_CommunityTagManager.GetInstance();
-		if (tagMgr)
-		{
-			tagMgr.FetchPlayerInfo();
-			tagMgr.GetOnPlayerInfoUpdated().Remove(OnPlayerInfoUpdated);
-			tagMgr.GetOnPlayerInfoUpdated().Insert(OnPlayerInfoUpdated);
-			tagMgr.GetOnPlayerRosterChanged().Remove(OnPlayerRosterChanged);
-			tagMgr.GetOnPlayerRosterChanged().Insert(OnPlayerRosterChanged);
-		}
-#endif
 	}
 	
 	/**
@@ -400,18 +387,6 @@ class COA_PreviewMenu: ChimeraMenuBase
 				continue;
 				
 			string displayName = GetGame().GetPlayerManager().GetPlayerName(player);
-			string playerTag = "";
-			int playerXp = -1;
-			string playerTrack = "enlisted";
-			
-#ifdef COALITION_REFORGER_FRAMEWORK
-			if (CRF_CommunityTagManager.GetInstance())
-			{
-				playerTag = CRF_CommunityTagManager.GetInstance().GetPlayerTag(player);
-				playerXp = CRF_CommunityTagManager.GetInstance().GetPlayerXp(player);
-				playerTrack = CRF_CommunityTagManager.GetInstance().GetPlayerRankTrack(player);
-			}
-#endif
 
 			int index = m_cPlayerListBoxComponent.AddItem(
 				displayName, 
@@ -421,11 +396,6 @@ class COA_PreviewMenu: ChimeraMenuBase
 			
 			SCR_ListBoxElementComponent comp = m_cPlayerListBoxComponent.GetElementComponent(index);
 			COA_ListBoxElementComponent crfComp = COA_ListBoxElementComponent.Cast(comp);
-			if (crfComp)
-			{
-				crfComp.SetTagText(playerTag);
-				crfComp.SetRankChevron(playerXp, playerTrack);
-			}
 			
 			// Color code players by role
 			SetPlayerStatusColor(player,comp);
@@ -518,15 +488,6 @@ class COA_PreviewMenu: ChimeraMenuBase
 	override void OnMenuClose()
 	{
 		super.OnMenuClose();
-
-#ifdef COALITION_REFORGER_FRAMEWORK
-		CRF_CommunityTagManager tagMgr = CRF_CommunityTagManager.GetInstance();
-		if (tagMgr)
-		{
-			tagMgr.GetOnPlayerInfoUpdated().Remove(OnPlayerInfoUpdated);
-			tagMgr.GetOnPlayerRosterChanged().Remove(OnPlayerRosterChanged);
-		}
-#endif
 
 		// Reset map opened state so the map is re-opened if the menu is reopened
 		m_bMapOpened = false;

@@ -383,16 +383,6 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		// Telemetry: bool
 		LogTelemetry("RpcAsk_RequestAdvanceGamemodeState", COA_BandwidthTelemetryManager.EstimateSize_Bool());
 		
-		// Set winning faction on the server where the log file handle exists
-		if (winningFaction != "")
-		{
-#ifdef COALITION_REFORGER_FRAMEWORK
-			COA_LoggingManager loggingManager = COA_LoggingManager.GetInstance();
-			if (loggingManager)
-				loggingManager.SetWinningFaction(winningFaction, "manual");
-#endif
-		}
-		
 		m_Gamemode.AdvanceGamemodeState(overriden);
 	}
 

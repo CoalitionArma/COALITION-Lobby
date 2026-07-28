@@ -39,10 +39,6 @@ class COA_SafestartManager : ScriptComponent
 
 	protected SCR_PopUpNotification m_PopUpNotification = null;
 	
-#ifdef COALITION_REFORGER_FRAMEWORK
-	protected CRF_LoggingManager m_Logging;
-#endif
-	
 	protected COA_Gamemode m_Gamemode;
 	protected COA_GameTimerManager m_GameTimerManager;
 	protected COA_SlottingManager m_SlottingManager;
@@ -75,13 +71,7 @@ class COA_SafestartManager : ScriptComponent
 		m_RplBroadcastManager = COA_RplBroadcastManager.GetInstance();
 
 		if (RplSession.Mode() != RplMode.Client) // Supports both workbench and dedi
-		{
-			// Initialize server components
-#ifdef COALITION_REFORGER_FRAMEWORK
-			m_Logging = CRF_LoggingManager.Cast(m_Gamemode.FindComponent(COA_LoggingManager));
-#endif
 			SetEventMask(GetGame().GetGameMode(), EntityEvent.FIXEDFRAME);
-		};
 	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -683,12 +673,6 @@ class COA_SafestartManager : ScriptComponent
 			Replication.BumpMe();//Broadcast change
 
 			DeactivateSafeStartEHs();
-
-#ifdef COALITION_REFORGER_FRAMEWORK
-			// Send notification message
-			if (m_Logging)
-				m_Logging.GameStarted();
-#endif
 
 			// Use CallLater to delay the call for the removal of EHs so the changes so m_bSafeStartEnabled can propagate.
 			GetGame().GetCallqueue().CallLater(DeactivateSafeStartEHs, 1500);

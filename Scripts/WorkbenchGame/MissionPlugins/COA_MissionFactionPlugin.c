@@ -117,11 +117,6 @@ class COA_MissionFactionsPlugin : WorkbenchPlugin
 	protected void SetPluginGearscriptVariables(COA_SimplifiedGearScriptContainer pluginGearscript, COA_GearScriptContainer gearscript)
 	{			
 		pluginGearscript.m_rGearScript = gearscript.m_rGearScript;
-		
-#ifdef COALITION_REFORGER_FRAMEWORK
-		pluginGearscript.m_bEnableShareableMarkers = gearscript.m_bEnableShareableMarkers;
-#endif
-		
 		pluginGearscript.m_bEnableBFT = gearscript.m_bEnableBFT;
 		pluginGearscript.m_bEnableLeadershipRadios = gearscript.m_bEnableLeadershipRadios;
 		pluginGearscript.m_bEnableGIRadios = gearscript.m_bEnableGIRadios;
@@ -217,11 +212,6 @@ class COA_MissionFactionsPlugin : WorkbenchPlugin
 		array<ref ContainerIdPathEntry> path = {ContainerIdPathEntry(gearscriptContainterToChange)};
 		
 		api.SetVariableValue(entitySource, path, "m_rGearScript", pluginGSContainer.m_rGearScript);
-		
-#ifdef COALITION_REFORGER_FRAMEWORK
-		api.SetVariableValue(entitySource, path, "m_bEnableShareableMarkers", pluginGSContainer.m_bEnableShareableMarkers.ToString());
-#endif	
-		
 		api.SetVariableValue(entitySource, path, "m_bEnableBFT", pluginGSContainer.m_bEnableBFT.ToString());
 		api.SetVariableValue(entitySource, path, "m_bEnableLeadershipRadios", pluginGSContainer.m_bEnableLeadershipRadios.ToString());
 		api.SetVariableValue(entitySource, path, "m_bEnableGIRadios", pluginGSContainer.m_bEnableGIRadios.ToString());

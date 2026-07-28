@@ -106,73 +106,20 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 			COA_PlayerHelper.AssignCharacterToPlayer(playerController, playerCharacter);
 			
 			if (!COA_EntityHelper.IsSpectator(playerCharacter))
-			{
 				// Group affiliation drives nametag visibility, but SCR_PlayerControllerGroupComponent
 				// isn't always resolvable immediately after SetInitialMainEntity (component/replication
 				// init order). Retry until it's ready instead of guessing a fixed delay.
 				ScheduleAssignPlayerToGroup(playerId, playerRplComp.Id(), 0);
-
-				// Notify the CRF-native stats manager so it begins tracking this player.
-				// Retry briefly in case component init/replication order delays availability.
-				
-#ifdef COALITION_REFORGER_FRAMEWORK
-				TryNotifyStatsManager(playerId, playerRplComp.Id(), 0);
-#endif
-			}
 			else
-			{
 				//Sends the player the respawn screen if they reconnect while dead
 				if (m_SlottingManager.IsPlayerInASlot(playerId) && m_SlottingManager.IsPlayerConsideredDead(playerId) && m_RespawnManager.CanPlayerRespawn(playerCharacter, faction.GetFactionKey(), playerId))
 					m_RplBroadcastManager.SendRespawnScreen(playerId);
-			}
 
 			m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, playerRplComp.Id());
 		};
 
 		return true;
 	}
-
-#ifdef COALITION_REFORGER_FRAMEWORK
-	//------------------------------------------------------------------------------------------------
-	//! Resolve delayed stats-manager availability and delayed replicated-entity availability.
-	protected void TryNotifyStatsManager(int playerId, RplId playerEntityRplId, int attempt)
-	{
-		if (playerId <= 0 || playerEntityRplId == RplId.Invalid())
-			return;
-
-		PlayerManager playerManager = GetGame().GetPlayerManager();
-		if (!playerManager || !playerManager.IsPlayerConnected(playerId))
-			return;
-
-		CRF_ServerStatsManager statsManager = CRF_ServerStatsManager.GetInstance();
-		IEntity playerEntity = null;
-
-		Managed replicatedItem = Replication.FindItem(playerEntityRplId);
-		if (replicatedItem)
-		{
-			RplComponent playerRplComp = RplComponent.Cast(replicatedItem);
-			if (playerRplComp)
-				playerEntity = playerRplComp.GetEntity();
-		}
-
-		if (statsManager && playerEntity)
-		{
-			if (playerManager.GetPlayerControlledEntity(playerId) != playerEntity)
-				return;
-
-			statsManager.NotifyPlayerSpawned(playerId, playerEntity);
-			return;
-		}
-
-		if (attempt + 1 >= STATS_TRACKING_INIT_MAX_RETRIES)
-		{
-			Print(string.Format("[COA_GamemodeManager] WARNING: Failed to initialize stats tracking for player %1 after %2 attempts", playerId, STATS_TRACKING_INIT_MAX_RETRIES), LogLevel.WARNING);
-			return;
-		}
-
-		GetGame().GetCallqueue().CallLater(TryNotifyStatsManager, STATS_TRACKING_INIT_RETRY_DELAY_MS, false, playerId, playerEntityRplId, attempt + 1);
-	}
-#endif
 
 	//------------------------------------------------------------------------------------------------
 	//! Re-acquire manager references if init ordering delayed singleton availability.

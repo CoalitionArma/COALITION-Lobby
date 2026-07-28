@@ -38,25 +38,8 @@ class COA_PlayerChatCommandManager : ScriptComponent
 		ChatCommandInvoker invoker5 = chatPanelManager.GetCommandInvoker("aar");
 		invoker5.Insert(Advance_Callback);
 		
-		// CURRENTLY BROKEN IN 1.7 - NEEDS UPDATING COA_PersistanceManager
-		// ChatCommandInvoker invoker6 = chatPanelManager.GetCommandInvoker("save");
-		// invoker6.Insert(SaveMission_Callback);		
-		
-#ifdef COALITION_REFORGER_FRAMEWORK
-		ChatCommandInvoker invoker7 = chatPanelManager.GetCommandInvoker("bug");
-		invoker7.Insert(ReportBug);
-#endif
-		
 		ChatCommandInvoker invoker8 = chatPanelManager.GetCommandInvoker("adminmenu");
 		invoker8.Insert(OpenAdminMenu);
-
-#ifdef COALITION_REFORGER_FRAMEWORK
-		ChatCommandInvoker invoker9 = chatPanelManager.GetCommandInvoker("forwarddeploy");
-		invoker9.Insert(ReopenForwardDeployMenu);
-
-		ChatCommandInvoker invoker10 = chatPanelManager.GetCommandInvoker("fd");
-		invoker10.Insert(ReopenForwardDeployMenu);
-#endif
 	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -79,72 +62,6 @@ class COA_PlayerChatCommandManager : ScriptComponent
 		if (hasAdminAccess)
 			GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.COA_AdminMenu);
 	}
-	
-#ifdef COALITION_REFORGER_FRAMEWORK
-//=============================================================================================================================================================================================================================================================================================================================================================
-//	 FORWARD DEPLOY METHODS
-//=============================================================================================================================================================================================================================================================================================================================================================
-
-	//------------------------------------------------------------------------------------------------
-	//! Reopens the JIP forward deploy menu (e.g. if the player closed it earlier via the back action).
-	//! Usage: /forwarddeploy or /fd
-	void ReopenForwardDeployMenu(SCR_ChatPanel panel, string data)
-	{
-		SCR_ChatComponent chatComponent;
-		PlayerController pc = GetGame().GetPlayerController();
-		if (pc)
-			chatComponent = SCR_ChatComponent.Cast(pc.FindComponent(SCR_ChatComponent));
-
-		COA_Gamemode gamemode = COA_Gamemode.GetInstance();
-		COA_SafestartManager safestartManager = COA_SafestartManager.GetInstance();
-		if (!gamemode || !safestartManager || gamemode.m_bLockUnusedSlots || safestartManager.GetSafestartStatus())
-		{
-			if (chatComponent)
-				chatComponent.ShowMessage("Forward deploy is not available right now.");
-			return;
-		}
-
-		IEntity controlled = SCR_PlayerController.GetLocalControlledEntity();
-		if (!controlled || COA_EntityHelper.IsSpectator(controlled))
-		{
-			if (chatComponent)
-				chatComponent.ShowMessage("You need to be playing a character to forward deploy.");
-			return;
-		}
-
-		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.CRF_JIPForwardDeployMenu);
-	}
-
-//=============================================================================================================================================================================================================================================================================================================================================================
-//	 BUG REPORT METHODS
-//=============================================================================================================================================================================================================================================================================================================================================================
-	
-	//------------------------------------------------------------------------------------------------
-	//! Reports bugs to github
-	//! \param[in] panel - Chat panel
-	//! \param[in] data - Message content
-	void ReportBug(SCR_ChatPanel panel, string data)
-	{
-		PlayerController pc = GetGame().GetPlayerController();
-		if (!pc)
-			return;
-		
-		SCR_ChatComponent chatComponent = SCR_ChatComponent.Cast(pc.FindComponent(SCR_ChatComponent));
-		if (!chatComponent)
-			return;
-		
-		int playerID = GetGame().GetPlayerController().GetPlayerId();
-		
-		if (!data.Length() > 0)
-		{
-			chatComponent.ShowMessage("You need to include your bug report after /bug");
-			return;
-		}	
-		
-		chatComponent.ShowMessage(string.Format("Bug Report Sent: \"%1\"", data));
-		m_PlayerRplToAuthorityManager.ReportBug(data, playerID);
-	}
-#endif
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 ADMIN MESSAGING METHODS
@@ -324,20 +241,6 @@ class COA_PlayerChatCommandManager : ScriptComponent
 					return;
 			}
 			
-#ifdef COALITION_REFORGER_FRAMEWORK
-			// Set the winning faction in the logging manager
-			CRF_LoggingManager loggingManager = CRF_LoggingManager.GetInstance();
-			if (loggingManager)
-			{
-				// Show confirmation message
-				if (panel)
-				{
-					SCR_ChatComponent chatComponent = SCR_ChatComponent.Cast(GetGame().GetPlayerController().FindComponent(SCR_ChatComponent));
-					if (chatComponent)
-						chatComponent.ShowMessage(string.Format("Winner set to %1. Advancing to AAR...", winningFaction));
-				}
-			}
-#endif
 			
 			// Advance to AAR state — winning faction is passed to the server RPC so
 			// SetWinningFaction is called on the authority where the log file handle exists.
