@@ -5,7 +5,7 @@ ButtonWidgetClass {
   VerticalAlign 3
  }
  components {
-  CRF_ListBoxElementComponent "{62F200F0C4795E5F}" {
+  COA_ListBoxElementComponent "{62F200F0C4795E5F}" {
   }
  }
  style blank

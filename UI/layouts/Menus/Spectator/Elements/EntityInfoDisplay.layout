@@ -11,7 +11,7 @@ ScaleWidgetClass {
   OffsetBottom -90
  }
  components {
-  CRF_EntityInfoDisplay "{68B4387969E57D45}" {
+  COA_EntityInfoDisplay "{68B4387969E57D45}" {
   }
  }
  {
