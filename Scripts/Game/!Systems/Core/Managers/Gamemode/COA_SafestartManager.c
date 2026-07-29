@@ -314,7 +314,7 @@ class COA_SafestartManager : ScriptComponent
 		// Cancel countdown if a faction unreadied after countdown began
 		if (readyFactionsCount != m_iPlayedFactionsCount && m_iSafeStartTimeRemaining != 35)
 		{
-			message = "[CRF] : Game Live Countdown Canceled!";
+			message = "[LOBBY] : Game Live Countdown Canceled!";
 			m_iSafeStartTimeRemaining = 35;
 			m_bCheckStartCountdown = false;
 			m_RplBroadcastManager.PopUpNotification(popupLife, message, submessage);
@@ -332,13 +332,13 @@ class COA_SafestartManager : ScriptComponent
 			if (m_iSafeStartTimeRemaining < 0)
 				m_iSafeStartTimeRemaining = 0;
 			
-			message = string.Format("[CRF] : Game Live In: %1 Seconds!", m_iSafeStartTimeRemaining);
+			message = string.Format("[LOBBY] : Game Live In: %1 Seconds!", m_iSafeStartTimeRemaining);
 
 			// End safe start when countdown reaches zero
 			if (m_iSafeStartTimeRemaining == 0) {
 				ToggleSafeStartServer(false);
 				m_bCheckStartCountdown = false;
-				message = "[CRF] : GAME LIVE!";
+				message = "[LOBBY] : GAME LIVE!";
 				submessage = "Safestart has ended, weapons are now live!";
 				popupLife = 8;
 			}
@@ -366,7 +366,7 @@ class COA_SafestartManager : ScriptComponent
 				m_iStoredTimeBeforeReadyUp = m_iSafeStartTimeRemaining;
 				
 				m_iSafeStartTimeRemaining = 30;
-				message = "[CRF] : All Factions Ready! Game Live In: 30 Seconds!";
+				message = "[LOBBY] : All Factions Ready! Game Live In: 30 Seconds!";
 				submessage = "Any leader can toggle ready to cancel the countdown";
 				popupLife = 5;
 				showMessage = true;
@@ -381,7 +381,7 @@ class COA_SafestartManager : ScriptComponent
 		else if (m_iSafeStartTimeRemaining <= 30 && m_iStoredTimeBeforeReadyUp > 0)
 		{
 			// A faction unreadied during the 30 second countdown - restore the original time
-			message = "[CRF] : Game Live Countdown Canceled!";
+			message = "[LOBBY] : Game Live Countdown Canceled!";
 			submessage = "A faction has unreadied";
 			popupLife = 5;
 			showMessage = true;
@@ -420,7 +420,7 @@ class COA_SafestartManager : ScriptComponent
 			else
 				timeString = string.Format("%1 Seconds", secondsRemaining);
 			
-			message = string.Format("[CRF] : Safestart Ends In: %1", timeString);
+			message = string.Format("[LOBBY] : Safestart Ends In: %1", timeString);
 			
 			// Give warnings at specific intervals (5 minutes or less)
 			if (m_iSafeStartTimeRemaining == 300) // 5 minutes
@@ -480,7 +480,7 @@ class COA_SafestartManager : ScriptComponent
 			
 			ToggleSafeStartServer(false);
 			m_bCountdownMode = false;
-			message = "[CRF] : GAME LIVE!";
+			message = "[LOBBY] : GAME LIVE!";
 			submessage = "Safestart timer expired, mission is now live!";
 			popupLife = 8;
 			showMessage = true;
@@ -557,9 +557,9 @@ class COA_SafestartManager : ScriptComponent
 				m_bBluforReady = !m_bBluforReady;
 				newStatus = m_bBluforReady;
 				if (newStatus) {
-					messageKey = "[CRF] : BLUFOR READY";
+					messageKey = "[LOBBY] : BLUFOR READY";
 				} else {
-					messageKey = "[CRF] : BLUFOR NOT READY";
+					messageKey = "[LOBBY] : BLUFOR NOT READY";
 				}
 				break;
 			}
@@ -567,9 +567,9 @@ class COA_SafestartManager : ScriptComponent
 				m_bOpforReady = !m_bOpforReady;
 				newStatus = m_bOpforReady;
 				if (newStatus) {
-					messageKey = "[CRF] : OPFOR READY";
+					messageKey = "[LOBBY] : OPFOR READY";
 				} else {
-					messageKey = "[CRF] : OPFOR NOT READY";
+					messageKey = "[LOBBY] : OPFOR NOT READY";
 				}
 				break;
 			}
@@ -577,9 +577,9 @@ class COA_SafestartManager : ScriptComponent
 				m_bIndforReady = !m_bIndforReady;
 				newStatus = m_bIndforReady;
 				if (newStatus) {
-					messageKey = "[CRF] : INDFOR READY";
+					messageKey = "[LOBBY] : INDFOR READY";
 				} else {
-					messageKey = "[CRF] : INDFOR NOT READY";
+					messageKey = "[LOBBY] : INDFOR NOT READY";
 				}
 				break;
 			}
@@ -587,9 +587,9 @@ class COA_SafestartManager : ScriptComponent
 				m_bCivReady = !m_bCivReady;
 				newStatus = m_bCivReady;
 				if (newStatus) {
-					messageKey = "[CRF] : CIV READY";
+					messageKey = "[LOBBY] : CIV READY";
 				} else {
-					messageKey = "[CRF] : CIV NOT READY";
+					messageKey = "[LOBBY] : CIV NOT READY";
 				}
 				break;
 			}

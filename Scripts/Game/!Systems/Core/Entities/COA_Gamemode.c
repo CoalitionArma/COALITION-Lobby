@@ -45,10 +45,10 @@ class COA_Gamemode : SCR_BaseGameMode
 	[Attribute("60", UIWidgets.Hidden)]
 	int m_iTimeToRespawn;
 	
-	[Attribute("0", UIWidgets.Hidden, desc: "Minutes before mission end when respawns disable (0 = never disable)", category: "Lobby Gamemode Settings - Respawn")]
+	[Attribute("0", UIWidgets.Hidden, desc: "Minutes before mission end when respawns disable (0 = never disable)", category: "Gamemode Settings - Respawn")]
 	int m_iRespawnCutoffMinutes;
 
-	[Attribute("0", UIWidgets.Hidden, desc: "0 = Team-Based (faction ticket pool), 1 = Slot-Based (per-role/group respawn counts configured on each COA_SlottingGroup)", category: "Lobby Gamemode Settings - Respawn")]
+	[Attribute("0", UIWidgets.Hidden, desc: "0 = Team-Based (faction ticket pool), 1 = Slot-Based (per-role/group respawn counts configured on each COA_SlottingGroup)", category: "Gamemode Settings - Respawn")]
 	COA_ERespawnMode m_eRespawnMode;
 	
 	[Attribute("45", UIWidgets.Hidden)]
@@ -69,7 +69,7 @@ class COA_Gamemode : SCR_BaseGameMode
 	[Attribute("", UIWidgets.Hidden)]
 	ref	array<ref COA_MissionDescriptor> m_aMissionDescriptors;
 
-	[Attribute("", UIWidgets.Auto, desc: "Default descriptors pre-populated when running the Configure Descriptions plugin", category: "Lobby Mission Settings - Descriptors")]
+	[Attribute("", UIWidgets.Auto, desc: "Default descriptors pre-populated when running the Configure Descriptions plugin", category: "Mission Settings - Descriptors")]
 	ref array<ref COA_MissionDescriptor> m_aDefaultMissionDescriptors;
 	
 	[Attribute("", UIWidgets.Hidden)]
@@ -110,61 +110,61 @@ class COA_Gamemode : SCR_BaseGameMode
 	
 	// Advanced Gamemode Settings
 	//------------------------------------------------------------------------------------
-	[Attribute("false", "auto", "Only works with BLUFOR, OPFOR, INDFOR. Players will hear enemy radio chatter but may not talk on the enemies net", category: "Lobby Gamemode Settings - Advanced")]
+	[Attribute("false", "auto", "Only works with BLUFOR, OPFOR, INDFOR. Players will hear enemy radio chatter but may not talk on the enemies net", category: "Gamemode Settings - Advanced")]
 	bool m_bMissionAllowsEspionage;
 	
-	[Attribute("false", "auto", "Separates spectator VON by faction - spectators can only hear their faction's voice chat", category: "Lobby Gamemode Settings - Advanced")]
+	[Attribute("false", "auto", "Separates spectator VON by faction - spectators can only hear their faction's voice chat", category: "Gamemode Settings - Advanced")]
 	bool m_bSeperateSpectatorsByFaction;
 	
-	[Attribute("false", "auto", "Hides other factions in spectator menu - spectators can only see and spectate players from their own faction", category: "Lobby Gamemode Settings - Advanced")]
+	[Attribute("false", "auto", "Hides other factions in spectator menu - spectators can only see and spectate players from their own faction", category: "Gamemode Settings - Advanced")]
 	bool m_bHideOtherSpectatorFactions;
 
-	[Attribute("true", "auto", "If safestart turns on instantly after the lobby screen.", category: "Lobby Gamemode Settings - Advanced")]
+	[Attribute("true", "auto", "If safestart turns on instantly after the screen.", category: "Gamemode Settings - Advanced")]
 	bool m_bSafestartEnabledOnMissionStart;
 	
-	[Attribute("false", "auto", "Enable players being able to swap their clothes on the fly", category: "Lobby Gamemode Settings - Advanced")]
+	[Attribute("false", "auto", "Enable players being able to swap their clothes on the fly", category: "Gamemode Settings - Advanced")]
 	bool m_bEnableClothesSwapping;
 	
-	[Attribute("0", "auto", "Disables AI Crouching", category: "Lobby Gamemode Settings - Advanced")]
+	[Attribute("0", "auto", "Disables AI Crouching", category: "Gamemode Settings - Advanced")]
 	bool m_bDisableAICrouching;
 	
-	[Attribute("true", "auto", "Disable chat messages except tickets & messages from admins/mods", category: "Lobby Gamemode Settings - Advanced")]
+	[Attribute("true", "auto", "Disable chat messages except tickets & messages from admins/mods", category: "Gamemode Settings - Advanced")]
 	bool m_bDisableChat;
 
 	// Spawn Point Settings
 	//------------------------------------------------------------------------------------
-	[Attribute("false", UIWidgets.CheckBox, desc: "If enabled, players spawn at a random point among BLUFOR's spawn points flagged 'Is Default Spawn' instead of always the same one", category: "Lobby Gamemode Settings - Spawn")]
+	[Attribute("false", UIWidgets.CheckBox, desc: "If enabled, players spawn at a random point among BLUFOR's spawn points flagged 'Is Default Spawn' instead of always the same one", category: "Gamemode Settings - Spawn")]
 	bool m_bBLUFORRandomizeSpawnpoints;
 
-	[Attribute("false", UIWidgets.CheckBox, desc: "If enabled, players spawn at a random point among OPFOR's spawn points flagged 'Is Default Spawn' instead of always the same one", category: "Lobby Gamemode Settings - Spawn")]
+	[Attribute("false", UIWidgets.CheckBox, desc: "If enabled, players spawn at a random point among OPFOR's spawn points flagged 'Is Default Spawn' instead of always the same one", category: "Gamemode Settings - Spawn")]
 	bool m_bOPFORRandomizeSpawnpoints;
 
-	[Attribute("false", UIWidgets.CheckBox, desc: "If enabled, players spawn at a random point among INDFOR's spawn points flagged 'Is Default Spawn' instead of always the same one", category: "Lobby Gamemode Settings - Spawn")]
+	[Attribute("false", UIWidgets.CheckBox, desc: "If enabled, players spawn at a random point among INDFOR's spawn points flagged 'Is Default Spawn' instead of always the same one", category: "Gamemode Settings - Spawn")]
 	bool m_bINDFORRandomizeSpawnpoints;
 
-	[Attribute("false", UIWidgets.CheckBox, desc: "If enabled, players spawn at a random point among CIV's spawn points flagged 'Is Default Spawn' instead of always the same one", category: "Lobby Gamemode Settings - Spawn")]
+	[Attribute("false", UIWidgets.CheckBox, desc: "If enabled, players spawn at a random point among CIV's spawn points flagged 'Is Default Spawn' instead of always the same one", category: "Gamemode Settings - Spawn")]
 	bool m_bCIVILIANRandomizeSpawnpoints;
 
 	// Weather and Time Settings
 	//------------------------------------------------------------------------------------
-	[Attribute("1", UIWidgets.Slider, "Time scale applied once the mission starts (after briefing/slotting). 1 = normal speed, 2 = twice as fast, etc.", "0.1 12 0.1", category: "Lobby Mission Settings - Weather & Time")]
+	[Attribute("1", UIWidgets.Slider, "Time scale applied once the mission starts (after briefing/slotting). 1 = normal speed, 2 = twice as fast, etc.", "0.1 12 0.1", category: "Mission Settings - Weather & Time")]
 	float m_fMissionTimeScale;
 
 	// Gearscript Settings
 	//------------------------------------------------------------------------------------
-	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all blufor players", category: "Lobby Gearscript Settings - Advanced")]
+	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all blufor players", category: "Gearscript Settings - Advanced")]
 	ref COA_GearScriptContainer m_BLUFORGearScriptSettings;
 	[RplProp()] ResourceName m_rBLUFORCurrentGearScript;
 
-	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all opfor players", category: "Lobby Gearscript Settings - Advanced")]
+	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all opfor players", category: "Gearscript Settings - Advanced")]
 	ref COA_GearScriptContainer m_OPFORGearScriptSettings;
 	[RplProp()] ResourceName m_rOPFORCurrentGearScript;
 
-	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all indfor players", category: "Lobby Gearscript Settings - Advanced")]
+	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all indfor players", category: "Gearscript Settings - Advanced")]
 	ref COA_GearScriptContainer m_INDFORGearScriptSettings;
 	[RplProp()] ResourceName m_rINDFORCurrentGearScript;
 
-	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all civ players", category: "Lobby Gearscript Settings - Advanced")]
+	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all civ players", category: "Gearscript Settings - Advanced")]
 	ref COA_GearScriptContainer m_CIVILIANGearScriptSettings;
 	[RplProp()] ResourceName m_rCIVILIANCurrentGearScript;
 	
