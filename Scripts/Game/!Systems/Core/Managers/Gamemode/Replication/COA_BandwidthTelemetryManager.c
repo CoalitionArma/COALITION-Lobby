@@ -4,7 +4,7 @@
 //! Server-side only
 */
 
-[ComponentEditorProps(category: "CRF Bandwidth Telemetry", description: "Tracks RPC bandwidth usage for performance monitoring")]
+[ComponentEditorProps(category: "Lobby Bandwidth Telemetry", description: "Tracks RPC bandwidth usage for performance monitoring")]
 class COA_BandwidthTelemetryManagerClass : SCR_BaseGameModeComponentClass
 {
 }

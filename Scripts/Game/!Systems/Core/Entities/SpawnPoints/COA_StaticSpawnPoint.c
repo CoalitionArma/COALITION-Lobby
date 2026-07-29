@@ -4,10 +4,10 @@ class COA_StaticSpawnPointClass : GenericEntityClass
 
 class COA_StaticSpawnPoint: GenericEntity
 {
-	[Attribute("0", "auto", "Is this a default respawn point for its faction. Flag several to build a spawn pool: normally the first one is used, but if the faction's 'Randomize Spawnpoints' setting is enabled, one is picked at random from the flagged points at each initial/automatic spawn", category: "CRF Spawn Point Settings")]
+	[Attribute("0", "auto", "Is this a default respawn point for its faction. Flag several to build a spawn pool: normally the first one is used, but if the faction's 'Randomize Spawnpoints' setting is enabled, one is picked at random from the flagged points at each initial/automatic spawn", category: "Spawn Point Settings")]
 	bool m_bIsDefaultSpawn;
 	
-	[Attribute(category: "CRF Spawn Point Settings")]
+	[Attribute(category: "Spawn Point Settings")]
 	ref COA_SpawnPointData m_SpawnPointSettings;
 	
 	protected int m_iLocallyStoredId;

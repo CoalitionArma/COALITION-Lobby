@@ -16,52 +16,52 @@ class COA_MissionFactionsPlugin : WorkbenchPlugin
 	// BLU
 	//------------------------------------------------------------------------------------
 	
-	[Attribute("0", UIWidgets.EditBox, "Amount of BLUFOR Tickets. 0 = disabled/-1 = unlimited", category: "CRF Faction Settings - BLUFOR")]
+	[Attribute("0", UIWidgets.EditBox, "Amount of BLUFOR Tickets. 0 = disabled/-1 = unlimited", category: "Faction Settings - BLUFOR")]
 	protected int m_iBLUFORTickets;
 	
-	[Attribute("", UIWidgets.SearchComboBox, enums: ParamEnumArray.FromEnum(COA_EFactions),  desc: "List of faction IDs that are considered friendly for this faction. Note: If factionA has factionB as friendly but FactionB does not have FactionA as friendly then they are still both set as friendly so for init it is only required for one faction.", category: "CRF Faction Settings - BLUFOR")]
+	[Attribute("", UIWidgets.SearchComboBox, enums: ParamEnumArray.FromEnum(COA_EFactions),  desc: "List of faction IDs that are considered friendly for this faction. Note: If factionA has factionB as friendly but FactionB does not have FactionA as friendly then they are still both set as friendly so for init it is only required for one faction.", category: "Faction Settings - BLUFOR")]
 	protected ref array<COA_EFactions> m_aBLUFORFriendlyFactionsIds;
 	
-	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all blufor players", category: "CRF Faction Settings - BLUFOR")]
+	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all blufor players", category: "Faction Settings - BLUFOR")]
 	protected ref COA_SimplifiedGearScriptContainer m_BLUFORGearScriptSettings;
 
 	//------------------------------------------------------------------------------------
 	// OPF
 	//------------------------------------------------------------------------------------
 	
-	[Attribute("0", UIWidgets.EditBox, "Amount of OPFOR Tickets. 0 = disabled/-1 = unlimited", category: "CRF Faction Settings - OPFOR")]
+	[Attribute("0", UIWidgets.EditBox, "Amount of OPFOR Tickets. 0 = disabled/-1 = unlimited", category: "Faction Settings - OPFOR")]
 	protected int m_iOPFORTickets;
 	
-	[Attribute("", UIWidgets.SearchComboBox, enums: ParamEnumArray.FromEnum(COA_EFactions), desc: "List of faction IDs that are considered friendly for this faction. Note: If factionA has factionB as friendly but FactionB does not have FactionA as friendly then they are still both set as friendly so for init it is only required for one faction.", category: "CRF Faction Settings - OPFOR")]
+	[Attribute("", UIWidgets.SearchComboBox, enums: ParamEnumArray.FromEnum(COA_EFactions), desc: "List of faction IDs that are considered friendly for this faction. Note: If factionA has factionB as friendly but FactionB does not have FactionA as friendly then they are still both set as friendly so for init it is only required for one faction.", category: "Faction Settings - OPFOR")]
 	protected ref array<COA_EFactions> m_aOPFORFriendlyFactionsIds;
 	
-	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all opfor players", category: "CRF Faction Settings - OPFOR")]
+	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all opfor players", category: "Faction Settings - OPFOR")]
 	protected ref COA_SimplifiedGearScriptContainer m_OPFORGearScriptSettings;
 	
 	//------------------------------------------------------------------------------------
 	// IND
 	//------------------------------------------------------------------------------------
 	
-	[Attribute("0", UIWidgets.EditBox, "Amount of INDFOR Tickets. 0 = disabled/-1 = unlimited", category: "CRF Faction Settings - INDFOR")]
+	[Attribute("0", UIWidgets.EditBox, "Amount of INDFOR Tickets. 0 = disabled/-1 = unlimited", category: "Faction Settings - INDFOR")]
 	protected int m_iINDFORTickets;
 	
-	[Attribute("", UIWidgets.SearchComboBox, enums: ParamEnumArray.FromEnum(COA_EFactions),  desc: "List of faction IDs that are considered friendly for this faction. Note: If factionA has factionB as friendly but FactionB does not have FactionA as friendly then they are still both set as friendly so for init it is only required for one faction.", category: "CRF Faction Settings - INDFOR")]
+	[Attribute("", UIWidgets.SearchComboBox, enums: ParamEnumArray.FromEnum(COA_EFactions),  desc: "List of faction IDs that are considered friendly for this faction. Note: If factionA has factionB as friendly but FactionB does not have FactionA as friendly then they are still both set as friendly so for init it is only required for one faction.", category: "Faction Settings - INDFOR")]
 	protected ref array<COA_EFactions> m_aINDFORFriendlyFactionsIds;
 
-	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all indfor players", category: "CRF Faction Settings - INDFOR")]
+	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all indfor players", category: "Faction Settings - INDFOR")]
 	protected ref COA_SimplifiedGearScriptContainer m_INDFORGearScriptSettings;
 
 	//------------------------------------------------------------------------------------
 	// CIV
 	//------------------------------------------------------------------------------------
 	
-	[Attribute("0", UIWidgets.EditBox, "Amount of CIVILIAN Tickets. 0 = disabled/-1 = unlimited", category: "CRF Faction Settings - CIVILIAN")]
+	[Attribute("0", UIWidgets.EditBox, "Amount of CIVILIAN Tickets. 0 = disabled/-1 = unlimited", category: "Faction Settings - CIVILIAN")]
 	protected int m_iCIVILIANTickets;
 	
-	[Attribute("", UIWidgets.SearchComboBox, enums: ParamEnumArray.FromEnum(COA_EFactions),  desc: "List of faction IDs that are considered friendly for this faction. Note: If factionA has factionB as friendly but FactionB does not have FactionA as friendly then they are still both set as friendly so for init it is only required for one faction.", category: "CRF Faction Settings - CIVILIAN")]
+	[Attribute("", UIWidgets.SearchComboBox, enums: ParamEnumArray.FromEnum(COA_EFactions),  desc: "List of faction IDs that are considered friendly for this faction. Note: If factionA has factionB as friendly but FactionB does not have FactionA as friendly then they are still both set as friendly so for init it is only required for one faction.", category: "Faction Settings - CIVILIAN")]
 	protected ref array<COA_EFactions> m_aCIVILIANFriendlyFactionsIds;
 	
-	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all civ players", category: "CRF Faction Settings - CIVILIAN")]
+	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all civ players", category: "Faction Settings - CIVILIAN")]
 	protected ref COA_SimplifiedGearScriptContainer m_CIVILIANGearScriptSettings;
 
 	//------------------------------------------------------------------------------------------------
@@ -238,7 +238,7 @@ class COA_MissionFactionsPlugin : WorkbenchPlugin
 		
 		array<ref ContainerIdPathEntry> path = {ContainerIdPathEntry("Factions", factionIndex)};
 		
-		// Valid faction keys supported by CRF
+		// Valid faction keys supported by Lobby
 		array<string> validFactionKeys = {"BLUFOR", "OPFOR", "INDFOR", "CIV"};
 		
 		string finalFactionsArrayStr;

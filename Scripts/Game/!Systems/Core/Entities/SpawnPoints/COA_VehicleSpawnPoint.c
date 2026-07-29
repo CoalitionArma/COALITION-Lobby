@@ -4,10 +4,10 @@ class COA_VehicleSpawnPointClass : VehicleClass
 
 class COA_VehicleSpawnPoint: Vehicle
 {
-	[Attribute("0", "auto", "Is this the default respawn point to be selected", category: "CRF Spawn Point Settings")]
+	[Attribute("0", "auto", "Is this the default respawn point to be selected", category: "Spawn Point Settings")]
 	bool m_bIsDefaultSpawn;
 	
-	[Attribute(category: "CRF Spawn Point Settings")]
+	[Attribute(category: "Spawn Point Settings")]
 	ref COA_SpawnPointData m_SpawnPointSettings;
 	
 	protected int m_iLocallyStoredId;

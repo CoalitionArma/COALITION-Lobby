@@ -139,7 +139,7 @@ class COA_GearscriptManager : ScriptComponent
 		if (!inventory || !inventoryManager)
 		{
 			string errorMsg = string.Format("Entity %1 is missing required inventory components (SCR_CharacterInventoryStorageComponent or SCR_InventoryStorageManagerComponent)", entity);
-			Print("[CRF GEARSCRIPT ERROR] " + errorMsg, LogLevel.ERROR);
+			Print("[GEARSCRIPT ERROR] " + errorMsg, LogLevel.ERROR);
 			
 			return;
 		}

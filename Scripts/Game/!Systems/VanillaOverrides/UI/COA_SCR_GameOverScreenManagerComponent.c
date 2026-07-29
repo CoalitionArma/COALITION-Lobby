@@ -1,4 +1,4 @@
-// Suppress the vanilla game-over fade overlay when CRF is already handling the
+// Suppress the vanilla game-over fade overlay when Lobby is already handling the
 // end-of-mission experience through its own AAR/outro system.
 // Without this, SetGameState(POSTGAME) triggers StartEndGameFade() which creates
 // a black fade-in overlay at ALWAYS_TOP and eventually opens the vanilla end screen.

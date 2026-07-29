@@ -5,19 +5,19 @@ class COA_VehicleSpawnerClass: BaseGameTriggerEntityClass
 
 class COA_VehicleSpawner: BaseGameTriggerEntity
 {
-	[Attribute("", desc: "Vehicle that will spawn in", category: "CRF Vehicle Spawning")] 
+	[Attribute("", desc: "Vehicle that will spawn in", category: "Vehicle Spawning")] 
 	ResourceName m_rVehicle;
 	
-	[Attribute("", desc: "Faction this spawner belongs to", category: "CRF Vehicle Spawning")] 
+	[Attribute("", desc: "Faction this spawner belongs to", category: "Vehicle Spawning")] 
 	string m_sFactionKey;
 	
-	[Attribute("1", desc: "Whenever a side respawns should this vehicle respawn with it. (Ignores the timer)", category: "CRF Vehicle Spawning")] 
+	[Attribute("1", desc: "Whenever a side respawns should this vehicle respawn with it. (Ignores the timer)", category: "Vehicle Spawning")] 
 	bool m_bShouldRespawnOnSideRespawn;
 	
-	[Attribute("300", desc: "How long until the vehicle respawns after its death in seconds", category: "CRF Vehicle Spawning")] 
+	[Attribute("300", desc: "How long until the vehicle respawns after its death in seconds", category: "Vehicle Spawning")] 
 	int m_iRespawnTimer;
 	
-	[Attribute("10", desc: "How many tickets is drained every time this spawns", category: "CRF Vehicle Spawning")] 
+	[Attribute("10", desc: "How many tickets is drained every time this spawns", category: "Vehicle Spawning")] 
 	int m_iTicketsPerRespawn;
 	
 	COA_RespawnManager m_RespawnManager;

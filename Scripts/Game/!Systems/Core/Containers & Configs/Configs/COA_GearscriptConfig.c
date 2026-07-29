@@ -67,70 +67,70 @@ class COA_SimplifiedGearScriptContainer
 [BaseContainerProps(configRoot: true)]
 class COA_GearScriptConfig
 {
-	[Attribute(category: "CRF Gearscript - Faction Settings")]
+	[Attribute(category: "Gearscript - Faction Settings")]
 	string m_FactionName;
 	
-	[Attribute(uiwidget: "resourcePickerThumbnail", params: "edds", category: "CRF Gearscript - Faction Settings")]
+	[Attribute(uiwidget: "resourcePickerThumbnail", params: "edds", category: "Gearscript - Faction Settings")]
 	ResourceName m_FactionIcon;
 	
-	[Attribute("{11CAD6C8909CE567}Configs/_Identities/COA_CharacterIdentity_European.conf", UIWidgets.ResourceNamePicker, desc: "Gearscript Faction Identity", "conf class=COA_CharacterIdentity", category: "CRF Gearscript - Faction Settings")]
+	[Attribute("{11CAD6C8909CE567}Configs/_Identities/COA_CharacterIdentity_European.conf", UIWidgets.ResourceNamePicker, desc: "Gearscript Faction Identity", "conf class=COA_CharacterIdentity", category: "Gearscript - Faction Settings")]
 	ResourceName m_FactionIdentity;
 	
-	[Attribute(category: "CRF Gearscript - Faction Weapons")]
+	[Attribute(category: "Gearscript - Faction Weapons")]
 	ref array<ref COA_Weapon_Class> m_Rifles;
 	
-	[Attribute(category: "CRF Gearscript - Faction Weapons")]
+	[Attribute(category: "Gearscript - Faction Weapons")]
 	ref array<ref COA_Weapon_Class> m_RifleUGLs;
 	
-	[Attribute(category: "CRF Gearscript - Faction Weapons")]
+	[Attribute(category: "Gearscript - Faction Weapons")]
 	ref array<ref COA_Weapon_Class> m_Carbines;
 	
-	[Attribute(category: "CRF Gearscript - Faction Weapons")]
+	[Attribute(category: "Gearscript - Faction Weapons")]
 	ref array<ref COA_Weapon_Class> m_Pistols;
 	
-	[Attribute(category: "CRF Gearscript - Specialty Faction Weapons")]
+	[Attribute(category: "Gearscript - Specialty Faction Weapons")]
 	ref COA_Spec_Weapon_Class m_AR;
 	
-	[Attribute(category: "CRF Gearscript - Specialty Faction Weapons")]
+	[Attribute(category: "Gearscript - Specialty Faction Weapons")]
 	ref COA_Spec_Weapon_Class m_MMG;
 	
-	[Attribute(category: "CRF Gearscript - Specialty Faction Weapons")]
+	[Attribute(category: "Gearscript - Specialty Faction Weapons")]
 	ref COA_Spec_Weapon_Class m_HMG;
 	
-	[Attribute(category: "CRF Gearscript - Specialty Faction Weapons")]
+	[Attribute(category: "Gearscript - Specialty Faction Weapons")]
 	ref COA_Spec_Weapon_Class m_AT;
 	
-	[Attribute(category: "CRF Gearscript - Specialty Faction Weapons")]
+	[Attribute(category: "Gearscript - Specialty Faction Weapons")]
 	ref COA_Spec_Weapon_Class m_MAT;
 	
-	[Attribute(category: "CRF Gearscript - Specialty Faction Weapons")]
+	[Attribute(category: "Gearscript - Specialty Faction Weapons")]
 	ref COA_Spec_Weapon_Class m_HAT;
 	
-	[Attribute(category: "CRF Gearscript - Specialty Faction Weapons")]
+	[Attribute(category: "Gearscript - Specialty Faction Weapons")]
 	ref COA_Spec_Weapon_Class m_AA;
 	
-	[Attribute(category: "CRF Gearscript - Specialty Faction Weapons")]
+	[Attribute(category: "Gearscript - Specialty Faction Weapons")]
 	ref COA_Weapon_Class m_SNIPER;
 	
-	[Attribute(category: "CRF Gearscript - Faction Clothing")]
+	[Attribute(category: "Gearscript - Faction Clothing")]
 	ref array<ref COA_Clothing> m_DefaultClothing;
 	
-	[Attribute(uiwidget: "resourcePickerThumbnail", params: "et", category: "CRF Gearscript - Faction Gear")]
+	[Attribute(uiwidget: "resourcePickerThumbnail", params: "et", category: "Gearscript - Faction Gear")]
 	ResourceName m_sLeadershipBinocularsPrefab;
 	
-	[Attribute(uiwidget: "resourcePickerThumbnail", params: "et", category: "CRF Gearscript - Faction Gear")]
+	[Attribute(uiwidget: "resourcePickerThumbnail", params: "et", category: "Gearscript - Faction Gear")]
 	ResourceName m_sAssistantBinocularsPrefab;
 	
-	[Attribute(category: "CRF Gearscript - Faction Gear")]
+	[Attribute(category: "Gearscript - Faction Gear")]
 	ref array<ref COA_Inventory_Item> m_DefaultInventoryItems;
 	
-	[Attribute(category: "CRF Gearscript - Faction Medical Gear")]
+	[Attribute(category: "Gearscript - Faction Medical Gear")]
 	ref array<ref COA_Inventory_Item>  m_InfantryMedicalItems;
 	
-	[Attribute(category: "CRF Gearscript - Faction Medical Gear")]
+	[Attribute(category: "Gearscript - Faction Medical Gear")]
 	ref array<ref COA_Inventory_Item>  m_MedicMedicalItems;
 	
-	[Attribute(category: "CRF Gearscript - Custom Role Settings")]
+	[Attribute(category: "Gearscript - Custom Role Settings")]
 	ref array<ref COA_Role_Custom_Gear> m_RolesToSetCustomSettings;
 }
 

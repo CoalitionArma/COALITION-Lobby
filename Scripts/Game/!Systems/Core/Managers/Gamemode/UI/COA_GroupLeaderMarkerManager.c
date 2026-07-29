@@ -39,7 +39,7 @@ class COA_GroupLeaderMarkerData
 	}
 }
 
-[ComponentEditorProps(category: "CRF Component", description: "Manager for group leader 3D markers during safestart")]
+[ComponentEditorProps(category: "Lobby Component", description: "Manager for group leader 3D markers during safestart")]
 class COA_GroupLeaderMarkerManagerClass: SCR_BaseGameModeComponentClass
 {
 }

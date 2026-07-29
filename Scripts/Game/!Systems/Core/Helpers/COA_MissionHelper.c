@@ -84,7 +84,7 @@ class COA_MissionHelper {
 
 	    fullName.Split(" ", parts, true);
 
-	    // Remove the first two tokens like "CRF" and "CO50"/"COTVT55"
+	    // Remove the first two tokens like "COA" and "CO50"/"COTVT55"
 	    if (parts.Count() > 2)
 	    {
 	        string cleanName;

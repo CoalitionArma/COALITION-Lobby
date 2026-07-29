@@ -85,7 +85,7 @@ class COA_PlayerController : SCR_PlayerController
 			return;
 		};
 
-		// Get the CRF player controller comp
+		// Get the Lobby player controller comp
 		COA_PlayerSettingsManager playerSettingsManager = COA_PlayerSettingsManager.GetInstance();
 		
 		// Can't do things if the pc comp doesnt exist

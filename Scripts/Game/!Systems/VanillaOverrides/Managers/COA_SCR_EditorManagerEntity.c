@@ -110,7 +110,7 @@ modded class SCR_EditorManagerEntity
 		if (!COA_Gamemode.GetInstance())
 			return;
 		
-		// Handle editor opening - close all CRF menus
+		// Handle editor opening - close all Lobby menus
 		if (type == EEditorEventOperation.OPEN)
 		{	
 			GetGame().GetMenuManager().CloseMenuByPreset(ChimeraMenuPreset.COA_PreviewMenu);

@@ -117,7 +117,7 @@ class COA_ListBoxElementComponent: SCR_ListBoxElementComponent
 	 */
 	void SetTagText(string tag)
 	{
-		// Tag widget may live in CRF slot/orbat layouts ("TagName")
+		// Tag widget may live in Lobby slot/orbat layouts ("TagName")
 		// or in the plain player-list layouts which share the same component.
 		TextWidget tagWidget = TextWidget.Cast(m_wRoot.FindAnyWidget("TagName"));
 		if (!tagWidget)

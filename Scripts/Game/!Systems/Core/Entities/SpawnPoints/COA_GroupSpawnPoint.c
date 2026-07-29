@@ -4,10 +4,10 @@ class COA_GroupSpawnPointClass : GenericEntityClass
 
 class COA_GroupSpawnPoint: GenericEntity
 {
-	[Attribute("1-1", "auto", "Callsign for the group to spawn at this point", category: "CRF Spawn Point Settings")]
+	[Attribute("1-1", "auto", "Callsign for the group to spawn at this point", category: "Spawn Point Settings")]
 	string m_sCallsignOfGroupToSpawn;
 	
-	[Attribute(category: "CRF Spawn Point Settings")]
+	[Attribute(category: "Spawn Point Settings")]
 	ref COA_SpawnPointData m_SpawnPointSettings;
 	
 	//------------------------------------------------------------------------------------------------

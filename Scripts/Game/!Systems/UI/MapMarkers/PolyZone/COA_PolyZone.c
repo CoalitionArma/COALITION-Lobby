@@ -331,7 +331,7 @@ class COA_PolyZone : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Resolves the faction this safezone belongs to: explicit attribute first, then falls
-	//! back to the "<FACTION>_SafestartBoundry" entity naming convention used across CRF missions.
+	//! back to the "<FACTION>_SafestartBoundry" entity naming convention used across Lobby missions.
 	protected FactionKey GetSafestartOwnerFaction()
 	{
 		if (!m_sSafestartOwnerFaction.IsEmpty())

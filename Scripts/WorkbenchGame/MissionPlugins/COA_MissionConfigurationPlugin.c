@@ -10,16 +10,16 @@
 class COA_MissionConfigurationPlugin : WorkbenchPlugin
 {	
 	//------------------------------------------------------------------------------------
-	[Attribute("<Author>", "auto", "", category: "CRF Mission Config - Mission Info")]
+	[Attribute("<Author>", "auto", "", category: "Mission Config - Mission Info")]
 	protected string m_sMissionAuthor;
 	
-	[Attribute(uiwidget: UIWidgets.SearchComboBox, enums: ParamEnumArray.FromEnum(COA_EGamemode), category: "CRF Mission Config - Mission Info")]
+	[Attribute(uiwidget: UIWidgets.SearchComboBox, enums: ParamEnumArray.FromEnum(COA_EGamemode), category: "Mission Config - Mission Info")]
 	COA_EGamemode m_MissionMode;
 	
-	[Attribute("<Name>", "auto", "", category: "CRF Mission Config - Mission Info")]
+	[Attribute("<Name>", "auto", "", category: "Mission Config - Mission Info")]
 	protected string m_sMissionName;
 	
-	[Attribute("<Description>", "auto", "", category: "CRF Mission Config - Mission Info")]
+	[Attribute("<Description>", "auto", "", category: "Mission Config - Mission Info")]
 	protected string m_sMissionDescription;
 
 	protected const string SCENARIOS_PATH = "Missions";
@@ -93,7 +93,7 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 			missionPlayercount = missionPlayercount + GetPlayerCount(gamemode.m_CivSlots);
 		};
 
-		missionHeaderContainer.Set("m_sName", string.Format("CRF %1%2 %3", missionMode, missionPlayercount, m_sMissionName));
+		missionHeaderContainer.Set("m_sName", string.Format("COA %1%2 %3", missionMode, missionPlayercount, m_sMissionName));
 
 		//--- Get target config path
 		string fileSystem = FilePath.FileSystemNameFromFileName(worldPath);

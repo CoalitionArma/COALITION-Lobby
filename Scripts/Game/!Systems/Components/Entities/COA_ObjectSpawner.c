@@ -5,7 +5,7 @@ class COA_ObjectSpawnerClass: BaseGameTriggerEntityClass
 
 class COA_ObjectSpawner: BaseGameTriggerEntity
 {
-	[Attribute("", desc: "Object that will spawn in.", category: "CRF Object Spawning", params: "et")] 
+	[Attribute("", desc: "Object that will spawn in.", category: "Object Spawning", params: "et")] 
 	ResourceName m_rObject;
 	
 	IEntity m_eObject;

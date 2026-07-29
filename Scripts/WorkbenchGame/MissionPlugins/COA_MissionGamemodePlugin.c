@@ -9,55 +9,55 @@
 ] 
 class COA_MissionGamemodePlugin : WorkbenchPlugin
 {	
-	[Attribute("45", "auto", "Mission Time (Minutes) (set to -1 to disable)", category: "CRF Mission Settings - General")]
+	[Attribute("45", "auto", "Mission Time (Minutes) (set to -1 to disable)", category: "Mission Settings - General")]
 	protected int m_iMissionTimeLimit;
 	
-	[Attribute("false", "auto", "Enable safestart time limit countdown (forces mission start after time expires)", category: "CRF Mission Settings - Safestart")]
+	[Attribute("false", "auto", "Enable safestart time limit countdown (forces mission start after time expires)", category: "Mission Settings - Safestart")]
 	protected bool m_bUseSafestartTimeLimit;
 	
-	[Attribute("10", UIWidgets.EditBox, "Safestart Time Limit (Minutes) - Only used if time limit is enabled", category: "CRF Mission Settings - Safestart")]
+	[Attribute("10", UIWidgets.EditBox, "Safestart Time Limit (Minutes) - Only used if time limit is enabled", category: "Mission Settings - Safestart")]
 	protected int m_iSafestartTimeLimit;
 	
-	[Attribute("true", "auto", "Disables JIP (Join In Progress). When enabled, all non-slotted slots lock once SafeStart turns off, so late joiners can't take an empty seat. When disabled, late joiners may forward deploy to their unit's live position instead. COOP = FALSE", category: "CRF Mission Settings - General")]
+	[Attribute("true", "auto", "Disables JIP (Join In Progress). When enabled, all non-slotted slots lock once SafeStart turns off, so late joiners can't take an empty seat. When disabled, late joiners may forward deploy to their unit's live position instead. COOP = FALSE", category: "Mission Settings - General")]
 	protected bool m_bDisableJIP;
 	
-	[Attribute("60", UIWidgets.EditBox, "Time To Respawn in Seconds", category: "CRF Mission Settings - Respawn")]
+	[Attribute("60", UIWidgets.EditBox, "Time To Respawn in Seconds", category: "Mission Settings - Respawn")]
 	protected int m_iTimeToRespawn;
 	
-	[Attribute("0", "auto", "", category: "CRF Mission Settings - Respawn")]
+	[Attribute("0", "auto", "", category: "Mission Settings - Respawn")]
 	protected bool m_bRespawnEnabled;
 	
-	[Attribute("0", "auto", "", category: "CRF Mission Settings - Respawn")]
+	[Attribute("0", "auto", "", category: "Mission Settings - Respawn")]
 	protected bool m_bRallyPointsEnabled;
 
-	[Attribute("0", "auto", "", category: "CRF Mission Settings - Respawn")]
+	[Attribute("0", "auto", "", category: "Mission Settings - Respawn")]
 	protected bool m_bWaveRespawn;
 
-	[Attribute("0", UIWidgets.EditBox, "Minutes before mission end when respawns disable (0 = never disable)", category: "CRF Mission Settings - Respawn")]
+	[Attribute("0", UIWidgets.EditBox, "Minutes before mission end when respawns disable (0 = never disable)", category: "Mission Settings - Respawn")]
 	protected int m_iRespawnCutoffMinutes;
 
-	[Attribute("0", UIWidgets.SearchComboBox, "Team-Based shares one ticket pool per faction (configured on the Configure Factions plugin). Slot-Based gives each squad's roles their own respawn counts (configured per-squad on the Configure Slots plugin).", enums: ParamEnumArray.FromEnum(COA_ERespawnMode), category: "CRF Mission Settings - Respawn")]
+	[Attribute("0", UIWidgets.SearchComboBox, "Team-Based shares one ticket pool per faction (configured on the Configure Factions plugin). Slot-Based gives each squad's roles their own respawn counts (configured per-squad on the Configure Slots plugin).", enums: ParamEnumArray.FromEnum(COA_ERespawnMode), category: "Mission Settings - Respawn")]
 	protected COA_ERespawnMode m_eRespawnMode;
 	
-	[Attribute("", desc: "Starting Weather", uiwidget: UIWidgets.ComboBox, enums: {ParamEnum("Clear", "Clear"), ParamEnum("Cloudy", "Cloudy"), ParamEnum("Overcast", "Overcast"), ParamEnum("Rainy", "Rainy")}, category: "CRF Mission Settings - Weather & Time")]
+	[Attribute("", desc: "Starting Weather", uiwidget: UIWidgets.ComboBox, enums: {ParamEnum("Clear", "Clear"), ParamEnum("Cloudy", "Cloudy"), ParamEnum("Overcast", "Overcast"), ParamEnum("Rainy", "Rainy")}, category: "Mission Settings - Weather & Time")]
 	protected string m_sMissionWeather;
 	
-	[Attribute("12", UIWidgets.Slider, desc: "Starting time of day (hour)", "0 23 1", category: "CRF Mission Settings - Weather & Time")]
+	[Attribute("12", UIWidgets.Slider, desc: "Starting time of day (hour)", "0 23 1", category: "Mission Settings - Weather & Time")]
 	protected int m_iStartingHour;
 
-	[Attribute("0", UIWidgets.Slider, "Starting time of day (minutes)", "0 59 1", category: "CRF Mission Settings - Weather & Time")]
+	[Attribute("0", UIWidgets.Slider, "Starting time of day (minutes)", "0 59 1", category: "Mission Settings - Weather & Time")]
 	protected int m_iStartingMinutes;
 	
-	[Attribute("0", category: "CRF Mission Settings - Weather & Time")]
+	[Attribute("0", category: "Mission Settings - Weather & Time")]
 	protected bool m_bRandomStartingWeather;
 	
-	[Attribute("0", desc: "Weather can change during gameplay", category: "CRF Mission Settings - Weather & Time")]
+	[Attribute("0", desc: "Weather can change during gameplay", category: "Mission Settings - Weather & Time")]
 	protected bool m_bRandomWeatherChanges;
 
-	[Attribute("1", UIWidgets.Slider, "Time scale applied once the mission starts (after briefing/slotting). 1 = normal speed, 2 = twice as fast, etc.", "0.1 12 0.1", category: "CRF Mission Settings - Weather & Time")]
+	[Attribute("1", UIWidgets.Slider, "Time scale applied once the mission starts (after briefing/slotting). 1 = normal speed, 2 = twice as fast, etc.", "0.1 12 0.1", category: "Mission Settings - Weather & Time")]
 	protected float m_fMissionTimeScale;
 
-	[Attribute("true", desc: "Use Coalition VON (CVON) for voice communication via TeamSpeak. Uncheck to use the default Arma Reforger in-game VON instead.", category: "CRF Mission Settings - VON")]
+	[Attribute("true", desc: "Use Coalition VON (CVON) for voice communication via TeamSpeak. Uncheck to use the default Arma Reforger in-game VON instead.", category: "Mission Settings - VON")]
 	protected bool m_bUseCVON;
 	
 	//------------------------------------------------------------------------------------------------

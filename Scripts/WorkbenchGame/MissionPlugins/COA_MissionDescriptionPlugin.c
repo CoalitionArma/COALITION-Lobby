@@ -9,7 +9,7 @@
 ] 
 class COA_MissionDescriptionsPlugin : WorkbenchPlugin
 {	
-	[Attribute("", category: "CRF Mission Settings - Descriptors")]
+	[Attribute("", category: "Mission Settings - Descriptors")]
 	protected ref array<ref COA_MissionDescriptor> m_aMissionDescriptors;
 	
 	//------------------------------------------------------------------------------------------------

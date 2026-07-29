@@ -29,7 +29,7 @@ class COA_PlayerHelper
 	
 	//------------------------------------------------------------------------------------------------
 	//! Assign character entity to player controller.
-	//! CRF pre-spawns all characters before calling InitilizePlayer, so SetInitialMainEntity is
+	//! Lobby pre-spawns all characters before calling InitilizePlayer, so SetInitialMainEntity is
 	//! always used directly. The RequestSpawn path was previously attempted here but caused
 	//! intermittent stats-tracking failures: the vanilla AssignEntity_S guard cancels the entire
 	//! spawn finalization (and therefore never fires OnPlayerSpawnFinalize_S) whenever the player

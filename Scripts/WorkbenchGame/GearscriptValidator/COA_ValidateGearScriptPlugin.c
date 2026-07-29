@@ -36,7 +36,7 @@ class COA_ValidateGearScriptPlugin : ResourceManagerPlugin
 
 		if (selection.IsEmpty())
 		{
-			Print("[CRF Gearscript Validator] No resource selected. Select a COA_GearScriptConfig .conf file in the Resource Browser first.", LogLevel.WARNING);
+			Print("[Lobby Gearscript Validator] No resource selected. Select a COA_GearScriptConfig .conf file in the Resource Browser first.", LogLevel.WARNING);
 			return;
 		}
 
@@ -51,7 +51,7 @@ class COA_ValidateGearScriptPlugin : ResourceManagerPlugin
 		}
 
 		if (validatedCount == 0)
-			Print("[CRF Gearscript Validator] No .conf files found in the selection.", LogLevel.WARNING);
+			Print("[Lobby Gearscript Validator] No .conf files found in the selection.", LogLevel.WARNING);
 	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -67,14 +67,14 @@ class COA_ValidateGearScriptPlugin : ResourceManagerPlugin
 		Resource containerResource = BaseContainerTools.LoadContainer(resourceName);
 		if (!containerResource)
 		{
-			Print(string.Format("[CRF Gearscript Validator] Could not load '%1' as a container resource.", resourceName), LogLevel.ERROR);
+			Print(string.Format("[Lobby Gearscript Validator] Could not load '%1' as a container resource.", resourceName), LogLevel.ERROR);
 			return;
 		}
 
 		COA_GearScriptConfig config = COA_GearScriptConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(containerResource.GetResource().ToBaseContainer()));
 		if (!config)
 		{
-			Print(string.Format("[CRF Gearscript Validator] Skipping '%1' - not a COA_GearScriptConfig.", resourceName), LogLevel.WARNING);
+			Print(string.Format("[Lobby Gearscript Validator] Skipping '%1' - not a COA_GearScriptConfig.", resourceName), LogLevel.WARNING);
 			return;
 		}
 
@@ -266,7 +266,7 @@ class COA_ValidateGearScriptPlugin : ResourceManagerPlugin
 	{
 		Print("", LogLevel.NORMAL);
 		Print("================================================================", LogLevel.NORMAL);
-		Print(string.Format("  CRF GEARSCRIPT VALIDATOR - %1", resourceName), LogLevel.NORMAL);
+		Print(string.Format("  LOBBY GEARSCRIPT VALIDATOR - %1", resourceName), LogLevel.NORMAL);
 		Print("================================================================", LogLevel.NORMAL);
 
 		if (m_aFailures.IsEmpty())
