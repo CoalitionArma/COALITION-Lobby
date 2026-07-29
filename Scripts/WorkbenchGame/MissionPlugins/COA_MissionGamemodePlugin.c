@@ -4,7 +4,7 @@
 	description: "Configure Mission Gamemode Settings", 
 	shortcut: "", 
 	wbModules: { "WorldEditor" }, 
-	category: "Coalition Reforger Framework",
+	category: "Coalition Lobby Mission Plugins",
 	awesomeFontCode: 0xF013)
 ] 
 class COA_MissionGamemodePlugin : WorkbenchPlugin

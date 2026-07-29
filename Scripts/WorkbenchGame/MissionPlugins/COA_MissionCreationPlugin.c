@@ -4,7 +4,7 @@
 	description: "Automatically Generate Mission Layers", 
 	shortcut: "", 
 	wbModules: { "WorldEditor" }, 
-	category: "Coalition Reforger Framework",
+	category: "Coalition Lobby Mission Plugins",
 	awesomeFontCode: 0xF1B3)
 ] 
 class COA_MissionWorldCreationPlugin : WorkbenchPlugin

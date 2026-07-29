@@ -1,5 +1,12 @@
 #ifdef WORKBENCH
-[WorkbenchPluginAttribute(name: "Validate Gearscript Resources", description: "Loads every resource referenced by the selected COA_GearScriptConfig (.conf) - weapons, attachments, magazines, clothing, inventory items, identity, and icons - and reports any that fail to load", shortcut: "", wbModules: { "ResourceManager", "ScriptEditor" })]
+[WorkbenchPluginAttribute(
+	name: "Validate Gearscript Resources", 
+	description: "Loads every resource referenced by the selected COA_GearScriptConfig (.conf) - weapons, attachments, magazines, clothing, inventory items, identity, and icons - and reports any that fail to load", 
+	shortcut: "", 
+	wbModules: { "ResourceManager", "ScriptEditor" },
+	category: "Coalition Lobby Gearscript Plugins",
+	awesomeFontCode: 0xF00B)
+]
 /*
 	Select one or more COA_GearScriptConfig .conf files (e.g. Configs/GearScripts/Standard/*) in
 	the Resource Browser, then run "Validate Gearscript Resources" from the Workbench Plugins

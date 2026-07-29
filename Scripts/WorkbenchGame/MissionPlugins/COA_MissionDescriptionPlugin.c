@@ -4,7 +4,7 @@
 	description: "Configure Mission Descriptions", 
 	shortcut: "", 
 	wbModules: { "WorldEditor" }, 
-	category: "Coalition Reforger Framework",
+	category: "Coalition Lobby Mission Plugins",
 	awesomeFontCode: 0xF15C)
 ] 
 class COA_MissionDescriptionsPlugin : WorkbenchPlugin

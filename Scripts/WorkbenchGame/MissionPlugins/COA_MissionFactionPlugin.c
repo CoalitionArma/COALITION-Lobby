@@ -4,7 +4,7 @@
 	description: "Configure Mission Factions", 
 	shortcut: "", 
 	wbModules: { "WorldEditor" }, 
-	category: "Coalition Reforger Framework",
+	category: "Coalition Lobby Mission Plugins",
 	awesomeFontCode: 0xF024)
 ] 
 class COA_MissionFactionsPlugin : WorkbenchPlugin

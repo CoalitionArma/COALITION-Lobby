@@ -4,7 +4,7 @@
 	description: "Configure Mission Slots", 
 	shortcut: "", 
 	wbModules: { "WorldEditor" }, 
-	category: "Coalition Reforger Framework",
+	category: "Coalition Lobby Mission Plugins",
 	awesomeFontCode: 0xF00B)
 ] 
 class COA_MissionSlottingPlugin : WorkbenchPlugin

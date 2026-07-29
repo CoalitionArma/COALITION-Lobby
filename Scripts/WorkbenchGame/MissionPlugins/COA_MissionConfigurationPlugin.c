@@ -4,7 +4,7 @@
 	description: "Generate Mission Configuration File", 
 	shortcut: "", 
 	wbModules: { "WorldEditor" }, 
-	category: "Coalition Reforger Framework",
+	category: "Coalition Lobby Mission Plugins",
 	awesomeFontCode: 0xF0C7)
 ] 
 class COA_MissionConfigurationPlugin : WorkbenchPlugin

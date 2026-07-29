@@ -1,5 +1,12 @@
 #ifdef WORKBENCH
-[WorkbenchPluginAttribute(name: "Gear Script Config Generator", description: "Generates a list of all .conf gear configs recursively", shortcut: "", wbModules: { "ScriptEditor", "ResourceManager" })]
+[WorkbenchPluginAttribute(
+	name: "Gear Script Config Generator", 
+	description: "Generates a list of all .conf gear configs recursively", 
+	shortcut: "", 
+	wbModules: { "ScriptEditor", "ResourceManager" },
+	category: "Coalition Lobby Gearscript Plugins",
+	awesomeFontCode: 0xF00B)
+]
 /*
 	This Workbench plugin automatically scans your "Configs/GearScripts/Standard/*" folder for all ".conf"
 	gear configuration files and generates a JSON index mapping each gearset name to its config file path for use in the admin menu.  
