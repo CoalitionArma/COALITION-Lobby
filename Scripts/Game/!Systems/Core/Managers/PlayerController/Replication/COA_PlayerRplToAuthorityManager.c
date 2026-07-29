@@ -1213,10 +1213,8 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			return;
 		}
 		
-		array<IEntity> teleportedVehicles = {};
-		array<AIAgent> players = {};
 		array<IEntity> entities = {};
-		
+
 		SCR_GroupsManagerComponent groupMan = SCR_GroupsManagerComponent.GetInstance();
 		SCR_AIGroup playerGroup = groupMan.GetPlayerGroup(playerId);
 		if (!playerGroup)
@@ -1224,17 +1222,37 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		    COA_PlayerRplToOwnerManager.GetInstance().ForwardDeployRequestRejected();
 		    return;
 		}
-		playerGroup.GetAgents(players);
-		foreach (AIAgent agent : players)
+
+		//SCR_AIGroup.GetAgents() only yields AI-controlled members, human players have to be found via the player manager.
+		array<int> groupPlayerIds = {};
+		GetGame().GetPlayerManager().GetPlayers(groupPlayerIds);
+		foreach (int groupMemberId : groupPlayerIds)
+		{
+			if (groupMan.GetPlayerGroup(groupMemberId) != playerGroup)
+				continue;
+
+			IEntity entity = GetGame().GetPlayerManager().GetPlayerControlledEntity(groupMemberId);
+			if (!entity)
+				continue;
+
+			if (!SCR_ChimeraCharacter.Cast(entity))
+				continue;
+
+			entities.Insert(entity);
+		}
+
+		array<AIAgent> aiAgents = {};
+		playerGroup.GetAgents(aiAgents);
+		foreach (AIAgent agent : aiAgents)
 		{
 			IEntity entity = agent.GetControlledEntity();
 			if (!entity)
 				continue;
-				
+
 			SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(entity);
 			if (!character)
 				continue;
-			
+
 			entities.Insert(entity);
 		}
 		foreach (IEntity entity: entities)
@@ -1246,7 +1264,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			if (compartmentAccess)
 			{
 				IEntity vehicle = compartmentAccess.GetVehicle();
-				
+
 				if (vehicle)
 				{
 					SCR_BaseCompartmentManagerComponent compartmentMan = SCR_BaseCompartmentManagerComponent.Cast(vehicle.FindComponent(SCR_BaseCompartmentManagerComponent));
@@ -1259,20 +1277,17 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 					{
 						if (!slot.IsOccupied())
 							continue;
-						
+
 						if (!slot.GetOccupant().FindComponent(FactionAffiliationComponent))
 							continue;
-						
+
 						if (entities.Contains(slot.GetOccupant()))
 							amountInGroup++;
 						else
 							amountNotInGroup++;
 					}
 					if (amountInGroup < amountNotInGroup)
-						continue; 
-					if (teleportedVehicles.Contains(vehicle))
 						continue;
-					teleportedVehicles.Insert(vehicle);
 					COA_ForwardDeployManager.GetInstance().CreateForwardDeployRequest(currentPlayerId, cursorWorldPos);
 					continue;
 				}
