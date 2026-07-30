@@ -106,9 +106,12 @@ class COA_PolyZoneTrigger : SCR_BaseTriggerEntity
 					character.FindComponent(ChimeraAIControlComponent)
 				);
 				
-				AIAgent aiAgent = aiControlComp.GetAIAgent();
-				if (aiAgent)
-					aiGroup = SCR_AIGroup.Cast(aiAgent.GetParentGroup());
+				if (aiControlComp)
+				{
+					AIAgent aiAgent = aiControlComp.GetAIAgent();
+					if (aiAgent)
+						aiGroup = SCR_AIGroup.Cast(aiAgent.GetParentGroup());
+				}
 			}
 			
 			if (m_bAliveOnly)
