@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{E2955F767E8762EA}Prefabs/Characters/Uniforms/SpectatorPants.et"
+ Name "{59EF8ECAE1DCD417}Prefabs/Systems/Editor/Modes/EditorModeEdit.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }
@@ -12,6 +12,8 @@ MetaFileClass {
   EntityTemplateResourceClass PS5 : PC {
   }
   EntityTemplateResourceClass HEADLESS : PC {
+  }
+  EntityTemplateResourceClass Xbox : PC {
   }
  }
 }

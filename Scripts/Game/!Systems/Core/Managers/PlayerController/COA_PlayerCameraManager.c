@@ -217,27 +217,23 @@ class COA_PlayerCameraManager : ScriptComponent
 	
 	//------------------------------------------------------------------------------------------------
 	protected void FrameUpdateEntity()
-	{
-		// Get the slot component for camera positioning
-		SlotManagerComponent slotComp = SlotManagerComponent.Cast(m_eCameraEntity.FindComponent(SlotManagerComponent));
-		if (!slotComp)
-			return;
+	{	
+		vector cameraBoneMat[4];
+		m_eCameraEntity.GetAnimation().GetBoneMatrix(m_eCameraEntity.GetBoneIndex("Camera"), cameraBoneMat);
 		
-		// Get the first-person camera slot
-		EntitySlotInfo cameraPoint = slotComp.GetSlotByName("COA_FPP");
-		if (!cameraPoint)
-			return;
+		vector cameraEntMat[4];
+		m_eCameraEntity.GetWorldTransform(cameraEntMat);
+		Math3D.MatrixMultiply4(cameraEntMat, cameraBoneMat, cameraBoneMat);
 		
-		// Get transform and modify it to be slightly behind and to the right of the player
-		vector transform[4];
-		cameraPoint.GetTransform(transform);
+		// Flip Yaw, otherwise we are looking the wrong way
+		cameraBoneMat[2] = cameraBoneMat[2].FromYaw(cameraBoneMat[2].ToYaw() - 180);
 		
-		// Calculate offset position (0.5m back, 0.3m right for over-shoulder view)
-		vector offsetPosition = transform[3] - (transform[2] * 0.5) + (transform[0] * 0.3);
-		transform[3] = offsetPosition;
+		// Calculate offset position (0.1m back, 0.3m right for over-shoulder view)
+		vector offsetPosition = cameraBoneMat[3] - (cameraBoneMat[2] * 0.1) + (cameraBoneMat[0] * -0.3);
+		cameraBoneMat[3] = offsetPosition;
 		
 		// Apply transform to spectator camera
-		m_eCamera.SetTransform(transform);
+		m_eCamera.SetTransform(cameraBoneMat);
 	};
 	
 	//------------------------------------------------------------------------------------------------

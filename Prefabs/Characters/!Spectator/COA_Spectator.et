@@ -20,9 +20,6 @@ COA_SpectatorCharacter : "{D7EB93B0550FD158}Prefabs/Characters/!Core/COA_Player.
    AllowRagdollEffectorsFromDamage 0
    m_fDrowningDuration 1000000000
   }
-  FactionAffiliationComponent "{633B2131A597C43C}" {
-   "faction affiliation" "SPEC"
-  }
   MeshObject "{520EA1D2F659C81F}" {
    Materials {
     MaterialAssignClass "{65AB3C7F849E4B47}" {
@@ -84,6 +81,9 @@ COA_SpectatorCharacter : "{D7EB93B0550FD158}Prefabs/Characters/!Core/COA_Player.
    m_bPermitUnconsciousness 0
    m_bAllowBloodyClothes 0
   }
+  SCR_CharacterFactionAffiliationComponent "{520EC961FB0A2E90}" {
+   "faction affiliation" "SPEC"
+  }
   SCR_CharacterStaminaComponent "{520EA1D2F659C824}" {
    StaminaRegainPerS 1
    StaminaDrainRun 1
@@ -139,12 +139,6 @@ COA_SpectatorCharacter : "{D7EB93B0550FD158}Prefabs/Characters/!Core/COA_Player.
   }
   SCR_CharacterPerceivableComponent "{566CCE2397E28600}" {
    Enabled 0
-  }
-  CharacterWeaponSlotComponent "{520EA1D2F659CFAB}" {
-   WeaponSlotIndex 0
-  }
-  CharacterWeaponSlotComponent "{520EA1D2F659CFB7}" {
-   WeaponSlotIndex 1
   }
   SCR_CharacterIdentityComponent "{5584CBC63E092DBC}" {
    Identity Identity "{5584CBC6363C648B}" {
