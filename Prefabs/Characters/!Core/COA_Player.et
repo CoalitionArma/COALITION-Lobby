@@ -27,15 +27,5 @@ COA_PlayerCharacter : "{836E7E39AAC5888B}Prefabs/Characters/Factions/BLUFOR/US_A
     Surname "Here"
    }
   }
-  SlotManagerComponent "{69F4E4E2B885A7E3}" {
-   Slots {
-    EntitySlotInfo COA_FPP {
-     PivotID "Camera"
-     Offset 0.0313 0.0706 -0.2141
-     Angles 0 180 0
-     DisablePhysicsInteraction 1
-    }
-   }
-  }
  }
 }
