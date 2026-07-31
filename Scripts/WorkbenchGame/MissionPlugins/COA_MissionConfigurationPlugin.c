@@ -12,7 +12,13 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 	//------------------------------------------------------------------------------------
 	[Attribute("<Author>", "auto", "", category: "Mission Config - Mission Info")]
 	protected string m_sMissionAuthor;
-	
+
+	//! Written to the mission header as m_sAuthorGUID, which CRF's modded SCR_MissionHeader declares
+	//! and CRF's COA_Gamemode reads to hand the mission maker admin privileges automatically.
+	//! Harmless when CRF isn't loaded - the header simply has no such field to set.
+	[Attribute("", "auto", "Your BI account GUID for automatic admin privileges (auto-filled from workbench)", category: "Mission Config - Mission Info")]
+	protected string m_sMissionAuthorGUID;
+
 	[Attribute(uiwidget: UIWidgets.SearchComboBox, enums: ParamEnumArray.FromEnum(COA_EGamemode), category: "Mission Config - Mission Info")]
 	COA_EGamemode m_MissionMode;
 	
@@ -28,7 +34,22 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 	override void Run()
 	{
 		m_sMissionAuthor = "<Author>";
-		
+
+		// Auto-fill GUID from currently logged-in Workbench user
+		BackendApi backendApi = GetGame().GetBackendApi();
+		if (backendApi)
+		{
+			UUID identityId = BackendAuthenticatorApi.GetIdentityId();
+			if (identityId && !identityId.IsNull())
+				m_sMissionAuthorGUID = identityId; // UUID extends string, can be assigned directly
+			else
+				m_sMissionAuthorGUID = "<AuthorGUID - Not logged in to BI account>";
+		}
+		else
+		{
+			m_sMissionAuthorGUID = "<AuthorGUID - Backend not available>";
+		}
+
 		m_MissionMode = COA_EGamemode.TVT;
 		m_sMissionName = "<Name>";
 		m_sMissionDescription = "<Description>";
@@ -46,6 +67,61 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 	protected bool ButtonCancel()
 	{
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Re-shows the synopsis preview (and re-copies it to the clipboard) without regenerating the
+	//! mission config - lets a mission maker re-open the synopsis after closing the window, without
+	//! risking a second .conf being generated (see the "DO NOT RUN THIS TWICE" warning above).
+	[ButtonAttribute("Show Mission Synopsis")]
+	protected bool ButtonShowSynopsis()
+	{
+		WorldEditor worldEditor = Workbench.GetModule(WorldEditor);
+		if (!worldEditor)
+			return false;
+
+		WorldEditorAPI api = worldEditor.GetApi();
+
+		IEntitySource entitySource = api.FindEntityByName("COA_Lobby");
+		if (!entitySource)
+			return false;
+
+		COA_Gamemode gamemode = COA_Gamemode.Cast(api.SourceToEntity(entitySource));
+		if (!gamemode)
+			return false;
+
+		string missionMode = SCR_Enum.GetEnumName(COA_EGamemode, m_MissionMode);
+
+		int missionPlayercount = GetPlayerCount(gamemode.m_BluforSlots);
+		missionPlayercount = missionPlayercount + GetPlayerCount(gamemode.m_OpforSlots);
+		missionPlayercount = missionPlayercount + GetPlayerCount(gamemode.m_IndforSlots);
+		missionPlayercount = missionPlayercount + GetPlayerCount(gamemode.m_CivSlots);
+
+		string worldPath;
+		api.GetWorldPath(worldPath);
+
+		array<string> strArray = {};
+		worldPath.Split("/", strArray, false);
+		string missionTerrain = strArray.Get(strArray.Count() - 2);
+
+		string missionDisplayName = string.Format("COA %1%2 %3", missionMode, missionPlayercount, m_sMissionName);
+
+		ShowMissionSynopsis(gamemode, entitySource, missionDisplayName, missionTerrain, missionMode, missionPlayercount);
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hands the synopsis to the mission maker via clipboard + a preview window. Mods extend the
+	//! synopsis itself by modding COA_MissionSynopsisGenerator, not this plugin - see the note on
+	//! that class for why a modded plugin never runs.
+	protected void ShowMissionSynopsis(COA_Gamemode gamemode, IEntitySource entitySource, string missionDisplayName, string missionTerrain, string missionMode, int missionPlayercount)
+	{
+		COA_MissionSynopsisGenerator synopsisGenerator = new COA_MissionSynopsisGenerator();
+		synopsisGenerator.m_sMissionAuthor = m_sMissionAuthor;
+		synopsisGenerator.m_sMissionDescription = m_sMissionDescription;
+
+		synopsisGenerator.ShowMissionSynopsis(gamemode, entitySource, missionDisplayName, missionTerrain, missionMode, missionPlayercount);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -73,6 +149,7 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 		string fullWorldPath = worldMeta.GetResourceID();
 		missionHeaderContainer.Set("World", fullWorldPath);
 		missionHeaderContainer.Set("m_sAuthor", m_sMissionAuthor);
+		missionHeaderContainer.Set("m_sAuthorGUID", m_sMissionAuthorGUID);
 		missionHeaderContainer.Set("m_sGameMode", missionMode);
 		missionHeaderContainer.Set("m_sDescription", m_sMissionDescription);
 		missionHeaderContainer.Set("m_iMapMarkerLimitPerPlayer", 256);
@@ -152,6 +229,12 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 		string missionHeaderAbsPath;
 		Workbench.GetAbsolutePath(missionHeaderPath, missionHeaderAbsPath, false);
 		resourceManager.RegisterResourceFile(missionHeaderAbsPath, false);
+
+		//--- Build the mission synopsis and hand it to the mission maker via clipboard + a preview window
+		//--- (NOT written to disk - a file here would get committed and bundled into the mod itself, which
+		//--- we don't want. The mission maker pastes this into the PR description instead.)
+		string missionDisplayName = string.Format("COA %1%2 %3", missionMode, missionPlayercount, m_sMissionName);
+		ShowMissionSynopsis(gamemode, entitySource, missionDisplayName, missionTerrain, missionMode, missionPlayercount);
 
 		return true;
 	}
