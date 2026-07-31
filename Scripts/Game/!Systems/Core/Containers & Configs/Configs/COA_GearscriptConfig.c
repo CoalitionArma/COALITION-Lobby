@@ -26,9 +26,6 @@ class COA_GearScriptContainer
 	//------------------------------------------------------------------------------------------------
 	// Vars considered "advanced" and not set by plugin
 	
-	[Attribute("false", UIWidgets.CheckBox)]
-	bool m_bEnableMagnifiedOptics;
-	
 	[Attribute(uiwidget: "resourcePickerThumbnail", params: "et")]
 	ResourceName m_rShortRangeRadioPrefab;
 	
