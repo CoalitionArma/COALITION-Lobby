@@ -1,6 +1,23 @@
 modded class SCR_EditorManagerEntity
 {
 	//----------------------------------------------------------------
+	// True when the local player is allowed unlimited editor access
+	// (spectators, moderators and admins). Used both to decide the
+	// limited state on open and to unlock the ArmaVision camera, see
+	// COA_SCR_CameraLimitedEditorComponent.
+	//----------------------------------------------------------------
+	static bool COA_HasUnlimitedEditorAccess()
+	{
+		if (COA_EntityHelper.IsSpectator())
+			return true;
+
+		if (COA_PermissionManager.GetInstance() && COA_PermissionManager.GetInstance().IsModerator())
+			return true;
+
+		return SCR_Global.IsAdmin(SCR_PlayerController.GetLocalPlayerId());
+	}
+
+	//----------------------------------------------------------------
 	// Determines if the editor can be opened based on current mode and permissions
 	//----------------------------------------------------------------
 	override bool CanOpen()
@@ -11,11 +28,7 @@ modded class SCR_EditorManagerEntity
 		}
 
 		// Spectators and moderators always get unlimited editor access
-		bool isSpectator = COA_EntityHelper.IsSpectator();
-		bool isModerator = COA_PermissionManager.GetInstance() && COA_PermissionManager.GetInstance().IsModerator();
-		bool isAdmin = SCR_Global.IsAdmin(SCR_PlayerController.GetLocalPlayerId());
-		
-		if (isSpectator || isModerator || isAdmin)
+		if (COA_HasUnlimitedEditorAccess())
 		{
 			SetIsLimited(false);
 		}
@@ -24,7 +37,7 @@ modded class SCR_EditorManagerEntity
 			// Regular players get limited editor
 			SetIsLimited(true);
 		}
-		
+
 		// If in building mode, always limit editor capabilities
 		if (GetCurrentMode() == EEditorMode.BUILDING)
 		{
