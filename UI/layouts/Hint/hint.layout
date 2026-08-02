@@ -1,5 +1,9 @@
 FrameWidgetClass {
  Name "hintRoot"
+ components {
+  COA_Hint "{624D2AA83C559DC6}" {
+  }
+ }
  {
   SizeLayoutWidgetClass "{624D2AAF695A42A1}" {
    Name "SizeLayout0"
