@@ -85,16 +85,16 @@ class COA_Gamemode : SCR_BaseGameMode
 	string m_sFactionTwoKey;
 	
 	[Attribute("", UIWidgets.Hidden)]
-	ref array <ref COA_SlottingGroup> m_BluforSlots;
+	ref array <ref COA_SlottingGroup> m_BLUFORSlots;
 
 	[Attribute("", UIWidgets.Hidden)]
-	ref array <ref COA_SlottingGroup> m_OpforSlots;
+	ref array <ref COA_SlottingGroup> m_OPFORSlots;
 	
 	[Attribute("", UIWidgets.Hidden)]
-	ref array <ref COA_SlottingGroup> m_IndforSlots;
+	ref array <ref COA_SlottingGroup> m_INDFORSlots;
 	
 	[Attribute("", UIWidgets.Hidden)]
-	ref array <ref COA_SlottingGroup> m_CivSlots;
+	ref array <ref COA_SlottingGroup> m_CIVSlots;
 	
 	[Attribute("0", UIWidgets.Hidden), RplProp()]
 	int m_iBLUFORTickets;

@@ -91,24 +91,28 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
  m_iFactionTwoRatio 2
  m_sFactionOneKey "BLU"
  m_sFactionTwoKey "OPF"
- m_BluforSlots {
-  COA_SlottingGroup "{68984E3EC728E646}" {
+ m_BLUFORSlots {
+  COA_SlottingGroup "{6A045847AF3AE53A}" {
    m_sCallsign "COY"
    m_FlagType SIGNAL
    m_aSlots {
     COMPANY_COMMANDER
     FIRST_SERGEANT
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7289921}" {
+  COA_SlottingGroup "{6A045847AF3AE26D}" {
    m_sCallsign "1PLT"
    m_FlagType SIGNAL
    m_aSlots {
     PLATOON_LEADER
     PLATOON_SERGEANT
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC72899B7}" {
+  COA_SlottingGroup "{6A045847AF3AE2CA}" {
    m_sCallsign "1-1"
    m_FlagType INFANTRY
    m_aSlots {
@@ -122,8 +126,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7289818}" {
+  COA_SlottingGroup "{6A045847AF3AE384}" {
    m_sCallsign "1-2"
    m_FlagType INFANTRY
    m_aSlots {
@@ -137,8 +143,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC72898A4}" {
+  COA_SlottingGroup "{6A045847AF3AE067}" {
    m_sCallsign "1-3"
    m_FlagType INFANTRY
    m_aSlots {
@@ -152,16 +160,20 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7289B25}" {
+  COA_SlottingGroup "{6A045847AF3AE0DD}" {
    m_sCallsign "2PLT"
    m_FlagType SIGNAL
    m_aSlots {
     PLATOON_LEADER
     PLATOON_SERGEANT
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7289BBA}" {
+  COA_SlottingGroup "{6A045847AF3AE150}" {
    m_sCallsign "2-1"
    m_FlagType INFANTRY
    m_aSlots {
@@ -175,8 +187,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7289A3B}" {
+  COA_SlottingGroup "{6A045847AF3AFE37}" {
    m_sCallsign "2-2"
    m_FlagType INFANTRY
    m_aSlots {
@@ -190,8 +204,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7289AD5}" {
+  COA_SlottingGroup "{6A045847AF3AFE96}" {
    m_sCallsign "2-3"
    m_FlagType INFANTRY
    m_aSlots {
@@ -205,8 +221,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7289D4A}" {
+  COA_SlottingGroup "{6A045847AF3AFC94}" {
    m_sCallsign "MMG"
    m_FlagType MACHINEGUN
    m_aSlots {
@@ -217,8 +235,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     MEDIUM_MACHINEGUN
     ASSISTANT_MEDIUM_MACHINEGUN
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7289DE7}" {
+  COA_SlottingGroup "{6A045847AF3AFD0F}" {
    m_sCallsign "MAT"
    m_FlagType ANTI_ARMOR
    m_aSlots {
@@ -229,16 +249,20 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     MEDIUM_ANTITANK
     ASSISTANT_MEDIUM_ANTITANK
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7289C7B}" {
+  COA_SlottingGroup "{6A045847AF3AFD89}" {
    m_sCallsign "HELI 1"
    m_FlagType HELICOPER
    m_aSlots {
     PILOT
     CREW_CHIEF
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7289C02}" {
+  COA_SlottingGroup "{6A045847AF3AFA01}" {
    m_sCallsign "IFV 1"
    m_FlagType ARMORED
    m_aSlots {
@@ -246,26 +270,32 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     VEHICLE_GUNNER
     VEHICLE_DRIVER
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
  }
- m_OpforSlots {
-  COA_SlottingGroup "{68984E3EC7289FC8}" {
+ m_OPFORSlots {
+  COA_SlottingGroup "{6A045847AF3AFB45}" {
    m_sCallsign "COY"
    m_FlagType SIGNAL
    m_aSlots {
     COMPANY_COMMANDER
     FIRST_SERGEANT
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7289E5A}" {
+  COA_SlottingGroup "{6A045847AF3AFBD9}" {
    m_sCallsign "1PLT"
    m_FlagType SIGNAL
    m_aSlots {
     PLATOON_LEADER
     PLATOON_SERGEANT
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7289EF8}" {
+  COA_SlottingGroup "{6A045847AF3AF859}" {
    m_sCallsign "1-1"
    m_FlagType INFANTRY
    m_aSlots {
@@ -279,8 +309,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7289E8C}" {
+  COA_SlottingGroup "{6A045847AF3AF8C6}" {
    m_sCallsign "1-2"
    m_FlagType INFANTRY
    m_aSlots {
@@ -294,8 +326,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC728910D}" {
+  COA_SlottingGroup "{6A045847AF3AF9A3}" {
    m_sCallsign "1-3"
    m_FlagType INFANTRY
    m_aSlots {
@@ -309,16 +343,20 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7289192}" {
+  COA_SlottingGroup "{6A045847AF3AF62C}" {
    m_sCallsign "2PLT"
    m_FlagType SIGNAL
    m_aSlots {
     PLATOON_LEADER
     PLATOON_SERGEANT
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7289030}" {
+  COA_SlottingGroup "{6A045847AF3AF6A8}" {
    m_sCallsign "2-1"
    m_FlagType INFANTRY
    m_aSlots {
@@ -332,8 +370,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC72890BF}" {
+  COA_SlottingGroup "{6A045847AF3AF70E}" {
    m_sCallsign "2-2"
    m_FlagType INFANTRY
    m_aSlots {
@@ -347,8 +387,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7289348}" {
+  COA_SlottingGroup "{6A045847AF3AF7FC}" {
    m_sCallsign "2-3"
    m_FlagType INFANTRY
    m_aSlots {
@@ -362,8 +404,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC72893CB}" {
+  COA_SlottingGroup "{6A045847AF3AF461}" {
    m_sCallsign "MMG"
    m_FlagType MACHINEGUN
    m_aSlots {
@@ -374,8 +418,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     MEDIUM_MACHINEGUN
     ASSISTANT_MEDIUM_MACHINEGUN
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC728926E}" {
+  COA_SlottingGroup "{6A045847AF3AF4DE}" {
    m_sCallsign "MAT"
    m_FlagType ANTI_ARMOR
    m_aSlots {
@@ -386,16 +432,20 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     MEDIUM_ANTITANK
     ASSISTANT_MEDIUM_ANTITANK
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC72892FE}" {
+  COA_SlottingGroup "{6A045847AF3AF55A}" {
    m_sCallsign "HELI 1"
    m_FlagType HELICOPER
    m_aSlots {
     PILOT
     CREW_CHIEF
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC728928E}" {
+  COA_SlottingGroup "{6A045847AF3AF5DD}" {
    m_sCallsign "IFV 1"
    m_FlagType ARMORED
    m_aSlots {
@@ -403,26 +453,32 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     VEHICLE_GUNNER
     VEHICLE_DRIVER
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
  }
- m_IndforSlots {
-  COA_SlottingGroup "{68984E3EC7289430}" {
+ m_INDFORSlots {
+  COA_SlottingGroup "{6A045847AF3AF328}" {
    m_sCallsign "COY"
    m_FlagType SIGNAL
    m_aSlots {
     COMPANY_COMMANDER
     FIRST_SERGEANT
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC72894D4}" {
+  COA_SlottingGroup "{6A045847AF3AF392}" {
    m_sCallsign "1PLT"
    m_FlagType SIGNAL
    m_aSlots {
     PLATOON_LEADER
     PLATOON_SERGEANT
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7289765}" {
+  COA_SlottingGroup "{6A045847AF3AF00A}" {
    m_sCallsign "1-1"
    m_FlagType INFANTRY
    m_aSlots {
@@ -436,8 +492,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC72897E5}" {
+  COA_SlottingGroup "{6A045847AF3AF0F2}" {
    m_sCallsign "1-2"
    m_FlagType INFANTRY
    m_aSlots {
@@ -451,8 +509,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC728966B}" {
+  COA_SlottingGroup "{6A045847AF3AF164}" {
    m_sCallsign "1-3"
    m_FlagType INFANTRY
    m_aSlots {
@@ -466,16 +526,20 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC72896F0}" {
+  COA_SlottingGroup "{6A045847AF3AF1D1}" {
    m_sCallsign "2PLT"
    m_FlagType SIGNAL
    m_aSlots {
     PLATOON_LEADER
     PLATOON_SERGEANT
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC728968A}" {
+  COA_SlottingGroup "{6A045847AF3A8E51}" {
    m_sCallsign "2-1"
    m_FlagType INFANTRY
    m_aSlots {
@@ -489,8 +553,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7288921}" {
+  COA_SlottingGroup "{6A045847AF3A8EDD}" {
    m_sCallsign "2-2"
    m_FlagType INFANTRY
    m_aSlots {
@@ -504,8 +570,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC72889A3}" {
+  COA_SlottingGroup "{6A045847AF3A8FB5}" {
    m_sCallsign "2-3"
    m_FlagType INFANTRY
    m_aSlots {
@@ -519,8 +587,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7288832}" {
+  COA_SlottingGroup "{6A045847AF3A8C25}" {
    m_sCallsign "MMG"
    m_FlagType MACHINEGUN
    m_aSlots {
@@ -531,8 +601,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     MEDIUM_MACHINEGUN
     ASSISTANT_MEDIUM_MACHINEGUN
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC72888BF}" {
+  COA_SlottingGroup "{6A045847AF3A8C84}" {
    m_sCallsign "MAT"
    m_FlagType ANTI_ARMOR
    m_aSlots {
@@ -543,16 +615,20 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     MEDIUM_ANTITANK
     ASSISTANT_MEDIUM_ANTITANK
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7288B4C}" {
+  COA_SlottingGroup "{6A045847AF3A8D75}" {
    m_sCallsign "HELI 1"
    m_FlagType HELICOPER
    m_aSlots {
     PILOT
     CREW_CHIEF
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7288BDE}" {
+  COA_SlottingGroup "{6A045847AF3A8DF8}" {
    m_sCallsign "IFV 1"
    m_FlagType ARMORED
    m_aSlots {
@@ -560,26 +636,32 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     VEHICLE_GUNNER
     VEHICLE_DRIVER
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
  }
- m_CivSlots {
-  COA_SlottingGroup "{68984E3EC7288D7A}" {
+ m_CIVSlots {
+  COA_SlottingGroup "{6A045847AF3A8B30}" {
    m_sCallsign "COY"
    m_FlagType SIGNAL
    m_aSlots {
     COMPANY_COMMANDER
     FIRST_SERGEANT
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7288D02}" {
+  COA_SlottingGroup "{6A045847AF3A886A}" {
    m_sCallsign "1PLT"
    m_FlagType SIGNAL
    m_aSlots {
     PLATOON_LEADER
     PLATOON_SERGEANT
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7288D99}" {
+  COA_SlottingGroup "{6A045847AF3A88E8}" {
    m_sCallsign "1-1"
    m_FlagType INFANTRY
    m_aSlots {
@@ -593,8 +675,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7288C11}" {
+  COA_SlottingGroup "{6A045847AF3A8951}" {
    m_sCallsign "1-2"
    m_FlagType INFANTRY
    m_aSlots {
@@ -608,8 +692,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7288C90}" {
+  COA_SlottingGroup "{6A045847AF3A89C1}" {
    m_sCallsign "1-3"
    m_FlagType INFANTRY
    m_aSlots {
@@ -623,16 +709,20 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7288F1C}" {
+  COA_SlottingGroup "{6A045847AF3A86B3}" {
    m_sCallsign "2PLT"
    m_FlagType SIGNAL
    m_aSlots {
     PLATOON_LEADER
     PLATOON_SERGEANT
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7288FB2}" {
+  COA_SlottingGroup "{6A045847AF3A8733}" {
    m_sCallsign "2-1"
    m_FlagType INFANTRY
    m_aSlots {
@@ -646,8 +736,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7288E3A}" {
+  COA_SlottingGroup "{6A045847AF3A87BE}" {
    m_sCallsign "2-2"
    m_FlagType INFANTRY
    m_aSlots {
@@ -661,8 +753,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC7288ECF}" {
+  COA_SlottingGroup "{6A045847AF3A842B}" {
    m_sCallsign "2-3"
    m_FlagType INFANTRY
    m_aSlots {
@@ -676,8 +770,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     RIFLEMAN_ANTITANK
     RIFLEMAN_DEMO
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC728814D}" {
+  COA_SlottingGroup "{6A045847AF3A8497}" {
    m_sCallsign "MMG"
    m_FlagType MACHINEGUN
    m_aSlots {
@@ -688,8 +784,10 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     MEDIUM_MACHINEGUN
     ASSISTANT_MEDIUM_MACHINEGUN
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC72881DE}" {
+  COA_SlottingGroup "{6A045847AF3A851B}" {
    m_sCallsign "MAT"
    m_FlagType ANTI_ARMOR
    m_aSlots {
@@ -700,16 +798,20 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     MEDIUM_ANTITANK
     ASSISTANT_MEDIUM_ANTITANK
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC728804D}" {
+  COA_SlottingGroup "{6A045847AF3A8587}" {
    m_sCallsign "HELI 1"
    m_FlagType HELICOPER
    m_aSlots {
     PILOT
     CREW_CHIEF
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
-  COA_SlottingGroup "{68984E3EC72880D3}" {
+  COA_SlottingGroup "{6A045847AF3A8211}" {
    m_sCallsign "IFV 1"
    m_FlagType ARMORED
    m_aSlots {
@@ -717,6 +819,8 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
     VEHICLE_GUNNER
     VEHICLE_DRIVER
    }
+   m_eRespawnPoolType PER_SLOT
+   m_iGroupRespawns -1
   }
  }
  m_iBLUFORTickets 0
@@ -937,7 +1041,7 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
      m_sFactionFlag "{BB790255945032F8}UI/Images/SpecImages/Spec_Eye_BCR.edds"
      m_FactionFlagMaterial "{E3BB2EF7F600DD28}Assets/Props/Fabric/Flags/Data/Flag_2_3_CIVILIAN.emat"
      m_FactionLabel FACTION_CIV
-     m_aFriendlyFactionsIds +{
+     m_aFriendlyFactionsIds {
      }
      m_iFactionRadioFrequency 58000
      m_aEntityCatalogs {
@@ -959,7 +1063,7 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/Systems/!Lobby/COA_Lobby.et"
      }
      m_sGroupFlagsImageSet "{D7E06968B5F9FC92}UI/Textures/GroupManagement/FlagIcons/GroupFlagsCivilian.imageset"
      m_sGroupFlagsImageSetOutlines "{824ADD5E7A28B03E}UI/Textures/GroupManagement/FlagIcons/GroupFlagsCivilian-outline.imageset"
-     m_aFlagNames +{
+     m_aFlagNames {
      }
      m_sFactionBackground "{781301447441F404}UI/Textures/DeployMenu/Loadout-BG/Loadout_BG_Civilian.imageset"
     }

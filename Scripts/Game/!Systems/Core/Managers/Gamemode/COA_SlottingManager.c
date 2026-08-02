@@ -42,10 +42,10 @@ class COA_SlottingManager : ScriptComponent
 	{
 		COA_Gamemode gamemode = COA_Gamemode.GetInstance();
 		
-		InitilizeSlotsForFaction("BLUFOR", gamemode.m_BluforSlots);
-		InitilizeSlotsForFaction("OPFOR", gamemode.m_OpforSlots);
-		InitilizeSlotsForFaction("INDFOR", gamemode.m_IndforSlots);
-		InitilizeSlotsForFaction("CIV", gamemode.m_CivSlots);
+		InitilizeSlotsForFaction("BLUFOR", gamemode.m_BLUFORSlots);
+		InitilizeSlotsForFaction("OPFOR", gamemode.m_OPFORSlots);
+		InitilizeSlotsForFaction("INDFOR", gamemode.m_INDFORSlots);
+		InitilizeSlotsForFaction("CIV", gamemode.m_CIVSlots);
 	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
