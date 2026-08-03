@@ -37,10 +37,9 @@ class COA_LoggingHelper
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	//! Alt Log item error
-	//! \param[in] itemResource ResourceName of the item that failed to insert
-	//! \param[in] entity Entity that the item was being added to
-	//! \param[in] itemType type of item to display (default is "ITEM")
+	//! Log Weight Error
+	//! \param[in] entity Entity that is considered overweight
+	//! \param[in] kg The actual weight of the entity
 	static void LogWeightError(IEntity entity, int kg)
 	{	
 		FactionAffiliationComponent facComp = FactionAffiliationComponent.Cast(entity.FindComponent(FactionAffiliationComponent));
