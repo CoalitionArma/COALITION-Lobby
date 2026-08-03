@@ -37,6 +37,25 @@ class COA_LoggingHelper
 	}
 	
 	//------------------------------------------------------------------------------------------------
+	//! Alt Log item error
+	//! \param[in] itemResource ResourceName of the item that failed to insert
+	//! \param[in] entity Entity that the item was being added to
+	//! \param[in] itemType type of item to display (default is "ITEM")
+	static void LogWeightError(IEntity entity, int kg)
+	{	
+		FactionAffiliationComponent facComp = FactionAffiliationComponent.Cast(entity.FindComponent(FactionAffiliationComponent));
+		
+		if (facComp)
+		{
+			COA_EGearRole role = COA_GearscriptCharacter.Cast(entity).GetGearRole();
+			int dif = kg - 50;
+			
+			string error = string.Format("[%2 %3 GEARSCRIPT ERROR] \n\n %1kg OVERWEIGHT OF TARGET WEIGHT (50kg) \n PLEASE REDUCE THE AMMOUNT OF GEAR ON THIS ENTITY TO GET IT BELLOW THE TARGET WEIGHT", dif, facComp.GetAffiliatedFaction().GetFactionKey(), SCR_Enum.GetEnumName(COA_EGearRole, role));
+			Debug.Error(error);
+		};
+	}
+	
+	//------------------------------------------------------------------------------------------------
 	//! Sanitize Resource Name of its path and extension
 	//! \param[in] resName Resource name to sanitize and strip (kinky)
 	//! \return sanatized string in uppercase

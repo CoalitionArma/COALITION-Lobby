@@ -100,6 +100,10 @@ class COA_GearscriptManager : ScriptComponent
 		// Apply inventory items
 		ApplyInventoryItems(gearConfig, role, gearScriptSettings, spawnParams, inventory, inventoryManager);
 		
+		int weight = inventoryManager.GetTotalWeightOfAllStorages();
+		if (weight > 50) // We dont enjoy people being over 50kg
+			COA_LoggingHelper.LogWeightError(entity, weight);
+		
 		// Initialize radios for player
 		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(entity);
 		if (playerId > 0)
@@ -860,11 +864,11 @@ class COA_GearscriptManager : ScriptComponent
 			PrintFormat("----------------------------------------------------------------------------");
 			PrintFormat("|     [GEARSCIRPT VALIDATION] : ALL SLOTS FOR %1 ARE BEING CHECKED...", factionKey);
 			PrintFormat("----------------------------------------------------------------------------");
+			PrintFormat("[GEARSCIRPT VALIDATION] : CHECKING GEAR FOR: %1, %2", factionKey, SCR_Enum.GetEnumName(COA_EGearRole, roleConfig.m_Role));
 		} else {
+			PrintFormat("[GEARSCIRPT VALIDATION] : CHECKING GEAR FOR: %1, %2", factionKey, SCR_Enum.GetEnumName(COA_EGearRole, roleConfig.m_Role));
 			SetEntityGear(m_CharacterToCheckAgainst, roleConfig.m_RoleResource);
 		};
-		
-		PrintFormat("[GEARSCIRPT VALIDATION] : CHECKING GEAR FOR: %1, %2", factionKey, SCR_Enum.GetEnumName(COA_EGearRole, roleConfig.m_Role));
 	}
 	
 	//------------------------------------------------------------------------------------------------
