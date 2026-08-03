@@ -25,7 +25,7 @@ class COA_MissionSlottingPlugin : WorkbenchPlugin
 		COA_Gamemode gamemode = COA_Gamemode.Cast(api.SourceToEntity(entitySource)); // Get the actual Gamemode so we can pull any variables we need.
 		
 		// Only call the quick slot setup if there is no slots setup on the gamemode (this is typically only true when a mission makers is first setting up slots).
-		if (gamemode.m_BLUFORSlots.IsEmpty() && gamemode.m_OPFORSlots.IsEmpty() && gamemode.m_INDFORSlots.IsEmpty() && gamemode.m_CIVSlots.IsEmpty())
+		if (gamemode.GetSlots("BLUFOR").IsEmpty() && gamemode.GetSlots("OPFOR").IsEmpty() && gamemode.GetSlots("INDFOR").IsEmpty() && gamemode.GetSlots("CIV").IsEmpty())
 		{
 			// Create the Quick Slot Setup Dialouge, NOTE: MUST CALL Workbench.ScriptDialog FOR WINDOW TO POP UP.
 			COA_MissionSlottingQuickSetupDialouge dialog = new COA_MissionSlottingQuickSetupDialouge();
@@ -186,10 +186,10 @@ class COA_MissionSlottingSetupDialouge
 		// Only use the quick slot setup variables if there is no slots setup on the gamemode.
 		if (m_BLUFORSlots.IsEmpty() && m_OPFORSlots.IsEmpty() && m_INDFORSlots.IsEmpty() && m_CIVILIANSlots.IsEmpty())
 		{
-			SetPluginSlottingVariables(m_BLUFORSlots, gamemode.m_BLUFORSlots);
-			SetPluginSlottingVariables(m_OPFORSlots, gamemode.m_OPFORSlots);
-			SetPluginSlottingVariables(m_INDFORSlots, gamemode.m_INDFORSlots);
-			SetPluginSlottingVariables(m_CIVILIANSlots, gamemode.m_CIVSlots);
+			SetPluginSlottingVariables(m_BLUFORSlots, gamemode.GetSlots("BLUFOR"));
+			SetPluginSlottingVariables(m_OPFORSlots, gamemode.GetSlots("OPFOR"));
+			SetPluginSlottingVariables(m_INDFORSlots, gamemode.GetSlots("INDFOR"));
+			SetPluginSlottingVariables(m_CIVILIANSlots, gamemode.GetSlots("CIV"));
 		};
 	}
 	
@@ -269,10 +269,10 @@ class COA_MissionSlottingSetupDialouge
 		api.SetVariableValue(entitySource, null, "m_iFactionTwoRatio", m_iFactionTwoRatio.ToString());
 		api.SetVariableValue(entitySource, null, "m_sFactionTwoKey", m_sFactionTwoKey);
 		
-		SetGamemodeSlottingVariables(api, entitySource, m_BLUFORSlots, "m_BLUFORSlots", gamemode.m_BLUFORSlots);
-		SetGamemodeSlottingVariables(api, entitySource, m_OPFORSlots, "m_OPFORSlots", gamemode.m_OPFORSlots);
-		SetGamemodeSlottingVariables(api, entitySource, m_INDFORSlots, "m_INDFORSlots", gamemode.m_INDFORSlots);
-		SetGamemodeSlottingVariables(api, entitySource, m_CIVILIANSlots, "m_CIVSlots", gamemode.m_CIVSlots);
+		SetGamemodeSlottingVariables(api, entitySource, m_BLUFORSlots, "m_BLUFORSlots", gamemode.GetSlots("BLUFOR"));
+		SetGamemodeSlottingVariables(api, entitySource, m_OPFORSlots, "m_OPFORSlots", gamemode.GetSlots("OPFOR"));
+		SetGamemodeSlottingVariables(api, entitySource, m_INDFORSlots, "m_INDFORSlots", gamemode.GetSlots("INDFOR"));
+		SetGamemodeSlottingVariables(api, entitySource, m_CIVILIANSlots, "m_CIVSlots", gamemode.GetSlots("CIV"));
 		
 		//-----------------------------------------------------
 		// END EDIT ACTION ON ENTITY

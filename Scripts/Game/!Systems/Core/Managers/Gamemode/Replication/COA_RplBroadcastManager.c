@@ -1671,7 +1671,7 @@ class COA_RplBroadcastManager : ScriptComponent
 
 		// Set up respawn timers
 		m_RespawnManager.m_iLocalTimeToRespawn = m_RespawnManager.m_iCurrentTimeToRespawn;
-		m_RespawnManager.m_fRespawnTimer = (float)m_RespawnManager.GetCurrentWaveTimer();
+		m_RespawnManager.m_fRespawnTimer = m_RespawnManager.GetCurrentWaveTimer();
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -92,10 +92,10 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 
 		string missionMode = SCR_Enum.GetEnumName(COA_EGamemode, m_MissionMode);
 
-		int missionPlayercount = GetPlayerCount(gamemode.m_BLUFORSlots);
-		missionPlayercount = missionPlayercount + GetPlayerCount(gamemode.m_OPFORSlots);
-		missionPlayercount = missionPlayercount + GetPlayerCount(gamemode.m_INDFORSlots);
-		missionPlayercount = missionPlayercount + GetPlayerCount(gamemode.m_CIVSlots);
+		int missionPlayercount = GetPlayerCount(gamemode.GetSlots("BLUFOR"));
+		missionPlayercount = missionPlayercount + GetPlayerCount(gamemode.GetSlots("OPFOR"));
+		missionPlayercount = missionPlayercount + GetPlayerCount(gamemode.GetSlots("INDFOR"));
+		missionPlayercount = missionPlayercount + GetPlayerCount(gamemode.GetSlots("CIV"));
 
 		string worldPath;
 		api.GetWorldPath(worldPath);
@@ -164,10 +164,10 @@ class COA_MissionConfigurationPlugin : WorkbenchPlugin
 
 		if (gamemode)
 		{
-			missionPlayercount = GetPlayerCount(gamemode.m_BLUFORSlots);
-			missionPlayercount = missionPlayercount + GetPlayerCount(gamemode.m_OPFORSlots);
-			missionPlayercount = missionPlayercount + GetPlayerCount(gamemode.m_INDFORSlots);
-			missionPlayercount = missionPlayercount + GetPlayerCount(gamemode.m_CIVSlots);
+			missionPlayercount = GetPlayerCount(gamemode.GetSlots("BLUFOR"));
+			missionPlayercount = missionPlayercount + GetPlayerCount(gamemode.GetSlots("OPFOR"));
+			missionPlayercount = missionPlayercount + GetPlayerCount(gamemode.GetSlots("INDFOR"));
+			missionPlayercount = missionPlayercount + GetPlayerCount(gamemode.GetSlots("CIV"));
 		};
 
 		missionHeaderContainer.Set("m_sName", string.Format("COA %1%2 %3", missionMode, missionPlayercount, m_sMissionName));

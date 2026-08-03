@@ -33,7 +33,7 @@ class COA_ClothingHelper
 			
 			bool spawned = inventoryManager.TrySpawnPrefabToStorage(clothing, inventory, slotInt);
 			if (!spawned)
-				COA_LoggingHelper.LogItemError(clothing, inventoryManager.GetOwner(), "CLOTHING");
+				COA_LoggingHelper.LogItemError(clothing, inventory.GetOwner(), "CLOTHING");
 		}
 
 		// Handle previously removed items

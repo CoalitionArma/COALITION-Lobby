@@ -219,7 +219,7 @@ class COA_PlayerCameraManager : ScriptComponent
 	protected void FrameUpdateEntity()
 	{	
 		vector cameraBoneMat[4];
-		m_eCameraEntity.GetAnimation().GetBoneMatrix(m_eCameraEntity.GetBoneIndex("Camera"), cameraBoneMat);
+		m_eCameraEntity.GetAnimation().GetBoneMatrix(m_eCameraEntity.GetAnimation().GetBoneIndex("Camera"), cameraBoneMat);
 		
 		vector cameraEntMat[4];
 		m_eCameraEntity.GetWorldTransform(cameraEntMat);

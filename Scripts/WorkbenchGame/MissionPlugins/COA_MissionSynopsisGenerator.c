@@ -125,13 +125,13 @@ class COA_MissionSynopsisGenerator
 
 		if (!slotBased)
 		{
-			if (!gamemode.m_BLUFORSlots.IsEmpty())
+			if (!gamemode.GetSlots("BLUFOR").IsEmpty())
 				lines.Insert(string.Format("- BLUFOR Tickets: %1", TicketToString(gamemode.m_iBLUFORTickets)));
-			if (!gamemode.m_OPFORSlots.IsEmpty())
+			if (!gamemode.GetSlots("OPFOR").IsEmpty())
 				lines.Insert(string.Format("- OPFOR Tickets: %1", TicketToString(gamemode.m_iOPFORTickets)));
-			if (!gamemode.m_INDFORSlots.IsEmpty())
+			if (!gamemode.GetSlots("INDFOR").IsEmpty())
 				lines.Insert(string.Format("- INDFOR Tickets: %1", TicketToString(gamemode.m_iINDFORTickets)));
-			if (!gamemode.m_CIVSlots.IsEmpty())
+			if (!gamemode.GetSlots("CIV").IsEmpty())
 				lines.Insert(string.Format("- CIV Tickets: %1", TicketToString(gamemode.m_iCIVTickets)));
 		}
 		else
@@ -156,13 +156,13 @@ class COA_MissionSynopsisGenerator
 	{
 		lines.Insert("## Gearscripts");
 
-		if (!gamemode.m_BLUFORSlots.IsEmpty())
+		if (!gamemode.GetSlots("BLUFOR").IsEmpty())
 			lines.Insert(string.Format("- BLUFOR: %1", GearScriptToString(gamemode.m_BLUFORGearScriptSettings)));
-		if (!gamemode.m_OPFORSlots.IsEmpty())
+		if (!gamemode.GetSlots("OPFOR").IsEmpty())
 			lines.Insert(string.Format("- OPFOR: %1", GearScriptToString(gamemode.m_OPFORGearScriptSettings)));
-		if (!gamemode.m_INDFORSlots.IsEmpty())
+		if (!gamemode.GetSlots("INDFOR").IsEmpty())
 			lines.Insert(string.Format("- INDFOR: %1", GearScriptToString(gamemode.m_INDFORGearScriptSettings)));
-		if (!gamemode.m_CIVSlots.IsEmpty())
+		if (!gamemode.GetSlots("CIV").IsEmpty())
 			lines.Insert(string.Format("- CIV: %1", GearScriptToString(gamemode.m_CIVILIANGearScriptSettings)));
 
 		lines.Insert("");
@@ -257,10 +257,10 @@ class COA_MissionSynopsisGenerator
 		//--- which depends on a live runtime manager singleton that isn't guaranteed to exist in Workbench)
 		COA_RolesConfig rolesConfig = COA_RolesConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(BaseContainerTools.LoadContainer("{4388548E9F600148}Configs/Gearscripts/COA_Global_Roles_Config.conf").GetResource().ToBaseContainer()));
 
-		AppendFactionSlotting(lines, "BLUFOR", gamemode.m_BLUFORSlots, gamemode.m_eRespawnMode, rolesConfig);
-		AppendFactionSlotting(lines, "OPFOR", gamemode.m_OPFORSlots, gamemode.m_eRespawnMode, rolesConfig);
-		AppendFactionSlotting(lines, "INDFOR", gamemode.m_INDFORSlots, gamemode.m_eRespawnMode, rolesConfig);
-		AppendFactionSlotting(lines, "CIV", gamemode.m_CIVSlots, gamemode.m_eRespawnMode, rolesConfig);
+		AppendFactionSlotting(lines, "BLUFOR", gamemode.GetSlots("BLUFOR"), gamemode.m_eRespawnMode, rolesConfig);
+		AppendFactionSlotting(lines, "OPFOR", gamemode.GetSlots("OPFOR"), gamemode.m_eRespawnMode, rolesConfig);
+		AppendFactionSlotting(lines, "INDFOR", gamemode.GetSlots("INDFOR"), gamemode.m_eRespawnMode, rolesConfig);
+		AppendFactionSlotting(lines, "CIV", gamemode.GetSlots("CIV"), gamemode.m_eRespawnMode, rolesConfig);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -7,21 +7,33 @@ class COA_LoggingHelper
 	//! \param[in] itemType type of item to display (default is "ITEM")
 	static void LogItemError(IEntity item, IEntity entity, string itemType = "ITEM")
 	{
-		string error = string.Format("[%3 GEARSCRIPT ERROR] \n\n UNABLE TO INSERT %1 %2 \n NOT ENOUGH SPACE IN ENTITY/INVALID %1!", itemType, SanitizeResourceName(item.GetPrefabData().GetPrefabName()), SanitizeResourceName(entity.GetPrefabData().GetPrefabName()));
+		FactionAffiliationComponent facComp = FactionAffiliationComponent.Cast(entity.FindComponent(FactionAffiliationComponent));
 		
-		Debug.Error(error);
+		if (facComp)
+		{
+			COA_EGearRole role = COA_GearscriptCharacter.Cast(entity).GetGearRole();
+			
+			string error = string.Format("[%3 %4 GEARSCRIPT ERROR] \n\n UNABLE TO INSERT %1 %2 \n NOT ENOUGH SPACE IN ENTITY/INVALID %1!", itemType, SanitizeResourceName(item.GetPrefabData().GetPrefabName()), facComp.GetAffiliatedFaction().GetFactionKey(), SCR_Enum.GetEnumName(COA_EGearRole, role));
+			Debug.Error(error);
+		};
 	}
 	
 	//------------------------------------------------------------------------------------------------
 	//! Alt Log item error
-	//! \param[in] itemResource Item that failed to insert
+	//! \param[in] itemResource ResourceName of the item that failed to insert
 	//! \param[in] entity Entity that the item was being added to
 	//! \param[in] itemType type of item to display (default is "ITEM")
 	static void LogItemError(ResourceName itemResource, IEntity entity, string itemType = "ITEM")
-	{
-		string error = string.Format("[%3 GEARSCRIPT ERROR] \n\n UNABLE TO INSERT %1 %2 \n NOT ENOUGH SPACE IN ENTITY/INVALID %1!", itemType, SanitizeResourceName(itemResource), SanitizeResourceName(entity.GetPrefabData().GetPrefabName()));
+	{	
+		FactionAffiliationComponent facComp = FactionAffiliationComponent.Cast(entity.FindComponent(FactionAffiliationComponent));
 		
-		Debug.Error(error);
+		if (facComp)
+		{
+			COA_EGearRole role = COA_GearscriptCharacter.Cast(entity).GetGearRole();
+			
+			string error = string.Format("[%3 %4 GEARSCRIPT ERROR] \n\n UNABLE TO INSERT %1 %2 \n NOT ENOUGH SPACE IN ENTITY/INVALID %1!", itemType, SanitizeResourceName(itemResource), facComp.GetAffiliatedFaction().GetFactionKey(), SCR_Enum.GetEnumName(COA_EGearRole, role));
+			Debug.Error(error);
+		};
 	}
 	
 	//------------------------------------------------------------------------------------------------

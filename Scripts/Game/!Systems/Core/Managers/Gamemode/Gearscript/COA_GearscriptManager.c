@@ -37,74 +37,10 @@ class COA_GearscriptManager : ScriptComponent
 		m_Gamemode = COA_Gamemode.GetInstance();
 		
 		// 10APR26 - Pat, this has started causing crashing as of today. No idea why. Commenting out for now.
-		// #ifdef WORKBENCH
-		// 	GetGame().GetCallqueue().CallLater(DEBUG_SpawnAllRoleCharacters, 250, false);
-		// #endif
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	static COA_RolesConfig GetRolesConfig()
-	{
-		return m_RolesConfig;
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	//! Load necessary configurations for gearscript
-	protected void LoadRoleConfig()
-	{
-		ResourceName rolesConfigPath;
-		if (!CVON_VONGameModeComponent.GetInstance())
-			rolesConfigPath = C_RolesConfigResource;
-		else
-			rolesConfigPath = C_CVONRolesConfigResource;
-		
-		m_RolesConfig = COA_RolesConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(
-			BaseContainerTools.LoadContainer(rolesConfigPath).GetResource().ToBaseContainer()));
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	//! Load gear script config from resource, caching the parsed instance so repeated calls
-	//! (every spawn, every vehicle refit, every inventory move) don't re-parse it from disk.
-	//! \param[in] resourceName Resource to load
-	//! \return Loaded config or null if failed
-	COA_GearScriptConfig LoadGearScriptConfig(ResourceName resourceName)
-	{
-		if (resourceName.IsEmpty())
-			return null;
-
-		COA_GearScriptConfig cachedConfig = m_mGearScriptConfigCache.Get(resourceName);
-		if (cachedConfig)
-			return cachedConfig;
-
-		COA_GearScriptConfig config = COA_GearScriptConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(
-			BaseContainerTools.LoadContainer(resourceName).GetResource().ToBaseContainer()));
-
-		if (config)
-			m_mGearScriptConfigCache.Set(resourceName, config);
-
-		return config;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Load character identity config from resource, caching the parsed instance (see LoadGearScriptConfig).
-	//! \param[in] resourceName Resource to load
-	//! \return Loaded config or null if failed
-	COA_CharacterIdentity LoadIdentityConfig(ResourceName resourceName)
-	{
-		if (resourceName.IsEmpty())
-			return null;
-
-		COA_CharacterIdentity cachedIdentity = m_mIdentityConfigCache.Get(resourceName);
-		if (cachedIdentity)
-			return cachedIdentity;
-
-		COA_CharacterIdentity identity = COA_CharacterIdentity.Cast(BaseContainerTools.CreateInstanceFromContainer(
-			BaseContainerTools.LoadContainer(resourceName).GetResource().ToBaseContainer()));
-
-		if (identity)
-			m_mIdentityConfigCache.Set(resourceName, identity);
-
-		return identity;
+		// 3AUG26 - Believe this was simply a bad gearscript on your end. Did some efficency and NPE passes rq just in case.
+		#ifdef WORKBENCH
+			GetGame().GetCallqueue().CallLater(DEBUG_GearscriptSelfCheck, 1250, false);
+		#endif
 	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -146,7 +82,8 @@ class COA_GearscriptManager : ScriptComponent
 
 		// Get role and clear entity
 		COA_EGearRole role = COA_RoleHelper.ResourceToRole(resourceNameToScan);
-		 ClearEntityGear(inventory, inventoryManager);
+		COA_GearscriptCharacter.Cast(entity).SetGearRole(role);
+		ClearEntityGear(inventory, inventoryManager);
 
 		// Load gearscript config
 		COA_GearScriptConfig gearConfig = LoadGearScriptConfig(gearScriptResourceName);
@@ -186,71 +123,6 @@ class COA_GearscriptManager : ScriptComponent
 			}
 		}
 	}	
-	
-//=============================================================================================================================================================================================================================================================================================================================================================
-//	 IDENTITY METHODS
-//=============================================================================================================================================================================================================================================================================================================================================================
-	
-	//------------------------------------------------------------------------------------------------	
-	//! Set identity for an entity
-	//! \param[in] entity The entity to equip
-	void SetEntityIdentity(IEntity entity)
-	{
-		if (!entity)
-			return;
-
-		// Determine faction from resource name
-		FactionKey factionKey = COA_EntityHelper.DetermineFactionKey(entity);
-		if (factionKey.IsEmpty())
-			return;
-
-		// Get gearscript resources
-		ResourceName gearScriptResourceName = m_Gamemode.GetGearScriptResource(factionKey);
-		if (gearScriptResourceName.IsEmpty())
-			return;
-
-		// Load gearscript config
-		COA_GearScriptConfig gearConfig = LoadGearScriptConfig(gearScriptResourceName);
-		if (!gearConfig)
-			return;
-		
-		SCR_CharacterIdentityComponent identityComp = SCR_CharacterIdentityComponent.Cast(entity.FindComponent(SCR_CharacterIdentityComponent));
-		if (!identityComp)
-			return;
-		
-		// Get both sound and visual identities from the identity identityComp
-		VisualIdentity visIdentity = identityComp.GetIdentity().GetVisualIdentity();
-		SoundIdentity sndIdentity = identityComp.GetIdentity().GetSoundIdentity();
-		if (!visIdentity || !sndIdentity)
-			return;
-			
-		COA_CharacterIdentity gsCharIdentity = LoadIdentityConfig(gearConfig.m_FactionIdentity);
-		
-		if (gsCharIdentity)
-		{
-			COA_Character_Visual_Identity gsVisIdentity;
-			COA_Character_Sound_Identity gsSndIdentity;
-			
-			if (!gsCharIdentity.m_VisualIdentityArray.IsEmpty())
-				gsVisIdentity = gsCharIdentity.m_VisualIdentityArray.GetRandomElement();			if (!gsCharIdentity.m_SoundIdentityArray.IsEmpty())
-					gsSndIdentity = gsCharIdentity.m_SoundIdentityArray.GetRandomElement();
-			
-			if (gsVisIdentity)
-			{
-	        		visIdentity.SetHead(gsVisIdentity.m_Head);
-	        		visIdentity.SetBody(gsVisIdentity.m_Body);
-			};
-			
-			if (gsSndIdentity)
-			{
-	        		sndIdentity.SetVoiceID(gsSndIdentity.m_VoiceID);
-				sndIdentity.SetPitch(gsSndIdentity.m_VoicePitch);
-			};
-			
-			// Commit all changes to the identity comp
-	        identityComp.CommitChanges();
-		};
-    }
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 GEAR METHODS
@@ -784,27 +656,161 @@ class COA_GearscriptManager : ScriptComponent
 	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
-//	 DEBUGGING METHODS (ONLY CALLED IN WORKBENCH)
+//	 IDENTITY METHODS
 //=============================================================================================================================================================================================================================================================================================================================================================
 	
-	#ifdef WORKBENCH
+	//------------------------------------------------------------------------------------------------	
+	//! Set identity for an entity
+	//! \param[in] entity The entity to equip
+	void SetEntityIdentity(IEntity entity)
+	{
+		if (!entity)
+			return;
+
+		// Determine faction from resource name
+		FactionKey factionKey = COA_EntityHelper.DetermineFactionKey(entity);
+		if (factionKey.IsEmpty())
+			return;
+
+		// Get gearscript resources
+		ResourceName gearScriptResourceName = m_Gamemode.GetGearScriptResource(factionKey);
+		if (gearScriptResourceName.IsEmpty())
+			return;
+
+		// Load gearscript config
+		COA_GearScriptConfig gearConfig = LoadGearScriptConfig(gearScriptResourceName);
+		if (!gearConfig)
+			return;
+		
+		SCR_CharacterIdentityComponent identityComp = SCR_CharacterIdentityComponent.Cast(entity.FindComponent(SCR_CharacterIdentityComponent));
+		if (!identityComp)
+			return;
+		
+		// Get both sound and visual identities from the identity identityComp
+		VisualIdentity visIdentity = identityComp.GetIdentity().GetVisualIdentity();
+		SoundIdentity sndIdentity = identityComp.GetIdentity().GetSoundIdentity();
+		if (!visIdentity || !sndIdentity)
+			return;
+			
+		COA_CharacterIdentity gsCharIdentity = LoadIdentityConfig(gearConfig.m_FactionIdentity);
+		
+		if (gsCharIdentity)
+		{
+			COA_Character_Visual_Identity gsVisIdentity;
+			COA_Character_Sound_Identity gsSndIdentity;
+			
+			if (!gsCharIdentity.m_VisualIdentityArray.IsEmpty())
+				gsVisIdentity = gsCharIdentity.m_VisualIdentityArray.GetRandomElement();			if (!gsCharIdentity.m_SoundIdentityArray.IsEmpty())
+					gsSndIdentity = gsCharIdentity.m_SoundIdentityArray.GetRandomElement();
+			
+			if (gsVisIdentity)
+			{
+	        		visIdentity.SetHead(gsVisIdentity.m_Head);
+	        		visIdentity.SetBody(gsVisIdentity.m_Body);
+			};
+			
+			if (gsSndIdentity)
+			{
+	        		sndIdentity.SetVoiceID(gsSndIdentity.m_VoiceID);
+				sndIdentity.SetPitch(gsSndIdentity.m_VoicePitch);
+			};
+			
+			// Commit all changes to the identity comp
+	        identityComp.CommitChanges();
+		};
+    }
+	
+//=============================================================================================================================================================================================================================================================================================================================================================
+//	 ROLE CONFIG ACCESSORS/LOADERS
+//=============================================================================================================================================================================================================================================================================================================================================================
+	
 	//------------------------------------------------------------------------------------------------
-	protected void DEBUG_SpawnAllRoleCharacters()
+	static COA_RolesConfig GetRolesConfig()
+	{
+		return m_RolesConfig;
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	//! Load necessary configurations for gearscript
+	protected void LoadRoleConfig()
+	{
+		ResourceName rolesConfigPath;
+		if (!CVON_VONGameModeComponent.GetInstance())
+			rolesConfigPath = C_RolesConfigResource;
+		else
+			rolesConfigPath = C_CVONRolesConfigResource;
+		
+		m_RolesConfig = COA_RolesConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(
+			BaseContainerTools.LoadContainer(rolesConfigPath).GetResource().ToBaseContainer()));
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	//! Load gear script config from resource, caching the parsed instance so repeated calls
+	//! (every spawn, every vehicle refit, every inventory move) don't re-parse it from disk.
+	//! \param[in] resourceName Resource to load
+	//! \return Loaded config or null if failed
+	COA_GearScriptConfig LoadGearScriptConfig(ResourceName resourceName)
+	{
+		if (resourceName.IsEmpty())
+			return null;
+
+		COA_GearScriptConfig cachedConfig = m_mGearScriptConfigCache.Get(resourceName);
+		if (cachedConfig)
+			return cachedConfig;
+
+		COA_GearScriptConfig config = COA_GearScriptConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(
+			BaseContainerTools.LoadContainer(resourceName).GetResource().ToBaseContainer()));
+
+		if (config)
+			m_mGearScriptConfigCache.Set(resourceName, config);
+
+		return config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Load character identity config from resource, caching the parsed instance (see LoadGearScriptConfig).
+	//! \param[in] resourceName Resource to load
+	//! \return Loaded config or null if failed
+	COA_CharacterIdentity LoadIdentityConfig(ResourceName resourceName)
+	{
+		if (resourceName.IsEmpty())
+			return null;
+
+		COA_CharacterIdentity cachedIdentity = m_mIdentityConfigCache.Get(resourceName);
+		if (cachedIdentity)
+			return cachedIdentity;
+
+		COA_CharacterIdentity identity = COA_CharacterIdentity.Cast(BaseContainerTools.CreateInstanceFromContainer(
+			BaseContainerTools.LoadContainer(resourceName).GetResource().ToBaseContainer()));
+
+		if (identity)
+			m_mIdentityConfigCache.Set(resourceName, identity);
+
+		return identity;
+	}
+	
+	#ifdef WORKBENCH
+//=============================================================================================================================================================================================================================================================================================================================================================
+//	 SELF-CHECK METHODS (ONLY CALLED IN WORKBENCH)
+//=============================================================================================================================================================================================================================================================================================================================================================
+	
+	protected COA_PlayerCharacter m_CharacterToCheckAgainst;
+	
+	//------------------------------------------------------------------------------------------------
+	protected void DEBUG_GearscriptSelfCheck()
 	{
 		COA_RespawnManager respawnManager = COA_RespawnManager.GetInstance();
 		
 		// Setup Faction/Role Arrays
 		array<FactionKey> factionKeys = {"BLUFOR", "OPFOR", "INDFOR", "CIV"};
-		array<ref COA_RoleConfig> roleArray = m_RolesConfig.GetRoleConfigArray();
-		RandomGenerator rng = new RandomGenerator;
+		int delayTime;
+		int delay;
 		
 		foreach (FactionKey factionKey : factionKeys)
 		{
 			COA_SpawnPointData initialSpawnData = respawnManager.FindInitalFactionSpawnpoint(factionKey);
-			Faction faction = GetGame().GetFactionManager().GetFactionByKey(factionKey);
-			
-			if (initialSpawnData && faction)
-			{
+			if (initialSpawnData)
+			{		
 				IEntity spawnPointEnt = COA_EntityHelper.GetEntityFromRplId(initialSpawnData.GetSpawnPointEntity());
 				if (spawnPointEnt)
 				{
@@ -812,28 +818,72 @@ class COA_GearscriptManager : ScriptComponent
 					spawnParams.TransformMode = ETransformMode.WORLD;
 					spawnPointEnt.GetWorldTransform(spawnParams.Transform);
 					
-					foreach (ref COA_RoleConfig roleConfig : roleArray)
-						GetGame().GetCallqueue().CallLater(DEBUG_SpawnThenDeleteCharacter, rng.RandInt(500, 12000), false, spawnParams, roleConfig.m_RoleResource, faction);
+					array<ref COA_RoleConfig> roleArray = {};
+					
+					foreach(COA_SlottingGroup slotGroup : m_Gamemode.GetSlots(factionKey))
+					{
+						foreach(COA_EGearRole role : slotGroup.m_aSlots)
+						{
+							COA_RoleConfig roleConfig = m_RolesConfig.FindRoleConfig(role);
+							if (!roleArray.Contains(roleConfig))
+							{
+								roleArray.Insert(roleConfig);
+								
+								delay++;
+								delayTime = (delay * 125); // need a delay to prevent massive lag spikes on mission load (and to see what role actually casued the error lol)
+								GetGame().GetCallqueue().CallLater(DEBUG_CheckGear, delayTime, false, factionKey, roleConfig, spawnParams);
+							}
+						}
+					}
 				};
 			};
 		}
+
+		GetGame().GetCallqueue().CallLater(DEBUG_DeleteCharacterCheck, delayTime + 150, false, "", true);
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	protected void DEBUG_SpawnThenDeleteCharacter(EntitySpawnParams spawnParams, ResourceName characterResource, Faction faction)
-	{
-		COA_PlayerCharacter playerCharacter = COA_PlayerCharacter.Cast(
-			GetGame().SpawnEntityPrefab(m_ResourceCache.GetCachedResource(characterResource), GetGame().GetWorld(), spawnParams)
-		);
+	protected void DEBUG_CheckGear(FactionKey factionKey, COA_RoleConfig roleConfig, EntitySpawnParams spawnParams)
+	{	
+		DEBUG_DeleteCharacterCheck(factionKey);
 		
-		if (!playerCharacter)
-			return;
+		if (!m_CharacterToCheckAgainst)
+		{	
+			m_CharacterToCheckAgainst = COA_PlayerCharacter.Cast(GetGame().SpawnEntityPrefab(m_ResourceCache.GetCachedResource(roleConfig.m_RoleResource), GetGame().GetWorld(), spawnParams));
+			
+			// Update character faction
+			Faction faction = GetGame().GetFactionManager().GetFactionByKey(factionKey);
+			FactionAffiliationComponent facComp = FactionAffiliationComponent.Cast(m_CharacterToCheckAgainst.FindComponent(FactionAffiliationComponent));
+			facComp.SetAffiliatedFaction(faction);
+			
+			PrintFormat("==========================================================================================================================================================");
+			PrintFormat("----------------------------------------------------------------------------");
+			PrintFormat("|     [GEARSCIRPT VALIDATION] : ALL SLOTS FOR %1 ARE BEING CHECKED...", factionKey);
+			PrintFormat("----------------------------------------------------------------------------");
+		} else {
+			SetEntityGear(m_CharacterToCheckAgainst, roleConfig.m_RoleResource);
+		};
 		
-		// Update character faction
-		FactionAffiliationComponent facComp = FactionAffiliationComponent.Cast(playerCharacter.FindComponent(FactionAffiliationComponent));
-		facComp.SetAffiliatedFaction(faction);
-		
-		GetGame().GetCallqueue().CallLater(SCR_EntityHelper.DeleteEntityAndChildren, 250, false, playerCharacter);
+		PrintFormat("[GEARSCIRPT VALIDATION] : CHECKING GEAR FOR: %1, %2", factionKey, SCR_Enum.GetEnumName(COA_EGearRole, roleConfig.m_Role));
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	protected FactionKey m_FactionInUse;
+	protected void DEBUG_DeleteCharacterCheck(FactionKey factionKey, bool forceDelete = false)
+	{	
+		if (m_FactionInUse != factionKey || forceDelete)
+		{
+			m_FactionInUse = factionKey;
+			
+			if (m_CharacterToCheckAgainst)
+			{
+				PrintFormat("----------------------------------------------------------------------------");
+				PrintFormat("|     [GEARSCIRPT VALIDATION] : ALL SLOTS FOR %1 HAVE BEEN CHECKED!", FactionAffiliationComponent.Cast(m_CharacterToCheckAgainst.FindComponent(FactionAffiliationComponent)).GetAffiliatedFaction().GetFactionKey());
+				PrintFormat("----------------------------------------------------------------------------");
+				
+				SCR_EntityHelper.DeleteEntityAndChildren(m_CharacterToCheckAgainst);
+			}
+		}
 	}
 	#endif
 	

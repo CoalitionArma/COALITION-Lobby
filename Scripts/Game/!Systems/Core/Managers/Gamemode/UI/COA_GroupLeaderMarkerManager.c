@@ -756,7 +756,7 @@ class COA_GroupLeaderMarkerManager: SCR_BaseGameModeComponent
 		markerData.m_wMarkerText.GetTextSize(textWidth, textHeight);
 		
 		// Add some padding
-		float padding = 8.0;
+		const float padding = 8.0;
 		FrameSlot.SetSize(markerData.m_wMarkerBackground, textWidth + padding, textHeight + padding);
 	}
 	

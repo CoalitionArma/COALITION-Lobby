@@ -66,7 +66,7 @@ class COA_ListBoxElementComponent: SCR_ListBoxElementComponent
 	 */
 	Widget GetSlottedWidget()
 	{
-		Widget widget = Widget.Cast(m_wRoot.FindAnyWidget("Slotted"));
+		Widget widget = m_wRoot.FindAnyWidget("Slotted");
 		if (widget)
 			return widget;
 		return null;

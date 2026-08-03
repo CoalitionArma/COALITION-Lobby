@@ -84,7 +84,7 @@ class COA_RespawnManager : ScriptComponent
 	private void InitializeRespawnTimers()
 	{
 		m_iRespawnWaveCurrentTime = m_iCurrentTimeToRespawn;
-		m_fRespawnTimer = (float)m_iRespawnWaveCurrentTime;
+		m_fRespawnTimer = m_iRespawnWaveCurrentTime;
 		m_bRespawnInit = true;
 	}
 	
@@ -551,7 +551,7 @@ class COA_RespawnManager : ScriptComponent
 				if (m_SelectedSpawnPoint != null && m_RespawnConfirmed)
 				{
 					// Reset the timer
-					m_fRespawnTimer = (float)m_iRespawnWaveCurrentTime;
+					m_fRespawnTimer = m_iRespawnWaveCurrentTime;
 					m_iLocalTimeToRespawn = m_iCurrentTimeToRespawn;
 					m_bNeedsRespawn = false;
 					// Only perform respawn if not in AAR state

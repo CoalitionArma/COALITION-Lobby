@@ -85,16 +85,16 @@ class COA_Gamemode : SCR_BaseGameMode
 	string m_sFactionTwoKey;
 	
 	[Attribute("", UIWidgets.Hidden)]
-	ref array <ref COA_SlottingGroup> m_BLUFORSlots;
+	protected ref array <ref COA_SlottingGroup> m_BLUFORSlots;
 
 	[Attribute("", UIWidgets.Hidden)]
-	ref array <ref COA_SlottingGroup> m_OPFORSlots;
+	protected ref array <ref COA_SlottingGroup> m_OPFORSlots;
 	
 	[Attribute("", UIWidgets.Hidden)]
-	ref array <ref COA_SlottingGroup> m_INDFORSlots;
+	protected ref array <ref COA_SlottingGroup> m_INDFORSlots;
 	
 	[Attribute("", UIWidgets.Hidden)]
-	ref array <ref COA_SlottingGroup> m_CIVSlots;
+	protected ref array <ref COA_SlottingGroup> m_CIVSlots;
 	
 	[Attribute("0", UIWidgets.Hidden), RplProp()]
 	int m_iBLUFORTickets;
@@ -774,6 +774,23 @@ class COA_Gamemode : SCR_BaseGameMode
 		}
 		
    		return true;
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	//! Get a sides slots container array
+	//! \param[in] factionKey Faction identifier (BLUFOR, OPFOR, etc.)
+	//! \return The slot container array or null if not found
+	array <ref COA_SlottingGroup> GetSlots(FactionKey factionKey)
+	{
+		switch (factionKey)
+		{
+			case "BLUFOR": return m_BLUFORSlots;
+			case "OPFOR": return m_OPFORSlots;
+			case "INDFOR": return m_INDFORSlots;
+			case "CIV": return m_CIVSlots;
+		}
+		
+		return new array <ref COA_SlottingGroup>;
 	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================

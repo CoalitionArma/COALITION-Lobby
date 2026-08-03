@@ -234,7 +234,7 @@ class COA_PlayerChatCommandManager : ScriptComponent
 						SCR_ChatComponent chatComponent = SCR_ChatComponent.Cast(GetGame().GetPlayerController().FindComponent(SCR_ChatComponent));
 						if (chatComponent)
 						{
-							string validOptions = "Valid faction options: blufor (blu), opfor (opf), indfor (ind), civ";
+							const string validOptions = "Valid faction options: blufor (blu), opfor (opf), indfor (ind), civ";
 							chatComponent.ShowMessage(string.Format("Invalid faction '%1'. %2", data, validOptions));
 						}
 					}

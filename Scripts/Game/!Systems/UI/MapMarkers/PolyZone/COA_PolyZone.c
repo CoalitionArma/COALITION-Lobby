@@ -217,8 +217,8 @@ class COA_PolyZone : ScriptComponent
 			// Use the map tile's exact bounds (always 0,0 → sizeX, sizeZ in world space)
 			// instead of GetBoundBox(), which returns entity AABB and can misalign with
 			// the visible map corners when objects are placed near or outside terrain edges.
-			float minX = 0;
-			float minZ = 0;
+			const float minX = 0;
+			const float minZ = 0;
 			float maxX = m_MapEntity.GetMapSizeX();
 			float maxZ = m_MapEntity.GetMapSizeY(); // map Y axis == world Z axis (top-down)
 			outPoints.InsertAt(Vector(minX, 0, minZ), 0);
