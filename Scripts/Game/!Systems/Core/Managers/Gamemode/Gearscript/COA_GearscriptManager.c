@@ -101,7 +101,7 @@ class COA_GearscriptManager : ScriptComponent
 		ApplyInventoryItems(gearConfig, role, gearScriptSettings, spawnParams, inventory, inventoryManager);
 		
 		int weight = inventoryManager.GetTotalWeightOfAllStorages();
-		if (weight > 50) // We dont enjoy people being over 50kg
+		if (weight > 60) // We dont enjoy people being over 60kg
 			COA_LoggingHelper.LogWeightError(entity, weight);
 		
 		// Initialize radios for player

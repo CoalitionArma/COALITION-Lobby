@@ -47,9 +47,9 @@ class COA_LoggingHelper
 		if (facComp)
 		{
 			COA_EGearRole role = COA_GearscriptCharacter.Cast(entity).GetGearRole();
-			int dif = kg - 50;
+			int dif = kg - 60;
 			
-			string error = string.Format("[%2 %3 GEARSCRIPT ERROR] \n\n %1kg OVERWEIGHT OF TARGET WEIGHT (50kg) \n PLEASE REDUCE THE AMMOUNT OF GEAR ON THIS ENTITY TO GET IT BELLOW THE TARGET WEIGHT", dif, facComp.GetAffiliatedFaction().GetFactionKey(), SCR_Enum.GetEnumName(COA_EGearRole, role));
+			string error = string.Format("[%2 %3 GEARSCRIPT ERROR] \n\n %1kg OVERWEIGHT OF MAX WEIGHT (60kg) \n PLEASE REDUCE THE AMMOUNT OF GEAR ON THIS ENTITY TO GET IT BELLOW THE MAX WEIGHT", dif, facComp.GetAffiliatedFaction().GetFactionKey(), SCR_Enum.GetEnumName(COA_EGearRole, role));
 			Debug.Error(error);
 		};
 	}
