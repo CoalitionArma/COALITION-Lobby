@@ -100,10 +100,10 @@ class COA_MissionFactionsPlugin : WorkbenchPlugin
 		m_INDFORGearScriptSettings = new COA_SimplifiedGearScriptContainer;
 		m_CIVILIANGearScriptSettings = new COA_SimplifiedGearScriptContainer;
 		
-		SetPluginGearscriptVariables(m_BLUFORGearScriptSettings, gamemode.m_BLUFORGearScriptSettings);
-		SetPluginGearscriptVariables(m_OPFORGearScriptSettings, gamemode.m_OPFORGearScriptSettings);
-		SetPluginGearscriptVariables(m_INDFORGearScriptSettings, gamemode.m_INDFORGearScriptSettings);
-		SetPluginGearscriptVariables(m_CIVILIANGearScriptSettings, gamemode.m_CIVILIANGearScriptSettings);
+		SetPluginGearscriptVariables(m_BLUFORGearScriptSettings, gamemode.GetGearScriptSettings("BLUFOR"));
+		SetPluginGearscriptVariables(m_OPFORGearScriptSettings, gamemode.GetGearScriptSettings("OPFOR"));
+		SetPluginGearscriptVariables(m_INDFORGearScriptSettings, gamemode.GetGearScriptSettings("INDFOR"));
+		SetPluginGearscriptVariables(m_CIVILIANGearScriptSettings, gamemode.GetGearScriptSettings("CIV"));
 		
 		// Actually shows the window
 		if (!Workbench.ScriptDialog(

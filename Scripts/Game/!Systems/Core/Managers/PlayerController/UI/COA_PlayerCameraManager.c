@@ -229,7 +229,7 @@ class COA_PlayerCameraManager : ScriptComponent
 		cameraBoneMat[2] = cameraBoneMat[2].FromYaw(cameraBoneMat[2].ToYaw() - 180);
 		
 		// Calculate offset position (0.1m back, 0.3m right for over-shoulder view)
-		vector offsetPosition = cameraBoneMat[3] - (cameraBoneMat[2] * 0.1) + (cameraBoneMat[0] * -0.3);
+		vector offsetPosition = cameraBoneMat[3] - (cameraBoneMat[2] * 0.0325) + (cameraBoneMat[0] * -0.1825);
 		cameraBoneMat[3] = offsetPosition;
 		
 		// Apply transform to spectator camera

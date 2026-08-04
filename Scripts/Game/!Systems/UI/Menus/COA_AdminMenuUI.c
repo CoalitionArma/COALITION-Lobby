@@ -2078,8 +2078,6 @@ class COA_AdminMenu : ChimeraMenuBase
 		
 		// Update Timer
 		gameTimerText.SetText(m_sServerWorldTime);
-		
-		COA_Gamemode gm = COA_Gamemode.GetInstance();
 
 		ref array<string> factions = {"BLUFOR", "OPFOR", "INDFOR", "CIV"};
 		
@@ -2087,14 +2085,7 @@ class COA_AdminMenu : ChimeraMenuBase
 		Widget gearSets = m_wMenuContent.FindAnyWidget("GearSets");
 		foreach (string faction : factions)
 		{
-			string resourceName;
-			switch (faction)
-			{
-				case "BLUFOR" : resourceName = gm.m_rBLUFORCurrentGearScript; break;
-				case "OPFOR" : resourceName = gm.m_rOPFORCurrentGearScript; break;
-				case "INDFOR" : resourceName = gm.m_rINDFORCurrentGearScript; break;
-				case "CIV" : resourceName = gm.m_rCIVILIANCurrentGearScript; break;
-			}
+			string resourceName = COA_Gamemode.GetInstance().GetGearScriptResource(faction);
 			
 			string gearSetName =  resourceName.Substring(resourceName.LastIndexOf("/") + 1, resourceName.LastIndexOf(".") - resourceName.LastIndexOf("/") - 1);
 			gearSetName.Replace("COA_GS_", "");

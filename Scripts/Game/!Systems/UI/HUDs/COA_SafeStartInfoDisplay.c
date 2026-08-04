@@ -352,24 +352,9 @@ class COA_SafeStartInfoDisplay : SCR_InfoDisplayExtended
 					ResourceName slotResource = slotData.GetSlotResource();
 					COA_EGearRole playerRole = COA_RoleHelper.ResourceToRole(slotResource);
 					string factionKey = slotData.GetSlotFactionKey();
-					COA_GearScriptContainer gearScriptSettings = null;
 					
 					// Get the appropriate gear script settings based on faction
-					switch (factionKey)
-					{
-						case "BLUFOR":
-							gearScriptSettings = m_Gamemode.m_BLUFORGearScriptSettings;
-							break;
-						case "OPFOR":
-							gearScriptSettings = m_Gamemode.m_OPFORGearScriptSettings;
-							break;
-						case "INDFOR":
-							gearScriptSettings = m_Gamemode.m_INDFORGearScriptSettings;
-							break;
-						case "CIV":
-							gearScriptSettings = m_Gamemode.m_CIVILIANGearScriptSettings;
-							break;
-					}
+					COA_GearScriptContainer gearScriptSettings = m_Gamemode.GetGearScriptSettings(factionKey);
 					
 					if (gearScriptSettings)
 					{

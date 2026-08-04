@@ -1823,7 +1823,7 @@ class COA_RplBroadcastManager : ScriptComponent
 		if (!IsLocalPlayer(playerId))
 			return;
 
-		COA_PlayerControllerManager.GetInstance().InitilizePlayerClient(playerCharID);
+		COA_PlayerControllerManager.GetInstance().InitilizePlayerClient(playerCharID, 0);
 	}
 	
 	//------------------------------------------------------------------------------------------------

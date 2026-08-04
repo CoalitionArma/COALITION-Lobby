@@ -153,20 +153,20 @@ class COA_Gamemode : SCR_BaseGameMode
 	// Gearscript Settings
 	//------------------------------------------------------------------------------------
 	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all blufor players", category: "Gearscript Settings - Advanced")]
-	ref COA_GearScriptContainer m_BLUFORGearScriptSettings;
-	[RplProp()] ResourceName m_rBLUFORCurrentGearScript;
+	protected ref COA_GearScriptContainer m_BLUFORGearScriptSettings;
+	[RplProp()] protected ResourceName m_rBLUFORCurrentGearScript;
 
 	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all opfor players", category: "Gearscript Settings - Advanced")]
-	ref COA_GearScriptContainer m_OPFORGearScriptSettings;
-	[RplProp()] ResourceName m_rOPFORCurrentGearScript;
+	protected ref COA_GearScriptContainer m_OPFORGearScriptSettings;
+	[RplProp()] protected ResourceName m_rOPFORCurrentGearScript;
 
 	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all indfor players", category: "Gearscript Settings - Advanced")]
-	ref COA_GearScriptContainer m_INDFORGearScriptSettings;
-	[RplProp()] ResourceName m_rINDFORCurrentGearScript;
+	protected ref COA_GearScriptContainer m_INDFORGearScriptSettings;
+	[RplProp()] protected ResourceName m_rINDFORCurrentGearScript;
 
 	[Attribute("", UIWidgets.Auto, desc: "Gearscript applied to all civ players", category: "Gearscript Settings - Advanced")]
-	ref COA_GearScriptContainer m_CIVILIANGearScriptSettings;
-	[RplProp()] ResourceName m_rCIVILIANCurrentGearScript;
+	protected ref COA_GearScriptContainer m_CIVILIANGearScriptSettings;
+	[RplProp()] protected ResourceName m_rCIVILIANCurrentGearScript;
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 RUNTIME VARIABLES
