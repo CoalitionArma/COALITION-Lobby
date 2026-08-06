@@ -82,7 +82,17 @@ class COA_GearscriptManager : ScriptComponent
 
 		// Get role and clear entity
 		COA_EGearRole role = COA_RoleHelper.ResourceToRole(resourceNameToScan);
-		COA_GearscriptCharacter.Cast(entity).SetGearRole(role);
+
+		COA_GearscriptCharacter gearscriptCharacter = COA_GearscriptCharacter.Cast(entity);
+		if (gearscriptCharacter)
+		{
+			gearscriptCharacter.SetGearRole(role);
+
+			// Claim the character before any gear is touched, so the deferred EOnInit pass cannot
+			// re-enter and wipe a loadout this call is midway through applying.
+			gearscriptCharacter.MarkGearApplied();
+		}
+
 		ClearEntityGear(inventory, inventoryManager);
 
 		// Load gearscript config
@@ -104,29 +114,44 @@ class COA_GearscriptManager : ScriptComponent
 		if (weight > 60) // We dont enjoy people being over 60kg
 			COA_LoggingHelper.LogWeightError(entity, weight);
 		
-		// Initialize radios for player
+		// Initialize radios for player.
+		// Resolves the player from the entity, so this only does anything when the character is
+		// already possessed - i.e. the deferred/AI path and re-equips. When gear is applied ahead of
+		// handover during player initialization there is no controlling player yet, and
+		// COA_GamemodeManager calls InitializeCharacterRadios() explicitly once possession completes.
 		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(entity);
 		if (playerId > 0)
-		{
-			COA_PlayerController pc = COA_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
-			COA_PlayerRplToOwnerManager rplToOwnerManager = COA_PlayerRplToOwnerManager.GetInstance();
-			// Cache groups manager reference - PERFORMANCE OPTIMIZATION
-			SCR_GroupsManagerComponent groupsMan = SCR_GroupsManagerComponent.GetInstance();
-			
-			// Rebuild the radio list after replacing the player's gear. Tuning before
-			// this can access stale entities left behind by ClearEntityGear().
-			if (pc)
-				pc.InitializeRadios(entity);
+			InitializeCharacterRadios(entity, playerId);
+	}
 
-			if (groupsMan)
-				groupsMan.TuneFreqDelayWithPresets(playerId, entity);
-			
-			if (rplToOwnerManager && pc)
-			{
-				rplToOwnerManager.InitializeRadioFromServer();
-			}
+	//------------------------------------------------------------------------------------------------
+	//! Rebuild and tune a character's radios. Must run AFTER the gearscript has been applied (the
+	//! radio list is built from the equipped gear) and after the player controls the character.
+	//! \param[in] entity the character to set radios up on
+	//! \param[in] playerId the player controlling that character
+	void InitializeCharacterRadios(IEntity entity, int playerId)
+	{
+		if (!entity || playerId <= 0)
+			return;
+
+		COA_PlayerController pc = COA_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
+		COA_PlayerRplToOwnerManager rplToOwnerManager = COA_PlayerRplToOwnerManager.GetInstance();
+		// Cache groups manager reference - PERFORMANCE OPTIMIZATION
+		SCR_GroupsManagerComponent groupsMan = SCR_GroupsManagerComponent.GetInstance();
+
+		// Rebuild the radio list after replacing the player's gear. Tuning before
+		// this can access stale entities left behind by ClearEntityGear().
+		if (pc)
+			pc.InitializeRadios(entity);
+
+		if (groupsMan)
+			groupsMan.TuneFreqDelayWithPresets(playerId, entity);
+
+		if (rplToOwnerManager && pc)
+		{
+			rplToOwnerManager.InitializeRadioFromServer();
 		}
-	}	
+	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 GEAR METHODS
