@@ -17,12 +17,6 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 	protected COA_MenuManager m_MenuManager;
 	protected COA_Gamemode m_Gamemode;
 	
-	protected const int STATS_TRACKING_INIT_RETRY_DELAY_MS = 250;
-	protected const int STATS_TRACKING_INIT_MAX_RETRIES = 20;
-
-	protected const int GROUP_ASSIGN_RETRY_DELAY_MS = 100;
-	protected const int GROUP_ASSIGN_MAX_RETRIES = 30;
-	
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{	
