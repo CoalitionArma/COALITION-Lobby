@@ -26,12 +26,41 @@ class COA_InitializationHelper
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	//!
+	//! Assign faction to the player controller. AUTHORITY ONLY.
+	//! SCR_PlayerFactionAffiliationComponent.RequestFaction() RPCs to the server either way, but it
+	//! can be refused by the spawn lock, and on a client the refusal is silent. Running it on the
+	//! authority (where the lock state is real) keeps the player-controller faction deterministic
+	//! rather than dependent on a request the client can never confirm.
+	//! \param[in] playerController Player controller to assign faction to
+	//! \param[in] faction Faction to assign
+	static void AssignFactionToPlayer(SCR_PlayerController playerController, Faction faction)
+	{
+		if (!faction || !playerController)
+			return;
+
+		SCR_PlayerFactionAffiliationComponent affiliationComponent = SCR_PlayerFactionAffiliationComponent.Cast(
+			playerController.FindComponent(SCR_PlayerFactionAffiliationComponent)
+		);
+
+		if (affiliationComponent)
+			affiliationComponent.RequestFaction(faction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Build the player's radio list and tune it. AUTHORITY ONLY — every step here is
+	//! server-authoritative and silently does nothing when run on a client:
+	//!  - InitializeRadios() fills the server-side copy of m_aRadios, which is what
+	//!    TuneFreqDelayWithPresets() iterates and what the VON backend reads.
+	//!  - TuneFreqDelayWithPresets() ends in BaseTransceiver.SetFrequency(), which only
+	//!    replicates from the authority.
+	//!  - InitializeRadioFromServer() sends an RplRcver.Owner RPC, which is a no-op unless
+	//!    it originates on the server. It is what tells the owning client to rebuild its own
+	//!    radio list, so the client never needs to call any of this itself.
 	static void SetupPlayerRadios(int playerId, IEntity entity)
 	{
 		if (playerId <= 0)
 			return;
-		
+
 		// Initialize radios for player
 		COA_PlayerController pc = COA_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
 		COA_PlayerRplToOwnerManager rplToOwnerManager = COA_PlayerRplToOwnerManager.GetInstance();
