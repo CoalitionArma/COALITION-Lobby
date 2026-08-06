@@ -7,8 +7,7 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 //	 RUNTIME VARIABLES
 //=============================================================================================================================================================================================================================================================================================================================================================
 	protected ref COA_ResourceCache m_ResourceCache;
-
-	protected SCR_GroupsManagerComponent m_GroupsManagerComponent;
+	
 	// SendRespawnScreen stayed on the lobby-side broadcast manager (COA_Gamemode's own respawn-into-slot
 	// flow calls it too), so this needs its own reference to that class.
 	protected COA_RplBroadcastManager m_RplBroadcastManager;
@@ -42,7 +41,6 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 	//! Initialize all manager references needed for this component
 	protected void InitializeManagers()
 	{
-		m_GroupsManagerComponent = SCR_GroupsManagerComponent.GetInstance();
 		m_RplBroadcastManager = COA_RplBroadcastManager.GetInstance();
 		m_SlottingManager = COA_SlottingManager.GetInstance();
 		m_RespawnManager = COA_RespawnManager.GetInstance();
@@ -102,24 +100,21 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		if (playerCharacter && playerRplComp)
 		{
 			playerCharacter.DisableAI();
-
+			
 			if (!COA_EntityHelper.IsSpectator(playerCharacter))
 			{
-				// Playable characters wait for their gear before being handed over — see
-				// ScheduleAssignPlayerToCharacter, which owns the rest of the sequence.
 				ScheduleAssignPlayerToCharacter(playerCharacter, playerId, playerController, playerRplComp.Id(), 0);
 			} else {
 				//Sends the player the respawn screen if they reconnect while dead
 				if (m_SlottingManager.IsPlayerInASlot(playerId) && m_SlottingManager.IsPlayerConsideredDead(playerId) && m_RespawnManager.CanPlayerRespawn(playerCharacter, faction.GetFactionKey(), playerId))
 					m_RplBroadcastManager.SendRespawnScreen(playerId);
-
+				
 				COA_InitializationHelper.AssignCharacterToPlayer(playerController, playerCharacter);
-				COA_InitializationHelper.AssignFactionToPlayer(playerController, faction);
-
+				
 				m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, playerRplComp.Id());
 			};
 		};
-
+		
 		return true;
 	}
 
@@ -200,17 +195,9 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		if (!playerCharacter)
 			return null;
 		
-		// Update character faction.
-		// Not every playable prefab carries a faction component — the Zeus and VIP prefabs in
-		// particular declare a bare FactionAffiliationComponent rather than inheriting the
-		// SCR_CharacterFactionAffiliationComponent the rest of the roles get. Missing it is not
-		// fatal to the spawn, so warn loudly (naming the prefab) and carry on rather than
-		// hard-crashing player initialization.
+		// Update character faction
 		FactionAffiliationComponent facComp = FactionAffiliationComponent.Cast(playerCharacter.FindComponent(FactionAffiliationComponent));
-		if (facComp)
-			facComp.SetAffiliatedFaction(m_SlottingManager.GetPlayerSlotFaction(playerId));
-		else
-			Print(string.Format("[COA_GamemodeManager] WARNING: '%1' has no FactionAffiliationComponent — spawning player %2 without a faction affiliation", resourceName, playerId), LogLevel.WARNING);
+		facComp.SetAffiliatedFaction(m_SlottingManager.GetPlayerSlotFaction(playerId));
 	
 		// Update slot data
 		RplComponent charRplComp = RplComponent.Cast(playerCharacter.FindComponent(RplComponent));
@@ -288,131 +275,56 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	//! Wait until the character is ready to be handed over, then run the whole server-side
-	//! handover in one place and in a fixed order.
-	//!
-	//! Order matters and mirrors the vanilla spawn sequence (SCR_SpawnHandlerComponent):
-	//! gear is applied to the entity first, then the entity is assigned to the player
-	//! (SetInitialMainEntity, which is also what transfers ownership), and only then does
-	//! anything that depends on the player actually controlling that entity run.
-	//!
-	//! Everything here is authority-side on purpose. Faction, group membership and radio tuning
-	//! are all server-authoritative; a client asking for them cannot confirm the result, and the
-	//! radio path in particular is a silent no-op off the authority. The client is told to do its
-	//! own local presentation work last, via InitilizePlayerBroadcast.
-	//! \param[in] playerCharacter the character being handed over
+	//! Poll until all parameters are met for a player to be assigned a character, then do it.
 	//! \param[in] playerId ID of the player to assign
-	//! \param[in] playerController Player controller to assign to
+	//! \param[in] playerController Player controller to check against
 	//! \param[in] playerEntityRplId RplId of the character this assignment was issued for, so a
 	//!            stale retry (player died/respawned again before this resolved) doesn't fire late
 	//! \param[in] attempt current retry count
 	protected void ScheduleAssignPlayerToCharacter(COA_PlayerCharacter playerCharacter, int playerId, SCR_PlayerController playerController, RplId playerEntityRplId, int attempt)
 	{
 		PlayerManager playerManager = GetGame().GetPlayerManager();
-		if (!playerCharacter || !playerController || !playerManager || !playerManager.IsPlayerConnected(playerId))
+		if (!playerCharacter || !playerManager || !playerManager.IsPlayerConnected(playerId))
 			return;
 
-		// If a newer InitilizePlayer call has already put this player into a different slot
-		// character, that call owns the handover now — drop this one. Compared against the slot
-		// rather than the controlled entity: the player has not been given the character yet at
-		// this point, so their current controlled entity is still the previous/spectator one and
-		// is expected to differ.
-		COA_PlayerCharacter slotCharacter = m_SlottingManager.GetPlayerSlotCharacter(playerId);
-		if (slotCharacter && slotCharacter != playerCharacter)
-			return;
+		// If the player already moved on to a different character (e.g. respawned again
+		// before this resolved), let that newer InitilizePlayer call own the group assignment.
+		IEntity controlledEntity = playerManager.GetPlayerControlledEntity(playerId);
+		if (controlledEntity && !COA_EntityHelper.IsSpectator(controlledEntity))
+		{
+			RplComponent controlledRplComp = RplComponent.Cast(controlledEntity.FindComponent(RplComponent));
+			if (!controlledRplComp || controlledRplComp.Id() != playerEntityRplId)
+				return;
+		};
 
 		//--------------------------------------------------------------------------- GROUP ---------------------------------------------------------------------------
-		// A slot can legitimately have no group at all (Zeus and other unattached roles), which is
-		// different from "the slot has a group but it hasn't replicated into an entity yet". Only
-		// the latter is worth waiting for — gating on the group unconditionally would stall
-		// group-less slots for the full retry budget and then strand them with no character.
-		COA_SlotData slotData = m_SlottingManager.GetPlayerSlotData(playerId);
-		bool slotExpectsGroup = slotData && slotData.GetSlotCurrentGroup() != RplId.Invalid();
-
 		SCR_AIGroup group = m_SlottingManager.GetPlayerSlotGroup(playerId);
 		int groupId = -1;
 		if (group)
 			groupId = group.GetGroupID();
 
-		bool isGroupReady = !slotExpectsGroup || (group && groupId != -1);
-
 		SCR_PlayerControllerGroupComponent groupComponent = SCR_PlayerControllerGroupComponent.GetPlayerControllerComponent(playerId);
-
+		
 		//--------------------------------------------------------------------------- GEARSCRIPT ---------------------------------------------------------------------------
-		// Non-gearscript playable prefabs have no gear state to wait on, so treat them as ready.
-		bool isCharacterGearSet = true;
-		COA_GearscriptCharacter gearscriptCharacter = COA_GearscriptCharacter.Cast(playerCharacter);
-		if (gearscriptCharacter)
-			isCharacterGearSet = gearscriptCharacter.GetCharacterGearState();
+		bool isCharacterGearSet = COA_GearscriptCharacter.Cast(playerCharacter).GetCharacterGearState();
 
 		//--------------------------------------------------------------------------- CHECK ---------------------------------------------------------------------------
-		if (!groupComponent || !isCharacterGearSet || !isGroupReady)
+		if (!group || groupId == -1 || !groupComponent || !isCharacterGearSet)
 		{
-			if (attempt + 1 < CHARACTER_ASSIGN_MAX_RETRIES)
+			if (attempt + 1 >= CHARACTER_ASSIGN_MAX_RETRIES)
 			{
-				GetGame().GetCallqueue().CallLater(ScheduleAssignPlayerToCharacter, CHARACTER_ASSIGN_RETRY_DELAY_MS, false, playerCharacter, playerId, playerController, playerEntityRplId, attempt + 1);
+				Print(string.Format("[COA_GamemodeManager] WARNING: Failed to assign player %1 to character after %2 attempts (this is very bad)", playerId, CHARACTER_ASSIGN_MAX_RETRIES), LogLevel.ERROR);
 				return;
 			}
 
-			// Out of retries. Hand the character over anyway — a player stuck with no character at
-			// all is far worse than one who spawns with a missing group or an untuned radio, and
-			// those can still be recovered by re-slotting. Log what was missing.
-			Print(string.Format("[COA_GamemodeManager] ERROR: Player %1 not ready after %2 attempts (gearSet: %3, groupComponent: %4, groupReady: %5) — assigning character anyway", playerId, CHARACTER_ASSIGN_MAX_RETRIES, isCharacterGearSet, groupComponent != null, isGroupReady), LogLevel.ERROR);
+			GetGame().GetCallqueue().CallLater(ScheduleAssignPlayerToCharacter, CHARACTER_ASSIGN_RETRY_DELAY_MS, false, playerCharacter, playerId, playerController, playerEntityRplId, attempt + 1);
+			return;
 		}
-
+		
 		//--------------------------------------------------------------------------- CHECK PASS ---------------------------------------------------------------------------
-		// 1. Hand the geared character over and transfer ownership to the player.
 		COA_InitializationHelper.AssignCharacterToPlayer(playerController, playerCharacter);
-
-		// 2. Faction on the player controller, from the authority.
-		COA_InitializationHelper.AssignFactionToPlayer(playerController, m_SlottingManager.GetPlayerSlotFaction(playerId));
-
-		// 3. Group membership. Drives nametags, group VON frequency and squad UI. A slot without a
-		//    group (Zeus and similar unattached roles) is legitimate, so this is not a hard gate on
-		//    the handover — it just gets skipped.
-		if (group && groupId != -1)
-			AssignPlayerToGroup(playerId);
-
-		// 4. Radios. Must run after the player controls the character: the radio list is built from
-		//    the controlled entity's inventory, and tuning is authority-only.
-		COA_InitializationHelper.SetupPlayerRadios(playerId, playerCharacter);
-
-		// 5. Finally let the owning client do its local presentation work.
+		
 		m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, playerEntityRplId);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Assign player to their slotted group. AUTHORITY ONLY — SCR_GroupsManagerComponent is
-	//! server-authoritative, and RPC_AskJoinGroup is what pushes the resulting group ID back down
-	//! to the owning client. Kept as its own method so mods can hook the moment a player is
-	//! grouped (see CRF_CSI_ColorTeam.c) rather than having to re-implement the sequence.
-	//! \param[in] playerId ID of the player to assign
-	protected void AssignPlayerToGroup(int playerId)
-	{
-		SCR_AIGroup group = m_SlottingManager.GetPlayerSlotGroup(playerId);
-		if (!group)
-			return;
-
-		int groupId = group.GetGroupID();
-		if (groupId == -1)
-			return;
-
-		// Not part of EnsureManagersReady() — a missing groups manager should degrade grouping, not
-		// block the player from getting their character.
-		if (!m_GroupsManagerComponent)
-			m_GroupsManagerComponent = SCR_GroupsManagerComponent.GetInstance();
-
-		if (!m_GroupsManagerComponent)
-		{
-			Print(string.Format("[COA_GamemodeManager] WARNING: No SCR_GroupsManagerComponent — player %1 will not be grouped", playerId), LogLevel.WARNING);
-			return;
-		}
-
-		m_GroupsManagerComponent.AddPlayerToGroup(groupId, playerId);
-
-		SCR_PlayerControllerGroupComponent groupComponent = SCR_PlayerControllerGroupComponent.GetPlayerControllerComponent(playerId);
-		if (groupComponent)
-			groupComponent.RPC_AskJoinGroup(groupId);
 	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================

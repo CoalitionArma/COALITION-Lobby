@@ -23,6 +23,8 @@ class COA_PlayerControllerManager : ScriptComponent
 	protected COA_Gamemode m_Gamemode;                      // Reference to the active gamemode
 	protected COA_PlayerRplToAuthorityManager m_PlayerRplToAuthorityManager;  // Network authority manager
 	protected COA_PlayerCameraManager m_CameraManager;                  // Reference to the local camera manager
+	protected SCR_GroupsManagerComponent m_GroupsManagerComponent;
+	protected COA_SlottingManager m_SlottingManager;
 
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 COMPONENT INITIALIZATION
@@ -57,6 +59,8 @@ class COA_PlayerControllerManager : ScriptComponent
 		m_Gamemode = COA_Gamemode.GetInstance();
 		m_PlayerRplToAuthorityManager = COA_PlayerRplToAuthorityManager.GetInstance();
 		m_CameraManager = COA_PlayerCameraManager.GetInstance();
+		m_SlottingManager = COA_SlottingManager.GetInstance();
+		m_GroupsManagerComponent = SCR_GroupsManagerComponent.GetInstance();
 	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -64,38 +68,61 @@ class COA_PlayerControllerManager : ScriptComponent
 //=============================================================================================================================================================================================================================================================================================================================================================
 	
 	//------------------------------------------------------------------------------------------------
-	//! Initializes the player client: cleans up the previous camera, closes menus and applies
-	//! player-specific settings.
-	//! Purely client-local presentation work. Faction, group membership and radio tuning are all
-	//! settled on the authority before this is broadcast — see
-	//! COA_GamemodeManager.ScheduleAssignPlayerToCharacter — so nothing here asks the server for
-	//! state, it only waits until possession has actually replicated down.
-	//! \param[in] playerCharID RplId of the character the server assigned to this player
-	//! \param[in] attempt current retry count
+	//! Initializes the player client
+	//! Cleans up previous camera, closes menus, and sets up player-specific settings
+	//! \param[in] playerCharacter - The spectator entity the server created and set to this player
 	void InitilizePlayerClient(RplId playerCharID, int attempt)
 	{
 		// Just In Case
 		InitializeReferences();
-
+		
 		// Get player character
 		IEntity playerCharacter = COA_EntityHelper.GetCharacterFromRplId(playerCharID);
 		SCR_PlayerController playerController = SCR_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(SCR_PlayerController.GetLocalPlayerId()));
-
+		
 		//--------------------------------------------------------------------------- CHECK ---------------------------------------------------------------------------
-		if (!playerCharacter || !playerController || !COA_PlayerCharacter.Cast(playerCharacter) || (SCR_PlayerController.GetLocalMainEntity() != playerCharacter)
-			|| !m_Gamemode || !m_PlayerRplToAuthorityManager || !m_CameraManager)
-		{
+		if (!playerCharacter || !playerController || !COA_PlayerCharacter.Cast(playerCharacter) || (playerController.GetLocalMainEntity() != playerCharacter))
+		{			
 			if (attempt + 1 >= CLIENT_ASSIGN_MAX_RETRIES)
 			{
-				Print(string.Format("[COA_PlayerControllerManager] ERROR: Failed to initialize Client %1 after %2 attempts (this is VERY bad)", SCR_PlayerController.GetLocalPlayerId(), CLIENT_ASSIGN_MAX_RETRIES), LogLevel.ERROR);
+				Print(string.Format("[COA_PlayerControllerManager] WARNING: Failed to initialize Client %1 after %2 attempts (this is VERY bad)", SCR_PlayerController.GetLocalPlayerId(), CLIENT_ASSIGN_MAX_RETRIES), LogLevel.ERROR);
 				return;
 			}
-
-			GetGame().GetCallqueue().CallLater(InitilizePlayerClient, CLIENT_ASSIGN_RETRY_DELAY_MS, false, playerCharID, attempt + 1);
+																		
+			GetGame().GetCallqueue().CallLater(InitilizePlayerClient, CLIENT_ASSIGN_RETRY_DELAY_MS, false, playerCharID, 0); // something is REALLY fucked, attempt again.
 			return;
 		}
 		//--------------------------------------------------------------------------- CHECK PASS ---------------------------------------------------------------------------
+		
+		SCR_PlayerFactionAffiliationComponent affiliationComponent = SCR_PlayerFactionAffiliationComponent.Cast(playerController.FindComponent(SCR_PlayerFactionAffiliationComponent));
+		SCR_CharacterFactionAffiliationComponent charAffiliationComponent = SCR_CharacterFactionAffiliationComponent.Cast(playerCharacter.FindComponent(SCR_CharacterFactionAffiliationComponent));
+		
+		if (affiliationComponent && charAffiliationComponent)
+		{
+			affiliationComponent.RequestFaction(charAffiliationComponent.GetAffiliatedFaction());
+			ScheduleInitializeClient(playerCharacter, affiliationComponent, charAffiliationComponent, 0);
+		};
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	protected void ScheduleInitializeClient(IEntity playerCharacter, SCR_PlayerFactionAffiliationComponent affiliationComponent, SCR_CharacterFactionAffiliationComponent charAffiliationComponent, int attempt)
+	{
+		//--------------------------------------------------------------------------- CHECK ---------------------------------------------------------------------------
+		if (!playerCharacter || !m_Gamemode || !m_PlayerRplToAuthorityManager || !m_CameraManager || (charAffiliationComponent.GetAffiliatedFaction() != affiliationComponent.GetAffiliatedFaction()))
+		{
+			if (attempt + 1 >= CLIENT_ASSIGN_MAX_RETRIES)
+			{
+				Print(string.Format("[COA_PlayerControllerManager] WARNING: Failed to initialize Client %1 after %2 attempts (this is very bad)", SCR_PlayerController.GetLocalPlayerId(), CLIENT_ASSIGN_MAX_RETRIES), LogLevel.ERROR);
+				return;
+			}
 
+			GetGame().GetCallqueue().CallLater(ScheduleInitializeClient, CLIENT_ASSIGN_RETRY_DELAY_MS, false, playerCharacter, affiliationComponent, charAffiliationComponent, attempt + 1);
+			return;
+		}
+		
+		//--------------------------------------------------------------------------- CHECK PASS ---------------------------------------------------------------------------
+		AssignPlayerToGroup();
+		
 		// Close all menus
 		if (m_Gamemode.m_GamemodeState == COA_EGamemodeState.GAME)
 		{
@@ -145,7 +172,7 @@ class COA_PlayerControllerManager : ScriptComponent
 			delete m_CameraManager.m_eCamera;
 		
 		// Originally added for data collector
-		m_Gamemode.GetOnPlayerSpawned().Invoke(SCR_PlayerController.GetLocalPlayerId(), playerCharacter);
+		m_Gamemode.GetOnPlayerSpawned().Invoke(SCR_PlayerController.GetLocalPlayerId(), SCR_PlayerController.GetLocalMainEntity());
 		
 		// Reset Stored Pos
 		GetGame().GetCallqueue().CallLater(m_CameraManager.UpdateStoredCameraPos, 200, false, vector.Zero, vector.Zero, vector.Zero, vector.Zero);
@@ -156,12 +183,29 @@ class COA_PlayerControllerManager : ScriptComponent
 		);
 		if (sender)
 			sender.SetKillFeedTypeNoneLocal();
-
-		// Radios are built and tuned on the authority, which then pushes the rebuild down to this
-		// client via COA_PlayerRplToOwnerManager.InitializeRadioFromServer(). Doing it here as well
-		// would either no-op or fight the authoritative state, so it is deliberately absent.
+		
+		COA_InitializationHelper.SetupPlayerRadios(SCR_PlayerController.GetLocalPlayerId(), playerCharacter);
 	}
+	
+	//------------------------------------------------------------------------------------------------
+	//! Assign player to their slotted group.
+	protected void AssignPlayerToGroup()
+	{
+		int playerId = SCR_PlayerController.GetLocalPlayerId();
+		
+		SCR_AIGroup group = m_SlottingManager.GetPlayerSlotGroup(playerId);
+		if (!group)
+			return;
 
+		int groupId = group.GetGroupID();
+		if (groupId == -1)
+			return;
+
+		SCR_PlayerControllerGroupComponent groupComponent = SCR_PlayerControllerGroupComponent.GetPlayerControllerComponent(playerId);
+		if (groupComponent)
+			groupComponent.RequestJoinGroup(groupId);
+	}
+	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 STATIC ACCESSORS
 //=============================================================================================================================================================================================================================================================================================================================================================
