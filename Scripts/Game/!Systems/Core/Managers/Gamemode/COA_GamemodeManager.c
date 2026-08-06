@@ -17,12 +17,6 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 	protected COA_MenuManager m_MenuManager;
 	protected COA_Gamemode m_Gamemode;
 	
-	protected const int STATS_TRACKING_INIT_RETRY_DELAY_MS = 250;
-	protected const int STATS_TRACKING_INIT_MAX_RETRIES = 20;
-
-	protected const int GROUP_ASSIGN_RETRY_DELAY_MS = 100;
-	protected const int GROUP_ASSIGN_MAX_RETRIES = 30;
-	
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{	
@@ -127,10 +121,7 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 				// skipped its own radio pass and left it to here.
 				InitializeCharacterRadiosAfterHandover(playerId, playerCharacter);
 
-				// Group affiliation drives nametag visibility, but SCR_PlayerControllerGroupComponent
-				// isn't always resolvable immediately after SetInitialMainEntity (component/replication
-				// init order). Retry until it's ready instead of guessing a fixed delay.
-				ScheduleAssignPlayerToGroup(playerId, playerRplComp.Id(), 0);
+				AssignPlayerToGroup(playerId);
 			}
 			else
 				//Sends the player the respawn screen if they reconnect while dead
@@ -171,7 +162,7 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 	//! Waits until the player actually controls the character before setting radios up. Possession
 	//! through the possess-spawn pipeline is not guaranteed to complete on the frame the request was
 	//! made (SCR_SpawnRequestComponent can await finalization), so this verifies rather than assumes.
-	//! Same shape as ScheduleAssignPlayerToGroup: retry on a condition rather than guess a delay.
+	//! Retries on a condition rather than guessing a fixed delay.
 	protected void InitializeCharacterRadiosDeferred(int playerId, RplId characterRplId, int attempt)
 	{
 		COA_GearscriptManager gearscriptManager = COA_GearscriptManager.GetInstance();
@@ -376,58 +367,9 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		
 		trasnformOut = baseTransform;
 	}
-	
-	//------------------------------------------------------------------------------------------------
-	//! Poll until group affiliation can actually be assigned, then do it exactly once.
-	//! Group affiliation is what drives nametag visibility, but the group/component readiness
-	//! can lag behind character possession, so this retries instead of assuming a fixed delay
-	//! is always enough. Kept separate from AssignPlayerToGroup() itself so overrides of that
-	//! method (see COA_CSI_ColorTeam.c) only fire once, on success, rather than once per retry.
-	//! \param[in] playerId ID of the player to assign
-	//! \param[in] playerEntityRplId RplId of the character this assignment was issued for, so a
-	//!            stale retry (player died/respawned again before this resolved) doesn't fire late
-	//! \param[in] attempt current retry count
-	protected void ScheduleAssignPlayerToGroup(int playerId, RplId playerEntityRplId, int attempt)
-	{
-		PlayerManager playerManager = GetGame().GetPlayerManager();
-		if (!playerManager || !playerManager.IsPlayerConnected(playerId))
-			return;
-
-		// If the player already moved on to a different character (e.g. respawned again
-		// before this resolved), let that newer InitilizePlayer call own the group assignment.
-		IEntity controlledEntity = playerManager.GetPlayerControlledEntity(playerId);
-		if (!controlledEntity)
-			return;
-
-		RplComponent controlledRplComp = RplComponent.Cast(controlledEntity.FindComponent(RplComponent));
-		if (!controlledRplComp || controlledRplComp.Id() != playerEntityRplId)
-			return;
-
-		SCR_AIGroup group = m_SlottingManager.GetPlayerSlotGroup(playerId);
-		int groupId = -1;
-		if (group)
-			groupId = group.GetGroupID();
-
-		SCR_PlayerControllerGroupComponent groupComponent = SCR_PlayerControllerGroupComponent.GetPlayerControllerComponent(playerId);
-
-		if (!group || groupId == -1 || !groupComponent)
-		{
-			if (attempt + 1 >= GROUP_ASSIGN_MAX_RETRIES)
-			{
-				Print(string.Format("[COA_GamemodeManager] WARNING: Failed to assign player %1 to group after %2 attempts (nametags may not display)", playerId, GROUP_ASSIGN_MAX_RETRIES), LogLevel.WARNING);
-				return;
-			}
-
-			GetGame().GetCallqueue().CallLater(ScheduleAssignPlayerToGroup, GROUP_ASSIGN_RETRY_DELAY_MS, false, playerId, playerEntityRplId, attempt + 1);
-			return;
-		}
-
-		AssignPlayerToGroup(playerId);
-	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Assign player to their slotted group. Only called once dependencies are confirmed ready
-	//! (see ScheduleAssignPlayerToGroup).
+	//! Assign player to their slotted group.
 	//! \param[in] playerId ID of the player to assign
 	protected void AssignPlayerToGroup(int playerId)
 	{
