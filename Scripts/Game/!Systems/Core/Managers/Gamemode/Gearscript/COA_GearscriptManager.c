@@ -104,7 +104,28 @@ class COA_GearscriptManager : ScriptComponent
 		if (weight > 60) // We dont enjoy people being over 60kg
 			COA_LoggingHelper.LogWeightError(entity, weight);
 		
-		COA_GearscriptCharacter.Cast(entity).SetCharacterGearState(true);
+		// Initialize radios for player
+		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(entity);
+		if (playerId > 0)
+		{
+			COA_PlayerController pc = COA_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
+			COA_PlayerRplToOwnerManager rplToOwnerManager = COA_PlayerRplToOwnerManager.GetInstance();
+			// Cache groups manager reference - PERFORMANCE OPTIMIZATION
+			SCR_GroupsManagerComponent groupsMan = SCR_GroupsManagerComponent.GetInstance();
+			
+			// Rebuild the radio list after replacing the player's gear. Tuning before
+			// this can access stale entities left behind by ClearEntityGear().
+			if (pc)
+				pc.InitializeRadios(entity);
+
+			if (groupsMan)
+				groupsMan.TuneFreqDelayWithPresets(playerId, entity);
+			
+			if (rplToOwnerManager && pc)
+			{
+				rplToOwnerManager.InitializeRadioFromServer();
+			}
+		}
 	}	
 	
 //=============================================================================================================================================================================================================================================================================================================================================================

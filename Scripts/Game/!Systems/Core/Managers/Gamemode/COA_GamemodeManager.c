@@ -8,6 +8,7 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 //=============================================================================================================================================================================================================================================================================================================================================================
 	protected ref COA_ResourceCache m_ResourceCache;
 	
+	protected SCR_GroupsManagerComponent m_GroupsManagerComponent;
 	// SendRespawnScreen stayed on the lobby-side broadcast manager (COA_Gamemode's own respawn-into-slot
 	// flow calls it too), so this needs its own reference to that class.
 	protected COA_RplBroadcastManager m_RplBroadcastManager;
@@ -19,8 +20,8 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 	protected const int STATS_TRACKING_INIT_RETRY_DELAY_MS = 250;
 	protected const int STATS_TRACKING_INIT_MAX_RETRIES = 20;
 
-	protected const int CHARACTER_ASSIGN_RETRY_DELAY_MS = 250;
-	protected const int CHARACTER_ASSIGN_MAX_RETRIES = 15;
+	protected const int GROUP_ASSIGN_RETRY_DELAY_MS = 100;
+	protected const int GROUP_ASSIGN_MAX_RETRIES = 30;
 	
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
@@ -41,6 +42,7 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 	//! Initialize all manager references needed for this component
 	protected void InitializeManagers()
 	{
+		m_GroupsManagerComponent = SCR_GroupsManagerComponent.GetInstance();
 		m_RplBroadcastManager = COA_RplBroadcastManager.GetInstance();
 		m_SlottingManager = COA_SlottingManager.GetInstance();
 		m_RespawnManager = COA_RespawnManager.GetInstance();
@@ -78,10 +80,10 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		{
 			// SPECTATOR PATH: Create initial entity for spectators
 			playerCharacter = GetOrCreateSpectatorEntity(playerId, playerController);
-
+	
 			faction = GetGame().GetFactionManager().GetFactionByKey("SPEC");
-
-			COA_InitializationHelper.RemovePlayerFromCurrentGroup(playerId);
+			
+			COA_PlayerHelper.RemovePlayerFromCurrentGroup(playerId);
 		} else {
 			// PLAYABLE CHARACTER PATH: Skip initial entity, spawn real character directly
 			playerCharacter = GetOrCreatePlayableCharacter(playerId, spawnPointID, entityRplID, alreadyCreated);
@@ -100,21 +102,22 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		if (playerCharacter && playerRplComp)
 		{
 			playerCharacter.DisableAI();
+			COA_PlayerHelper.AssignFactionToPlayer(playerController, faction);
+			COA_PlayerHelper.AssignCharacterToPlayer(playerController, playerCharacter);
 			
 			if (!COA_EntityHelper.IsSpectator(playerCharacter))
-			{
-				ScheduleAssignPlayerToCharacter(playerCharacter, playerId, playerController, playerRplComp.Id(), 0);
-			} else {
+				// Group affiliation drives nametag visibility, but SCR_PlayerControllerGroupComponent
+				// isn't always resolvable immediately after SetInitialMainEntity (component/replication
+				// init order). Retry until it's ready instead of guessing a fixed delay.
+				ScheduleAssignPlayerToGroup(playerId, playerRplComp.Id(), 0);
+			else
 				//Sends the player the respawn screen if they reconnect while dead
 				if (m_SlottingManager.IsPlayerInASlot(playerId) && m_SlottingManager.IsPlayerConsideredDead(playerId) && m_RespawnManager.CanPlayerRespawn(playerCharacter, faction.GetFactionKey(), playerId))
 					m_RplBroadcastManager.SendRespawnScreen(playerId);
-				
-				COA_InitializationHelper.AssignCharacterToPlayer(playerController, playerCharacter);
-				
-				m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, playerRplComp.Id());
-			};
+
+			m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, playerRplComp.Id());
 		};
-		
+
 		return true;
 	}
 
@@ -275,56 +278,72 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	//! Poll until all parameters are met for a player to be assigned a character, then do it.
+	//! Poll until group affiliation can actually be assigned, then do it exactly once.
+	//! Group affiliation is what drives nametag visibility, but the group/component readiness
+	//! can lag behind character possession, so this retries instead of assuming a fixed delay
+	//! is always enough. Kept separate from AssignPlayerToGroup() itself so overrides of that
+	//! method (see COA_CSI_ColorTeam.c) only fire once, on success, rather than once per retry.
 	//! \param[in] playerId ID of the player to assign
-	//! \param[in] playerController Player controller to check against
 	//! \param[in] playerEntityRplId RplId of the character this assignment was issued for, so a
 	//!            stale retry (player died/respawned again before this resolved) doesn't fire late
 	//! \param[in] attempt current retry count
-	protected void ScheduleAssignPlayerToCharacter(COA_PlayerCharacter playerCharacter, int playerId, SCR_PlayerController playerController, RplId playerEntityRplId, int attempt)
+	protected void ScheduleAssignPlayerToGroup(int playerId, RplId playerEntityRplId, int attempt)
 	{
 		PlayerManager playerManager = GetGame().GetPlayerManager();
-		if (!playerCharacter || !playerManager || !playerManager.IsPlayerConnected(playerId))
+		if (!playerManager || !playerManager.IsPlayerConnected(playerId))
 			return;
 
 		// If the player already moved on to a different character (e.g. respawned again
 		// before this resolved), let that newer InitilizePlayer call own the group assignment.
 		IEntity controlledEntity = playerManager.GetPlayerControlledEntity(playerId);
-		if (controlledEntity && !COA_EntityHelper.IsSpectator(controlledEntity))
-		{
-			RplComponent controlledRplComp = RplComponent.Cast(controlledEntity.FindComponent(RplComponent));
-			if (!controlledRplComp || controlledRplComp.Id() != playerEntityRplId)
-				return;
-		};
+		if (!controlledEntity)
+			return;
 
-		//--------------------------------------------------------------------------- GROUP ---------------------------------------------------------------------------
+		RplComponent controlledRplComp = RplComponent.Cast(controlledEntity.FindComponent(RplComponent));
+		if (!controlledRplComp || controlledRplComp.Id() != playerEntityRplId)
+			return;
+
 		SCR_AIGroup group = m_SlottingManager.GetPlayerSlotGroup(playerId);
 		int groupId = -1;
 		if (group)
 			groupId = group.GetGroupID();
 
 		SCR_PlayerControllerGroupComponent groupComponent = SCR_PlayerControllerGroupComponent.GetPlayerControllerComponent(playerId);
-		
-		//--------------------------------------------------------------------------- GEARSCRIPT ---------------------------------------------------------------------------
-		bool isCharacterGearSet = COA_GearscriptCharacter.Cast(playerCharacter).GetCharacterGearState();
 
-		//--------------------------------------------------------------------------- CHECK ---------------------------------------------------------------------------
-		if (!group || groupId == -1 || !groupComponent || !isCharacterGearSet)
+		if (!group || groupId == -1 || !groupComponent)
 		{
-			if (attempt + 1 >= CHARACTER_ASSIGN_MAX_RETRIES)
+			if (attempt + 1 >= GROUP_ASSIGN_MAX_RETRIES)
 			{
-				Print(string.Format("[COA_GamemodeManager] WARNING: Failed to assign player %1 to character after %2 attempts (this is very bad)", playerId, CHARACTER_ASSIGN_MAX_RETRIES), LogLevel.ERROR);
+				Print(string.Format("[COA_GamemodeManager] WARNING: Failed to assign player %1 to group after %2 attempts (nametags may not display)", playerId, GROUP_ASSIGN_MAX_RETRIES), LogLevel.WARNING);
 				return;
 			}
 
-			GetGame().GetCallqueue().CallLater(ScheduleAssignPlayerToCharacter, CHARACTER_ASSIGN_RETRY_DELAY_MS, false, playerCharacter, playerId, playerController, playerEntityRplId, attempt + 1);
+			GetGame().GetCallqueue().CallLater(ScheduleAssignPlayerToGroup, GROUP_ASSIGN_RETRY_DELAY_MS, false, playerId, playerEntityRplId, attempt + 1);
 			return;
 		}
-		
-		//--------------------------------------------------------------------------- CHECK PASS ---------------------------------------------------------------------------
-		COA_InitializationHelper.AssignCharacterToPlayer(playerController, playerCharacter);
-		
-		m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, playerEntityRplId);
+
+		AssignPlayerToGroup(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Assign player to their slotted group. Only called once dependencies are confirmed ready
+	//! (see ScheduleAssignPlayerToGroup).
+	//! \param[in] playerId ID of the player to assign
+	protected void AssignPlayerToGroup(int playerId)
+	{
+		SCR_AIGroup group = m_SlottingManager.GetPlayerSlotGroup(playerId);
+		if (!group)
+			return;
+
+		int groupId = group.GetGroupID();
+		if (groupId == -1)
+			return;
+
+		m_GroupsManagerComponent.AddPlayerToGroup(groupId, playerId);
+
+		SCR_PlayerControllerGroupComponent groupComponent = SCR_PlayerControllerGroupComponent.GetPlayerControllerComponent(playerId);
+		if (groupComponent)
+			groupComponent.RPC_AskJoinGroup(groupId);
 	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================

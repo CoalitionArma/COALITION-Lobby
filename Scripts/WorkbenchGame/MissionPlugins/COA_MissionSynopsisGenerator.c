@@ -157,13 +157,13 @@ class COA_MissionSynopsisGenerator
 		lines.Insert("## Gearscripts");
 
 		if (!gamemode.GetSlots("BLUFOR").IsEmpty())
-			lines.Insert(string.Format("- BLUFOR: %1", GearScriptToString(gamemode.GetGearScriptSettings("BLUFOR"))));
+			lines.Insert(string.Format("- BLUFOR: %1", GearScriptToString(gamemode.m_BLUFORGearScriptSettings)));
 		if (!gamemode.GetSlots("OPFOR").IsEmpty())
-			lines.Insert(string.Format("- OPFOR: %1", GearScriptToString(gamemode.GetGearScriptSettings("OPFOR"))));
+			lines.Insert(string.Format("- OPFOR: %1", GearScriptToString(gamemode.m_OPFORGearScriptSettings)));
 		if (!gamemode.GetSlots("INDFOR").IsEmpty())
-			lines.Insert(string.Format("- INDFOR: %1", GearScriptToString(gamemode.GetGearScriptSettings("INDFOR"))));
+			lines.Insert(string.Format("- INDFOR: %1", GearScriptToString(gamemode.m_INDFORGearScriptSettings)));
 		if (!gamemode.GetSlots("CIV").IsEmpty())
-			lines.Insert(string.Format("- CIV: %1", GearScriptToString(gamemode.GetGearScriptSettings("CIV"))));
+			lines.Insert(string.Format("- CIV: %1", GearScriptToString(gamemode.m_CIVILIANGearScriptSettings)));
 
 		lines.Insert("");
 	}
