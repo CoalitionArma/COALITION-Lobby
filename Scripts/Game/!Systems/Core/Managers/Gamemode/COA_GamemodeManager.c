@@ -95,12 +95,34 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		
 		if (playerCharacter && playerRplComp)
 		{
-			playerCharacter.DisableAI();
+			// Equip BEFORE handing the character over. Vanilla's pipeline runs PrepareEntity_S
+			// ("character can have items added, can be seated in vehicle, etc.") strictly before
+			// AssignEntity_S for this reason. Previously the gearscript ran from a deferred
+			// end-of-frame call queued in COA_GearscriptCharacter.EOnInit, while possession happened
+			// synchronously in this function - so the player took control of an unequipped character
+			// and ClearEntityGear() then wiped and re-spawned ~30 item entities on a character the
+			// owning client was already rendering.
+			ApplyGearBeforeHandover(playerCharacter);
+
 			COA_PlayerHelper.AssignFactionToPlayer(playerController, faction);
+
+			// AI deactivation is part of possession: SCR_PlayerController.SetInitialMainEntity()
+			// calls SetAIActivation(entity, false) itself, and the possess-spawn pipeline routes
+			// through the same call. Deactivating here as well happened before ownership transfer,
+			// leaving a window where the character was AI-active and unowned - which is what the
+			// next-frame DisableAIWrap re-check in COA_PlayerCharacter was compensating for.
 			COA_PlayerHelper.AssignCharacterToPlayer(playerController, playerCharacter);
-			
+
 			if (!COA_EntityHelper.IsSpectator(playerCharacter))
+			{
+				// Radios are built from the equipped gear AND require the player to control the
+				// character, so this has to run after both. When the gearscript was applied ahead of
+				// handover above there was no controlling player yet, so SetEntityGear() deliberately
+				// skipped its own radio pass and left it to here.
+				InitializeCharacterRadiosAfterHandover(playerId, playerCharacter);
+
 				AssignPlayerToGroup(playerId);
+			}
 			else
 				//Sends the player the respawn screen if they reconnect while dead
 				if (m_SlottingManager.IsPlayerInASlot(playerId) && m_SlottingManager.IsPlayerConsideredDead(playerId) && m_RespawnManager.CanPlayerRespawn(playerCharacter, faction.GetFactionKey(), playerId))
@@ -110,6 +132,84 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		};
 
 		return true;
+	}
+
+	//! Bounds for the post-handover radio setup retry (see InitializeCharacterRadiosDeferred).
+	protected const int RADIO_INIT_RETRY_MS = 100;
+	protected const int RADIO_INIT_MAX_ATTEMPTS = 30;
+
+	//------------------------------------------------------------------------------------------------
+	//! Set up the player's radios once they actually control the character.
+	//! Deferred by one call-queue tick because possession completes asynchronously when it goes
+	//! through the possess-spawn pipeline - GetPlayerIdFromControlledEntity() inside the radio setup
+	//! would otherwise still resolve to nothing on the frame the request was made.
+	protected void InitializeCharacterRadiosAfterHandover(int playerId, COA_PlayerCharacter playerCharacter)
+	{
+		if (RplSession.Mode() == RplMode.Client || playerId <= 0 || !playerCharacter)
+			return;
+
+		RplComponent characterRpl = RplComponent.Cast(playerCharacter.FindComponent(RplComponent));
+		if (!characterRpl)
+			return;
+
+		GetGame().GetCallqueue().Call(InitializeCharacterRadiosDeferred, playerId, characterRpl.Id(), 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Keyed on RplId rather than the entity pointer - the character can be gone by the time this
+	//! runs (player disconnects during initialization).
+	//!
+	//! Waits until the player actually controls the character before setting radios up. Possession
+	//! through the possess-spawn pipeline is not guaranteed to complete on the frame the request was
+	//! made (SCR_SpawnRequestComponent can await finalization), so this verifies rather than assumes.
+	//! Retries on a condition rather than guessing a fixed delay.
+	protected void InitializeCharacterRadiosDeferred(int playerId, RplId characterRplId, int attempt)
+	{
+		COA_GearscriptManager gearscriptManager = COA_GearscriptManager.GetInstance();
+		if (!gearscriptManager)
+			return;
+
+		RplComponent characterRpl = RplComponent.Cast(Replication.FindItem(characterRplId));
+		if (!characterRpl)
+			return;
+
+		IEntity character = characterRpl.GetEntity();
+		if (!character)
+			return;
+
+		// Not possessed yet - come back next tick.
+		if (GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId) != character)
+		{
+			if (attempt < RADIO_INIT_MAX_ATTEMPTS)
+				GetGame().GetCallqueue().CallLater(InitializeCharacterRadiosDeferred, RADIO_INIT_RETRY_MS, false, playerId, characterRplId, attempt + 1);
+			else
+				Print(string.Format("[COA_GamemodeManager] Player %1 never took control of their character - radios not initialized.", playerId), LogLevel.WARNING);
+
+			return;
+		}
+
+		gearscriptManager.InitializeCharacterRadios(character, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Apply this character's gearscript now, before it is handed to the player.
+	//! No-op for spectators (no gearscript), for characters whose gear was already applied, and on
+	//! clients. Safe to call for an existing character on re-init: IsGearApplied() short-circuits it,
+	//! so a reconnecting player does not get their loadout wiped and rebuilt.
+	protected void ApplyGearBeforeHandover(COA_PlayerCharacter playerCharacter)
+	{
+		if (RplSession.Mode() == RplMode.Client)
+			return;
+
+		COA_GearscriptCharacter gearscriptCharacter = COA_GearscriptCharacter.Cast(playerCharacter);
+		if (!gearscriptCharacter || gearscriptCharacter.IsGearApplied())
+			return;
+
+		COA_GearscriptManager gearscriptManager = COA_GearscriptManager.GetInstance();
+		if (!gearscriptManager)
+			return;
+
+		gearscriptManager.SetEntityGear(gearscriptCharacter, gearscriptCharacter.GetPrefabData().GetPrefabName());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -269,8 +369,7 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Assign player to their slotted group. Only called once dependencies are confirmed ready
-	//! (see ScheduleAssignPlayerToGroup).
+	//! Assign player to their slotted group.
 	//! \param[in] playerId ID of the player to assign
 	protected void AssignPlayerToGroup(int playerId)
 	{

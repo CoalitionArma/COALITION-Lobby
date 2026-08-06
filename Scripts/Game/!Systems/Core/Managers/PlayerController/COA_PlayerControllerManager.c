@@ -121,9 +121,14 @@ class COA_PlayerControllerManager : ScriptComponent
 		if (m_CameraManager.m_eCamera)
 			delete m_CameraManager.m_eCamera;
 		
-		// Originally added for data collector
-		m_Gamemode.GetOnPlayerSpawned().Invoke(SCR_PlayerController.GetLocalPlayerId(), SCR_PlayerController.GetLocalMainEntity());
-		
+		// NOTE: this used to fire m_Gamemode.GetOnPlayerSpawned().Invoke(...) here, on the CLIENT,
+		// as a stand-in for the server event that never ran because possession bypassed vanilla's
+		// spawn pipeline. That is an authority-side invoker: every vanilla listener is registered
+		// from server context and expects a server-resolved playerId/entity, so firing it locally
+		// satisfied the data collector and misled everything else.
+		// COA_PlayerHelper.AssignCharacterToPlayer now routes through the possess-spawn pipeline, so
+		// SCR_BaseGameMode raises the real event on the authority and this fake is not needed.
+
 		// Reset Stored Pos
 		GetGame().GetCallqueue().CallLater(m_CameraManager.UpdateStoredCameraPos, 200, false, vector.Zero, vector.Zero, vector.Zero, vector.Zero);
 		
