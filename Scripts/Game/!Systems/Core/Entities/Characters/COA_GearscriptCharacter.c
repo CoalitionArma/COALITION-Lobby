@@ -6,9 +6,8 @@ class COA_GearscriptCharacter : COA_PlayerCharacter
 {
 	protected COA_EGearRole m_GearRole;
 
-	//! Set once a gearscript has been applied to this character, so the deferred pass queued in
-	//! EOnInit does not re-run ClearEntityGear() + a full re-equip over gear that was already
-	//! applied synchronously during player initialization.
+	//! Set once a gearscript has been applied to this character, so the deferred EOnInit pass cannot
+	//! wipe and rebuild a loadout that some other path (arsenal, gear reset) already applied.
 	protected bool m_bGearApplied;
 
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -31,11 +30,12 @@ class COA_GearscriptCharacter : COA_PlayerCharacter
 			owner
 		);
 	
-		// Apply gearscript if not on client
-		// Deferred: this covers characters that are NOT spawned through player initialization (AI,
-		// editor-placed, previews). For player characters, COA_GamemodeManager applies the gearscript
-		// synchronously before handing the character to the player, and the m_bGearApplied guard in
-		// ApplyDeferredGear() then makes this a no-op.
+		// Apply gearscript if not on client.
+		//
+		// Deferred to end of frame on purpose. COA_GamemodeManager.InitilizePlayer() spawns this
+		// character and hands it to the player synchronously, so this call lands AFTER the player
+		// owns the entity. Equipping an unowned character leaves the player unable to reload, so do
+		// not be tempted to make this synchronous or move it earlier.
 		if (RplSession.Mode() != RplMode.Client)
 			GetGame().GetCallqueue().Call(ApplyDeferredGear);
 	}

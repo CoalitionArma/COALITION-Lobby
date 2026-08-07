@@ -95,15 +95,15 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		
 		if (playerCharacter && playerRplComp)
 		{
-			// Equip BEFORE handing the character over. Vanilla's pipeline runs PrepareEntity_S
-			// ("character can have items added, can be seated in vehicle, etc.") strictly before
-			// AssignEntity_S for this reason. Previously the gearscript ran from a deferred
-			// end-of-frame call queued in COA_GearscriptCharacter.EOnInit, while possession happened
-			// synchronously in this function - so the player took control of an unequipped character
-			// and ClearEntityGear() then wiped and re-spawned ~30 item entities on a character the
-			// owning client was already rendering.
-			ApplyGearBeforeHandover(playerCharacter);
-
+			// GEAR IS APPLIED AFTER POSSESSION, NOT BEFORE. Do not "fix" this ordering.
+			//
+			// An earlier version equipped the character here, before handover, citing vanilla's
+			// PrepareEntity_S -> AssignEntity_S ordering. That was the wrong precedent: the vanilla
+			// hook that actually spawns a player's loadout is SCR_BasePlayerLoadout.OnLoadoutSpawned,
+			// which fires from OnPlayerSpawnFinalize_S - and SCR_SpawnHandlerComponent calls
+			// AssignEntity_S (line 156) BEFORE OnPlayerSpawnFinalize_S (line 160). So vanilla also
+			// equips after assignment.
+			//
 			COA_PlayerHelper.AssignFactionToPlayer(playerController, faction);
 
 			// AI deactivation is part of possession: SCR_PlayerController.SetInitialMainEntity()
@@ -115,12 +115,9 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 
 			if (!COA_EntityHelper.IsSpectator(playerCharacter))
 			{
-				// Radios are built from the equipped gear AND require the player to control the
-				// character, so this has to run after both. When the gearscript was applied ahead of
-				// handover above there was no controlling player yet, so SetEntityGear() deliberately
-				// skipped its own radio pass and left it to here.
-				InitializeCharacterRadiosAfterHandover(playerId, playerCharacter);
-
+				// Radios are set up by SetEntityGear() itself, once the gearscript has been applied
+				// and the player controls the character - both of which are true again now that gear
+				// is back to running after handover.
 				AssignPlayerToGroup(playerId);
 			}
 			else
@@ -132,84 +129,6 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		};
 
 		return true;
-	}
-
-	//! Bounds for the post-handover radio setup retry (see InitializeCharacterRadiosDeferred).
-	protected const int RADIO_INIT_RETRY_MS = 100;
-	protected const int RADIO_INIT_MAX_ATTEMPTS = 30;
-
-	//------------------------------------------------------------------------------------------------
-	//! Set up the player's radios once they actually control the character.
-	//! Deferred by one call-queue tick because possession completes asynchronously when it goes
-	//! through the possess-spawn pipeline - GetPlayerIdFromControlledEntity() inside the radio setup
-	//! would otherwise still resolve to nothing on the frame the request was made.
-	protected void InitializeCharacterRadiosAfterHandover(int playerId, COA_PlayerCharacter playerCharacter)
-	{
-		if (RplSession.Mode() == RplMode.Client || playerId <= 0 || !playerCharacter)
-			return;
-
-		RplComponent characterRpl = RplComponent.Cast(playerCharacter.FindComponent(RplComponent));
-		if (!characterRpl)
-			return;
-
-		GetGame().GetCallqueue().Call(InitializeCharacterRadiosDeferred, playerId, characterRpl.Id(), 0);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Keyed on RplId rather than the entity pointer - the character can be gone by the time this
-	//! runs (player disconnects during initialization).
-	//!
-	//! Waits until the player actually controls the character before setting radios up. Possession
-	//! through the possess-spawn pipeline is not guaranteed to complete on the frame the request was
-	//! made (SCR_SpawnRequestComponent can await finalization), so this verifies rather than assumes.
-	//! Retries on a condition rather than guessing a fixed delay.
-	protected void InitializeCharacterRadiosDeferred(int playerId, RplId characterRplId, int attempt)
-	{
-		COA_GearscriptManager gearscriptManager = COA_GearscriptManager.GetInstance();
-		if (!gearscriptManager)
-			return;
-
-		RplComponent characterRpl = RplComponent.Cast(Replication.FindItem(characterRplId));
-		if (!characterRpl)
-			return;
-
-		IEntity character = characterRpl.GetEntity();
-		if (!character)
-			return;
-
-		// Not possessed yet - come back next tick.
-		if (GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId) != character)
-		{
-			if (attempt < RADIO_INIT_MAX_ATTEMPTS)
-				GetGame().GetCallqueue().CallLater(InitializeCharacterRadiosDeferred, RADIO_INIT_RETRY_MS, false, playerId, characterRplId, attempt + 1);
-			else
-				Print(string.Format("[COA_GamemodeManager] Player %1 never took control of their character - radios not initialized.", playerId), LogLevel.WARNING);
-
-			return;
-		}
-
-		gearscriptManager.InitializeCharacterRadios(character, playerId);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Apply this character's gearscript now, before it is handed to the player.
-	//! No-op for spectators (no gearscript), for characters whose gear was already applied, and on
-	//! clients. Safe to call for an existing character on re-init: IsGearApplied() short-circuits it,
-	//! so a reconnecting player does not get their loadout wiped and rebuilt.
-	protected void ApplyGearBeforeHandover(COA_PlayerCharacter playerCharacter)
-	{
-		if (RplSession.Mode() == RplMode.Client)
-			return;
-
-		COA_GearscriptCharacter gearscriptCharacter = COA_GearscriptCharacter.Cast(playerCharacter);
-		if (!gearscriptCharacter || gearscriptCharacter.IsGearApplied())
-			return;
-
-		COA_GearscriptManager gearscriptManager = COA_GearscriptManager.GetInstance();
-		if (!gearscriptManager)
-			return;
-
-		gearscriptManager.SetEntityGear(gearscriptCharacter, gearscriptCharacter.GetPrefabData().GetPrefabName());
 	}
 
 	//------------------------------------------------------------------------------------------------
