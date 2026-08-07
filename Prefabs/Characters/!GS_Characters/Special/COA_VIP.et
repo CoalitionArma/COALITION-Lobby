@@ -1,13 +1,6 @@
 COA_GearscriptCharacter : "{D7EB93B0550FD158}Prefabs/Characters/!Core/COA_Player.et" {
  ID "520EC961A090B1EE"
  components {
-  FactionAffiliationComponent "{686470C2F6513808}" {
-  }
-  SCR_CharacterDamageManagerComponent "{55872AD7B4E959F2}" {
-   EnableDamage 0
-   m_fDOTScale 0
-   m_fRegenScale 5
-  }
   SCR_EditableCharacterComponent "{520EA1D2F659C85C}" {
    m_UIInfo SCR_EditableEntityUIInfo "{5298E609432D192D}" {
     Name "VIP"
