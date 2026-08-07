@@ -33,10 +33,11 @@ COA_Gamemode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" {
    }
   }
   CVON_VONGameModeComponent "{6624E607CC6D4CC8}" {
-   m_sFreqConfig "{8FE52CD7F8502E24}Configs/Systems/FreqConfigs/CFCFrequencyConfig.conf"
+   m_sFreqConfig "{8FE52CD7F8502E24}Configs/Systems/FreqConfigs/FrequencyConfig.conf"
   }
   SCR_AdditionalGameModeSettingsComponent "{6170E11C3C452ACC}" {
    m_bEnableTeamKillPunishment 0
+   m_eNametagRelationFilters 18
   }
   SCR_DataCollectorComponent "{5ADE83EE64329989}" {
    Enabled 0
