@@ -145,7 +145,7 @@ class COA_AdminMenu : ChimeraMenuBase
 		
 		return SCR_ButtonTextComponent.GetButtonText(button, widget);
 	}
-	
+
 	/**
 	 * Get a multiline edit box from the current loaded menu
 	 * @param name of the root widget of the edit box
@@ -506,18 +506,18 @@ class COA_AdminMenu : ChimeraMenuBase
 		// Change menu title
 		UpdateMenuTitle("Gear Reset");
 
-		// Populate player list
-		PopulatePlayerList(playerList);
-		
 		// Add available roles
 		AddRoles(roleList);
+
+		// Populate player list
+		PopulatePlayerList(playerList);	
 	}
 	
 	/**
 	 * Populates a list with active players
 	 * @param list The list to populate with player names
 	 */
-	protected void PopulatePlayerList(SCR_ListBoxComponent list)
+	protected void PopulatePlayerList(SCR_ListBoxComponent list, SCR_ListBoxComponent preList = null, bool selectOpenTicket = true)
 	{
 		// Get all players
 		m_playerManager.GetPlayers(m_allPlayers);
@@ -533,16 +533,36 @@ class COA_AdminMenu : ChimeraMenuBase
 		foreach (string name : playerNames)
 		{
 			int playerId = GetplayerIdFromName(name);
-			
-			if (!m_groupManagerComponent.GetPlayerGroup(playerId))
+			Faction playerFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId);
+			SCR_AIGroup playerGroup = COA_SlottingManager.GetInstance().GetPlayerSlotGroup(playerId);
+
+			if (!playerGroup)
 				continue;
 				
 			if (COA_EntityHelper.IsSpectator(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
 				continue;
-			
-			Faction playerFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId);
+
+			if (preList)
+			{
+				// Get selected player ID
+				string preListPlayerName = TextWidget.Cast(preList.GetElementComponent(preList.GetSelectedItem()).GetRootWidget().FindAnyWidget("Text")).GetText();
+				int prePlayerId = GetplayerIdFromName(preListPlayerName);
+				if (prePlayerId != 0)
+				{
+					SCR_AIGroup preListPlayerGroup = COA_SlottingManager.GetInstance().GetPlayerSlotGroup(prePlayerId);
+					if (preListPlayerGroup == playerGroup)
+						list.AddItemWithColor(string.Format("%1", name), Color.Green);
+					else
+						list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
+				} 
+				
+				continue;
+			}
+
 			list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
 		}
+
+		SelectOpenTicketOnwer(selectOpenTicket, list);
 	}
 
 	/**
@@ -1240,7 +1260,7 @@ class COA_AdminMenu : ChimeraMenuBase
 	/**
 	 * Populates the list of dead/spectating players
 	 */
-	protected void PopulateDeadPlayersList()
+	protected void PopulateDeadPlayersList(bool selectOpenTicket = true)
 	{
 		TStringArray playerNames = {};
 		
@@ -1267,6 +1287,8 @@ class COA_AdminMenu : ChimeraMenuBase
 				playerList.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
 			}
 		}
+
+		SelectOpenTicketOnwer(selectOpenTicket, playerList);
 	}
 	
 	/**
@@ -1470,7 +1492,10 @@ class COA_AdminMenu : ChimeraMenuBase
 		menuButton0.m_OnClicked.Insert(TeleportLocalToSelected);
 		menuButton1.m_OnClicked.Insert(TeleportPlayers);
 		menuButton2.m_OnClicked.Insert(TeleportSelectedToLocal);
-		
+
+		// Setup selection change handlers
+		playerList0.m_OnChanged.Insert(UpdateTeleportToList);
+
 		// Change title of the menu
 		UpdateMenuTitle("Teleport");
 
@@ -1573,6 +1598,24 @@ class COA_AdminMenu : ChimeraMenuBase
 
 		// Teleport player 1 to player 2
 		COA_PlayerRplToAuthorityManager.GetInstance().TeleportPlayers(playerId1, playerId2, true);
+	}
+
+	/**
+	 * Teleports a player to another player's location
+	 */
+	void UpdateTeleportToList()
+	{
+		SCR_ListBoxComponent playerList0 = GetListBox("PlayerListBox0");
+		if (!playerList0)
+			return;
+
+		SCR_ListBoxComponent playerList1 = GetListBox("PlayerListBox1");
+		if (!playerList1)
+			return;
+
+		playerList1.Clear();
+
+		PopulatePlayerList(playerList1, playerList0, false);
 	}
 
 	//-----------------------------------------------------------------------------
@@ -2144,6 +2187,27 @@ class COA_AdminMenu : ChimeraMenuBase
 		{
 			respawnEnabledText.SetText("Respawns Disabled");
 			respawnEnabledText.SetColorInt(Color.RED);
+		}
+	}
+
+	/**
+	 * Select the current open ticket player in a list
+	 */
+	void SelectOpenTicketOnwer(bool selectOpenTicket, SCR_ListBoxComponent list)
+	{
+		// Find the open ticket selected in the list
+		if (selectOpenTicket && m_iSelectedTicket != -1)
+		{			
+			for (int i = 0; i < list.GetItemCount(); i++)
+			{
+				string ticketName = m_playerManager.GetPlayerName(m_iSelectedTicket);
+				string listName = TextWidget.Cast(list.GetElementComponent(i).GetRootWidget().FindAnyWidget("Text")).GetText();
+				if (ticketName == listName)
+				{
+					list.SetItemSelected(i, true, true);
+					return;
+				}
+			}
 		}
 	}
 	
