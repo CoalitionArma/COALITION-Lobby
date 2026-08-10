@@ -527,14 +527,32 @@ class COA_RplBroadcastManager : ScriptComponent
 	void NotifyChannelJoinRequest(int targetPlayerId, int requesterId, int channel)
 	{
 		Print(string.Format("[VON] Server notifying player %1 of join request from player %2 for channel %3", targetPlayerId, requesterId, channel), LogLevel.NORMAL);
-		
+
 		// Telemetry: 3 ints
 		LogTelemetry("NotifyChannelJoinRequest", COA_BandwidthTelemetryManager.EstimateSize_Int() * 3);
-		
+
 		#ifdef WORKBENCH
 		RpcDo_NotifyChannelJoinRequest(targetPlayerId, requesterId, channel);
 		#else
 		Rpc(RpcDo_NotifyChannelJoinRequest, targetPlayerId, requesterId, channel);
+		#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure notification (carries no channel-membership data of its own - that's already covered by
+	//! the [RplProp] replication of COA_MenuManager.m_aVONChannels) telling clients which single
+	//! player moved channels, so the spectator menu can patch just the affected rows instead of
+	//! reparsing/rebuilding the whole VON channel list. Only called by COA_MenuManager.AddPlayerToChannel
+	//! when no channel was removed by CleanupEmptyChannels() in the same call - see the comment there.
+	void UpdatePlayerChannelDelta(int playerId, int newChannelIndex, int oldChannelIndex)
+	{
+		// Telemetry: 3 ints
+		LogTelemetry("UpdatePlayerChannelDelta", COA_BandwidthTelemetryManager.EstimateSize_Int() * 3);
+
+		#ifdef WORKBENCH
+		RpcDo_UpdatePlayerChannelDelta(playerId, newChannelIndex, oldChannelIndex);
+		#else
+		Rpc(RpcDo_UpdatePlayerChannelDelta, playerId, newChannelIndex, oldChannelIndex);
 		#endif
 	}
 
@@ -1384,7 +1402,19 @@ class COA_RplBroadcastManager : ScriptComponent
 		Print(string.Format("[VON] Successfully created join request popup for %1", requesterName), LogLevel.NORMAL);
 	}
 
-	
+
+	//------------------------------------------------------------------------------------------------
+	//! Client handler for UpdatePlayerChannelDelta - just forwards to COA_MenuManager's invoker so
+	//! any open COA_SpectatorMenu can patch its VON channel rows surgically.
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_UpdatePlayerChannelDelta(int playerId, int newChannelIndex, int oldChannelIndex)
+	{
+		COA_MenuManager menuManager = COA_MenuManager.GetInstance();
+		if (menuManager)
+			menuManager.GetOnPlayerChannelChanged().Invoke(playerId, newChannelIndex, oldChannelIndex);
+	}
+
+
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	void RpcDo_MoveSpecCamToSlot(vector slotPos, int targetPlayerId)
