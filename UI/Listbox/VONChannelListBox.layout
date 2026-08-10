@@ -44,7 +44,7 @@ ButtonWidgetClass {
           SizeY 0
           OffsetBottom 0
          }
-         Color 0.05 0.05 0.05 1
+         Color 0.042 0.042 0.042 1
         }
         ButtonWidgetClass "{647E22C6563F8B1B}" {
          Name "SlotButton"
@@ -89,7 +89,7 @@ ButtonWidgetClass {
           OffsetBottom -30
          }
          Clipping Ancestor
-         Color 1 1 1 0.843
+         Color 1 1 1 0.85
          Text "Salami's Channel"
          "Min Font Size" 5
          "Vertical Alignment" Center
@@ -156,7 +156,7 @@ ButtonWidgetClass {
           OffsetBottom -33.88
          }
          Text "KIA"
-         "Font Size" 30
+         "Font Size" 32
          "Horizontal Alignment" Center
          "Vertical Alignment" Center
         }

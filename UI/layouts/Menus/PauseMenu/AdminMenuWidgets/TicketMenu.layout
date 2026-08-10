@@ -223,7 +223,7 @@ FrameWidgetClass {
      Slot ButtonWidgetSlot "{62992E44F11398F5}" {
      }
      Text "Close Ticket"
-     "Font Size" 17
+     "Font Size" 16
      "Min Font Size" 13
     }
    }

@@ -31,7 +31,7 @@ ButtonWidgetClass {
         HorizontalAlign 3
         VerticalAlign 3
        }
-       Color 0.044 0.044 0.044 0.137
+       Color 0.042 0.042 0.042 0.137
        Size 512 512
        "Transition width" 1
        Progress 0.52
@@ -72,7 +72,7 @@ ButtonWidgetClass {
           SizeY 0
           OffsetBottom 0
          }
-         Color 1 1 1 0.012
+         Color 1 1 1 0
          components {
           ButtonComponent "{6305105441730952}" {
            m_ColorButtonDefault 0 0 0 0
@@ -110,7 +110,7 @@ ButtonWidgetClass {
           SizeY 0
           OffsetBottom 0
          }
-         Color 1 1 1 0.012
+         Color 1 1 1 0
          components {
           ButtonComponent "{6305105441730952}" {
            m_ColorButtonDefault 0 0 0 0
@@ -133,6 +133,23 @@ ButtonWidgetClass {
           OffsetBottom 0
          }
          Size 5 128
+        }
+        ImageWidgetClass "{632444CBEEFA6BF0}" {
+         Name "RoleImageOutline"
+         Slot FrameWidgetSlot "{630C43F4485D0898}" {
+          Anchor 0 0 0 0
+          PositionX -8.1
+          OffsetLeft -8.1
+          PositionY -11.5
+          OffsetTop -11.5
+          SizeX 76
+          OffsetRight -67.9
+          SizeY 62
+          OffsetBottom -50.5
+         }
+         "Z Order" -1
+         Texture "{7294DBB54D4BFED6}UI/Images/Ranks/SFC_Rank.edds"
+         Size 40 40
         }
         ImageWidgetClass "{632444CBEEFA6BEF}" {
          Name "RoleImage"
@@ -204,7 +221,7 @@ ButtonWidgetClass {
           OffsetBottom -35
          }
          Clipping Ancestor
-         Color 1 1 1 0.843
+         Color 1 1 1 0.85
          Text "(Empty)"
          "Min Font Size" 5
          "Vertical Alignment" Center
@@ -227,7 +244,7 @@ ButtonWidgetClass {
           SizeY -6
           OffsetBottom 4
          }
-         Color 1 1 1 0.012
+         Color 1 1 1 0
          components {
           ButtonComponent "{6305105441730952}" {
            m_ColorButtonDefault 0 0 0 0
@@ -264,7 +281,7 @@ ButtonWidgetClass {
           SizeY 0
           OffsetBottom 0
          }
-         Color 1 1 1 0.843
+         Color 1 1 1 0.85
          Text "Automatic Rifleman Assistant"
          "Font Size" 24
          "Min Font Size" 10
@@ -336,7 +353,7 @@ ButtonWidgetClass {
        }
        "Is Visible" 0
        Opacity 0.25
-       Color 1 0 0 1
+       Color 0.855 0.031 0.028 1
       }
      }
     }

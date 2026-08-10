@@ -789,80 +789,68 @@ class COA_SlottingMenu: ChimeraMenuBase
 	 */
 	void SelectFactionBlufor()
 	{
-		SelectFaction("BLUFOR", 
-			Color.FromRGBA(34, 196, 244, 33), 
-			true, false, false, false);
+		SelectFaction("BLUFOR", true, false, false, false);
 	}
-	
+
 	/**
 	 * Updates UI to show OPFOR faction is selected
 	 */
 	void SelectFactionOpfor()
 	{
-		SelectFaction("OPFOR", 
-			Color.FromRGBA(238, 49, 47, 33), 
-			false, true, false, false);
+		SelectFaction("OPFOR", false, true, false, false);
 	}
-	
+
 	/**
 	 * Updates UI to show INDFOR faction is selected
 	 */
 	void SelectFactionIndfor()
 	{
-		SelectFaction("INDFOR", 
-			Color.FromRGBA(0, 177, 79, 33), 
-			false, false, true, false);
+		SelectFaction("INDFOR", false, false, true, false);
 	}
-	
+
 	/**
 	 * Updates UI to show CIV faction is selected
 	 */
 	void SelectFactionCiv()
 	{
-		SelectFaction("CIV", 
-			Color.FromRGBA(168, 110, 207, 33), 
-			false, false, false, true);
+		SelectFaction("CIV", false, false, false, true);
 	}
-	
+
 	/**
 	 * Common helper method for faction selection
 	 * @param factionKey - Key identifying the faction
-	 * @param bgColor - Background color for faction UI
 	 * @param bluforVisible - Whether Blufor highlight is visible
 	 * @param opforVisible - Whether Opfor highlight is visible
 	 * @param indforVisible - Whether Indfor highlight is visible
 	 * @param civVisible - Whether Civilian highlight is visible
 	 */
-	protected void SelectFaction(string factionKey, Color bgColor, bool bluforVisible, bool opforVisible, bool indforVisible, bool civVisible)
+	protected void SelectFaction(string factionKey, bool bluforVisible, bool opforVisible, bool indforVisible, bool civVisible)
 	{
 		// Set selected faction
 		m_fSelectedFaction = GetGame().GetFactionManager().GetFactionByKey(factionKey);
-		
+
 		// Update UI visibility for faction selection indicators
 		// This would be so much better if we had ternary operators #bohemiapls
 		if (bluforVisible)
 			m_wRoot.FindAnyWidget("BluforBGSelect").SetOpacity(1);
 		else
 			m_wRoot.FindAnyWidget("BluforBGSelect").SetOpacity(0);
-			
+
 		if (opforVisible)
 			m_wRoot.FindAnyWidget("OpforBGSelect").SetOpacity(1);
 		else
 			m_wRoot.FindAnyWidget("OpforBGSelect").SetOpacity(0);
-			
+
 		if (indforVisible)
 			m_wRoot.FindAnyWidget("IndforBGSelect").SetOpacity(1);
 		else
 			m_wRoot.FindAnyWidget("IndforBGSelect").SetOpacity(0);
-			
+
 		if (civVisible)
 			m_wRoot.FindAnyWidget("CivBGSelect").SetOpacity(1);
 		else
 			m_wRoot.FindAnyWidget("CivBGSelect").SetOpacity(0);
-		
-		// Set slot background color to match faction
-		m_wRoot.FindAnyWidget("SlotsBG").SetColor(bgColor);
-		
+
 		// Update slot list for selected faction
 		UpdateSlots();
 	}

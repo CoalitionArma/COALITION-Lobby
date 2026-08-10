@@ -41,7 +41,7 @@ ButtonWidgetClass {
        Slot OverlayWidgetSlot "{630A2578A5208A35}" {
         HorizontalAlign 3
        }
-       Color 0.044 0.044 0.044 0.137
+       Color 0.042 0.042 0.042 0.137
        Size 40 512
        "Transition width" 1
        Progress 0.52
@@ -105,7 +105,7 @@ ButtonWidgetClass {
           OffsetBottom -35.557
          }
          Clipping Ancestor
-         Color 1 1 1 0.706
+         Color 1 1 1 0.6
          Text "RqandAlThor"
          "Min Font Size" 5
          "Vertical Alignment" Center
@@ -140,7 +140,7 @@ ButtonWidgetClass {
           OffsetBottom -34.861
          }
          "Z Order" 10
-         Color 1 1 1 0.012
+         Color 1 1 1 0
          components {
           ButtonComponent "{6305105441730952}" {
            m_ColorButtonDefault 0 0 0 0

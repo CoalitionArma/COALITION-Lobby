@@ -31,7 +31,7 @@ ButtonWidgetClass {
         HorizontalAlign 3
         VerticalAlign 3
        }
-       Color 0.044 0.044 0.044 0.137
+       Color 0.042 0.042 0.042 0.137
        Size 512 512
        "Transition width" 1
        Progress 0.52
@@ -42,6 +42,23 @@ ButtonWidgetClass {
         HorizontalAlign 0
        }
        {
+        ImageWidgetClass "{647D656AAA1FB936}" {
+         Name "RoleImageOutline"
+         Slot FrameWidgetSlot "{630C43F4485D089A}" {
+          Anchor 0 0 0 0
+          PositionX -6.864
+          OffsetLeft -6.864
+          PositionY -11.5
+          OffsetTop -11.5
+          SizeX 72.429
+          OffsetRight -65.565
+          SizeY 58.017
+          OffsetBottom -46.517
+         }
+         "Z Order" -1
+         Texture "{7294DBB54D4BFED6}UI/Images/Ranks/SFC_Rank.edds"
+         Size 40 40
+        }
         ImageWidgetClass "{647D656AAA1FB937}" {
          Name "RoleImage"
          Slot FrameWidgetSlot "{630C43F4485D0897}" {
@@ -72,7 +89,7 @@ ButtonWidgetClass {
           OffsetBottom -30
          }
          Clipping Ancestor
-         Color 1 1 1 0.843
+         Color 1 1 1 0.85
          Text "(Empty)"
          "Min Font Size" 5
          "Vertical Alignment" Center
@@ -120,7 +137,7 @@ ButtonWidgetClass {
           SizeY -6
           OffsetBottom 0
          }
-         Color 1 1 1 0.012
+         Color 1 1 1 0
          components {
           ButtonComponent "{6305105441730952}" {
            m_ColorButtonDefault 0 0 0 0
@@ -190,7 +207,7 @@ ButtonWidgetClass {
           OffsetBottom -33.88
          }
          Text "KIA"
-         "Font Size" 30
+         "Font Size" 32
          "Horizontal Alignment" Center
          "Vertical Alignment" Center
         }

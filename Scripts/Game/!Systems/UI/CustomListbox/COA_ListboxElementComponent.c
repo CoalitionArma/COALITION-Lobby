@@ -295,11 +295,11 @@ class COA_ListBoxElementComponent: SCR_ListBoxElementComponent
 		// Return if no image resource is provided
 		if (imageOrImageset.IsEmpty())
 			return;
-		
+
 		ImageWidget imageWidget = ImageWidget.Cast(m_wRoot.FindAnyWidget("RoleImage"));
 		if (!imageWidget)
 			return;
-			
+
 		// Handle either imageset or direct texture
 		if (imageOrImageset.EndsWith("imageset"))
 		{
@@ -309,6 +309,23 @@ class COA_ListBoxElementComponent: SCR_ListBoxElementComponent
 		else
 		{
 			imageWidget.LoadImageTexture(0, imageOrImageset);
+		}
+
+		// Mirror onto the outline widget (only present on slot-icon layouts) so the faked stroke -
+		// a slightly larger duplicate of the same icon sitting behind it - matches the icon's shape.
+		// ImageWidget has no native outline/stroke property, unlike TextWidget.
+		ImageWidget outlineWidget = ImageWidget.Cast(m_wRoot.FindAnyWidget("RoleImageOutline"));
+		if (outlineWidget)
+		{
+			if (imageOrImageset.EndsWith("imageset"))
+			{
+				if (!iconName.IsEmpty())
+					outlineWidget.LoadImageFromSet(0, imageOrImageset, iconName);
+			}
+			else
+			{
+				outlineWidget.LoadImageTexture(0, imageOrImageset);
+			}
 		}
 	}
 	
@@ -345,17 +362,39 @@ class COA_ListBoxElementComponent: SCR_ListBoxElementComponent
 	 */
 	void SetRoleColor(Color color)
 	{
+		// Icon fill/outline are NOT driven by the passed-in color - COALITION-Lobby's default is
+		// always a white icon with a black outline, regardless of faction. Mods that want a
+		// different icon scheme (e.g. CRF's CSI fireteam colors) call SetRoleIconColor() explicitly
+		// after this, instead of this method reacting to whatever color happens to be passed here.
 		ImageWidget roleImage = ImageWidget.Cast(m_wRoot.FindAnyWidget("RoleImage"));
+		ImageWidget outlineImage = ImageWidget.Cast(m_wRoot.FindAnyWidget("RoleImageOutline"));
 		if (roleImage)
-			roleImage.SetColor(color);
-			
+		{
+			roleImage.SetColor(Color.White);
+			if (outlineImage)
+				outlineImage.SetColor(Color.Black);
+		}
+
 		ImageWidget divider1 = ImageWidget.Cast(m_wRoot.FindAnyWidget("Divider1"));
 		if (divider1)
 			divider1.SetColor(color);
-			
+
 		ImageWidget divider2 = ImageWidget.Cast(m_wRoot.FindAnyWidget("Divider2"));
 		if (divider2)
 			divider2.SetColor(color);
+	}
+
+	/**
+	 * Explicitly overrides just the role icon's fill color (outline stays black), independent of
+	 * SetRoleColor()'s faction-driven divider coloring. Used by mods (e.g. CRF's CSI fireteam
+	 * colors) that want a different icon color scheme than COALITION-Lobby's white default.
+	 * @param color Color to apply to the icon fill
+	 */
+	void SetRoleIconColor(Color color)
+	{
+		ImageWidget roleImage = ImageWidget.Cast(m_wRoot.FindAnyWidget("RoleImage"));
+		if (roleImage)
+			roleImage.SetColor(color);
 	}
 	
 	//------------------------------------------------------------------------------------------------

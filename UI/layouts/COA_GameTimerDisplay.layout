@@ -15,7 +15,7 @@ FrameWidgetClass {
     OffsetBottom 4.048
    }
    Opacity 0
-   Color 0 0 0 0.333
+   Color 0 0 0 0.35
    "Shadow Offset" 0.5 0.5
   }
   TextWidgetClass "{612ED7C369056034}" {
@@ -32,7 +32,7 @@ FrameWidgetClass {
     OffsetBottom 4.824
    }
    Opacity 0
-   Color 0.928 0.862 0.862 1
+   Color 0.9 0.9 0.9 1
    Text "Game not live"
    "Font Size" 16
    "Min Font Size" 14
@@ -59,7 +59,7 @@ FrameWidgetClass {
     OffsetBottom 3.818
    }
    Opacity 0
-   Color 0 0 0 0.333
+   Color 0 0 0 0.35
    "Shadow Offset" 0.5 0.5
   }
   ImageWidgetClass "{645911A4F7FC2697}" {
@@ -139,7 +139,7 @@ FrameWidgetClass {
     OffsetBottom 31.585
    }
    Opacity 0
-   Color 0 0 0 0.333
+   Color 0 0 0 0.35
    "Shadow Offset" 0.5 0.5
   }
   TextWidgetClass "{645911A37262319E}" {
@@ -219,7 +219,7 @@ FrameWidgetClass {
     OffsetBottom 59.283
    }
    Opacity 0
-   Color 0 0 0 0.333
+   Color 0 0 0 0.35
    "Shadow Offset" 0.5 0.5
   }
   ImageWidgetClass "{645911A08A21294E}" {
@@ -299,7 +299,7 @@ FrameWidgetClass {
     OffsetBottom 87.05
    }
    Opacity 0
-   Color 0 0 0 0.333
+   Color 0 0 0 0.35
    "Shadow Offset" 0.5 0.5
   }
   TextWidgetClass "{645911A08A212623}" {
