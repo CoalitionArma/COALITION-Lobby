@@ -887,11 +887,11 @@ class COA_GearscriptManager : ScriptComponent
 			
 			PrintFormat("==========================================================================================================================================================");
 			PrintFormat("----------------------------------------------------------------------------");
-			PrintFormat("|     [GEARSCIRPT VALIDATION] : ALL SLOTS FOR %1 ARE BEING CHECKED...", factionKey);
+			PrintFormat("|     [GEARSCRIPT VALIDATION] : ALL SLOTS FOR %1 ARE BEING CHECKED...", factionKey);
 			PrintFormat("----------------------------------------------------------------------------");
-			PrintFormat("[GEARSCIRPT VALIDATION] : CHECKING GEAR FOR: %1, %2", factionKey, SCR_Enum.GetEnumName(COA_EGearRole, roleConfig.m_Role));
+			PrintFormat("[GEARSCRIPT VALIDATION] : CHECKING GEAR FOR: %1, %2", factionKey, SCR_Enum.GetEnumName(COA_EGearRole, roleConfig.m_Role));
 		} else {
-			PrintFormat("[GEARSCIRPT VALIDATION] : CHECKING GEAR FOR: %1, %2", factionKey, SCR_Enum.GetEnumName(COA_EGearRole, roleConfig.m_Role));
+			PrintFormat("[GEARSCRIPT VALIDATION] : CHECKING GEAR FOR: %1, %2", factionKey, SCR_Enum.GetEnumName(COA_EGearRole, roleConfig.m_Role));
 			SetEntityGear(m_CharacterToCheckAgainst, roleConfig.m_RoleResource);
 		};
 	}
@@ -907,7 +907,7 @@ class COA_GearscriptManager : ScriptComponent
 			if (m_CharacterToCheckAgainst)
 			{
 				PrintFormat("----------------------------------------------------------------------------");
-				PrintFormat("|     [GEARSCIRPT VALIDATION] : ALL SLOTS FOR %1 HAVE BEEN CHECKED!", FactionAffiliationComponent.Cast(m_CharacterToCheckAgainst.FindComponent(FactionAffiliationComponent)).GetAffiliatedFaction().GetFactionKey());
+				PrintFormat("|     [GEARSCRIPT VALIDATION] : ALL SLOTS FOR %1 HAVE BEEN CHECKED!", FactionAffiliationComponent.Cast(m_CharacterToCheckAgainst.FindComponent(FactionAffiliationComponent)).GetAffiliatedFaction().GetFactionKey());
 				PrintFormat("----------------------------------------------------------------------------");
 				
 				SCR_EntityHelper.DeleteEntityAndChildren(m_CharacterToCheckAgainst);
