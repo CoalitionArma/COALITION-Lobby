@@ -70,6 +70,7 @@ class COA_SpectatorCamera : SCR_ManualCamera
 
 	protected bool m_bCameraOnRails;
 	protected bool m_bTPPMode = false; // True = third-person, false = first-person (helmet cam)
+	protected bool m_bEyeMode = false; // True first-person "eye cam" - see SetOnRailsEntityEyeMode
 
 	// Orbit camera state (TPP mode)
 	protected float m_fOrbitYaw    = 0.0;   // Accumulated horizontal orbit angle (degrees)
@@ -211,12 +212,16 @@ class COA_SpectatorCamera : SCR_ManualCamera
 	//------------------------------------------------------------------------------------------------
 	protected void ClearOnRailsVariables()
 	{
+		if (m_bEyeMode && m_eCameraEntity)
+			SetHeadAlpha(m_eCameraEntity, 0);
+
 		m_eCameraEntity = null;
 		m_CameraPolyLine = null;
 		m_vCameraOrbitPoint = vector.Zero;
 		m_vCameraOrbitDistance = 0;
 		m_vCameraOrbitHeight = 0;
 		m_bTPPMode = false;
+		m_bEyeMode = false;
 		m_fOrbitYaw        = 0.0;
 		m_fOrbitPitch      = 20.0;
 		m_fOrbitRadius     = 4.0;
@@ -226,6 +231,38 @@ class COA_SpectatorCamera : SCR_ManualCamera
 		m_bHasSmoothedPivot  = false;
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! Switches to true first-person eye-cam on the given entity - distinct from the helmet-cam FPP
+	//! mode above, which sits just off the head's Camera bone rather than exactly at the eye. Reuses
+	//! SetOnRailsEntity for its target-switch bookkeeping (easing, ClearOnRailsVariables clearing any
+	//! previous mode/alpha) then flags eye mode on top.
+	void SetOnRailsEntityEyeMode(IEntity entity)
+	{
+		if (!entity)
+		{
+			ClearOnRails();
+			return;
+		}
+
+		SetOnRailsEntity(entity, false);
+		m_bEyeMode = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! 255 fully hides the head/face mesh (alpha-test cutout), 0 restores normal visibility - see
+	//! CharacterCameraHandlerComponent.OnAlphatestChange in the vanilla source.
+	protected void SetHeadAlpha(IEntity entity, int alpha)
+	{
+		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(entity);
+		if (!character)
+			return;
+
+		SCR_CharacterCameraHandlerComponent cameraHandler = SCR_CharacterCameraHandlerComponent.Cast(
+			character.FindComponent(SCR_CharacterCameraHandlerComponent));
+		if (cameraHandler)
+			cameraHandler.OnAlphatestChange(alpha);
+	}
+
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 FRAME UPDATE METHODS
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -233,6 +270,12 @@ class COA_SpectatorCamera : SCR_ManualCamera
 	//------------------------------------------------------------------------------------------------
 	protected void FrameUpdateEntity(float timeSlice)
 	{
+		if (m_bEyeMode)
+		{
+			FrameUpdateEntityEyeCam(timeSlice);
+			return;
+		}
+
 		vector cameraBoneMat[4];
 		m_eCameraEntity.GetAnimation().GetBoneMatrix(m_eCameraEntity.GetAnimation().GetBoneIndex("Camera"), cameraBoneMat);
 
@@ -249,6 +292,50 @@ class COA_SpectatorCamera : SCR_ManualCamera
 
 		ApplyCameraTransform(cameraBoneMat, timeSlice);
 	};
+
+	//------------------------------------------------------------------------------------------------
+	//! True first-person camera: position from the leftEye bone, orientation from the Head bone,
+	//! matching exactly what the character sees rather than the helmet-cam's over-shoulder offset.
+	//! Ports PS_ManualCameraSpectator.CameraPositionUpdate from PlayableSelector.
+	protected void FrameUpdateEntityEyeCam(float timeSlice)
+	{
+		if (!m_eCameraEntity)
+			return;
+
+		int boneHead = m_eCameraEntity.GetAnimation().GetBoneIndex("Head");
+		int boneEyeLeft = m_eCameraEntity.GetAnimation().GetBoneIndex("leftEye");
+
+		vector charMat[4];
+		m_eCameraEntity.GetTransform(charMat);
+
+		vector headBoneMat[4];
+		m_eCameraEntity.GetAnimation().GetBoneMatrix(boneHead, headBoneMat);
+		vector eyeBoneMat[4];
+		m_eCameraEntity.GetAnimation().GetBoneMatrix(boneEyeLeft, eyeBoneMat);
+
+		vector headWorldMat[4];
+		Math3D.MatrixMultiply4(charMat, headBoneMat, headWorldMat);
+		vector eyeWorldMat[4];
+		Math3D.MatrixMultiply4(charMat, eyeBoneMat, eyeWorldMat);
+
+		// Head bone's own facing doesn't line up with how the eye actually looks - flip Z and nudge
+		// yaw/pitch to compensate, same correction PS_ManualCameraSpectator applies.
+		vector flipZ[3] = { "1 0 0", "0 1 0", "0 0 -1" };
+		vector orientMat[4];
+		Math3D.MatrixMultiply3(headWorldMat, flipZ, orientMat);
+
+		vector angles = Math3D.MatrixToAngles(orientMat);
+		angles[2] = 0.0;
+		angles[1] = angles[1] + 10.0;
+		angles[0] = angles[0] - 5.0;
+		Math3D.AnglesToMatrix(angles, orientMat);
+		orientMat[3] = eyeWorldMat[3];
+
+		// Re-assert every frame - other systems can reset this between frames.
+		SetHeadAlpha(m_eCameraEntity, 255);
+
+		ApplyCameraTransform(orientMat, timeSlice);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Third-person orbit camera: orbits around the entity using mouse look input.

@@ -66,6 +66,7 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	ref array<Widget> m_aRequest = {};            			  // Array of request widgets
 	protected bool m_bFrameEventRegistered = false;          // Flag to track if frame event is registered
 	protected bool m_bTPPMode = false;                       // True = third-person camera, false = first-person (helmet cam)
+	protected int m_iCamCycle = 0;                           // 0 = helmet FPP, 1 = eye-cam, 2 = TPP orbit - see ToggleCameraMode
 	
 	// Last kill world position, updated by OnKillfeedNotification, used by Action_TeleportToKill
 	protected vector m_vLastKillPosition = vector.Zero;
@@ -499,19 +500,38 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	}
 	
 	/**
-	 * Toggles between first-person (helmet cam) and third-person spectator camera modes.
-	 * Can be triggered by the HUD button or a key binding.
+	 * Cycles between first-person (helmet cam), true first-person (eye cam), and third-person
+	 * spectator camera modes. Can be triggered by the HUD button or a key binding.
 	 * If currently following an entity, the camera switches mode immediately.
 	 */
 	void ToggleCameraMode()
 	{
-		m_bTPPMode = !m_bTPPMode;
-
-		// If already following someone, restart the rails with the new mode
-		if (m_eSpecEntity && m_bFrameEventRegistered)
+		if (!m_eSpecEntity || !m_bFrameEventRegistered)
 		{
-			COA_PlayerCameraManager camManager = COA_PlayerCameraManager.GetInstance();
-			camManager.SetCameraOnRailsEntity(m_eSpecEntity, m_bTPPMode);
+			m_bTPPMode = !m_bTPPMode;
+			return;
+		}
+
+		m_iCamCycle = (m_iCamCycle + 1) % 3;
+
+		COA_PlayerCameraManager camManager = COA_PlayerCameraManager.GetInstance();
+
+		switch (m_iCamCycle)
+		{
+			case 0:
+				m_bTPPMode = false;
+				camManager.SetCameraOnRailsEntity(m_eSpecEntity, false);
+				break;
+
+			case 1:
+				m_bTPPMode = false;
+				camManager.SetCameraOnRailsEntityEyeMode(m_eSpecEntity);
+				break;
+
+			case 2:
+				m_bTPPMode = true;
+				camManager.SetCameraOnRailsEntity(m_eSpecEntity, true);
+				break;
 		}
 	}
 
@@ -1901,11 +1921,12 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			UnregisterFrameEvent();
 			return;
 		}
-		
+
 		m_bTPPMode = true;
+		m_iCamCycle = 2;
 		m_eSpecEntity = entity;
 		m_bFPPEntityValidityCheck = true;
-		
+
 		COA_PlayerCameraManager camManager = COA_PlayerCameraManager.GetInstance();
 		camManager.SetCameraOnRailsEntity(m_eSpecEntity, true);
 		m_bFrameEventRegistered = true;
@@ -1934,11 +1955,12 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			UnregisterFrameEvent();
 			return;
 		}
-		
+
 		m_bTPPMode = false;
+		m_iCamCycle = 0;
 		m_eSpecEntity = entity;
 		m_bFPPEntityValidityCheck = true;
-		
+
 		COA_PlayerCameraManager camManager = COA_PlayerCameraManager.GetInstance();
 		camManager.SetCameraOnRailsEntity(m_eSpecEntity, false);
 		m_bFrameEventRegistered = true;

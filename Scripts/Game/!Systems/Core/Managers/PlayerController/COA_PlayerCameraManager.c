@@ -77,6 +77,15 @@ class COA_PlayerCameraManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True first-person "eye cam" mode - see COA_SpectatorCamera.SetOnRailsEntityEyeMode.
+	void SetCameraOnRailsEntityEyeMode(IEntity entity)
+	{
+		COA_SpectatorCamera camera = COA_SpectatorCamera.Cast(m_eCamera);
+		if (camera)
+			camera.SetOnRailsEntityEyeMode(entity);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Orbit the camera around a fixed world-space point at constant speed.
 	//! \param point    World position to orbit around.
 	//! \param radius   Orbit radius in metres.
