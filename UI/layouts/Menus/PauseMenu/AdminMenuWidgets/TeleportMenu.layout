@@ -4,14 +4,14 @@ FrameWidgetClass {
   FrameWidgetClass "{6552D82331FE4CE8}" {
    Name "MenuSlot1"
    Slot FrameWidgetSlot "{6548E8DD235B0C39}" {
-    PositionX 152
-    OffsetLeft 152
-    PositionY 88
-    OffsetTop 88
+    PositionX 144
+    OffsetLeft 144
+    PositionY 72
+    OffsetTop 72
     SizeX 1128
-    OffsetRight -1280
+    OffsetRight -1272
     SizeY 928
-    OffsetBottom -1016
+    OffsetBottom -1000
    }
    "Is Enabled" 0
   }
@@ -68,12 +68,12 @@ FrameWidgetClass {
     Anchor 0.5 0.5 0.5 0.5
     PositionX -792
     OffsetLeft -792
-    PositionY -380
-    OffsetTop -380
+    PositionY -356
+    OffsetTop -356
     SizeX 293.405
     OffsetRight 498.595
-    SizeY 849.01
-    OffsetBottom -469.01
+    SizeY 809.01
+    OffsetBottom -453.01
    }
    {
     OverlayWidgetClass "{6552D823ECEDB680}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
@@ -114,12 +114,12 @@ FrameWidgetClass {
     Anchor 0.5 0.5 0.5 0.5
     PositionX -152
     OffsetLeft -152
-    PositionY -380
-    OffsetTop -380
+    PositionY -356
+    OffsetTop -356
     SizeX 293.405
     OffsetRight -141.405
-    SizeY 849.01
-    OffsetBottom -469.01
+    SizeY 809.01
+    OffsetBottom -453.01
    }
    {
     OverlayWidgetClass "{6552D823ECED6AB6}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
@@ -160,12 +160,12 @@ FrameWidgetClass {
     Anchor 0.5 0.5 0.5 0.5
     PositionX 152
     OffsetLeft 152
-    PositionY -316
-    OffsetTop -316
+    PositionY -308
+    OffsetTop -308
     SizeX 112
     OffsetRight -264
     SizeY 29.999
-    OffsetBottom 286.001
+    OffsetBottom 278.001
    }
    Color 0.013 0.0152 0.0176 1
    components {
@@ -191,12 +191,12 @@ FrameWidgetClass {
     Anchor 0.5 0.5 0.5 0.5
     PositionX 152
     OffsetLeft 152
-    PositionY -276
-    OffsetTop -276
+    PositionY -268
+    OffsetTop -268
     SizeX 112
     OffsetRight -264
     SizeY 29.999
-    OffsetBottom 246.001
+    OffsetBottom 238.001
    }
    Color 0.013 0.0152 0.0176 1
    components {
@@ -269,12 +269,12 @@ FrameWidgetClass {
     Anchor 0.5 0.5 0.5 0.5
     PositionX 152
     OffsetLeft 152
-    PositionY -356
-    OffsetTop -356
+    PositionY -348
+    OffsetTop -348
     SizeX 112
     OffsetRight -264
     SizeY 29.999
-    OffsetBottom 326.001
+    OffsetBottom 318.001
    }
    Color 0.013 0.0152 0.0176 1
    components {
@@ -300,12 +300,12 @@ FrameWidgetClass {
     Anchor 0.5 0.5 0.5 0.5
     PositionX -472
     OffsetLeft -472
-    PositionY -380
-    OffsetTop -380
+    PositionY -356
+    OffsetTop -356
     SizeX 293.405
     OffsetRight 178.595
-    SizeY 849.01
-    OffsetBottom -469.01
+    SizeY 809.01
+    OffsetBottom -453.01
    }
    {
     OverlayWidgetClass "{6A1525BDF034411F}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
@@ -339,6 +339,54 @@ FrameWidgetClass {
      Offset 0 0
     }
    }
+  }
+  ButtonWidgetClass "{6A174D0F61B7D055}" {
+   Name "OpenTicketFilterButton"
+   Slot FrameWidgetSlot "{62992E477A603216}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -792
+    OffsetLeft -792
+    PositionY -388
+    OffsetTop -388
+    SizeX 24
+    OffsetRight 768
+    SizeY 24
+    OffsetBottom 364
+   }
+   Color 0.013 0.0152 0.0176 1
+   components {
+    SCR_ButtonTextComponent "{62993E178E05DA3C}" {
+     m_bCanBeToggled 1
+     m_bIsToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   Switch toggle
+   {
+    ImageWidgetClass "{6A174D0F61B7D050}" {
+     Name "OpenTicketFilterButtonImage"
+     Slot ButtonWidgetSlot "{62992E44F11398F5}" {
+     }
+     Texture "{7DEEE956159B85D2}UI/Images/LobbyImages/check.edds"
+     Size 25 25
+    }
+   }
+  }
+  TextWidgetClass "{6A1525E0342C15F4}" {
+   Name "OpenTicketFilterText"
+   Slot FrameWidgetSlot "{6A1525E0342C15E4}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -760
+    OffsetLeft -760
+    PositionY -388
+    OffsetTop -388
+    SizeX 104
+    OffsetRight 656
+    SizeY 24
+    OffsetBottom 364
+   }
+   Text "Open Tickets"
+   "Min Font Size" 20
   }
  }
 }

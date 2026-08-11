@@ -157,7 +157,19 @@ class COA_AdminMenu : ChimeraMenuBase
 		
 		return MultilineEditBoxWidget.Cast(widget.FindAnyWidget(multiEditBox));
 	}
-	
+
+	/**
+	 * Get a image widget from the current loaded menu
+	 * @param name of the image widget
+	 */
+	protected ImageWidget GetImageWidget(string imagewidget, Widget widget = null)
+	{
+		if (!widget)
+			widget = m_wMenuContent;
+		
+		return ImageWidget.Cast(widget.FindAnyWidget(imagewidget));
+	}
+
 	/**
 	 * Get a edit box from the current loaded menu
 	 * @param name of the root widget of the edit box
@@ -422,7 +434,7 @@ class COA_AdminMenu : ChimeraMenuBase
 	 * Populates a list with active players
 	 * @param list The list to populate with player names
 	 */
-	protected void PopulatePlayerList(SCR_ListBoxComponent list, bool selectOpenTicket = true, bool filterByOpenTickets = true, SCR_AIGroup filterByGroup = null, Faction filterByFaction = null)
+	protected void PopulatePlayerList(SCR_ListBoxComponent list, bool selectOpenTicket = true, bool filterByOpenTickets = false, SCR_AIGroup filterByGroup = null, Faction filterByFaction = null)
 	{
 		// Clear the list
 		list.Clear();
@@ -674,6 +686,29 @@ class COA_AdminMenu : ChimeraMenuBase
 			list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
 		}
 	}
+
+	/**
+	 * Toggle the filter for only players with open tickets in the first player list
+	 */
+	void ToggleOpenTicketFilter()
+	{
+
+		SCR_ButtonTextComponent menuButtonTicketOpenToggle = GetMenuButton("OpenTicketFilterButton");
+		if (!menuButtonTicketOpenToggle)
+			return;
+
+		SCR_ListBoxComponent playerList = GetListBox("PlayerListBox0");
+		if (!playerList)
+			return;
+
+		ImageWidget check = GetImageWidget("OpenTicketFilterButtonImage");
+		if (!check)
+			return;
+		
+		check.SetVisible(menuButtonTicketOpenToggle.IsToggled());
+		
+		PopulatePlayerList(playerList, false, menuButtonTicketOpenToggle.IsToggled());
+	}
 	
 	/**
 	 * Update chat while menu is active
@@ -721,7 +756,6 @@ class COA_AdminMenu : ChimeraMenuBase
 	 */
 	void InitializeGearMenu()
 	{
-		
 		// Load menu content widget
         m_wMenuContent = GetGame().GetWorkspace().CreateWidgets("{5C7EC9AAE498F6B6}UI/layouts/Menus/PauseMenu/AdminMenuWidgets/GearMenu.layout");
 		if (!m_wMenuContent)
@@ -756,6 +790,13 @@ class COA_AdminMenu : ChimeraMenuBase
 		menuButton5.m_OnClicked.Insert(AddWrench);
 		menuButton6.m_OnClicked.Insert(AddMedicKit);
 		menuButton7.m_OnClicked.Insert(AddPrimaryAmmo);
+
+		// Setup List Filters
+		SCR_ButtonTextComponent menuButtonTicketOpenToggle = GetMenuButton("OpenTicketFilterButton");
+		if (!menuButtonTicketOpenToggle)
+			return;
+		
+		menuButtonTicketOpenToggle.m_OnToggled.Insert(ToggleOpenTicketFilter);
 		
 		// Setup selection change handler
 		playerList.m_OnChanged.Insert(UpdateDefaultGear);
@@ -767,7 +808,7 @@ class COA_AdminMenu : ChimeraMenuBase
 		AddRoles(roleList);
 
 		// Populate player list
-		PopulatePlayerList(playerList);	
+		PopulatePlayerList(playerList, true, menuButtonTicketOpenToggle.IsToggled());
 	}
 
 	/**
@@ -1447,6 +1488,13 @@ class COA_AdminMenu : ChimeraMenuBase
 		// Setup selection change handlers
 		playerList.m_OnChanged.Insert(UpdateRespawnSelectedGroup);
 		groupList.m_OnChanged.Insert(UpdateRespawnSpawnpoint);
+
+		// Setup List Filters
+		SCR_ButtonTextComponent menuButtonTicketOpenToggle = GetMenuButton("OpenTicketFilterButton");
+		if (!menuButtonTicketOpenToggle)
+			return;
+		
+		menuButtonTicketOpenToggle.m_OnToggled.Insert(ToggleOpenTicketFilter);
 		
 		// Change title of the menu
 		UpdateMenuTitle("Respawn");
@@ -1456,7 +1504,7 @@ class COA_AdminMenu : ChimeraMenuBase
 		m_outGroups = COA_SlottingManager.GetInstance().GetAllGroups();
 
 		// Populate Dead Players list
-		PopulateDeadPlayersList(playerList);
+		PopulatePlayerList(playerList, true, menuButtonTicketOpenToggle.IsToggled());
 		
 		// Populate Groups list
 		PopulateGroupsList(groupList);
@@ -1613,6 +1661,13 @@ class COA_AdminMenu : ChimeraMenuBase
 		menuButton1.m_OnClicked.Insert(TeleportPlayers);
 		menuButton2.m_OnClicked.Insert(TeleportSelectedToLocal);
 
+		// Setup List Filters
+		SCR_ButtonTextComponent menuButtonTicketOpenToggle = GetMenuButton("OpenTicketFilterButton");
+		if (!menuButtonTicketOpenToggle)
+			return;
+		
+		menuButtonTicketOpenToggle.m_OnToggled.Insert(ToggleOpenTicketFilter);
+
 		// Setup selection change handlers
 		playerList0.m_OnChanged.Insert(UpdateTeleportGroupList);
 		groupList.m_OnChanged.Insert(UpdateTeleportToList);
@@ -1624,8 +1679,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		m_outGroups = COA_SlottingManager.GetInstance().GetAllGroups();
 
 		// Populate player lists
-		PopulatePlayerList(playerList0, false, false);
-		PopulatePlayerList(playerList1);
+		PopulatePlayerList(playerList0, true, menuButtonTicketOpenToggle.IsToggled());
+		PopulatePlayerList(playerList1, false);
 
 		// Populate group list
 		PopulateGroupsList(groupList);
@@ -1803,12 +1858,19 @@ class COA_AdminMenu : ChimeraMenuBase
 		menuButton0.m_OnClicked.Insert(SendHintAll);
 		menuButton1.m_OnClicked.Insert(SendHintFaction);
 		menuButton2.m_OnClicked.Insert(SendHintPlayer);
+
+		// Setup List Filters
+		SCR_ButtonTextComponent menuButtonTicketOpenToggle = GetMenuButton("OpenTicketFilterButton");
+		if (!menuButtonTicketOpenToggle)
+			return;
+		
+		menuButtonTicketOpenToggle.m_OnToggled.Insert(ToggleOpenTicketFilter);
 		
 		// Change title of the menu
 		UpdateMenuTitle("Hint");
 
 		// Populate player list
-		PopulatePlayerList(playerList);
+		PopulatePlayerList(playerList, true, menuButtonTicketOpenToggle.IsToggled());
 		
 		// Populate faction list
 		PopulateFactionList(factionList);
@@ -1914,13 +1976,20 @@ class COA_AdminMenu : ChimeraMenuBase
 		menuButton0.m_OnClicked.Insert(HealPlayer);
 		menuButton1.m_OnClicked.Insert(HealPlayerVehicle);
 		searchButton0.m_OnClicked.Insert(SearchList0);
+
+		// Setup List Filters
+		SCR_ButtonTextComponent menuButtonTicketOpenToggle = GetMenuButton("OpenTicketFilterButton");
+		if (!menuButtonTicketOpenToggle)
+			return;
+		
+		menuButtonTicketOpenToggle.m_OnToggled.Insert(ToggleOpenTicketFilter);
 		
 		// Change title of the menu
 		UpdateMenuTitle("Heal");
 		
 
 		// Populate player list
-		PopulatePlayerList(playerList);
+		PopulatePlayerList(playerList, true, menuButtonTicketOpenToggle.IsToggled());
 	}
 	
 	/**
