@@ -91,8 +91,9 @@ class COA_SpectatorCamera : SCR_ManualCamera
 	// Smoothing state
 	protected vector m_vSmoothedPivot;   // eased target/orbit-center position, absorbs replication jitter
 	protected bool m_bHasSmoothedPivot;  // false until a pivot has been captured once (avoids glide-in from zero)
-	protected vector oldTransform[4];    // previous camera transform, used to ease into a newly-switched target
+	protected vector m_vOldTransform[4];    // previous camera transform, used to ease into a newly-switched target
 	protected bool m_bEaseToTarget;      // true for the first few frames after switching targets while already on rails
+	protected float m_fEaseToTargetTimeSlice;
 
 	//------------------------------------------------------------------------------------------------
 	override protected void EOnPostFrame(IEntity owner, float timeSlice)
@@ -116,6 +117,16 @@ class COA_SpectatorCamera : SCR_ManualCamera
 	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================
+//	 ON-RAILS GETTER METHODS
+//=============================================================================================================================================================================================================================================================================================================================================================
+
+	//------------------------------------------------------------------------------------------------
+	bool GetIfCameraOnRails()
+	{
+		return m_bCameraOnRails;
+	}
+
+//=============================================================================================================================================================================================================================================================================================================================================================
 //	 ON-RAILS SETTER METHODS
 //=============================================================================================================================================================================================================================================================================================================================================================
 
@@ -132,7 +143,7 @@ class COA_SpectatorCamera : SCR_ManualCamera
 		// snap immediately on first-ever activation (mirrors PS_ManualCameraSpectator's move-link blend).
 		if (m_bCameraOnRails && m_eCameraEntity)
 		{
-			GetTransform(oldTransform);
+			GetTransform(m_vOldTransform);
 			m_bEaseToTarget = true;
 		}
 		else
@@ -143,15 +154,6 @@ class COA_SpectatorCamera : SCR_ManualCamera
 		ClearOnRailsVariables();
 		m_eCameraEntity = entity;
 		m_bTPPMode = tpp;
-
-		// Initialise orbit yaw to face behind the entity so camera starts at its back
-		if (tpp)
-		{
-			vector angles = entity.GetAngles();
-			// angles[0] = yaw (world Y-rotation). Offset 180° so we're behind.
-			m_fOrbitYaw = angles[0] + 180.0;
-			m_fOrbitPitch = 20.0;
-		}
 
 		m_bCameraOnRails = true;
 	}
@@ -182,7 +184,10 @@ class COA_SpectatorCamera : SCR_ManualCamera
 	void SetOnRailsOrbitEntity(IEntity entity, float radius, float height, float speed = 10.0)
 	{
 		if (!entity)
+		{
+			ClearOnRails();
 			return;
+		}
 
 		ClearOnRailsVariables();
 		m_eOrbitTargetEntity = entity;
@@ -222,9 +227,6 @@ class COA_SpectatorCamera : SCR_ManualCamera
 		m_vCameraOrbitHeight = 0;
 		m_bTPPMode = false;
 		m_bEyeMode = false;
-		m_fOrbitYaw        = 0.0;
-		m_fOrbitPitch      = 20.0;
-		m_fOrbitRadius     = 4.0;
 		m_eOrbitTargetEntity = null;
 		m_fOrbitSpeed        = 10.0;
 		m_fSlowOrbitAngle    = 0.0;
@@ -384,7 +386,7 @@ class COA_SpectatorCamera : SCR_ManualCamera
 		}
 		else
 		{
-			m_vSmoothedPivot = vector.Lerp(m_vSmoothedPivot, rawPivot, Math.Clamp(timeSlice * 10, 0, 1));
+			m_vSmoothedPivot = vector.Lerp(m_vSmoothedPivot, rawPivot, Math.Clamp(timeSlice * 5, 0, 1));
 		}
 
 		// --- Build camera position on sphere around entity -------------------
@@ -433,7 +435,7 @@ class COA_SpectatorCamera : SCR_ManualCamera
 			}
 			else
 			{
-				m_vSmoothedPivot = vector.Lerp(m_vSmoothedPivot, rawCenter, Math.Clamp(timeSlice * 10, 0, 1));
+				m_vSmoothedPivot = vector.Lerp(m_vSmoothedPivot, rawCenter, Math.Clamp(timeSlice * 5, 0, 1));
 			}
 		}
 		else
@@ -491,17 +493,21 @@ class COA_SpectatorCamera : SCR_ManualCamera
 		{
 			vector eased[4];
 			eased = transform;
-			eased[3] = vector.Lerp(oldTransform[3], transform[3], Math.Clamp(timeSlice * 5, 0, 1));
+			m_fEaseToTargetTimeSlice = m_fEaseToTargetTimeSlice + timeSlice;
+			float t = Math.Map(Math.Clamp(m_fEaseToTargetTimeSlice, 0, 3), 0, 3, 0.1, 1);
+			
+			eased[3] = vector.Lerp(m_vOldTransform[3], transform[3], t);
 
-			if (vector.Distance(eased[3], transform[3]) < 0.05)
+			if (vector.Distance(eased[3], transform[3]) < 0.05 || m_fEaseToTargetTimeSlice > 3)
 				m_bEaseToTarget = false;
 
 			SetTransform(eased);
-			oldTransform = eased;
+			m_vOldTransform = eased;
 			return;
 		}
 
 		SetTransform(transform);
-		oldTransform = transform;
+		m_vOldTransform = transform;
+		m_fEaseToTargetTimeSlice = 0;
 	}
 }
