@@ -102,6 +102,12 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	
 	protected COA_EntityInfoDisplay m_EntityInfoDisplay;
 
+	// Camera mode button row (helmet / eye / orbit) - see InitCameraModeButtons
+	protected Widget m_wCameraModeButtons;
+	protected ImageWidget m_wHelmetCamBG;
+	protected ImageWidget m_wEyeCamBG;
+	protected ImageWidget m_wOrbitCamBG;
+
 	// Damage report overlay
 	protected Widget m_wDamageReportPanel;
 	protected ImageWidget m_wDamageReportBodyOutline;
@@ -186,6 +192,7 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		// Get follow-mode HUD overlay
 		Widget entityInfoDisplay = m_wRoot.FindAnyWidget("EntityInfoDisplay");
 		m_EntityInfoDisplay = COA_EntityInfoDisplay.Cast(entityInfoDisplay.FindHandler(COA_EntityInfoDisplay));
+		InitCameraModeButtons();
 		InitDamageReportWidgets();
 		
 		// Initialize VON (Voice Over Network)
@@ -512,7 +519,19 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			return;
 		}
 
-		m_iCamCycle = (m_iCamCycle + 1) % 3;
+		SetCameraMode((m_iCamCycle + 1) % 3);
+	}
+
+	/**
+	 * Switches the camera to a specific mode (0 = helmet FPP, 1 = eye-cam, 2 = TPP orbit) on the
+	 * currently spectated entity. Shared by ToggleCameraMode and the CameraModeButtons HUD row.
+	 */
+	protected void SetCameraMode(int mode)
+	{
+		if (!m_eSpecEntity || !m_bFrameEventRegistered)
+			return;
+
+		m_iCamCycle = mode;
 
 		COA_PlayerCameraManager camManager = COA_PlayerCameraManager.GetInstance();
 
@@ -532,6 +551,71 @@ class COA_SpectatorMenu: ChimeraMenuBase
 				m_bTPPMode = true;
 				camManager.SetCameraOnRailsEntity(m_eSpecEntity, true);
 				break;
+		}
+
+		UpdateCameraModeButtonsUI();
+	}
+
+	/**
+	 * Finds the CameraModeButtons HUD row (see CameraModeButtons.layout) and wires its three
+	 * buttons directly to SetCameraMode.
+	 */
+	protected void InitCameraModeButtons()
+	{
+		m_wCameraModeButtons = m_wRoot.FindAnyWidget("CameraModeButtons");
+		if (!m_wCameraModeButtons)
+			return;
+
+		m_wHelmetCamBG = ImageWidget.Cast(m_wRoot.FindAnyWidget("HelmetCamBG"));
+		m_wEyeCamBG = ImageWidget.Cast(m_wRoot.FindAnyWidget("EyeCamBG"));
+		m_wOrbitCamBG = ImageWidget.Cast(m_wRoot.FindAnyWidget("OrbitCamBG"));
+
+		SCR_ButtonTextComponent.Cast(ButtonWidget.Cast(m_wRoot.FindAnyWidget("HelmetCamSelectButton")).FindHandler(SCR_ButtonTextComponent)).m_OnClicked.Insert(SelectCameraModeHelmet);
+		SCR_ButtonTextComponent.Cast(ButtonWidget.Cast(m_wRoot.FindAnyWidget("EyeCamSelectButton")).FindHandler(SCR_ButtonTextComponent)).m_OnClicked.Insert(SelectCameraModeEye);
+		SCR_ButtonTextComponent.Cast(ButtonWidget.Cast(m_wRoot.FindAnyWidget("OrbitCamSelectButton")).FindHandler(SCR_ButtonTextComponent)).m_OnClicked.Insert(SelectCameraModeOrbit);
+
+		UpdateCameraModeButtonsUI();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SelectCameraModeHelmet()
+	{
+		SetCameraMode(0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SelectCameraModeEye()
+	{
+		SetCameraMode(1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SelectCameraModeOrbit()
+	{
+		SetCameraMode(2);
+	}
+
+	/**
+	 * Highlights whichever CameraModeButtons entry matches m_iCamCycle so the row reflects the
+	 * active camera mode.
+	 */
+	protected void UpdateCameraModeButtonsUI()
+	{
+		if (!m_wHelmetCamBG || !m_wEyeCamBG || !m_wOrbitCamBG)
+			return;
+
+		Color active = Color.FromRGBA(0, 149, 255, 153);
+		Color inactive = Color.FromRGBA(37, 37, 37, 153);
+
+		m_wHelmetCamBG.SetColor(inactive);
+		m_wEyeCamBG.SetColor(inactive);
+		m_wOrbitCamBG.SetColor(inactive);
+
+		switch (m_iCamCycle)
+		{
+			case 0: m_wHelmetCamBG.SetColor(active); break;
+			case 1: m_wEyeCamBG.SetColor(active); break;
+			case 2: m_wOrbitCamBG.SetColor(active); break;
 		}
 	}
 
@@ -765,6 +849,8 @@ class COA_SpectatorMenu: ChimeraMenuBase
 
 		// Update follow-mode HUD overlay
 		m_EntityInfoDisplay.UpdateEntityInfoDisplay(m_eSpecEntity);
+		if (m_wCameraModeButtons)
+			m_wCameraModeButtons.SetVisible(m_eSpecEntity != null);
 		RefreshDamageReport();
 		
 		// Process channel requests
@@ -1930,24 +2016,25 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		COA_PlayerCameraManager camManager = COA_PlayerCameraManager.GetInstance();
 		camManager.SetCameraOnRailsEntity(m_eSpecEntity, true);
 		m_bFrameEventRegistered = true;
+		UpdateCameraModeButtonsUI();
 	}
 
 	/**
-	 * Selects a specific entity to spectate in first-person (helmet cam) mode.
-	 * Called directly from the icon's left-click handler with the known entity,
+	 * Selects a specific entity to spectate in true first-person (eye cam) mode - the default for
+	 * left-click. Called directly from the icon's left-click handler with the known entity,
 	 * bypassing cursor hit-testing which is unreliable inside button callbacks.
-	 * @param entity - The entity to follow in FPP mode
+	 * @param entity - The entity to follow in eye-cam mode
 	 */
 	void SelectSpecCursorFPP(IEntity entity)
 	{
 		if (!entity)
 			return;
-		
+
 		IEntity specEntity = SCR_PlayerController.GetLocalMainEntity();
 		if (!COA_EntityHelper.IsSpectator(specEntity))
 			return;
-		
-		// Toggle off if already following this entity in FPP mode
+
+		// Toggle off if already following this entity in FPP mode (helmet or eye cam)
 		if (!m_bTPPMode && m_bFrameEventRegistered && m_eSpecEntity == entity)
 		{
 			m_bTPPMode = false;
@@ -1957,13 +2044,14 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		}
 
 		m_bTPPMode = false;
-		m_iCamCycle = 0;
+		m_iCamCycle = 1;
 		m_eSpecEntity = entity;
 		m_bFPPEntityValidityCheck = true;
 
 		COA_PlayerCameraManager camManager = COA_PlayerCameraManager.GetInstance();
-		camManager.SetCameraOnRailsEntity(m_eSpecEntity, false);
+		camManager.SetCameraOnRailsEntityEyeMode(m_eSpecEntity);
 		m_bFrameEventRegistered = true;
+		UpdateCameraModeButtonsUI();
 	}
 
 	/**
