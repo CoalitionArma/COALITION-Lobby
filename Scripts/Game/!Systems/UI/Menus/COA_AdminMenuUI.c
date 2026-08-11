@@ -417,6 +417,263 @@ class COA_AdminMenu : ChimeraMenuBase
 			m_InputManager.RemoveActionListener(UIConstants.MENU_ACTION_BACK_WB, EActionTrigger.DOWN, Close);
 		#endif
 	}
+
+	/**
+	 * Populates a list with active players
+	 * @param list The list to populate with player names
+	 */
+	protected void PopulatePlayerList(SCR_ListBoxComponent list, bool selectOpenTicket = true, bool filterByOpenTickets = true, SCR_AIGroup filterByGroup = null, Faction filterByFaction = null)
+	{
+		// Clear the list
+		list.Clear();
+
+		// Get all players
+		m_playerManager.GetPlayers(m_allPlayers);
+		TStringArray playerNames = {};
+
+		// Get and sort player names
+		foreach (int playerId : m_allPlayers)
+			playerNames.Insert(m_playerManager.GetPlayerName(playerId));
+
+		playerNames.Sort(false);
+
+		// Add players to list if they're in a group and not spectating
+		foreach (string name : playerNames)
+		{
+			int playerId = GetplayerIdFromName(name);
+			Faction playerFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId);
+			SCR_AIGroup playerGroup = COA_SlottingManager.GetInstance().GetPlayerSlotGroup(playerId);
+
+			if (!playerGroup)
+				continue;
+
+			if (COA_EntityHelper.IsSpectator(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
+				continue;
+			
+			if (filterByOpenTickets && !COA_AdminMenuManager.GetInstance().TicketExists(playerId))
+				continue;
+
+			if (filterByGroup && filterByGroup != playerGroup)
+				continue;
+
+			if (filterByFaction && filterByFaction != playerFaction)
+				continue;
+
+			list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
+		}
+
+		if (selectOpenTicket)
+			SelectOpenTicketOnwer(list);
+	}
+
+	/**
+	 * Populates the list of dead/spectating players
+	 */
+	protected void PopulateDeadPlayersList(SCR_ListBoxComponent list, bool selectOpenTicket = true)
+	{
+		TStringArray playerNames = {};
+
+		// Get and sort player names
+		foreach (int playerId : m_allPlayers)
+			playerNames.Insert(m_playerManager.GetPlayerName(playerId));
+
+		playerNames.Sort(false);
+
+		// Add dead or spectating players to list
+		foreach (string name : playerNames)
+		{
+			int playerId = GetplayerIdFromName(name);
+			Faction playerFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId);
+
+			if (COA_SlottingManager.GetInstance().IsPlayerConsideredDead(playerId) ||
+				COA_EntityHelper.IsSpectator(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
+			{
+				list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
+			}
+		}
+
+		if (selectOpenTicket)
+			SelectOpenTicketOnwer(list);
+	}
+	
+	/**
+	 * Populates the list of available groups
+	 */
+	protected void PopulateGroupsList(SCR_ListBoxComponent list)
+	{
+		foreach (SCR_AIGroup group : m_outGroups)
+		{
+			// Get faction info
+			Faction groupFaction = group.GetFaction();
+			if (!groupFaction)
+				continue;
+				
+			string factionKey = groupFaction.GetFactionKey();
+			if (factionKey.IsEmpty() || factionKey == "SPEC")
+				continue;
+				
+			string factionTag = factionKey.Substring(0, 3);
+			
+			// Add group to list
+			list.AddItem(string.Format("%1 | %2", factionTag, group.GetCustomNameWithOriginal()));
+			m_groupIDList.Insert(group.GetGroupID());
+		}
+	}
+
+	/**
+	 * Populates the list of active factions
+	 */
+	protected void PopulateFactionList(SCR_ListBoxComponent list)
+	{
+		// Get all factions
+		GetGame().GetFactionManager().GetFactionsList(m_factions);
+		
+		// Add factions with active players
+		foreach (Faction faction : m_factions)
+		{
+			if (SCR_FactionManager.SGetFactionPlayerCount(faction) > 0)
+			{
+				list.AddItem(faction.GetFactionName());
+				m_selectableFactions.Insert(faction.GetFactionKey());
+			}
+		}
+	}
+
+	/**
+	 * Populates the list with players from a selected group
+	 */
+	void SelectGroupByPlayer(SCR_ListBoxComponent groupList, SCR_ListBoxComponent playerList)
+	{
+		if (playerList.GetSelectedItem() < 0)
+			return;
+			
+		// Get selected player ID
+		string playerName = TextWidget.Cast(playerList.GetElementComponent(playerList.GetSelectedItem()).GetRootWidget().FindAnyWidget("Text")).GetText();
+		int playerId = GetplayerIdFromName(playerName);
+		if (playerId == 0)
+			return;
+		
+		SCR_AIGroup selectedGroup = COA_SlottingManager.GetInstance().GetPlayerSlotGroup(playerId);
+		
+		foreach (int i, SCR_AIGroup group : m_outGroups)
+		{
+			if (selectedGroup == group)
+			{
+				// Adjust index for client mode
+				int itemIndex = i;
+				groupList.SetItemSelected(itemIndex, true);
+				return;
+			}
+		};
+	}
+
+	/**
+	 * Select the current open ticket player in a list
+	 */
+	void SelectOpenTicketOnwer(SCR_ListBoxComponent list)
+	{
+		// Find the open ticket selected in the list
+		if (m_iSelectedTicket != -1)
+		{			
+			for (int i = 0; i < list.GetItemCount(); i++)
+			{
+				string ticketName = m_playerManager.GetPlayerName(m_iSelectedTicket);
+				string listName = TextWidget.Cast(list.GetElementComponent(i).GetRootWidget().FindAnyWidget("Text")).GetText();
+				if (ticketName == listName)
+				{
+					list.SetItemSelected(i, true, true);
+					return;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Search the first player list
+	 */
+	void SearchList0()
+	{
+		// Load List Box
+		SCR_ListBoxComponent playerList = GetListBox("PlayerListBox0");
+		if (!playerList)
+			return;
+		
+		// Load Search Box
+		EditBoxWidget searchBox = GetEditBox("SearchBox0");
+		if (!searchBox)
+			return;
+		
+		SearchPlayerList(playerList, searchBox.GetText());
+	}
+	
+	/**
+	 * Search the second player list
+	 */
+	void SearchList1()
+	{
+		// Load List Box
+		SCR_ListBoxComponent playerList = GetListBox("PlayerListBox1");
+		if (!playerList)
+			return;
+		
+		// Load Search Box
+		EditBoxWidget searchBox = GetEditBox("SearchBox1");
+		if (!searchBox)
+			return;
+		
+		SearchPlayerList(playerList, searchBox.GetText());
+	}
+	
+	/**
+	 * Filters a player list based on search text
+	 * @param list The list box to filter
+	 * @param searchData The search text to filter by
+	 */
+	void SearchPlayerList(SCR_ListBoxComponent list, string searchData)
+	{
+		TStringArray playerNames = {};
+		m_playerManager.GetPlayers(m_allPlayers);
+		list.Clear();
+
+		// If search is empty, show all players
+		if (searchData == "")
+		{
+			foreach (int playerId : m_allPlayers)
+				playerNames.Insert(m_playerManager.GetPlayerName(playerId));
+		} 
+		else 
+		{
+			// Otherwise filter by search text
+			string searchLower = searchData;
+			searchLower.ToLower();
+			
+			foreach (int playerId : m_allPlayers)
+			{
+				string playerName = m_playerManager.GetPlayerName(playerId);
+				string playerNameLower = playerName;
+				playerNameLower.ToLower();
+
+				if (playerNameLower.Contains(searchLower))
+					playerNames.Insert(playerName);
+			}
+		}
+
+		// Sort and add filtered players
+		playerNames.Sort(false);
+		foreach (string name : playerNames)
+		{
+			int playerId = GetplayerIdFromName(name);
+			Faction playerFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId);
+			
+			if (!m_groupManagerComponent.GetPlayerGroup(playerId))
+				continue;
+				
+			if (COA_EntityHelper.IsSpectator(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
+				continue;
+			
+			list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
+		}
+	}
 	
 	/**
 	 * Update chat while menu is active
@@ -511,58 +768,6 @@ class COA_AdminMenu : ChimeraMenuBase
 
 		// Populate player list
 		PopulatePlayerList(playerList);	
-	}
-	
-	/**
-	 * Populates a list with active players
-	 * @param list The list to populate with player names
-	 */
-	protected void PopulatePlayerList(SCR_ListBoxComponent list, SCR_ListBoxComponent preList = null, bool selectOpenTicket = true)
-	{
-		// Get all players
-		m_playerManager.GetPlayers(m_allPlayers);
-		TStringArray playerNames = {};
-
-		// Get and sort player names
-		foreach (int playerId : m_allPlayers)
-			playerNames.Insert(m_playerManager.GetPlayerName(playerId));
-
-		playerNames.Sort(false);
-
-		// Add players to list if they're in a group and not spectating
-		foreach (string name : playerNames)
-		{
-			int playerId = GetplayerIdFromName(name);
-			Faction playerFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId);
-			SCR_AIGroup playerGroup = COA_SlottingManager.GetInstance().GetPlayerSlotGroup(playerId);
-
-			if (!playerGroup)
-				continue;
-				
-			if (COA_EntityHelper.IsSpectator(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
-				continue;
-
-			if (preList)
-			{
-				// Get selected player ID
-				string preListPlayerName = TextWidget.Cast(preList.GetElementComponent(preList.GetSelectedItem()).GetRootWidget().FindAnyWidget("Text")).GetText();
-				int prePlayerId = GetplayerIdFromName(preListPlayerName);
-				if (prePlayerId != 0)
-				{
-					SCR_AIGroup preListPlayerGroup = COA_SlottingManager.GetInstance().GetPlayerSlotGroup(prePlayerId);
-					if (preListPlayerGroup == playerGroup)
-						list.AddItemWithColor(string.Format("%1", name), Color.Green);
-					else
-						list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
-				} 
-				
-				continue;
-			}
-
-			list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
-		}
-
-		SelectOpenTicketOnwer(selectOpenTicket, list);
 	}
 
 	/**
@@ -1240,8 +1445,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		menuButton4.m_OnClicked.Insert(RespawnSide);
 		
 		// Setup selection change handlers
-		playerList.m_OnChanged.Insert(UpdateSpawnGroupRequest);
-		groupList.m_OnChanged.Insert(UpdateSpawnpoint);
+		playerList.m_OnChanged.Insert(UpdateRespawnSelectedGroup);
+		groupList.m_OnChanged.Insert(UpdateRespawnSpawnpoint);
 		
 		// Change title of the menu
 		UpdateMenuTitle("Respawn");
@@ -1251,79 +1456,16 @@ class COA_AdminMenu : ChimeraMenuBase
 		m_outGroups = COA_SlottingManager.GetInstance().GetAllGroups();
 
 		// Populate Dead Players list
-		PopulateDeadPlayersList();
+		PopulateDeadPlayersList(playerList);
 		
 		// Populate Groups list
-		PopulateGroupsList();
-	}
-	
-	/**
-	 * Populates the list of dead/spectating players
-	 */
-	protected void PopulateDeadPlayersList(bool selectOpenTicket = true)
-	{
-		TStringArray playerNames = {};
-		
-		// Load List Boxes
-		SCR_ListBoxComponent playerList = GetListBox("PlayerListBox0");
-		if (!playerList)
-			return;
-
-		// Get and sort player names
-		foreach (int playerId : m_allPlayers)
-			playerNames.Insert(m_playerManager.GetPlayerName(playerId));
-
-		playerNames.Sort(false);
-
-		// Add dead or spectating players to list
-		foreach (string name : playerNames)
-		{
-			int playerId = GetplayerIdFromName(name);
-			Faction playerFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId);
-
-			if (COA_SlottingManager.GetInstance().IsPlayerConsideredDead(playerId) ||
-				COA_EntityHelper.IsSpectator(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
-			{
-				playerList.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
-			}
-		}
-
-		SelectOpenTicketOnwer(selectOpenTicket, playerList);
-	}
-	
-	/**
-	 * Populates the list of available groups
-	 */
-	protected void PopulateGroupsList()
-	{
-		foreach (SCR_AIGroup group : m_outGroups)
-		{
-			// Load List Boxes
-			SCR_ListBoxComponent groupList = GetListBox("GroupListBox0");
-			if (!groupList)
-				return;
-			
-			// Get faction info
-			Faction groupFaction = group.GetFaction();
-			if (!groupFaction)
-				continue;
-				
-			string factionKey = groupFaction.GetFactionKey();
-			if (factionKey.IsEmpty() || factionKey == "SPEC")
-				continue;
-				
-			string factionTag = factionKey.Substring(0, 3);
-			
-			// Add group to list
-			groupList.AddItem(string.Format("%1 | %2", factionTag, group.GetCustomNameWithOriginal()));
-			m_groupIDList.Insert(group.GetGroupID());
-		}
+		PopulateGroupsList(groupList);
 	}
 
 	/**
 	 * Requests server to provide group ID for selected player
 	 */
-	void UpdateSpawnGroupRequest()
+	void UpdateRespawnSelectedGroup()
 	{
 		// Load List Boxes
 		SCR_ListBoxComponent playerList = GetListBox("PlayerListBox0");
@@ -1334,36 +1476,13 @@ class COA_AdminMenu : ChimeraMenuBase
 		if (!groupList)
 			return;
 		
-		if (playerList.GetSelectedItem() < 0)
-			return;
-			
-		// Get selected player ID
-		string playerName = TextWidget.Cast(playerList.GetElementComponent(playerList.GetSelectedItem()).GetRootWidget().FindAnyWidget("Text")).GetText();
-		int playerId = GetplayerIdFromName(playerName);
-		if (playerId == 0)
-			return;
-		
-		SCR_AIGroup selectedGroup = COA_SlottingManager.GetInstance().GetPlayerSlotGroup(playerId);
-		
-		foreach (int i, SCR_AIGroup group : m_outGroups)
-		{
-			if (selectedGroup == group)
-			{
-				// Adjust index for client mode
-				int itemIndex = i;
-				if (RplSession.Mode() == RplMode.Client)
-					itemIndex = i - 1;
-
-				groupList.SetItemSelected(itemIndex, true);
-				return;
-			}
-		};
+		SelectGroupByPlayer(groupList, playerList);
 	}
 
 	/**
 	 * Updates spawnpoint list based on selected group
 	 */
-	void UpdateSpawnpoint()
+	void UpdateRespawnSpawnpoint()
 	{
 		// Load List Boxes
 		SCR_ListBoxComponent respawnPoints = GetListBox("SpawnpointListBox0");
@@ -1474,7 +1593,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		// Load List Boxes
 		SCR_ListBoxComponent playerList0 = GetListBox("PlayerListBox0");
 		SCR_ListBoxComponent playerList1 = GetListBox("PlayerListBox1");
-		if (!playerList0 || !playerList1)
+		SCR_ListBoxComponent groupList = GetListBox("GroupListBox0");
+		if (!playerList0 || !playerList1 || !groupList)
 			return;
 		
 		// Load Menu Buttons
@@ -1494,14 +1614,21 @@ class COA_AdminMenu : ChimeraMenuBase
 		menuButton2.m_OnClicked.Insert(TeleportSelectedToLocal);
 
 		// Setup selection change handlers
-		playerList0.m_OnChanged.Insert(UpdateTeleportToList);
+		playerList0.m_OnChanged.Insert(UpdateTeleportGroupList);
+		groupList.m_OnChanged.Insert(UpdateTeleportToList);
 
 		// Change title of the menu
 		UpdateMenuTitle("Teleport");
 
+		// Get list of groups
+		m_outGroups = COA_SlottingManager.GetInstance().GetAllGroups();
+
 		// Populate player lists
-		PopulatePlayerList(playerList0);
+		PopulatePlayerList(playerList0, false, false);
 		PopulatePlayerList(playerList1);
+
+		// Populate group list
+		PopulateGroupsList(groupList);
 	}
 
 	/**
@@ -1600,22 +1727,38 @@ class COA_AdminMenu : ChimeraMenuBase
 		COA_PlayerRplToAuthorityManager.GetInstance().TeleportPlayers(playerId1, playerId2, true);
 	}
 
+	void UpdateTeleportGroupList()
+	{
+		SCR_ListBoxComponent playerList = GetListBox("PlayerListBox0");
+		if (!playerList)
+			return;
+
+		SCR_ListBoxComponent groupList = GetListBox("GroupListBox0");
+		if (!groupList)
+			return;
+
+		SelectGroupByPlayer(groupList, playerList)
+	}
+	
 	/**
-	 * Teleports a player to another player's location
+	 * Update teleport target from the selected group
 	 */
 	void UpdateTeleportToList()
 	{
-		SCR_ListBoxComponent playerList0 = GetListBox("PlayerListBox0");
-		if (!playerList0)
+		SCR_ListBoxComponent playerList = GetListBox("PlayerListBox1");
+		if (!playerList)
 			return;
 
-		SCR_ListBoxComponent playerList1 = GetListBox("PlayerListBox1");
-		if (!playerList1)
+		SCR_ListBoxComponent groupList = GetListBox("GroupListBox0");
+		if (!groupList)
 			return;
 
-		playerList1.Clear();
+		// Get the ID of the group selected
+		int groupID = m_groupIDList.Get(groupList.GetSelectedItem());
+		if (groupID == -1)
+			return;
 
-		PopulatePlayerList(playerList1, playerList0, false);
+		PopulatePlayerList(playerList, false, false, m_groupManagerComponent.FindGroup(groupID));
 	}
 
 	//-----------------------------------------------------------------------------
@@ -1668,31 +1811,7 @@ class COA_AdminMenu : ChimeraMenuBase
 		PopulatePlayerList(playerList);
 		
 		// Populate faction list
-		PopulateFactionList();
-	}
-	
-	/**
-	 * Populates the list of active factions
-	 */
-	protected void PopulateFactionList()
-	{
-		// Get all factions
-		GetGame().GetFactionManager().GetFactionsList(m_factions);
-		
-		// Load List Boxes
-		SCR_ListBoxComponent factionList = GetListBox("FactionListBox0");
-		if (!factionList)
-			return;
-		
-		// Add factions with active players
-		foreach (Faction faction : m_factions)
-		{
-			if (SCR_FactionManager.SGetFactionPlayerCount(faction) > 0)
-			{
-				factionList.AddItem(faction.GetFactionName());
-				m_selectableFactions.Insert(faction.GetFactionKey());
-			}
-		}
+		PopulateFactionList(factionList);
 	}
 
 	/**
@@ -2187,118 +2306,6 @@ class COA_AdminMenu : ChimeraMenuBase
 		{
 			respawnEnabledText.SetText("Respawns Disabled");
 			respawnEnabledText.SetColorInt(Color.RED);
-		}
-	}
-
-	/**
-	 * Select the current open ticket player in a list
-	 */
-	void SelectOpenTicketOnwer(bool selectOpenTicket, SCR_ListBoxComponent list)
-	{
-		// Find the open ticket selected in the list
-		if (selectOpenTicket && m_iSelectedTicket != -1)
-		{			
-			for (int i = 0; i < list.GetItemCount(); i++)
-			{
-				string ticketName = m_playerManager.GetPlayerName(m_iSelectedTicket);
-				string listName = TextWidget.Cast(list.GetElementComponent(i).GetRootWidget().FindAnyWidget("Text")).GetText();
-				if (ticketName == listName)
-				{
-					list.SetItemSelected(i, true, true);
-					return;
-				}
-			}
-		}
-	}
-	
-	//-----------------------------------------------------------------------------
-	// Search Methods
-	//-----------------------------------------------------------------------------
-	
-	/**
-	 * Search the first player list
-	 */
-	void SearchList0()
-	{
-		// Load List Box
-		SCR_ListBoxComponent playerList = GetListBox("PlayerListBox0");
-		if (!playerList)
-			return;
-		
-		// Load Search Box
-		EditBoxWidget searchBox = GetEditBox("SearchBox0");
-		if (!searchBox)
-			return;
-		
-		SearchPlayerList(playerList, searchBox.GetText());
-	}
-	
-	/**
-	 * Search the second player list
-	 */
-	void SearchList1()
-	{
-		// Load List Box
-		SCR_ListBoxComponent playerList = GetListBox("PlayerListBox1");
-		if (!playerList)
-			return;
-		
-		// Load Search Box
-		EditBoxWidget searchBox = GetEditBox("SearchBox1");
-		if (!searchBox)
-			return;
-		
-		SearchPlayerList(playerList, searchBox.GetText());
-	}
-	
-	/**
-	 * Filters a player list based on search text
-	 * @param list The list box to filter
-	 * @param searchData The search text to filter by
-	 */
-	void SearchPlayerList(SCR_ListBoxComponent list, string searchData)
-	{
-		TStringArray playerNames = {};
-		m_playerManager.GetPlayers(m_allPlayers);
-		list.Clear();
-
-		// If search is empty, show all players
-		if (searchData == "")
-		{
-			foreach (int playerId : m_allPlayers)
-				playerNames.Insert(m_playerManager.GetPlayerName(playerId));
-		} 
-		else 
-		{
-			// Otherwise filter by search text
-			string searchLower = searchData;
-			searchLower.ToLower();
-			
-			foreach (int playerId : m_allPlayers)
-			{
-				string playerName = m_playerManager.GetPlayerName(playerId);
-				string playerNameLower = playerName;
-				playerNameLower.ToLower();
-
-				if (playerNameLower.Contains(searchLower))
-					playerNames.Insert(playerName);
-			}
-		}
-
-		// Sort and add filtered players
-		playerNames.Sort(false);
-		foreach (string name : playerNames)
-		{
-			int playerId = GetplayerIdFromName(name);
-			Faction playerFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId);
-			
-			if (!m_groupManagerComponent.GetPlayerGroup(playerId))
-				continue;
-				
-			if (COA_EntityHelper.IsSpectator(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
-				continue;
-			
-			list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
 		}
 	}
 	
