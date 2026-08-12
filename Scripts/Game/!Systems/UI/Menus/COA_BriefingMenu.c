@@ -6,20 +6,18 @@ class COA_PreviewMenu: ChimeraMenuBase
 	protected ImageWidget m_wSlotting;                        // Slotting phase indicator 
 	protected ImageWidget m_wGame;                            // Game phase indicator
 	protected ImageWidget m_wAAR;                             // After Action Report phase indicator
-	protected ButtonWidget m_wBackButton;                     // Back button for description navigation
-	
+
 	//--- Components and Managers ---
 	protected SCR_MapEntity m_MapEntity;                      // Map entity for displaying mission map
 	protected SCR_ListBoxComponent m_cPlayerListBoxComponent; // Component for player list
-	protected SCR_ListBoxComponent m_cMissionDescriptionListBoxComponent; // Component for mission descriptions
+	protected ref COA_MissionDescriptionUI m_MissionDescriptionUI = new COA_MissionDescriptionUI(); // Mission description list + text panel
 	protected COA_Gamemode m_Gamemode;                        // Game mode instance
 	protected COA_MenuManager m_MenuManager;                  // Menu manager instance
 	protected SCR_PlayerController m_PlayerController;		  // Reference to the player controller
 	protected SCR_ChatPanel m_ChatPanel;                      // Chat panel component
 	protected SCR_VONController m_VONController				  // VONController
-	
+
 	//--- Data Storage ---
-	protected ref array<ref COA_MissionDescriptor> m_aActiveDescriptors = {}; // Active mission descriptors
 	protected bool m_bMapOpened = false;                      // Tracks whether OpenMap has been queued to prevent duplicate calls
 	protected bool m_bFocusOnDescription = false;             // Tracks which panel controller focus should jump to next
 	
@@ -71,9 +69,13 @@ class COA_PreviewMenu: ChimeraMenuBase
 		
 		// Setup player and description lists
 		SetupListComponents();
-		
+
 		// Initialize description section
-		DescriptionInit();
+		Widget missionDescriptionWidget = m_wRoot.FindAnyWidget("MissionDescription");
+		if (missionDescriptionWidget)
+			m_MissionDescriptionUI.Init(missionDescriptionWidget, m_Gamemode);
+
+		m_MissionDescriptionUI.ShowList();
 		
 		// Configure navigation buttons based on game state
 		ConfigureNavigationButtons();
@@ -132,13 +134,8 @@ class COA_PreviewMenu: ChimeraMenuBase
 		m_wSlotting = ImageWidget.Cast(m_wRoot.FindAnyWidget("SlottingBorder"));
 		m_wGame = ImageWidget.Cast(m_wRoot.FindAnyWidget("GameBorder"));
 		m_wAAR = ImageWidget.Cast(m_wRoot.FindAnyWidget("AARBorder"));
-		
-		// Initialize back button
-		m_wBackButton = ButtonWidget.Cast(m_wRoot.FindAnyWidget("BackButton"));
-		m_wBackButton.SetOpacity(0);
-		m_wBackButton.SetEnabled(false);
 	}
-	
+
 	/**
 	 * Updates mission text display with name and author
 	 */
@@ -205,10 +202,6 @@ class COA_PreviewMenu: ChimeraMenuBase
 	{
 		m_cPlayerListBoxComponent = SCR_ListBoxComponent.Cast(
 			OverlayWidget.Cast(m_wRoot.FindAnyWidget("PlayersList")).FindHandler(SCR_ListBoxComponent)
-		);
-		
-		m_cMissionDescriptionListBoxComponent = SCR_ListBoxComponent.Cast(
-			OverlayWidget.Cast(m_wRoot.FindAnyWidget("DescriptionList")).FindHandler(SCR_ListBoxComponent)
 		);
 	}
 	
@@ -512,21 +505,9 @@ class COA_PreviewMenu: ChimeraMenuBase
 		GetGame().GetInputManager().RemoveActionListener("ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
 		GetGame().GetInputManager().RemoveActionListener("COA_BriefingSwitchPanel", EActionTrigger.DOWN, Action_SwitchPanel);
 
-		// Clear widget references and event handlers to prevent invisible blocking
-		if (m_cMissionDescriptionListBoxComponent)
-		{
-			m_cMissionDescriptionListBoxComponent.m_OnChanged.Clear();
-			m_cMissionDescriptionListBoxComponent.Clear();
-		}
-		
-		// Clear back button click handler
-		if (m_wBackButton)
-		{
-			SCR_ButtonTextComponent backButton = SCR_ButtonTextComponent.Cast(m_wBackButton.FindHandler(SCR_ButtonTextComponent));
-			if (backButton)
-				backButton.m_OnClicked.Clear();
-		}
-		
+		// Clear mission description state and event handlers to prevent invisible blocking
+		m_MissionDescriptionUI.Clear();
+
 		// Explicitly hide and disable root widget to prevent invisible blocking
 		if (m_wRoot)
 		{
@@ -534,99 +515,7 @@ class COA_PreviewMenu: ChimeraMenuBase
 			m_wRoot.SetEnabled(false);
 		}
 	}
-	
-	/**
-	 * Initializes the mission description section
-	 */
-	void DescriptionInit()
-	{
-		ScrollLayoutWidget scrollLayout = ScrollLayoutWidget.Cast(m_wRoot.FindAnyWidget("ScrollLayout"));
-		scrollLayout.SetEnabled(false);
-		
-		// Reset back button
-		m_wBackButton.SetOpacity(0);
-		m_wBackButton.SetEnabled(false);
-		SCR_ButtonTextComponent backButton = SCR_ButtonTextComponent.Cast(m_wBackButton.FindHandler(SCR_ButtonTextComponent));
-		backButton.m_OnClicked.Clear();
-		
-		// Clear description text
-		RichTextWidget missionDescriptionText = RichTextWidget.Cast(m_wRoot.FindAnyWidget("DescriptionInfo"));
-		missionDescriptionText.SetText("");
-		
-		// Clear list components
-		m_cMissionDescriptionListBoxComponent.Clear();
-		m_aActiveDescriptors.Clear();
-		
-		// Get player faction
-		string playerFaction = SCR_PlayerFactionAffiliationComponent.Cast(
-			GetGame().GetPlayerController().FindComponent(SCR_PlayerFactionAffiliationComponent)
-		).GetAffiliatedFactionKey();
-		
-		// Add relevant descriptions to list
-		foreach (ref COA_MissionDescriptor description : m_Gamemode.m_aMissionDescriptors)
-		{
-			// Add description visible to all factions
-			if (description.m_bShowForAnyFaction)
-			{
-				m_cMissionDescriptionListBoxComponent.AddItem(
-					description.m_sTitle, 
-					null, 
-					"{A564FC959554A1B9}UI/Listbox/DescriptionListboxElementNoIcon.layout"
-				);
-				m_aActiveDescriptors.Insert(description);
-				continue;
-			}
-			
-			// Add description specific to player's faction
-			foreach (string factionKey : description.m_aFactionKeys)
-			{
-				if (playerFaction == factionKey)
-				{
-					m_cMissionDescriptionListBoxComponent.AddItem(
-						description.m_sTitle, 
-						null, 
-						"{A564FC959554A1B9}UI/Listbox/DescriptionListboxElementNoIcon.layout"
-					);
-					m_aActiveDescriptors.Insert(description);
-					break;
-				}
-			}
-		}
-		
-		// Register selection handler
-		m_cMissionDescriptionListBoxComponent.m_OnChanged.Insert(DescriptionSelected);
-	}
-	
-	/**
-	 * Handles selection of a description item
-	 */
-	void DescriptionSelected()
-	{
-		ScrollLayoutWidget scrollLayout = ScrollLayoutWidget.Cast(m_wRoot.FindAnyWidget("ScrollLayout"));
-		scrollLayout.SetEnabled(true);
-		
-		// Get selected description
-		int index = m_cMissionDescriptionListBoxComponent.GetSelectedItem();
-		if (index < 0 || index >= m_aActiveDescriptors.Count())
-			return;
-			
-		string description = m_aActiveDescriptors.Get(index).m_sTextData;
-		
-		// Show back button
-		m_wBackButton.SetOpacity(1);
-		m_wBackButton.SetEnabled(true);
-		SCR_ButtonTextComponent backButton = SCR_ButtonTextComponent.Cast(m_wBackButton.FindHandler(SCR_ButtonTextComponent));
-		backButton.m_OnClicked.Insert(DescriptionInit);
-		
-		// Clear description list
-		m_cMissionDescriptionListBoxComponent.Clear();
-		m_cMissionDescriptionListBoxComponent.m_OnChanged.Clear();
-		
-		// Set description text
-		RichTextWidget missionDescriptionText = RichTextWidget.Cast(m_wRoot.FindAnyWidget("DescriptionInfo"));
-		missionDescriptionText.SetText(description);
-	}
-	
+
 	//--- MAP METHODS ---
 	
 	/**
