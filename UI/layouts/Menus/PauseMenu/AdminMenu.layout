@@ -412,14 +412,14 @@ FrameWidgetClass {
    Name "ChatHud"
    Slot FrameWidgetSlot "{58731DB272499DED}" {
     Anchor 0.5 0.5 0.5 0.5
-    PositionX 344
-    OffsetLeft 344
-    PositionY -452
-    OffsetTop -452
+    PositionX 352
+    OffsetLeft 352
+    PositionY -444
+    OffsetTop -444
     SizeX 506.825
-    OffsetRight -850.825
-    SizeY 457.191
-    OffsetBottom -5.191
+    OffsetRight -858.825
+    SizeY 272
+    OffsetBottom 172
    }
    {
     OverlayWidgetClass "{585F053862A9FD1C}" {
@@ -432,8 +432,8 @@ FrameWidgetClass {
       OffsetTop -0.676
       SizeX -2.365
       OffsetRight 3.992
-      SizeY 453.998
-      OffsetBottom -453.322
+      SizeY 264.676
+      OffsetBottom -264
      }
      {
       OverlayWidgetClass "{56150B2288F76A08}" {
@@ -446,114 +446,6 @@ FrameWidgetClass {
            Prefab "{563296652233D952}"
            Slot LayoutSlot "{563296652233D97A}" {
             Padding 0 0 0 0
-           }
-           {
-            OverlayWidgetClass "{0000000076CB44EF}" {
-             Prefab "{0000000076CB44EF}"
-             {
-              ImageWidgetClass "{55DCCD27A68C5447}" {
-               Prefab "{55DCCD27A68C5447}"
-              }
-              BlurWidgetClass "{00000000794CF909}" {
-               Prefab "{00000000794CF909}"
-              }
-              TextWidgetClass "{55E6B13D4AF7217C}" {
-               Prefab "{55E6B13D4AF7217C}"
-              }
-              HorizontalLayoutWidgetClass "{00000000A1E383A5}" {
-               Prefab "{00000000A1E383A5}"
-               {
-                ImageWidgetClass "{55DCCD258C886EC8}" {
-                 Prefab "{55DCCD258C886EC8}"
-                }
-                ImageWidgetClass "{0000000034CEFF98}" {
-                 Prefab "{0000000034CEFF98}"
-                }
-                TextWidgetClass "{54FEBC03B2EC44A5}" {
-                 Prefab "{54FEBC03B2EC44A5}"
-                }
-                SizeLayoutWidgetClass "{56F9028315D8FE42}" {
-                 Prefab "{56F9028315D8FE42}"
-                 {
-                  EditBoxWidgetClass "{000000009EEB4E0F}" {
-                   Prefab "{000000009EEB4E0F}"
-                  }
-                 }
-                }
-                HorizontalLayoutWidgetClass "{00000000528E33DF}" {
-                 Prefab "{00000000528E33DF}"
-                 {
-                  ImageWidgetClass "{00000000B6626F93}" {
-                   Prefab "{00000000B6626F93}"
-                  }
-                  TextWidgetClass "{54FEBC03E12A1386}" {
-                   Prefab "{54FEBC03E12A1386}"
-                  }
-                 }
-                }
-                TextWidgetClass "{54FEBC045BAF6963}" {
-                 Prefab "{54FEBC045BAF6963}"
-                }
-               }
-              }
-              ImageWidgetClass "{0000000086FFCCC5}" {
-               Prefab "{0000000086FFCCC5}"
-              }
-             }
-            }
-            HorizontalLayoutWidgetClass "{5632A745B44CD3D0}" {
-             Prefab "{5632A745B44CD3D0}"
-             {
-              OverlayWidgetClass "{563285D152EBA710}" {
-               Prefab "{563285D152EBA710}"
-               {
-                OverlayWidgetClass "{5EDCE274A0C4967B}" {
-                 Prefab "{5EDCE274A0C4967B}"
-                 {
-                  BlurWidgetClass "{5EDCE274A0C49647}" {
-                   Prefab "{5EDCE274A0C49647}"
-                  }
-                  HorizontalLayoutWidgetClass "{5EDCE274A0C49645}" {
-                   Prefab "{5EDCE274A0C49645}"
-                   {
-                    RichTextWidgetClass "{5EDCE274A0C49643}" {
-                     Prefab "{5EDCE274A0C49643}"
-                    }
-                    TextWidgetClass "{5EDCE274A0C49641}" {
-                     Prefab "{5EDCE274A0C49641}"
-                    }
-                   }
-                  }
-                 }
-                }
-               }
-              }
-              OverlayWidgetClass "{5632A747AAE781EA}" {
-               Prefab "{5632A747AAE781EA}"
-               {
-                OverlayWidgetClass "{5EDCE274A0C4967B}" {
-                 Prefab "{5EDCE274A0C4967B}"
-                 {
-                  BlurWidgetClass "{5EDCE274A0C49647}" {
-                   Prefab "{5EDCE274A0C49647}"
-                  }
-                  HorizontalLayoutWidgetClass "{5EDCE274A0C49645}" {
-                   Prefab "{5EDCE274A0C49645}"
-                   {
-                    RichTextWidgetClass "{5EDCE274A0C49643}" {
-                     Prefab "{5EDCE274A0C49643}"
-                    }
-                    TextWidgetClass "{5EDCE274A0C49641}" {
-                     Prefab "{5EDCE274A0C49641}"
-                    }
-                   }
-                  }
-                 }
-                }
-               }
-              }
-             }
-            }
            }
           }
          }
@@ -570,12 +462,12 @@ FrameWidgetClass {
     Anchor 0.5 0.5 0.5 0.5
     PositionX 352
     OffsetLeft 352
-    PositionY 12
-    OffsetTop 12
+    PositionY -132
+    OffsetTop -132
     SizeX 493.17
     OffsetRight -845.17
-    SizeY 449.88
-    OffsetBottom -461.88
+    SizeY 616
+    OffsetBottom -484
    }
    {
     TextWidgetClass "{6548E8DEFC6A58BB}" {
@@ -606,14 +498,6 @@ FrameWidgetClass {
       }
      }
      {
-      ScrollLayoutWidgetClass "{56691148E692435A}" {
-       Prefab "{56691148E692435A}"
-       {
-        VerticalLayoutWidgetClass "{56691148E013D981}" {
-         Prefab "{56691148E013D981}"
-        }
-       }
-      }
       ImageWidgetClass "{5DB6D18100D38307}" {
        Prefab "{5DB6D18100D38307}"
        "Is Visible" 0
@@ -621,6 +505,150 @@ FrameWidgetClass {
      }
     }
    }
+  }
+  ButtonWidgetClass "{6A176E1601804784}" {
+   Name "LowFilterButton"
+   Slot FrameWidgetSlot "{62992E477A603216}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 360
+    OffsetLeft 360
+    PositionY -164
+    OffsetTop -164
+    SizeX 24
+    OffsetRight -384
+    SizeY 24
+    OffsetBottom 140
+   }
+   Color 0.013 0.0152 0.0176 1
+   components {
+    SCR_ButtonTextComponent "{62993E178E05DA3C}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   Switch toggle
+   {
+    ImageWidgetClass "{6A176E1601804782}" {
+     Name "LowFilterButtonImage"
+     Slot ButtonWidgetSlot "{62992E44F11398F5}" {
+     }
+     "Is Visible" 0
+     Texture "{7DEEE956159B85D2}UI/Images/LobbyImages/check.edds"
+     Size 25 25
+    }
+   }
+  }
+  TextWidgetClass "{6A176E16018047CB}" {
+   Name "LowFilterText"
+   Slot FrameWidgetSlot "{6A1525E0342C15E4}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 392
+    OffsetLeft 392
+    PositionY -164
+    OffsetTop -164
+    SizeX 32
+    OffsetRight -424
+    SizeY 24
+    OffsetBottom 140
+   }
+   Text "Low"
+   "Min Font Size" 20
+  }
+  ButtonWidgetClass "{6A176E162591EBBE}" {
+   Name "MediumFilterButton"
+   Slot FrameWidgetSlot "{62992E477A603216}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 432
+    OffsetLeft 432
+    PositionY -164
+    OffsetTop -164
+    SizeX 24
+    OffsetRight -456
+    SizeY 24
+    OffsetBottom 140
+   }
+   Color 0.013 0.0152 0.0176 1
+   components {
+    SCR_ButtonTextComponent "{62993E178E05DA3C}" {
+     m_bCanBeToggled 1
+     m_bIsToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   Switch toggle
+   {
+    ImageWidgetClass "{6A176E162591EBBC}" {
+     Name "MediumFilterButtonImage"
+     Slot ButtonWidgetSlot "{62992E44F11398F5}" {
+     }
+     Texture "{7DEEE956159B85D2}UI/Images/LobbyImages/check.edds"
+     Size 25 25
+    }
+   }
+  }
+  TextWidgetClass "{6A176E162591609D}" {
+   Name "MediumFilterText"
+   Slot FrameWidgetSlot "{6A1525E0342C15E4}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 464
+    OffsetLeft 464
+    PositionY -164
+    OffsetTop -164
+    SizeX 64
+    OffsetRight -528
+    SizeY 24
+    OffsetBottom 140
+   }
+   Text "Medium"
+   "Min Font Size" 20
+  }
+  ButtonWidgetClass "{6A176E16DB158D00}" {
+   Name "HighFilterButton"
+   Slot FrameWidgetSlot "{62992E477A603216}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 536
+    OffsetLeft 536
+    PositionY -164
+    OffsetTop -164
+    SizeX 24
+    OffsetRight -560
+    SizeY 24
+    OffsetBottom 140
+   }
+   Color 0.013 0.0152 0.0176 1
+   components {
+    SCR_ButtonTextComponent "{62993E178E05DA3C}" {
+     m_bCanBeToggled 1
+     m_bIsToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   Switch toggle
+   {
+    ImageWidgetClass "{6A176E16DB158D7F}" {
+     Name "HighFilterButtonImage"
+     Slot ButtonWidgetSlot "{62992E44F11398F5}" {
+     }
+     Texture "{7DEEE956159B85D2}UI/Images/LobbyImages/check.edds"
+     Size 25 25
+    }
+   }
+  }
+  TextWidgetClass "{6A176E16DB16D852}" {
+   Name "HighFilterText"
+   Slot FrameWidgetSlot "{6A1525E0342C15E4}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 568
+    OffsetLeft 568
+    PositionY -164
+    OffsetTop -164
+    SizeX 40
+    OffsetRight -608
+    SizeY 24
+    OffsetBottom 140
+   }
+   Text "High"
+   "Min Font Size" 20
   }
  }
 }

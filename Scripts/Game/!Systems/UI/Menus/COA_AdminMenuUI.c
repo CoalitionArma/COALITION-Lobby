@@ -106,7 +106,7 @@ class COA_AdminMenu : ChimeraMenuBase
 
 		// Initialize chat panel
 		InitializeChat();
-		
+
 		// Populate Admin Logs
 		PopulateAdminActionsList();
 		
@@ -117,6 +117,17 @@ class COA_AdminMenu : ChimeraMenuBase
 	// Set up the initial menu (Tickets)
 	protected void DelayedMenuInitialization()
 	{
+		// Setup log filters
+		SCR_ButtonTextComponent filterLogHigh = GetMenuButton("HighFilterButton", m_wRoot);
+		SCR_ButtonTextComponent filterLogMedium = GetMenuButton("MediumFilterButton", m_wRoot);
+		SCR_ButtonTextComponent filterLogLow = GetMenuButton("LowFilterButton", m_wRoot);
+		if (!filterLogLow || !filterLogMedium || !filterLogLow)
+			return;
+		
+		filterLogHigh.m_OnToggled.Insert(ToggleLogLevelFilter);
+		filterLogMedium.m_OnToggled.Insert(ToggleLogLevelFilter);
+		filterLogLow.m_OnToggled.Insert(ToggleLogLevelFilter);
+
 		InitializeTicketMenu();
 		UpdateMenuButtonColors(m_ticketMenuButton);
 	}
@@ -709,6 +720,33 @@ class COA_AdminMenu : ChimeraMenuBase
 		
 		PopulatePlayerList(playerList, false, menuButtonTicketOpenToggle.IsToggled());
 	}
+
+	/**
+	 * Toggle filters for logs
+	 */
+	 void ToggleLogLevelFilter()
+	 {
+		Print("toggled");
+
+		// Setup log filters
+		SCR_ButtonTextComponent filterLogHigh = GetMenuButton("HighFilterButton", m_wRoot);
+		SCR_ButtonTextComponent filterLogMedium = GetMenuButton("MediumFilterButton", m_wRoot);
+		SCR_ButtonTextComponent filterLogLow = GetMenuButton("LowFilterButton", m_wRoot);
+		if (!filterLogLow || !filterLogMedium || !filterLogLow)
+			return;
+
+		ImageWidget filterLogHighCheck = GetImageWidget("HighFilterButtonImage", m_wRoot);
+		ImageWidget filterLogMediumCheck = GetImageWidget("MediumFilterButtonImage", m_wRoot);
+		ImageWidget filterLogLowCheck = GetImageWidget("LowFilterButtonImage", m_wRoot);
+		if (!filterLogHighCheck || !filterLogMediumCheck || !filterLogLowCheck)
+			return;
+
+		filterLogHighCheck.SetVisible(filterLogHigh.IsToggled());
+		filterLogMediumCheck.SetVisible(filterLogMedium.IsToggled());
+		filterLogLowCheck.SetVisible(filterLogLow.IsToggled());
+
+		PopulateAdminActionsList();
+	 }
 	
 	/**
 	 * Update chat while menu is active
@@ -1439,10 +1477,34 @@ class COA_AdminMenu : ChimeraMenuBase
 		// Clear old logs 
 		list5.Clear();
 		
+		// Grab current log filters
+		SCR_ButtonTextComponent filterLogHigh = GetMenuButton("HighFilterButton", m_wRoot);
+		SCR_ButtonTextComponent filterLogMedium = GetMenuButton("MediumFilterButton", m_wRoot);
+		SCR_ButtonTextComponent filterLogLow = GetMenuButton("LowFilterButton", m_wRoot);
+		if (!filterLogLow || !filterLogMedium || !filterLogLow)
+			return;
+
 		// Format and add the messages to the list
 		foreach (int i, ref COA_AdminActionLog action : reversed)
 		{
-			list5.AddItem(string.Format("%1 - %2", action.timestamp, action.action));
+			Color textColor = Color.White;
+
+			if (action.level == COA_EAdminLogLevel.High)
+				if (!filterLogHigh.IsToggled())
+					continue;
+				else
+					textColor = Color.Red;
+
+			if (action.level == COA_EAdminLogLevel.Medium)
+				if (!filterLogMedium.IsToggled())
+					continue;
+				else
+					textColor = Color.Orange;
+
+			if (action.level == COA_EAdminLogLevel.Low && !filterLogLow.IsToggled())
+				continue;
+
+			list5.AddItemWithColor(string.Format("%1 - %2", action.timestamp, action.action), textColor);
 		}
 	}
 

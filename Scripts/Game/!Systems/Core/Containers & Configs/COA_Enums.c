@@ -302,3 +302,14 @@ enum COA_EPolyZoneEffectHUDType
 	ScreenBlure,
 	TriggerCapture,
 }
+
+//------------------------------------------------------------------------------------
+// Enumeration for logging level for the admin menu
+//------------------------------------------------------------------------------------
+
+enum COA_EAdminLogLevel
+{
+	Low,
+	Medium,
+	High,
+}

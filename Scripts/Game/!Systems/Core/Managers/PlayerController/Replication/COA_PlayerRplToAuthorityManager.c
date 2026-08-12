@@ -281,9 +281,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void LogAdminAction(string data, int playerId, bool sendToPlayer) 
+	void LogAdminAction(string data, int playerId, bool sendToPlayer, COA_EAdminLogLevel level) 
 	{
-		Rpc(RpcAsk_LogAdminAction, data, playerId, sendToPlayer); 
+		Rpc(RpcAsk_LogAdminAction, data, playerId, sendToPlayer, level); 
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -644,7 +644,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			{
 				string playerName = GetGame().GetPlayerManager().GetPlayerName(playerId);
 				string logMessage = string.Format("%1 was respawned to %2", playerName, group.m_faction);
-				m_RplBroadcastManager.LogAdminAction(logMessage, playerId, true);
+				m_RplBroadcastManager.LogAdminAction(logMessage, playerId, true, COA_EAdminLogLevel.Low);
 			}
 		}
 	}
@@ -695,7 +695,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			string prefabName = prefab.Substring(prefab.LastIndexOf("/") + 1, prefab.LastIndexOf(".") - prefab.LastIndexOf("/") - 1);
 			string playerName = GetGame().GetPlayerManager().GetPlayerName(playerId);
 			string logMessage = string.Format("%1's gear was set to %2", playerName, prefabName);
-			m_RplBroadcastManager.LogAdminAction(logMessage, playerId, true);
+			m_RplBroadcastManager.LogAdminAction(logMessage, playerId, true, COA_EAdminLogLevel.Low);
 		}
 	}
 
@@ -768,7 +768,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		UpdateGearSetQueue(entityIds);
 		
 		string logMessage = string.Format("%1 was changed to %2", faction, path);
-		m_RplBroadcastManager.LogAdminAction(logMessage, -1 , false)
+		m_RplBroadcastManager.LogAdminAction(logMessage, -1 , false, COA_EAdminLogLevel.Low)
 	}
 
 	
@@ -937,7 +937,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		if (logAction)
 		{
 			string logMessage = string.Format("%1 was respawned", faction);
-			m_RplBroadcastManager.LogAdminAction(logMessage, -1, false);
+			m_RplBroadcastManager.LogAdminAction(logMessage, -1, false, COA_EAdminLogLevel.Low);
 		}
 	}
 
@@ -960,7 +960,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			string itemName = prefab.Substring(prefab.LastIndexOf("/") + 1, prefab.LastIndexOf(".") - prefab.LastIndexOf("/") - 1);
 			string playerName = GetGame().GetPlayerManager().GetPlayerName(playerId);
 			string logMessage = string.Format("%2 was added to %1's inventory", playerName, itemName);
-			m_RplBroadcastManager.LogAdminAction(logMessage, playerId, true);
+			m_RplBroadcastManager.LogAdminAction(logMessage, playerId, true, COA_EAdminLogLevel.Low);
 		}
 		
 		IEntity entity = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
@@ -1071,14 +1071,14 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		{
 			string playerName = GetGame().GetPlayerManager().GetPlayerName(playerId);
 			string logMessage = string.Format("%1 was healed/vehicle repaired", playerName);
-			m_RplBroadcastManager.LogAdminAction(logMessage, playerId, true);
+			m_RplBroadcastManager.LogAdminAction(logMessage, playerId, true, COA_EAdminLogLevel.Low);
 		}
 	}
 
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_LogAdminAction(string data, int playerId, bool sendToPlayer)
+	protected void RpcAsk_LogAdminAction(string data, int playerId, bool sendToPlayer, COA_EAdminLogLevel level)
 	{
 		// Telemetry: string + int + bool
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_String(data);
@@ -1086,7 +1086,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
 		LogTelemetry("RpcAsk_LogAdminAction", bytes);
 		
-		m_RplBroadcastManager.LogAdminAction(data, playerId, sendToPlayer);
+		m_RplBroadcastManager.LogAdminAction(data, playerId, sendToPlayer, COA_EAdminLogLevel.Low);
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -1105,7 +1105,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		COA_GameTimerManager.GetInstance().m_iTimeMissionEnds = currentEndTime + delta;
 		
 		string logMessage = string.Format("Game timer adjusted by %1 mins", delta/60000);
-		m_RplBroadcastManager.LogAdminAction(logMessage, -1, false);
+		m_RplBroadcastManager.LogAdminAction(logMessage, -1, false, COA_EAdminLogLevel.Low);
 	}
 
 	
@@ -1125,7 +1125,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			m_RespawnManager.SubtractTicket(faction, delta, true);
 		
 		string logMessage = string.Format("%1 tickets was subtracted from %2", delta, faction);
-		m_RplBroadcastManager.LogAdminAction(logMessage, -1, false);
+		m_RplBroadcastManager.LogAdminAction(logMessage, -1, false, COA_EAdminLogLevel.Low);
 	}
 	
 	//------------------------------------------------------------------------------------------------
