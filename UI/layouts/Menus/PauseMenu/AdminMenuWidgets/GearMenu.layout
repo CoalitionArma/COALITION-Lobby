@@ -257,7 +257,7 @@ FrameWidgetClass {
      Slot ButtonWidgetSlot "{62992E44F11398F5}" {
      }
      Text "Add GI Radio"
-     "Font Size" 17
+     "Font Size" 16
      "Min Font Size" 13
     }
    }
@@ -288,7 +288,7 @@ FrameWidgetClass {
      Slot ButtonWidgetSlot "{62992E44F11398F5}" {
      }
      Text "Add Binos"
-     "Font Size" 17
+     "Font Size" 16
      "Min Font Size" 13
     }
    }
@@ -319,7 +319,7 @@ FrameWidgetClass {
      Slot ButtonWidgetSlot "{62992E44F11398F5}" {
      }
      Text "Add Map"
-     "Font Size" 17
+     "Font Size" 16
      "Min Font Size" 13
     }
    }
@@ -350,7 +350,7 @@ FrameWidgetClass {
      Slot ButtonWidgetSlot "{62992E44F11398F5}" {
      }
      Text "Add Wrench"
-     "Font Size" 17
+     "Font Size" 16
      "Min Font Size" 13
     }
    }
@@ -381,7 +381,7 @@ FrameWidgetClass {
      Slot ButtonWidgetSlot "{62992E44F11398F5}" {
      }
      Text "Add Med Supply"
-     "Font Size" 17
+     "Font Size" 16
      "Min Font Size" 13
     }
    }
@@ -412,7 +412,7 @@ FrameWidgetClass {
      Slot ButtonWidgetSlot "{62992E44F11398F5}" {
      }
      Text "Add Ammo"
-     "Font Size" 17
+     "Font Size" 16
      "Min Font Size" 13
     }
    }

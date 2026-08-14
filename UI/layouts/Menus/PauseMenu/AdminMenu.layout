@@ -47,7 +47,7 @@ FrameWidgetClass {
       OffsetBottom -169.375
      }
      "Z Order" 2
-     Color 0.587 0.587 0.587 0
+     Color 0.591 0.591 0.591 0
      components {
       SCR_ButtonTextComponent "{62993E179FB21E0C}" {
        m_bMouseOverToFocus 1
@@ -80,7 +80,7 @@ FrameWidgetClass {
       OffsetBottom -34.138
      }
      "Z Order" 2
-     Color 0.587 0.587 0.587 0
+     Color 0.591 0.591 0.591 0
      components {
       SCR_ButtonTextComponent "{62993E179FB21E0C}" {
        m_bMouseOverToFocus 1
@@ -113,7 +113,7 @@ FrameWidgetClass {
       OffsetBottom -100.896
      }
      "Z Order" 2
-     Color 0.587 0.587 0.587 0
+     Color 0.591 0.591 0.591 0
      components {
       SCR_ButtonTextComponent "{62993E179FB21E0C}" {
        m_bMouseOverToFocus 1
@@ -146,7 +146,7 @@ FrameWidgetClass {
       OffsetBottom -203.615
      }
      "Z Order" 2
-     Color 0.587 0.587 0.587 0
+     Color 0.591 0.591 0.591 0
      components {
       SCR_ButtonTextComponent "{62993E179FB21E0C}" {
        m_bMouseOverToFocus 1
@@ -179,7 +179,7 @@ FrameWidgetClass {
       OffsetBottom -135.176
      }
      "Z Order" 2
-     Color 0.587 0.587 0.587 0
+     Color 0.591 0.591 0.591 0
      components {
       SCR_ButtonTextComponent "{62993E179FB21E0C}" {
        m_bMouseOverToFocus 1
@@ -212,7 +212,7 @@ FrameWidgetClass {
       OffsetBottom -67.265
      }
      "Z Order" 2
-     Color 0.587 0.587 0.587 0
+     Color 0.591 0.591 0.591 0
      components {
       SCR_ButtonTextComponent "{62993E179FB21E0C}" {
        m_bMouseOverToFocus 1
@@ -245,7 +245,7 @@ FrameWidgetClass {
       OffsetBottom -237.861
      }
      "Z Order" 2
-     Color 0.587 0.587 0.587 0
+     Color 0.591 0.591 0.591 0
      components {
       SCR_ButtonTextComponent "{62993E179FB21E0C}" {
        m_bMouseOverToFocus 1

@@ -574,7 +574,7 @@ FrameWidgetClass {
       SizeY 30
       OffsetBottom -229.245
      }
-     Color 0.045 0.045 0.045 1
+     Color 0.042 0.042 0.042 1
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1

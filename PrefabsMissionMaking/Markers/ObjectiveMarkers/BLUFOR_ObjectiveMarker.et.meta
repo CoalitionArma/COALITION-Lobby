@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{C3939B6C408F27CA}PrefabsMissionMaking/Markers/ObjectiveMarkers/OG/BLUFOR_ObjectiveMarker.et"
+ Name "{C3939B6C408F27CA}PrefabsMissionMaking/Markers/ObjectiveMarkers/BLUFOR_ObjectiveMarker.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

@@ -364,7 +364,40 @@ class COA_ListboxComponent: SCR_ListBoxComponent
 	{
 		if (item < 0 || item > m_aElementComponents.Count())
 			return null;
-		
+
 		return COA_ListBoxElementComponent.Cast(m_aElementComponents[item]);
+	}
+
+	/**
+	 * Removes a contiguous range of items [firstIndex..lastIndex] without touching any rows outside
+	 * the range, and repairs the EXPLICIT UP/DOWN keyboard/gamepad navigation link at the seam left
+	 * behind (RemoveItem() on its own only removes the row — it does not relink neighbours).
+	 * @param firstIndex Index of the first item to remove (inclusive)
+	 * @param lastIndex Index of the last item to remove (inclusive)
+	 */
+	void RemoveItemRange(int firstIndex, int lastIndex)
+	{
+		if (firstIndex < 0 || lastIndex < firstIndex || lastIndex >= m_aElementComponents.Count())
+			return;
+
+		Widget prevWidget;
+		if (firstIndex > 0)
+			prevWidget = m_aElementComponents[firstIndex - 1].GetRootWidget();
+
+		Widget nextWidget;
+		if (lastIndex + 1 < m_aElementComponents.Count())
+			nextWidget = m_aElementComponents[lastIndex + 1].GetRootWidget();
+
+		// Remove from the tail of the range downward so earlier indices in the range stay valid.
+		for (int i = lastIndex; i >= firstIndex; i--)
+		{
+			RemoveItem(i);
+		}
+
+		if (prevWidget && nextWidget)
+		{
+			prevWidget.SetNavigation(WidgetNavigationDirection.DOWN, WidgetNavigationRuleType.EXPLICIT, nextWidget.GetName());
+			nextWidget.SetNavigation(WidgetNavigationDirection.UP, WidgetNavigationRuleType.EXPLICIT, prevWidget.GetName());
+		}
 	}
 }

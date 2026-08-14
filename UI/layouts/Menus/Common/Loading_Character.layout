@@ -33,10 +33,10 @@ FrameWidgetClass {
     SizeY 854.28
     OffsetBottom -314.28
    }
-   Color 0.761 0.386 0.078 1
+   Color 0.761 0.386 0.08 1
    Text "Character Initialization In Progress..."
-   "Font Size" 42
-   "Min Font Size" 42
+   "Font Size" 45
+   "Min Font Size" 45
    "Horizontal Alignment" Center
    "Vertical Alignment" Center
    Wrap 1
@@ -54,7 +54,7 @@ FrameWidgetClass {
     SizeY 225.72
     OffsetBottom -168.48
    }
-   Color 0.761 0.386 0.078 1
+   Color 0.761 0.386 0.08 1
    components {
     SCR_SpinningWidgetComponent "{655776580646776F}" {
     }

@@ -39,6 +39,14 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	protected ref array<int> m_aGroupIconIds = {};           // Array of group IDs with icons
 	protected ref array<Widget> m_aGroupIconWidgets = {};    // Array of group icon UI widgets
 	protected ref array<ref COA_SpectatorLabelIconGroup> m_aGroupIcons = {}; // Array of group icon handlers
+
+	// Row tracking for incremental UpdateSlots() (group-scoped patch instead of full Clear+rebuild)
+	protected ref map<SCR_AIGroup, int> m_mGroupHeaderIndex = new map<SCR_AIGroup, int>();
+	protected ref map<SCR_AIGroup, ref array<int>> m_mGroupSlotIndices = new map<SCR_AIGroup, ref array<int>>();
+
+	// Row tracking for incremental UpdateChannel() (single-row patch instead of full Clear+rebuild)
+	protected ref map<int, int> m_mChannelHeaderIndex = new map<int, int>();
+	protected ref map<int, ref map<int, int>> m_mChannelPlayerRowIndex = new map<int, ref map<int, int>>();
 	
 	// Faction counters
 	protected int m_iBluforSlots = 0;                        // Total Blufor slots
@@ -58,6 +66,7 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	ref array<Widget> m_aRequest = {};            			  // Array of request widgets
 	protected bool m_bFrameEventRegistered = false;          // Flag to track if frame event is registered
 	protected bool m_bTPPMode = false;                       // True = third-person camera, false = first-person (helmet cam)
+	protected int m_iCamCycle = 0;                           // 0 = helmet FPP, 1 = eye-cam, 2 = TPP orbit - see ToggleCameraMode
 	
 	// Last kill world position, updated by OnKillfeedNotification, used by Action_TeleportToKill
 	protected vector m_vLastKillPosition = vector.Zero;
@@ -92,6 +101,12 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	protected bool m_bWarningDismissed = false;
 	
 	protected COA_EntityInfoDisplay m_EntityInfoDisplay;
+
+	// Camera mode button row (helmet / eye / orbit) - see InitCameraModeButtons
+	protected Widget m_wCameraModeButtons;
+	protected ImageWidget m_wHelmetCamBG;
+	protected ImageWidget m_wEyeCamBG;
+	protected ImageWidget m_wOrbitCamBG;
 
 	// Damage report overlay
 	protected Widget m_wDamageReportPanel;
@@ -177,17 +192,24 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		// Get follow-mode HUD overlay
 		Widget entityInfoDisplay = m_wRoot.FindAnyWidget("EntityInfoDisplay");
 		m_EntityInfoDisplay = COA_EntityInfoDisplay.Cast(entityInfoDisplay.FindHandler(COA_EntityInfoDisplay));
+		InitCameraModeButtons();
 		InitDamageReportWidgets();
 		
 		// Initialize VON (Voice Over Network)
 		if (!CVON_VONGameModeComponent.GetInstance())
+		{
 			InitVON();
+			// Surgical per-player channel-move updates patch only the affected rows instead of a
+			// full VON channel list rebuild; the existing m_iChannelChanges poll in OnMenuUpdate
+			// remains as a fallback for structural channel create/remove.
+			m_MenuManager.GetOnPlayerChannelChanged().Insert(OnPlayerChannelChanged);
+		}
 		
 		// Update slots and register for slot updates
 		UpdateSlots();
 		COA_SlottingManager.GetInstance().GetOnSlottingUpdate().Insert(UpdateSlots);
-		// Also register for surgical player-ID delta updates so spectator view stays current
-		COA_SlottingManager.GetInstance().GetOnSlotChanged().Insert(UpdateSlots);
+		// Surgical player-ID delta updates patch only the affected group instead of a full rebuild
+		COA_SlottingManager.GetInstance().GetOnSlotChanged().Insert(OnSlotPlayerIdChanged);
 		// Separate handler checks only whether the local player was just slotted during the game phase
 		COA_SlottingManager.GetInstance().GetOnSlotChanged().Insert(OnSlotChangedCheckAutoInsert);
 		
@@ -485,19 +507,115 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	}
 	
 	/**
-	 * Toggles between first-person (helmet cam) and third-person spectator camera modes.
-	 * Can be triggered by the HUD button or a key binding.
+	 * Cycles between first-person (helmet cam), true first-person (eye cam), and third-person
+	 * spectator camera modes. Can be triggered by the HUD button or a key binding.
 	 * If currently following an entity, the camera switches mode immediately.
 	 */
 	void ToggleCameraMode()
 	{
-		m_bTPPMode = !m_bTPPMode;
-
-		// If already following someone, restart the rails with the new mode
-		if (m_eSpecEntity && m_bFrameEventRegistered)
+		if (!m_eSpecEntity || !m_bFrameEventRegistered)
 		{
-			COA_PlayerCameraManager camManager = COA_PlayerCameraManager.GetInstance();
-			camManager.SetCameraOnRailsEntity(m_eSpecEntity, m_bTPPMode);
+			m_bTPPMode = !m_bTPPMode;
+			return;
+		}
+
+		SetCameraMode((m_iCamCycle + 1) % 3);
+	}
+
+	/**
+	 * Switches the camera to a specific mode (0 = helmet FPP, 1 = eye-cam, 2 = TPP orbit) on the
+	 * currently spectated entity. Shared by ToggleCameraMode and the CameraModeButtons HUD row.
+	 */
+	protected void SetCameraMode(int mode)
+	{
+		if (!m_eSpecEntity || !m_bFrameEventRegistered)
+			return;
+
+		m_iCamCycle = mode;
+
+		COA_PlayerCameraManager camManager = COA_PlayerCameraManager.GetInstance();
+
+		switch (m_iCamCycle)
+		{
+			case 0:
+				m_bTPPMode = false;
+				camManager.SetCameraOnRailsEntity(m_eSpecEntity, false);
+				break;
+
+			case 1:
+				m_bTPPMode = false;
+				camManager.SetCameraOnRailsEntityEyeMode(m_eSpecEntity);
+				break;
+
+			case 2:
+				m_bTPPMode = true;
+				camManager.SetCameraOnRailsEntity(m_eSpecEntity, true);
+				break;
+		}
+
+		UpdateCameraModeButtonsUI();
+	}
+
+	/**
+	 * Finds the CameraModeButtons HUD row (see CameraModeButtons.layout) and wires its three
+	 * buttons directly to SetCameraMode.
+	 */
+	protected void InitCameraModeButtons()
+	{
+		m_wCameraModeButtons = m_wRoot.FindAnyWidget("CameraModeButtons");
+		if (!m_wCameraModeButtons)
+			return;
+
+		m_wHelmetCamBG = ImageWidget.Cast(m_wRoot.FindAnyWidget("HelmetCamBG"));
+		m_wEyeCamBG = ImageWidget.Cast(m_wRoot.FindAnyWidget("EyeCamBG"));
+		m_wOrbitCamBG = ImageWidget.Cast(m_wRoot.FindAnyWidget("OrbitCamBG"));
+
+		SCR_ButtonTextComponent.Cast(ButtonWidget.Cast(m_wRoot.FindAnyWidget("HelmetCamSelectButton")).FindHandler(SCR_ButtonTextComponent)).m_OnClicked.Insert(SelectCameraModeHelmet);
+		SCR_ButtonTextComponent.Cast(ButtonWidget.Cast(m_wRoot.FindAnyWidget("EyeCamSelectButton")).FindHandler(SCR_ButtonTextComponent)).m_OnClicked.Insert(SelectCameraModeEye);
+		SCR_ButtonTextComponent.Cast(ButtonWidget.Cast(m_wRoot.FindAnyWidget("OrbitCamSelectButton")).FindHandler(SCR_ButtonTextComponent)).m_OnClicked.Insert(SelectCameraModeOrbit);
+
+		UpdateCameraModeButtonsUI();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SelectCameraModeHelmet()
+	{
+		SetCameraMode(0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SelectCameraModeEye()
+	{
+		SetCameraMode(1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SelectCameraModeOrbit()
+	{
+		SetCameraMode(2);
+	}
+
+	/**
+	 * Highlights whichever CameraModeButtons entry matches m_iCamCycle so the row reflects the
+	 * active camera mode.
+	 */
+	protected void UpdateCameraModeButtonsUI()
+	{
+		if (!m_wHelmetCamBG || !m_wEyeCamBG || !m_wOrbitCamBG)
+			return;
+
+		Color active = Color.FromRGBA(0, 149, 255, 153);
+		Color inactive = Color.FromRGBA(37, 37, 37, 153);
+
+		m_wHelmetCamBG.SetColor(inactive);
+		m_wEyeCamBG.SetColor(inactive);
+		m_wOrbitCamBG.SetColor(inactive);
+
+		switch (m_iCamCycle)
+		{
+			case 0: m_wHelmetCamBG.SetColor(active); break;
+			case 1: m_wEyeCamBG.SetColor(active); break;
+			case 2: m_wOrbitCamBG.SetColor(active); break;
 		}
 	}
 
@@ -731,6 +849,8 @@ class COA_SpectatorMenu: ChimeraMenuBase
 
 		// Update follow-mode HUD overlay
 		m_EntityInfoDisplay.UpdateEntityInfoDisplay(m_eSpecEntity);
+		if (m_wCameraModeButtons)
+			m_wCameraModeButtons.SetVisible(m_eSpecEntity != null);
 		RefreshDamageReport();
 		
 		// Process channel requests
@@ -1479,101 +1599,309 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	{
 		// Clear existing channels
 		m_wVONChannels.Clear();
-		
+		m_mChannelHeaderIndex.Clear();
+		m_mChannelPlayerRowIndex.Clear();
+
 		PlayerManager playerManager = GetGame().GetPlayerManager();
 		if (!playerManager)
 			return;
-		
+
 		// Iterate through all available channels
-		foreach(string channelData: m_MenuManager.m_aVONChannels)
+		foreach(int channelIndex, string channelData: m_MenuManager.m_aVONChannels)
 		{
-			// Parse channel data format: "ChannelName|PlayerID1,PlayerID2,..."
-			ref array<string> channelParts = {};
-			channelData.Split("|", channelParts, true);
-			
-			if (channelParts.Count() == 0)
-				continue;
-				
-			string channelName = channelParts.Get(0);
-			
-			// Add channel to the list
-			int channelIndex = m_wVONChannels.AddItemChannel(null, channelName);
-			COA_ListBoxElementComponent channelComponent = m_wVONChannels.GetCRFElementComponent(channelIndex);
-			
-			if (!channelComponent)
-				continue;
-				
-			// Store channel ID and register join button click handler
-			channelComponent.m_iChannelId = m_MenuManager.m_aVONChannels.Find(channelData);
-			channelComponent.GetChannelButton().m_OnClicked.Insert(JoinChannelDelay);
-			
-			// If channel has no players, continue to next channel
-			if (channelParts.Count() <= 1)
-				continue;
-				
-			// Parse player IDs in the channel
-			ref array<string> playerIds = {};
-			channelParts.Get(1).Split(",", playerIds, true);
-			
-			// Add each player in the channel to the display
-			foreach(string playerIdStr: playerIds)
-			{
-				// Skip invalid player IDs
-				if (playerIdStr.IsEmpty())
-					continue;
-					
-				int playerId = playerIdStr.ToInt();
-				
-				// Skip disconnected players
-				if (!playerManager.IsPlayerConnected(playerId))
-					continue;
-					
-				// In "Deafen" channel, only show the local player
-				if (playerId != SCR_PlayerController.GetLocalPlayerId() && channelName == "Deafen")
-					continue;
-				
-				// Only show dead players in spectator VON channels
-				COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
-				if (slottingManager)
-				{
-					COA_SlotData playerSlotData = slottingManager.GetPlayerSlotData(playerId);
-					if (playerSlotData && !playerSlotData.GetIsDeadSlot())
-						continue; // Skip alive players
-				}
-					
-				// Add player to the channel display
-				int playerIndex = m_wVONChannels.AddItem(
-					playerManager.GetPlayerName(playerId), 
-					null, 
-					"{68D74FF57296AFFB}UI/Listbox/PlayerListboxElementVON.layout"
-				);
-				
-				COA_ListBoxElementComponent playerComponent = m_wVONChannels.GetCRFElementComponent(playerIndex);
-				if (playerComponent)
-				{
-					playerComponent.m_iPlayerId = SCR_PlayerController.GetLocalPlayerId();
-					playerComponent.m_bIsPlayer = true;
-				}
-			}
+			BuildChannelRows(channelIndex, channelData);
 		}
-		
+
 		// Update local channel counter to match server state
 		m_iLocalChannelUpdates = m_MenuManager.m_iChannelChanges;
-		
-		if (!CVON_VONGameModeComponent.GetInstance())
+
+		UpdateLocalPlayerRadioState();
+	}
+
+	/**
+	 * Builds the header + player rows for a single channel, appending them at the current end of
+	 * m_wVONChannels and recording their indices so a later per-player move can patch just the
+	 * affected rows without reparsing/rebuilding the whole channel list.
+	 * @param channelIndex Index of this channel within m_MenuManager.m_aVONChannels
+	 * @param channelData Raw "ChannelName|PlayerID1,PlayerID2,..." string for this channel
+	 */
+	protected void BuildChannelRows(int channelIndex, string channelData)
+	{
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (!playerManager)
+			return;
+
+		// Parse channel data format: "ChannelName|PlayerID1,PlayerID2,..."
+		ref array<string> channelParts = {};
+		channelData.Split("|", channelParts, true);
+
+		if (channelParts.Count() == 0)
+			return;
+
+		string channelName = channelParts.Get(0);
+
+		// Add channel to the list
+		int headerIndex = m_wVONChannels.AddItemChannel(null, channelName);
+		COA_ListBoxElementComponent channelComponent = m_wVONChannels.GetCRFElementComponent(headerIndex);
+
+		if (!channelComponent)
+			return;
+
+		// Store channel ID and register join button click handler
+		channelComponent.m_iChannelId = channelIndex;
+		channelComponent.GetChannelButton().m_OnClicked.Insert(JoinChannelDelay);
+
+		m_mChannelHeaderIndex.Set(channelIndex, headerIndex);
+		map<int, int> playerRowIndex = new map<int, int>();
+		m_mChannelPlayerRowIndex.Set(channelIndex, playerRowIndex);
+
+		// If channel has no players, nothing more to add
+		if (channelParts.Count() <= 1)
+			return;
+
+		// Parse player IDs in the channel
+		ref array<string> playerIds = {};
+		channelParts.Get(1).Split(",", playerIds, true);
+
+		// Add each player in the channel to the display
+		foreach(string playerIdStr: playerIds)
 		{
-			// Toggle radio power based on whether player is in a channel
-			int localPlayerId = SCR_PlayerController.GetLocalPlayerId();
-			bool isInChannel = m_MenuManager.GetChannel(localPlayerId) != 0;
-			SetRadioPower(isInChannel);
-	
-			// Update radio frequency to match current channel assignment
-			// This ensures the radio frequency is correct after channel changes
-			if (isInChannel)
+			// Skip invalid player IDs
+			if (playerIdStr.IsEmpty())
+				continue;
+
+			int playerId = playerIdStr.ToInt();
+
+			if (!IsPlayerVisibleInChannel(playerId, channelName))
+				continue;
+
+			AppendChannelPlayerRow(channelIndex, playerId, playerManager);
+		}
+	}
+
+	/**
+	 * Surgical handler for COA_MenuManager's per-player channel-move notification (see
+	 * COA_MenuManager.GetOnPlayerChannelChanged()): patches only the affected rows instead of
+	 * reparsing/rebuilding the whole VON channel list.
+	 */
+	void OnPlayerChannelChanged(int playerId, int newChannelIndex, int oldChannelIndex)
+	{
+		bool handledFully = true;
+
+		if (oldChannelIndex >= 0 && !RemoveChannelPlayerRow(oldChannelIndex, playerId))
+			handledFully = false;
+
+		if (newChannelIndex >= 0 && IsPlayerVisibleInChannel(playerId, GetChannelName(newChannelIndex)))
+		{
+			if (!AddChannelPlayerRow(newChannelIndex, playerId))
+				handledFully = false;
+		}
+
+		if (playerId == SCR_PlayerController.GetLocalPlayerId())
+			UpdateLocalPlayerRadioState();
+
+		// Only suppress the structural fallback poll (OnMenuUpdate's m_iChannelChanges check) when
+		// the surgical patch actually covered this change in full - e.g. NOT a brand-new channel the
+		// client hasn't built a header for yet, which still needs the full UpdateChannel() rebuild.
+		if (handledFully)
+			m_iLocalChannelUpdates = m_MenuManager.m_iChannelChanges;
+	}
+
+	/**
+	 * Removes a single player's row from a channel, if one is currently tracked there.
+	 * @return False if the channel itself was never built (caller should fall back to a full rebuild)
+	 */
+	protected bool RemoveChannelPlayerRow(int channelIndex, int playerId)
+	{
+		if (!m_mChannelHeaderIndex.Contains(channelIndex))
+			return false;
+
+		if (!m_mChannelPlayerRowIndex.Contains(channelIndex))
+			return true;
+
+		map<int, int> playerRowIndex = m_mChannelPlayerRowIndex.Get(channelIndex);
+		if (!playerRowIndex.Contains(playerId))
+			return true;
+
+		int rowIndex = playerRowIndex.Get(playerId);
+		playerRowIndex.Remove(playerId);
+
+		m_wVONChannels.RemoveItemRange(rowIndex, rowIndex);
+		ShiftChannelIndicesAfter(rowIndex, 1);
+		return true;
+	}
+
+	/**
+	 * Adds a single player's row to a channel. Since the listbox is append-only, this rebuilds the
+	 * channel's whole block (header + its already-tracked players, reconstructed from
+	 * m_mChannelPlayerRowIndex rather than by reparsing the replicated array - see
+	 * COA_MenuManager.AddPlayerToChannel for why re-parsing here would be racy) at the end of the
+	 * list, plus the new player - so the channel visibly moves to the bottom on membership changes.
+	 * @return False if the channel itself was never built (caller should fall back to a full rebuild)
+	 */
+	protected bool AddChannelPlayerRow(int channelIndex, int playerId)
+	{
+		if (!m_mChannelHeaderIndex.Contains(channelIndex))
+			return false;
+
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (!playerManager)
+			return true;
+
+		map<int, int> playerRowIndex = m_mChannelPlayerRowIndex.Get(channelIndex);
+		if (playerRowIndex.Contains(playerId))
+			return true; // already shown
+
+		array<int> existingPlayerIds = {};
+		foreach (int existingPlayerId, int existingRowIdx : playerRowIndex)
+			existingPlayerIds.Insert(existingPlayerId);
+
+		int headerIndex = m_mChannelHeaderIndex.Get(channelIndex);
+		int lastIndex = headerIndex;
+		foreach (int existingRowIdx : playerRowIndex)
+		{
+			if (existingRowIdx > lastIndex)
+				lastIndex = existingRowIdx;
+		}
+
+		string channelName = GetChannelName(channelIndex);
+
+		m_mChannelHeaderIndex.Remove(channelIndex);
+		m_mChannelPlayerRowIndex.Remove(channelIndex);
+		m_wVONChannels.RemoveItemRange(headerIndex, lastIndex);
+		ShiftChannelIndicesAfter(headerIndex, lastIndex - headerIndex + 1);
+
+		int newHeaderIndex = m_wVONChannels.AddItemChannel(null, channelName);
+		COA_ListBoxElementComponent channelComponent = m_wVONChannels.GetCRFElementComponent(newHeaderIndex);
+		if (channelComponent)
+		{
+			channelComponent.m_iChannelId = channelIndex;
+			channelComponent.GetChannelButton().m_OnClicked.Insert(JoinChannelDelay);
+		}
+
+		m_mChannelHeaderIndex.Set(channelIndex, newHeaderIndex);
+		map<int, int> newPlayerRowIndex = new map<int, int>();
+		m_mChannelPlayerRowIndex.Set(channelIndex, newPlayerRowIndex);
+
+		foreach (int existingPlayerId : existingPlayerIds)
+			AppendChannelPlayerRow(channelIndex, existingPlayerId, playerManager);
+
+		AppendChannelPlayerRow(channelIndex, playerId, playerManager);
+		return true;
+	}
+
+	/**
+	 * Appends one player row at the current end of m_wVONChannels and records its index.
+	 * Caller is responsible for making sure this lands within the correct channel's block.
+	 */
+	protected void AppendChannelPlayerRow(int channelIndex, int playerId, PlayerManager playerManager)
+	{
+		int playerIndex = m_wVONChannels.AddItem(
+			playerManager.GetPlayerName(playerId),
+			null,
+			"{68D74FF57296AFFB}UI/Listbox/PlayerListboxElementVON.layout"
+		);
+
+		COA_ListBoxElementComponent playerComponent = m_wVONChannels.GetCRFElementComponent(playerIndex);
+		if (playerComponent)
+		{
+			playerComponent.m_iPlayerId = SCR_PlayerController.GetLocalPlayerId();
+			playerComponent.m_bIsPlayer = true;
+		}
+
+		m_mChannelPlayerRowIndex.Get(channelIndex).Set(playerId, playerIndex);
+	}
+
+	/**
+	 * After removing rows starting at removedFromIndex, every other tracked channel/player row index
+	 * past that point needs to shift down by the removed count to stay accurate for future patches.
+	 */
+	protected void ShiftChannelIndicesAfter(int removedFromIndex, int delta)
+	{
+		foreach (int channelIdx, int headerIdx : m_mChannelHeaderIndex)
+		{
+			if (headerIdx > removedFromIndex)
+				m_mChannelHeaderIndex.Set(channelIdx, headerIdx - delta);
+		}
+
+		foreach (int channelIdx, map<int, int> playerRowIndex : m_mChannelPlayerRowIndex)
+		{
+			array<int> playerIds = {};
+			foreach (int pid, int rowIdx : playerRowIndex)
+				playerIds.Insert(pid);
+
+			foreach (int pid : playerIds)
 			{
-				// Schedule frequency update after a small delay to ensure replication is complete
-				GetGame().GetCallqueue().CallLater(UpdateRadioFrequency, 100, false);
+				int rowIdx = playerRowIndex.Get(pid);
+				if (rowIdx > removedFromIndex)
+					playerRowIndex.Set(pid, rowIdx - delta);
 			}
+		}
+	}
+
+	/**
+	 * Resolves a channel's display name from its stable name portion of the replicated array entry.
+	 * Only the name is read (never the player-list portion, which can be stale relative to a
+	 * just-arrived per-player notification - see COA_MenuManager.AddPlayerToChannel).
+	 */
+	protected string GetChannelName(int channelIndex)
+	{
+		if (channelIndex < 0 || channelIndex >= m_MenuManager.m_aVONChannels.Count())
+			return "";
+
+		ref array<string> nameParts = {};
+		m_MenuManager.m_aVONChannels[channelIndex].Split("|", nameParts, true);
+		if (nameParts.IsEmpty())
+			return "";
+
+		return nameParts.Get(0);
+	}
+
+	/**
+	 * Visibility rules for the spectator VON display: connected, "Deafen" shows only the local
+	 * player, and spectator channels only show dead players. Deliberately takes the channel name
+	 * (not an index) so callers control whether it comes from a stable read (see GetChannelName).
+	 */
+	protected bool IsPlayerVisibleInChannel(int playerId, string channelName)
+	{
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (!playerManager || !playerManager.IsPlayerConnected(playerId))
+			return false;
+
+		if (playerId != SCR_PlayerController.GetLocalPlayerId() && channelName == "Deafen")
+			return false;
+
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+		if (slottingManager)
+		{
+			COA_SlotData playerSlotData = slottingManager.GetPlayerSlotData(playerId);
+			if (playerSlotData && !playerSlotData.GetIsDeadSlot())
+				return false; // Skip alive players
+		}
+
+		return true;
+	}
+
+	/**
+	 * Toggles radio power/frequency for the local player based on their current channel. Runs
+	 * unconditionally after a full UpdateChannel() rebuild, and after any surgical channel change
+	 * that affects the local player specifically (see OnPlayerChannelChanged).
+	 */
+	protected void UpdateLocalPlayerRadioState()
+	{
+		if (CVON_VONGameModeComponent.GetInstance())
+			return;
+
+		int localPlayerId = SCR_PlayerController.GetLocalPlayerId();
+		bool isInChannel = m_MenuManager.GetChannel(localPlayerId) != 0;
+		SetRadioPower(isInChannel);
+
+		// Update radio frequency to match current channel assignment
+		// This ensures the radio frequency is correct after channel changes
+		if (isInChannel)
+		{
+			// Schedule frequency update after a small delay to ensure replication is complete
+			GetGame().GetCallqueue().CallLater(UpdateRadioFrequency, 100, false);
 		}
 	}
 	
@@ -1679,32 +2007,34 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			UnregisterFrameEvent();
 			return;
 		}
-		
+
 		m_bTPPMode = true;
+		m_iCamCycle = 2;
 		m_eSpecEntity = entity;
 		m_bFPPEntityValidityCheck = true;
-		
+
 		COA_PlayerCameraManager camManager = COA_PlayerCameraManager.GetInstance();
 		camManager.SetCameraOnRailsEntity(m_eSpecEntity, true);
 		m_bFrameEventRegistered = true;
+		UpdateCameraModeButtonsUI();
 	}
 
 	/**
-	 * Selects a specific entity to spectate in first-person (helmet cam) mode.
-	 * Called directly from the icon's left-click handler with the known entity,
+	 * Selects a specific entity to spectate in true first-person (eye cam) mode - the default for
+	 * left-click. Called directly from the icon's left-click handler with the known entity,
 	 * bypassing cursor hit-testing which is unreliable inside button callbacks.
-	 * @param entity - The entity to follow in FPP mode
+	 * @param entity - The entity to follow in eye-cam mode
 	 */
 	void SelectSpecCursorFPP(IEntity entity)
 	{
 		if (!entity)
 			return;
-		
+
 		IEntity specEntity = SCR_PlayerController.GetLocalMainEntity();
 		if (!COA_EntityHelper.IsSpectator(specEntity))
 			return;
-		
-		// Toggle off if already following this entity in FPP mode
+
+		// Toggle off if already following this entity in FPP mode (helmet or eye cam)
 		if (!m_bTPPMode && m_bFrameEventRegistered && m_eSpecEntity == entity)
 		{
 			m_bTPPMode = false;
@@ -1712,14 +2042,16 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			UnregisterFrameEvent();
 			return;
 		}
-		
+
 		m_bTPPMode = false;
+		m_iCamCycle = 1;
 		m_eSpecEntity = entity;
 		m_bFPPEntityValidityCheck = true;
-		
+
 		COA_PlayerCameraManager camManager = COA_PlayerCameraManager.GetInstance();
-		camManager.SetCameraOnRailsEntity(m_eSpecEntity, false);
+		camManager.SetCameraOnRailsEntityEyeMode(m_eSpecEntity);
 		m_bFrameEventRegistered = true;
+		UpdateCameraModeButtonsUI();
 	}
 
 	/**
@@ -1880,137 +2212,228 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		m_iAliveOpforSlots = 0;
 		m_iAliveIndforSlots = 0;
 		m_iAliveCivSlots = 0;
-		
+
 		// Clear player slots list
 		m_wPlayerSlots.Clear();
-		
-		// Get required managers
-		SCR_GroupsManagerComponent groupManager = SCR_GroupsManagerComponent.GetInstance();
-		
+		m_mGroupHeaderIndex.Clear();
+		m_mGroupSlotIndices.Clear();
+
 		// Initialize slot counters
 		InitSlots();
-		
+
 		// Update faction UI elements
-		UpdateFactionUI("BLUFOR", m_wRoot.FindAnyWidget("BLUButton"), 
-			m_wRoot.FindAnyWidget("BLUFlag"), m_wRoot.FindAnyWidget("BLURatio"), 
+		UpdateFactionUI("BLUFOR", m_wRoot.FindAnyWidget("BLUButton"),
+			m_wRoot.FindAnyWidget("BLUFlag"), m_wRoot.FindAnyWidget("BLURatio"),
 			m_iAliveBluforSlots, m_iBluforSlots);
-			
-		UpdateFactionUI("OPFOR", m_wRoot.FindAnyWidget("OPFButton"), 
-			m_wRoot.FindAnyWidget("OPFFlag"), m_wRoot.FindAnyWidget("OPFRatio"), 
+
+		UpdateFactionUI("OPFOR", m_wRoot.FindAnyWidget("OPFButton"),
+			m_wRoot.FindAnyWidget("OPFFlag"), m_wRoot.FindAnyWidget("OPFRatio"),
 			m_iAliveOpforSlots, m_iOpforSlots);
-		
-		UpdateFactionUI("INDFOR", m_wRoot.FindAnyWidget("INDButton"), 
-			m_wRoot.FindAnyWidget("INDFlag"), m_wRoot.FindAnyWidget("INDRatio"), 
+
+		UpdateFactionUI("INDFOR", m_wRoot.FindAnyWidget("INDButton"),
+			m_wRoot.FindAnyWidget("INDFlag"), m_wRoot.FindAnyWidget("INDRatio"),
 			m_iAliveIndforSlots, m_iIndforSlots);
-			
-		UpdateFactionUI("CIV", m_wRoot.FindAnyWidget("CIVButton"), 
-			m_wRoot.FindAnyWidget("CIVFlag"), m_wRoot.FindAnyWidget("CIVRatio"), 
+
+		UpdateFactionUI("CIV", m_wRoot.FindAnyWidget("CIVButton"),
+			m_wRoot.FindAnyWidget("CIVFlag"), m_wRoot.FindAnyWidget("CIVRatio"),
 			m_iAliveCivSlots, m_iCivSlots);
-		
-		// Get slot and group data
-		map<int, ref COA_SlotData> slotMap = COA_SlottingManager.GetInstance().GetSlotMap();
-		
+
 		array<SCR_AIGroup> factionGroups = {};
-		
+
 		if (m_fSelectedFaction)
 			factionGroups = COA_SlottingManager.GetInstance().GetAllGroups(m_fSelectedFaction.GetFactionKey());
-		
+
 		if (factionGroups.IsEmpty())
 			return;
-		
+
 		// Process each group and its players
 		foreach(SCR_AIGroup group : factionGroups)
-		{	
+		{
 			// Skip private groups
 			if(group.IsPrivate())
 				continue;
-			
-			int playersInGroup = 0;
-			int deadPlayersInGroup = 0;
-			
-			// Add group to the player slots UI
-			int groupIndex = m_wPlayerSlots.AddItemSpecGroup(null, group);
-			COA_ListBoxElementComponent groupComponent = m_wPlayerSlots.GetCRFElementComponent(groupIndex);
-			
-			if (groupComponent)
+
+			BuildGroupRows(group);
+		}
+	}
+
+	/**
+	 * Builds (or rebuilds, if called via RebuildGroupRows) the header + slot rows for a single group,
+	 * appending them at the current end of m_wPlayerSlots and recording their indices in
+	 * m_mGroupHeaderIndex/m_mGroupSlotIndices so a later per-slot change can patch just this group.
+	 * @param group The group to build rows for
+	 */
+	protected void BuildGroupRows(SCR_AIGroup group)
+	{
+		map<int, ref COA_SlotData> slotMap = COA_SlottingManager.GetInstance().GetSlotMap();
+
+		int playersInGroup = 0;
+		int deadPlayersInGroup = 0;
+
+		// Add group to the player slots UI
+		int groupIndex = m_wPlayerSlots.AddItemSpecGroup(null, group);
+		COA_ListBoxElementComponent groupComponent = m_wPlayerSlots.GetCRFElementComponent(groupIndex);
+
+		if (groupComponent)
+		{
+			// Set group colors and icon
+			Color factionColor = group.GetFaction().GetFactionColor();
+			groupComponent.GetGroupUnderline().SetColor(factionColor);
+
+			if(group.GetFaction().GetFactionKey() == "INDFOR")
+				groupComponent.GetGroupIcon().SetColor(factionColor);
+
+			groupComponent.GetGroupIcon().LoadImageFromSet(0, SCR_Faction.Cast(group.GetFaction()).GetGroupFlagImageSet(), group.GetGroupFlag());
+		}
+
+		// Get group ID
+		RplId groupId = 0;
+		RplComponent groupRplComp = RplComponent.Cast(group.FindComponent(RplComponent));
+		if (groupRplComp)
+		{
+			groupId = groupRplComp.Id();
+		}
+
+		array<int> slotIndices = {};
+
+		// Process all slots in this group
+		foreach(int slotId, COA_SlotData slotData : slotMap)
+		{
+			// Skip slots that don't belong to this group/faction
+			if (slotData.GetSlotCurrentGroup() != groupId ||
+				slotData.GetIsLockedSlot() ||
+				slotData.GetSlotCurrentPlayerId() == 0 ||
+				GetGame().GetFactionManager().GetFactionByKey(slotData.GetSlotFactionKey()) != m_fSelectedFaction)
+				continue;
+
+			// Count dead players
+			if (slotData.GetIsDeadSlot())
 			{
-				// Set group colors and icon
-				Color factionColor = group.GetFaction().GetFactionColor();
-				groupComponent.GetGroupUnderline().SetColor(factionColor);
-				
-				if(group.GetFaction().GetFactionKey() == "INDFOR")
-					groupComponent.GetGroupIcon().SetColor(factionColor);
-				
-				groupComponent.GetGroupIcon().LoadImageFromSet(0, SCR_Faction.Cast(group.GetFaction()).GetGroupFlagImageSet(), group.GetGroupFlag());
+				deadPlayersInGroup++;
+				continue;
 			}
-			
-			// Get group ID
-			RplId groupId = 0;
-			RplComponent groupRplComp = RplComponent.Cast(group.FindComponent(RplComponent));
-			if (groupRplComp)
+
+			// Skip locked slots
+			if(slotData.GetIsLockedSlot() && slotData.GetSlotCurrentPlayerId() <= 0)
+				continue;
+
+			// Add slot to the UI
+			int slotIndex = m_wPlayerSlots.AddItemSpecSlot(null, slotId);
+			COA_ListBoxElementComponent slotComponent = m_wPlayerSlots.GetCRFElementComponent(slotIndex);
+			slotIndices.Insert(slotIndex);
+
+			// Count occupied slots
+			if (slotData.GetSlotCurrentPlayerId() > 0)
+				playersInGroup++;
+
+			// Add click handler for spectating
+			if (slotComponent && slotComponent.GetSlotButton())
 			{
-				groupId = groupRplComp.Id();
+				slotComponent.GetSlotButton().m_OnClicked.Insert(SelectSpecDelay);
 			}
-			
-			// Process all slots in this group
-			foreach(int slotId, COA_SlotData slotData : slotMap)
-			{	
-				// Skip slots that don't belong to this group/faction
-				if (slotData.GetSlotCurrentGroup() != groupId || 
-					slotData.GetIsLockedSlot() || 
-					slotData.GetSlotCurrentPlayerId() == 0 || 
-					GetGame().GetFactionManager().GetFactionByKey(slotData.GetSlotFactionKey()) != m_fSelectedFaction)
-					continue;
-				
-				// Count dead players
-				if (slotData.GetIsDeadSlot())
+
+			// Set player name if slot is occupied
+			if (slotData.GetSlotCurrentPlayerId() > 0 && slotComponent)
+			{
+				PlayerManager playerManager = GetGame().GetPlayerManager();
+				if (playerManager)
 				{
-					deadPlayersInGroup++;
-					continue;
-				}
-				
-				// Skip locked slots
-				if(slotData.GetIsLockedSlot() && slotData.GetSlotCurrentPlayerId() <= 0)
-					continue;
-				
-				// Add slot to the UI
-				int slotIndex = m_wPlayerSlots.AddItemSpecSlot(null, slotId);
-				COA_ListBoxElementComponent slotComponent = m_wPlayerSlots.GetCRFElementComponent(slotIndex);
-				
-				// Count occupied slots
-				if (slotData.GetSlotCurrentPlayerId() > 0)
-					playersInGroup++;
-				
-				// Add click handler for spectating
-				if (slotComponent && slotComponent.GetSlotButton())
-				{
-					slotComponent.GetSlotButton().m_OnClicked.Insert(SelectSpecDelay);
-				}
-				
-				// Set player name if slot is occupied
-				if (slotData.GetSlotCurrentPlayerId() > 0 && slotComponent)
-				{
-					PlayerManager playerManager = GetGame().GetPlayerManager();
-					if (playerManager)
+					slotComponent.SetPlayerText(playerManager.GetPlayerName(slotData.GetSlotCurrentPlayerId()));
+
+					// Show disconnected indicator if player is no longer connected
+					if (!playerManager.IsPlayerConnected(slotData.GetSlotCurrentPlayerId()))
 					{
-						slotComponent.SetPlayerText(playerManager.GetPlayerName(slotData.GetSlotCurrentPlayerId()));
-						
-						// Show disconnected indicator if player is no longer connected
-						if (!playerManager.IsPlayerConnected(slotData.GetSlotCurrentPlayerId()))
-						{
-							slotComponent.GetDisconnectWidget().SetVisible(true);
-						}
+						slotComponent.GetDisconnectWidget().SetVisible(true);
 					}
 				}
 			}
-			
-			// Remove empty groups
-			if (playersInGroup == 0)
-			{
-				m_wPlayerSlots.RemoveItem(groupIndex);
-			}
 		}
 
+		// Remove empty groups; only track groups that actually have visible rows, so a later
+		// per-slot change knows there's nothing to remove before rebuilding.
+		if (playersInGroup == 0)
+		{
+			m_wPlayerSlots.RemoveItem(groupIndex);
+		}
+		else
+		{
+			m_mGroupHeaderIndex.Set(group, groupIndex);
+			m_mGroupSlotIndices.Set(group, slotIndices);
+		}
+	}
+
+	/**
+	 * Surgical handler for COA_SlottingManager's per-slot player-ID change invoker (see
+	 * COA_SlottingManager.GetOnSlotChanged()): patches only the affected group's rows instead of
+	 * rebuilding the entire slot list.
+	 */
+	void OnSlotPlayerIdChanged()
+	{
+		int slotId = COA_SlottingManager.GetInstance().GetLastChangedSlotId();
+		COA_SlotData slotData = COA_SlottingManager.GetInstance().GetSlotData(slotId);
+		if (!slotData)
+			return;
+
+		// Not the currently-displayed faction — nothing visible is affected.
+		if (GetGame().GetFactionManager().GetFactionByKey(slotData.GetSlotFactionKey()) != m_fSelectedFaction)
+			return;
+
+		SCR_AIGroup group = COA_EntityHelper.GetGroupFromRplId(slotData.GetSlotCurrentGroup());
+		if (!group || group.IsPrivate())
+			return;
+
+		RebuildGroupRows(group);
+	}
+
+	/**
+	 * Removes a group's existing rows (if any are currently tracked/visible) and rebuilds them,
+	 * freshly appended at the end of the list — the engine's listbox widgets are append-only, so a
+	 * changed group's rows land at the end rather than back in their original position.
+	 * @param group The group whose rows should be refreshed
+	 */
+	protected void RebuildGroupRows(SCR_AIGroup group)
+	{
+		if (m_mGroupHeaderIndex.Contains(group))
+		{
+			int headerIndex = m_mGroupHeaderIndex.Get(group);
+			array<int> slotIndices = m_mGroupSlotIndices.Get(group);
+
+			int lastIndex = headerIndex;
+			if (slotIndices && !slotIndices.IsEmpty())
+				lastIndex = slotIndices[slotIndices.Count() - 1];
+
+			int removedCount = lastIndex - headerIndex + 1;
+
+			m_mGroupHeaderIndex.Remove(group);
+			m_mGroupSlotIndices.Remove(group);
+
+			m_wPlayerSlots.RemoveItemRange(headerIndex, lastIndex);
+			ShiftGroupIndicesAfter(headerIndex, removedCount);
+		}
+
+		BuildGroupRows(group);
+	}
+
+	/**
+	 * After removing rows starting at removedFromIndex, every other tracked group's row indices
+	 * past that point need to shift down by the removed count to stay accurate for future patches.
+	 */
+	protected void ShiftGroupIndicesAfter(int removedFromIndex, int delta)
+	{
+		foreach (SCR_AIGroup otherGroup, int headerIdx : m_mGroupHeaderIndex)
+		{
+			if (headerIdx > removedFromIndex)
+				m_mGroupHeaderIndex.Set(otherGroup, headerIdx - delta);
+		}
+
+		foreach (SCR_AIGroup otherGroup, array<int> slotIndices : m_mGroupSlotIndices)
+		{
+			for (int i = 0; i < slotIndices.Count(); i++)
+			{
+				if (slotIndices[i] > removedFromIndex)
+					slotIndices[i] = slotIndices[i] - delta;
+			}
+		}
 	}
 
 	/**
@@ -2168,9 +2591,13 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		if (slottingManager)
 		{
 			slottingManager.GetOnSlottingUpdate().Remove(UpdateSlots);
-			slottingManager.GetOnSlotChanged().Remove(UpdateSlots);
+			slottingManager.GetOnSlotChanged().Remove(OnSlotPlayerIdChanged);
 			slottingManager.GetOnSlotChanged().Remove(OnSlotChangedCheckAutoInsert);
 		}
+
+		// Unregister from VON channel updates
+		if (m_MenuManager)
+			m_MenuManager.GetOnPlayerChannelChanged().Remove(OnPlayerChannelChanged);
 		
 		// Remove all action listeners
 		InputManager inputManager = GetGame().GetInputManager();

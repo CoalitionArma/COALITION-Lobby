@@ -31,7 +31,7 @@ FrameWidgetClass {
       SizeY 50
       OffsetBottom 18.43
      }
-     Color 0.0908 0.0908 0.0908 1
+     Color 0.042 0.042 0.042 1
     }
     TextWidgetClass "{66948BF1C605874F}" {
      Name "SlotWarningText"
@@ -85,7 +85,7 @@ FrameWidgetClass {
         VerticalAlign 3
        }
        Text "Dismiss"
-       "Font Size" 34
+       "Font Size" 32
        "Horizontal Alignment" Center
        "Vertical Alignment" Center
        FontProperties FontProperties "{6694ADF619F03E7D}" {
@@ -126,10 +126,10 @@ FrameWidgetClass {
       SizeY -145
       OffsetBottom -14.486
      }
-     Color 1 1 1 0.745
+     Color 1 1 1 0.85
      Text "DISCORD.GG/THE-COALITION"
-     "Font Size" 9
-     "Min Font Size" 9
+     "Font Size" 12
+     "Min Font Size" 12
      "Horizontal Alignment" Center
     }
     ImageWidgetClass "{6483581F5342B000}" {
@@ -207,7 +207,7 @@ FrameWidgetClass {
       SizeY 0
       OffsetBottom 0
      }
-     Color 0 0 0 0.84
+     Color 0 0 0 0.85
     }
     TextWidgetClass "{6900000000000005}" {
      Name "DamageReportTitle"
@@ -220,7 +220,7 @@ FrameWidgetClass {
       SizeY 32
       OffsetBottom -44
      }
-     Color 1 1 1 0.95
+     Color 1 1 1 1
      Text "DAMAGE REPORT"
      "Font Size" 24
      "Horizontal Alignment" Center
@@ -270,7 +270,7 @@ FrameWidgetClass {
         SizeY 0
         OffsetBottom 0
        }
-       Color 0.035 0.035 0.035 0.92
+       Color 0.042 0.042 0.042 0.92
       }
       ImageWidgetClass "{6900000000000022}" {
        Name "DamageReportBodyOutline"
@@ -391,7 +391,7 @@ FrameWidgetClass {
        }
        Color 0.9 0.9 0.9 1
        Text "Fatal Location: No fatal damage recorded"
-       "Font Size" 14
+       "Font Size" 15
        "Horizontal Alignment" Center
        "Vertical Alignment" Center
       }
@@ -420,7 +420,7 @@ FrameWidgetClass {
         SizeY 0
         OffsetBottom 0
        }
-       Color 0.035 0.035 0.035 0.92
+       Color 0.042 0.042 0.042 0.92
       }
       RichTextWidgetClass "{6900000000000020}" {
        Name "DamageReportLog"
@@ -433,7 +433,7 @@ FrameWidgetClass {
         SizeY -28
         OffsetBottom 14
        }
-       Color 0.88 0.88 0.88 1
+       Color 0.9 0.9 0.9 1
        Text "No damage recorded."
        "Font Size" 16
        "Min Font Size" 16
@@ -926,7 +926,7 @@ FrameWidgetClass {
       SizeY -360
       OffsetBottom 180
      }
-     Color 0.133 0.133 0.133 0.353
+     Color 0.144 0.144 0.144 0.35
      Texture "{123C22FEC78BBCF7}UI/Images/UIElements/tab.edds"
      Size 640 360
      "Transition width" 0.71
@@ -945,7 +945,7 @@ FrameWidgetClass {
       SizeY -413.809
       OffsetBottom 207.4
      }
-     Color 1 1 1 0.353
+     Color 1 1 1 0.35
      Rotation 270
      Texture "{D45AE7F19DBF4021}UI/Textures/InventoryIcons/Medical/lines_UI.edds"
      Size 64 64
@@ -966,7 +966,7 @@ FrameWidgetClass {
       OffsetBottom 0
      }
      Opacity 0.2
-     Color 0.047 0.047 0.047 1
+     Color 0.042 0.042 0.042 1
      "Transition width" 0.71
      Progress 0.5
     }
@@ -1013,7 +1013,7 @@ FrameWidgetClass {
         SizeY -100
         OffsetBottom 0
        }
-       Color 0.016 0.552 0.905 0.6
+       Color 0 0.584 1 0.6
       }
       ImageWidgetClass "{647D656FC098D136}" {
        Name "BLUFlag"
@@ -1398,7 +1398,7 @@ FrameWidgetClass {
       SizeY -360
       OffsetBottom 180
      }
-     Color 0.133 0.133 0.133 0.353
+     Color 0.144 0.144 0.144 0.35
      Texture "{123C22FEC78BBCF7}UI/Images/UIElements/tab.edds"
      Size 640 360
      "Transition width" 0.71
@@ -1417,7 +1417,7 @@ FrameWidgetClass {
       SizeY -413.809
       OffsetBottom 207.4
      }
-     Color 1 1 1 0.353
+     Color 1 1 1 0.35
      Rotation 90
      Texture "{D45AE7F19DBF4021}UI/Textures/InventoryIcons/Medical/lines_UI.edds"
      Size 64 64
@@ -1438,7 +1438,7 @@ FrameWidgetClass {
       OffsetBottom 0
      }
      Opacity 0.2
-     Color 0.046 0.046 0.046 1
+     Color 0.042 0.042 0.042 1
      "Transition width" 0.71
      Progress 0.5
     }
@@ -1652,7 +1652,7 @@ FrameWidgetClass {
          Slot LayoutSlot "{6674EDCBB2814F4E}" {
           Padding 0 0 0 5
          }
-         Color 0 0 0 0.333
+         Color 0 0 0 0.35
          "Shadow Offset" 0.5 0.5
         }
         TextWidgetClass "{64E05E71F1A66A86}" {
@@ -1660,7 +1660,7 @@ FrameWidgetClass {
          Slot LayoutSlot "{6674EDCBB2814F78}" {
           Padding 0 -34 0 4
          }
-         Color 0.928 0.862 0.862 1
+         Color 0.9 0.9 0.9 1
          Text "Game Not Live"
          "Font Size" 16
          "Min Font Size" 14
@@ -1686,7 +1686,7 @@ FrameWidgetClass {
          Slot LayoutSlot "{6674EDC2C99EA65D}" {
           Padding 0 0 0 5
          }
-         Color 0 0 0 0.333
+         Color 0 0 0 0.35
          "Shadow Offset" 0.5 0.5
         }
         TextWidgetClass "{6674EDC792D10A4E}" {
@@ -1694,7 +1694,7 @@ FrameWidgetClass {
          Slot LayoutSlot "{6674EDC2C99EA64C}" {
           Padding 0 -34 0 4
          }
-         Color 0.016 0.552 0.9047 1
+         Color 0 0.584 1 1
          Text "BLUFOR Tickets: 0"
          "Font Size" 16
          "Min Font Size" 14
@@ -1720,7 +1720,7 @@ FrameWidgetClass {
          Slot LayoutSlot "{6674EDC2A0D91810}" {
           Padding 0 0 0 5
          }
-         Color 0 0 0 0.333
+         Color 0 0 0 0.35
          "Shadow Offset" 0.5 0.5
         }
         TextWidgetClass "{6674EDC70672776A}" {
@@ -1728,7 +1728,7 @@ FrameWidgetClass {
          Slot LayoutSlot "{6674EDC2A0D91806}" {
           Padding 0 -34 0 4
          }
-         Color 0.855 0.0308 0.0284 1
+         Color 0.855 0.031 0.028 1
          Text "OPFOR Tickets: 0"
          "Font Size" 16
          "Min Font Size" 14
@@ -1754,7 +1754,7 @@ FrameWidgetClass {
          Slot LayoutSlot "{6674EDC22A587ED5}" {
           Padding 0 0 0 5
          }
-         Color 0 0 0 0.333
+         Color 0 0 0 0.35
          "Shadow Offset" 0.5 0.5
         }
         TextWidgetClass "{6674EDC7024408FB}" {
@@ -1762,7 +1762,7 @@ FrameWidgetClass {
          Slot LayoutSlot "{6674EDC22A587EC1}" {
           Padding 0 -34 0 4
          }
-         Color 0 0.4397 0.0782 1
+         Color 0 0.44 0.078 1
          Text "INDFOR Tickets: 0"
          "Font Size" 16
          "Min Font Size" 14
@@ -1788,7 +1788,7 @@ FrameWidgetClass {
          Slot LayoutSlot "{6674EDC20FB459B3}" {
           Padding 0 0 0 5
          }
-         Color 0 0 0 0.333
+         Color 0 0 0 0.35
          "Shadow Offset" 0.5 0.5
         }
         TextWidgetClass "{6674EDC778D8EE10}" {
@@ -1796,7 +1796,7 @@ FrameWidgetClass {
          Slot LayoutSlot "{6674EDC20FB459B8}" {
           Padding 0 -34 0 4
          }
-         Color 0.3916 0.1559 0.624 1
+         Color 0.392 0.156 0.624 1
          Text "CIV Tickets: 0"
          "Font Size" 16
          "Min Font Size" 14
@@ -1826,7 +1826,7 @@ FrameWidgetClass {
       SizeY -320
       OffsetBottom 55
      }
-     Color 0.133 0.133 0.133 0.353
+     Color 0.144 0.144 0.144 0.35
      Texture "{123C22FEC78BBCF7}UI/Images/UIElements/tab.edds"
      Size 640 360
      "Transition width" 0.71
@@ -1845,12 +1845,83 @@ FrameWidgetClass {
       SizeY -413.809
       OffsetBottom 82
      }
-     Color 1 1 1 0.353
+     Color 1 1 1 0.35
      Rotation 270
      Texture "{D45AE7F19DBF4021}UI/Textures/InventoryIcons/Medical/lines_UI.edds"
      Size 64 64
      "Transition width" 0.71
      Progress 0.5
+    }
+   }
+  }
+  ScaleWidgetClass "{CFC5CA0000000100}" : "{B206B37D7D02D9F4}UI/layouts/Menus/Spectator/Elements/CameraModeButtons.layout" {
+   Name "CameraModeButtons"
+   Slot FrameWidgetSlot "{CFC5CA0000000101}" {
+    Anchor 0.5 1 0.5 1
+    PositionX -175
+    OffsetLeft -175
+    PositionY -154
+    OffsetTop -154
+    SizeX 350
+    OffsetRight -175
+    SizeY 36
+    OffsetBottom 118
+   }
+   {
+    FrameWidgetClass "{CFC5CA0000000002}" {
+     Prefab "{CFC5CA0000000002}"
+     {
+      ImageWidgetClass "{CFC5CA0000000004}" {
+       Prefab "{CFC5CA0000000004}"
+      }
+      HorizontalLayoutWidgetClass "{CFC5CA0000000006}" {
+       Prefab "{CFC5CA0000000006}"
+       {
+        FrameWidgetClass "{CFC5CA0000000008}" {
+         Prefab "{CFC5CA0000000008}"
+         {
+          ImageWidgetClass "{CFC5CA0000000010}" {
+           Prefab "{CFC5CA0000000010}"
+          }
+          TextWidgetClass "{CFC5CA0000000012}" {
+           Prefab "{CFC5CA0000000012}"
+          }
+          ButtonWidgetClass "{CFC5CA0000000014}" {
+           Prefab "{CFC5CA0000000014}"
+          }
+         }
+        }
+        FrameWidgetClass "{CFC5CA0000000018}" {
+         Prefab "{CFC5CA0000000018}"
+         {
+          ImageWidgetClass "{CFC5CA0000000020}" {
+           Prefab "{CFC5CA0000000020}"
+          }
+          TextWidgetClass "{CFC5CA0000000022}" {
+           Prefab "{CFC5CA0000000022}"
+          }
+          ButtonWidgetClass "{CFC5CA0000000024}" {
+           Prefab "{CFC5CA0000000024}"
+          }
+         }
+        }
+        FrameWidgetClass "{CFC5CA0000000028}" {
+         Prefab "{CFC5CA0000000028}"
+         {
+          ImageWidgetClass "{CFC5CA0000000030}" {
+           Prefab "{CFC5CA0000000030}"
+          }
+          TextWidgetClass "{CFC5CA0000000032}" {
+           Prefab "{CFC5CA0000000032}"
+          }
+          ButtonWidgetClass "{CFC5CA0000000034}" {
+           Prefab "{CFC5CA0000000034}"
+          }
+         }
+        }
+       }
+      }
+     }
     }
    }
   }

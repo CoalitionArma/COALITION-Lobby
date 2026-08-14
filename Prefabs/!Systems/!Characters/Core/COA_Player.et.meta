@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{D7EB93B0550FD158}Prefabs/Characters/!Core/COA_Player.et"
+ Name "{D7EB93B0550FD158}Prefabs/!Systems/!Characters/Core/COA_Player.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

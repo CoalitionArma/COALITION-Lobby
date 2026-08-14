@@ -110,7 +110,7 @@ SCR_AIGroup : "{EACD97CF4A702FAE}Prefabs/Groups/BLUFOR/Group_US_Base.et" {
  coords 0 0 0
  m_faction "BLUFOR"
  m_aUnitPrefabSlots {
-  "{CC8EDD051CB0C1CE}Prefabs/Characters/!GS_Characters/Squad Level/COA_SL.et" "{D4DB370FB7ED69BA}Prefabs/Characters/!GS_Characters/Squad Level/COA_AT.et" "{D4DB370FB7ED69BA}Prefabs/Characters/!GS_Characters/Squad Level/COA_AT.et" "{6F99DE8453E6B423}Prefabs/Characters/!GS_Characters/Squad Level/COA_Rifleman.et" "{6F99DE8453E6B423}Prefabs/Characters/!GS_Characters/Squad Level/COA_Rifleman.et"
+  "{CC8EDD051CB0C1CE}Prefabs/!Systems/!Characters/GS_Characters/Squad Level/COA_SL.et" "{D4DB370FB7ED69BA}Prefabs/!Systems/!Characters/GS_Characters/Squad Level/COA_AT.et" "{D4DB370FB7ED69BA}Prefabs/!Systems/!Characters/GS_Characters/Squad Level/COA_AT.et" "{6F99DE8453E6B423}Prefabs/!Systems/!Characters/GS_Characters/Squad Level/COA_Rifleman.et" "{6F99DE8453E6B423}Prefabs/!Systems/!Characters/GS_Characters/Squad Level/COA_Rifleman.et"
  }
  m_bDeleteWhenEmpty 1
  m_iMaxMembers 1

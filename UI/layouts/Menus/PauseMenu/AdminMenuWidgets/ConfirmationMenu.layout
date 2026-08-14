@@ -39,7 +39,7 @@ FrameWidgetClass {
     OffsetBottom -108
    }
    "Z Order" 1
-   Color 1 0 0.0392 1
+   Color 0.855 0.031 0.028 1
    components {
     SCR_ButtonTextComponent "{62993E178E05DA3C}" {
      m_bCanBeToggled 1
@@ -71,7 +71,7 @@ FrameWidgetClass {
     OffsetBottom -108
    }
    "Z Order" 1
-   Color 0.006 0.007 0.008 1
+   Color 0.013 0.0152 0.0176 1
    components {
     SCR_ButtonTextComponent "{62993E178E05DA3C}" {
      m_bCanBeToggled 1
@@ -116,7 +116,7 @@ FrameWidgetClass {
       SizeY 240
       OffsetBottom -116
      }
-     Color 0.0152 0.0176 0.0212 1
+     Color 0.013 0.0152 0.0176 1
      "Inherit Color" 1
      Size 3840 2160
     }

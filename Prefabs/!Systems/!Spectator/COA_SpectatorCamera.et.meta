@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{E1FF38EC8894C5F3}Prefabs/Systems/!Spectator/COA_SpectatorCamera.et"
+ Name "{E1FF38EC8894C5F3}Prefabs/!Systems/!Spectator/COA_SpectatorCamera.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

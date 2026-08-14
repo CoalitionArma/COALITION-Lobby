@@ -1,3 +1,14 @@
+//------------------------------------------------------------------------------------------------
+// Holds the widgets for a single faction-colored player icon shown on the spectator map.
+// Built from the same layout/component as the 3D spectator icons (COA_SpectatorLabelIconCharacter)
+// so it gets proven faction coloring, character state and a name label for free.
+class COA_SpectatorPlayerIconData
+{
+	Widget m_wRoot;
+	Widget m_wLabel;
+	COA_SpectatorLabelIconCharacter m_Icon;
+}
+
 modded class SCR_MapMarkersUI
 {
 	protected const int COA_DOUBLE_CLICK_MS = 350;
@@ -12,13 +23,18 @@ modded class SCR_MapMarkersUI
 	static SCR_MapEntity m_MapEntity;
 	// Flag to track if the map is currently open
 	static bool m_bIsMapOpen = false;
-	
+
 	// Array to store time values for marker updates
 	protected ref array<float> m_aMarkerUpdateTimes = {};
 	// Array to store cached positions for markers
 	protected ref array<vector> m_aCachedPositions = {};
 	// Map storing marker widgets and their associated data
 	protected ref map<Widget, string> m_mMarkerWidgetData = new map<Widget, string>;
+
+	protected const float COA_PLAYER_ICON_SIZE = 28.0;
+	protected ref map<RplId, ref COA_SpectatorPlayerIconData> m_mSpectatorPlayerIcons = new map<RplId, ref COA_SpectatorPlayerIconData>();
+	protected ref array<RplId> m_aSpectatorPlayerIconsLive = {};
+	protected ref array<RplId> m_aSpectatorPlayerIconsToRemove = {};
 
 	//------------------------------------------------------------------------------------------------
 	// Called when the map is opened
@@ -128,13 +144,16 @@ modded class SCR_MapMarkersUI
 		// Remove the marker update listener so updates don't create widgets after map close
 		if (m_PlayerScriptedMarkerManager)
 			m_PlayerScriptedMarkerManager.GetOnMarkerUpdate().Remove(LoadStoredMarkers);
-		
+
 		// Cancel any pending deferred LoadStoredMarkers call
 		GetGame().GetCallqueue().Remove(LoadStoredMarkers);
-		
+
 		// Clean up marker widgets before parent is destroyed
 		CleanupExistingMarkers();
-		
+
+		// Clean up spectator player icons before parent is destroyed
+		COA_ClearSpectatorPlayerIcons();
+
 		super.OnMapClose(config);
 	}
 	
@@ -180,9 +199,238 @@ modded class SCR_MapMarkersUI
 			
 			// Update marker position on screen
 			UpdateMarkerScreenPosition(markerWidget, markerPosition);
-			
+
 			markerIndex++;
 		}
+
+		// Show faction-colored player icons on the map while the local player is spectating
+		COA_UpdateSpectatorPlayerIcons();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Creates/updates faction-colored icons for every player-controlled character, but only while
+	// the local player is spectating - regular players must never see enemy positions on the map.
+	protected void COA_UpdateSpectatorPlayerIcons()
+	{
+		if (!COA_EntityHelper.IsSpectator())
+		{
+			COA_ClearSpectatorPlayerIcons();
+			return;
+		}
+
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+		if (!slottingManager)
+			return;
+
+		map<int, ref COA_SlotData> slotMap = slottingManager.GetSlotMap();
+		if (!slotMap)
+			return;
+
+		m_aSpectatorPlayerIconsLive.Clear();
+
+		foreach (int slotId, COA_SlotData slotData : slotMap)
+		{
+			RplId charRplId = slotData.GetSlotCurrentCharacter();
+			if (charRplId == RplId.Invalid() || !Replication.FindItem(charRplId))
+				continue;
+
+			RplComponent charRpl = RplComponent.Cast(Replication.FindItem(charRplId));
+			if (!charRpl)
+				continue;
+
+			SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(charRpl.GetEntity());
+			if (!character)
+				continue;
+
+			SCR_Faction faction = SCR_Faction.Cast(character.GetFaction());
+			if (!faction || !COA_ShouldShowSpectatorPlayerIcon(faction))
+				continue;
+
+			m_aSpectatorPlayerIconsLive.Insert(charRplId);
+
+			COA_SpectatorPlayerIconData iconData = m_mSpectatorPlayerIcons.Get(charRplId);
+			if (!iconData)
+			{
+				iconData = COA_CreateSpectatorPlayerIcon(character, faction);
+				if (!iconData)
+					continue;
+
+				m_mSpectatorPlayerIcons.Set(charRplId, iconData);
+			}
+
+			// Refreshes the name label plus wounded/dead state using the same logic as the 3D icons
+			if (iconData.m_Icon)
+				iconData.m_Icon.UpdateLabel();
+
+			COA_PositionSpectatorPlayerIcon(iconData, character);
+		}
+
+		// Remove icons for characters that no longer qualify (disconnected, respawned, faction hidden, etc.)
+		m_aSpectatorPlayerIconsToRemove.Clear();
+		foreach (RplId rplId, COA_SpectatorPlayerIconData data : m_mSpectatorPlayerIcons)
+		{
+			if (m_aSpectatorPlayerIconsLive.Find(rplId) == -1)
+				m_aSpectatorPlayerIconsToRemove.Insert(rplId);
+		}
+
+		foreach (RplId rplId : m_aSpectatorPlayerIconsToRemove)
+		{
+			COA_SpectatorPlayerIconData data = m_mSpectatorPlayerIcons.Get(rplId);
+			if (data && data.m_wRoot)
+				data.m_wRoot.RemoveFromHierarchy();
+
+			m_mSpectatorPlayerIcons.Remove(rplId);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Respects the gamemode's "hide other spectator factions" setting, matching COA_SpectatorMenu's
+	// 3D floating icons so the map overlay can't leak intel that setting is meant to hide.
+	protected bool COA_ShouldShowSpectatorPlayerIcon(Faction faction)
+	{
+		COA_Gamemode gamemode = COA_Gamemode.GetInstance();
+		if (!gamemode || !gamemode.m_bHideOtherSpectatorFactions)
+			return true;
+
+		int localPlayerId = SCR_PlayerController.GetLocalPlayerId();
+		Faction localPlayerFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(localPlayerId);
+		if (!localPlayerFaction)
+			return true;
+
+		return faction == localPlayerFaction;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Instantiates the same layout/component used by the 3D spectator icons (proven to render
+	// correctly - faction colors, character icon, wounded/dead state) and repurposes it as a flat
+	// map pin. A hand-built ImageWidget rendered as an untextured black square, so this reuses a
+	// real widget resource instead, same as PlayableSelector's marker icons do.
+	protected COA_SpectatorPlayerIconData COA_CreateSpectatorPlayerIcon(SCR_ChimeraCharacter character, SCR_Faction faction)
+	{
+		if (!m_RootWidget)
+			return null;
+
+		Widget root = GetGame().GetWorkspace().CreateWidgets("{68625BAD23CEE68F}UI/Spectator/SpectatorLabelIconCharacter.layout", m_RootWidget);
+		if (!root)
+			return null;
+
+		COA_SpectatorLabelIconCharacter icon = COA_SpectatorLabelIconCharacter.Cast(root.FindHandler(COA_SpectatorLabelIconCharacter));
+		if (!icon)
+		{
+			root.RemoveFromHierarchy();
+			return null;
+		}
+
+		// Sets up faction colors, character portrait icon and label text via existing logic
+		icon.SetEntity(character, "Spine3");
+
+		// Clicking the icon follows that player in third-person orbit and closes the map. Reuses
+		// the icon's existing MMB-follow handler (COA_SpectatorLabelIconCharacter.OnMMBClicked)
+		// as the click action, so this needs the active spectator menu wired in first.
+		COA_SpectatorMenu specMenu = COA_SpectatorMenu.Cast(GetGame().GetMenuManager().GetTopMenu());
+		if (specMenu)
+			icon.SetSpectatorMenu(specMenu);
+
+		Widget labelButton = root.FindAnyWidget("LabelButton");
+		if (labelButton)
+		{
+			// Recenter the colored circle (LabelButton) around the root's local origin
+			FrameSlot.SetSize(labelButton, COA_PLAYER_ICON_SIZE, COA_PLAYER_ICON_SIZE);
+			FrameSlot.SetPos(labelButton, -COA_PLAYER_ICON_SIZE * 0.5, -COA_PLAYER_ICON_SIZE * 0.5);
+
+			SCR_ButtonTextComponent button = icon.GetButton();
+			if (specMenu && button)
+			{
+				button.m_OnClicked.Insert(icon.OnMMBClicked);
+				button.m_OnClicked.Insert(COA_OnSpectatorPlayerIconClicked);
+			}
+		}
+
+		// Recenter the character portrait to the same size/position as the circle so it renders
+		// directly over it, instead of sitting at its static top-left layout offset.
+		Widget portraitIcon = root.FindAnyWidget("SpectatorLabelIcon");
+		if (portraitIcon)
+		{
+			FrameSlot.SetSize(portraitIcon, COA_PLAYER_ICON_SIZE, COA_PLAYER_ICON_SIZE);
+			FrameSlot.SetPos(portraitIcon, -COA_PLAYER_ICON_SIZE * 0.5, -COA_PLAYER_ICON_SIZE * 0.5);
+			portraitIcon.SetZOrder(10);
+		}
+
+		// HandlerAttached() hides the icon until its own Update() runs; we position/refresh it
+		// manually instead (its Update() projects via the 3D free camera), so show it now.
+		root.SetOpacity(1.0);
+		root.SetEnabled(true);
+
+		COA_SpectatorPlayerIconData data = new COA_SpectatorPlayerIconData();
+		data.m_wRoot = root;
+		data.m_wLabel = root.FindAnyWidget("SpectatorLabel");
+		data.m_Icon = icon;
+
+		// Match the name text color to the icon's own faction fill color
+		if (faction)
+		{
+			RichTextWidget nameText = RichTextWidget.Cast(root.FindAnyWidget("SpectatorLabelText"));
+			if (nameText)
+				nameText.SetColor(faction.GetFactionColor());
+		}
+
+		return data;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Fires alongside COA_SpectatorLabelIconCharacter.OnMMBClicked (which moves the camera onto the
+	// clicked player in third-person orbit) to also close the map, mirroring the map toggle key.
+	protected void COA_OnSpectatorPlayerIconClicked()
+	{
+		COA_SpectatorMenu specMenu = COA_SpectatorMenu.Cast(GetGame().GetMenuManager().GetTopMenu());
+		if (specMenu)
+			specMenu.CloseMap();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Converts the character's world position to map screen space, matching
+	// UpdateMarkerScreenPosition's approach, and keeps the player's name label centered above the icon.
+	protected void COA_PositionSpectatorPlayerIcon(COA_SpectatorPlayerIconData data, SCR_ChimeraCharacter character)
+	{
+		if (!data || !data.m_wRoot || !m_MapEntity || !character)
+			return;
+
+		vector worldPos = character.GetOrigin();
+
+		int screenX, screenY;
+		m_MapEntity.WorldToScreen(worldPos[0], worldPos[2], screenX, screenY, true);
+
+		float screenXD = GetGame().GetWorkspace().DPIUnscale(screenX);
+		float screenYD = GetGame().GetWorkspace().DPIUnscale(screenY);
+
+		// The circle/portrait are already centered on the root's local origin (see
+		// COA_CreateSpectatorPlayerIcon), so the root itself sits directly on the screen point.
+		FrameSlot.SetPos(data.m_wRoot, screenXD, screenYD);
+
+		if (!data.m_wLabel)
+			return;
+
+		float labelSizeX, labelSizeY;
+		data.m_wLabel.GetScreenSize(labelSizeX, labelSizeY);
+		float labelSizeXD = GetGame().GetWorkspace().DPIUnscale(labelSizeX);
+		float labelSizeYD = GetGame().GetWorkspace().DPIUnscale(labelSizeY);
+
+		// Sit the label's bottom edge just above the icon's top edge (icon top = -half its size)
+		const float COA_PLAYER_LABEL_GAP = 2.0;
+		FrameSlot.SetPos(data.m_wLabel, -labelSizeXD * 0.5, -(COA_PLAYER_ICON_SIZE * 0.5) - COA_PLAYER_LABEL_GAP - labelSizeYD);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Removes all spectator player icon widgets, e.g. when the map closes or spectating ends.
+	protected void COA_ClearSpectatorPlayerIcons()
+	{
+		foreach (RplId rplId, COA_SpectatorPlayerIconData data : m_mSpectatorPlayerIcons)
+		{
+			if (data && data.m_wRoot)
+				data.m_wRoot.RemoveFromHierarchy();
+		}
+
+		m_mSpectatorPlayerIcons.Clear();
 	}
 	
 	//------------------------------------------------------------------------------------------------

@@ -39,25 +39,25 @@ COA_VehicleSpawnPoint {
    }
    Wheels {
     VehicleWheelSound L_01 {
-     Filename "{58B4EAD8230C865B}Sounds/Vehicles/Wheeled/Ural4320/Vehicles_Ural4320_Wheel_l_1.acp"
+     Filename "{58B4EAD8230C865B}Sounds/Vehicles/_SharedData/Wheels/Vehicles_Truck_Wheel_l_1.acp"
      SoundPoint PointInfo "{66B4D32648D6F2FF}" {
       PivotID "v_wheel_L01"
      }
     }
     VehicleWheelSound R_01 {
-     Filename "{18D4C82EFFAAFD6D}Sounds/Vehicles/Wheeled/Ural4320/Vehicles_Ural4320_Wheel_r_1.acp"
+     Filename "{18D4C82EFFAAFD6D}Sounds/Vehicles/_SharedData/Wheels/Vehicles_Truck_Wheel_r_1.acp"
      SoundPoint PointInfo "{66B4D32648D6F2E2}" {
       PivotID "v_wheel_R01"
      }
     }
     VehicleWheelSound L_02 {
-     Filename "{C1AA53413EEBB7CB}Sounds/Vehicles/Wheeled/Ural4320/Vehicles_Ural4320_Wheel_l_2.acp"
+     Filename "{C1AA53413EEBB7CB}Sounds/Vehicles/_SharedData/Wheels/Vehicles_Truck_Wheel_l_2.acp"
      SoundPoint PointInfo "{66B4D32648D6F2D5}" {
       PivotID "v_wheel_L02"
      }
     }
     VehicleWheelSound R_02 {
-     Filename "{81CA71B7E24DCCFD}Sounds/Vehicles/Wheeled/Ural4320/Vehicles_Ural4320_Wheel_r_2.acp"
+     Filename "{81CA71B7E24DCCFD}Sounds/Vehicles/_SharedData/Wheels/Vehicles_Truck_Wheel_r_2.acp"
      SoundPoint PointInfo "{66B4D32648D6F2DA}" {
       PivotID "v_wheel_R02"
      }

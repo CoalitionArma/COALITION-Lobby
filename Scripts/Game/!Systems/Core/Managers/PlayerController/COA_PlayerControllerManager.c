@@ -20,6 +20,8 @@ class COA_PlayerControllerManager : ScriptComponent
 	protected COA_Gamemode m_Gamemode;                      // Reference to the active gamemode
 	protected COA_PlayerRplToAuthorityManager m_PlayerRplToAuthorityManager;  // Network authority manager
 	protected COA_PlayerCameraManager m_CameraManager;                  // Reference to the local camera manager
+	protected const int PLAYER_CLIENT_INIT_RETRY_DELAY_MS = 100;
+	protected const int MAX_PLAYER_CLIENT_INIT_RETRIES = 40; // ~4 seconds at 100ms interval
 
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 COMPONENT INITIALIZATION
@@ -58,21 +60,29 @@ class COA_PlayerControllerManager : ScriptComponent
 	//! Initializes the player client
 	//! Cleans up previous camera, closes menus, and sets up player-specific settings
 	//! \param[in] playerCharacter - The spectator entity the server created and set to this player
-	void InitilizePlayerClient(RplId playerCharID)
+	void InitilizePlayerClient(RplId playerCharID, int retryCount = 0)
 	{
 		// Get player character
 		IEntity playerCharacter = COA_EntityHelper.GetCharacterFromRplId(playerCharID);
-		
-		// if we cant get the player character or it's null, wait another full initilization time before attempting again
-		if (!playerCharacter || !m_CameraManager || !m_PlayerRplToAuthorityManager || !SCR_ChimeraCharacter.Cast(playerCharacter))
-		{
-			// Schedule another verification attempt
-			GetGame().GetCallqueue().Call(InitilizePlayerClient, playerCharID);
-			return;
-		};
-		
+		SCR_ChimeraCharacter chimeraCharacter = SCR_ChimeraCharacter.Cast(playerCharacter);
+
 		m_Gamemode = COA_Gamemode.GetInstance();
 		m_PlayerRplToAuthorityManager = COA_PlayerRplToAuthorityManager.GetInstance();
+		m_CameraManager = COA_PlayerCameraManager.GetInstance();
+		
+		// If dependencies are not replicated/initialized yet, retry briefly and then stop.
+		if (!playerCharacter || !chimeraCharacter || !m_Gamemode || !m_CameraManager || !m_PlayerRplToAuthorityManager)
+		{
+			retryCount++;
+			if (retryCount >= MAX_PLAYER_CLIENT_INIT_RETRIES)
+			{
+				Print(string.Format("[Coalition Lobby] WARNING: Failed to initialize player client for character %1 after %2 attempts", playerCharID, retryCount), LogLevel.WARNING);
+				return;
+			}
+
+			GetGame().GetCallqueue().CallLater(InitilizePlayerClient, PLAYER_CLIENT_INIT_RETRY_DELAY_MS, false, playerCharID, retryCount);
+			return;
+		};
 		
 		// Close all menus
 		if (m_Gamemode.m_GamemodeState == COA_EGamemodeState.GAME)

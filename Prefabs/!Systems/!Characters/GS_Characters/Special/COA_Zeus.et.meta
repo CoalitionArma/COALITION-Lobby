@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{15992AA89FF4475A}Prefabs/Characters/!GS_Characters/Special/COA_Zeus.et"
+ Name "{15992AA89FF4475A}Prefabs/!Systems/!Characters/GS_Characters/Special/COA_Zeus.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

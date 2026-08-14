@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{0B9A19205D71AD61}Prefabs/Characters/!GS_Characters/Specialties/COA_MAT.et"
+ Name "{0B9A19205D71AD61}Prefabs/!Systems/!Characters/GS_Characters/Specialties/COA_MAT.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

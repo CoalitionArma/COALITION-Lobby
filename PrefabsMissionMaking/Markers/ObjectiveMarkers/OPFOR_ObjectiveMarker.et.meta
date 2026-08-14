@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{BA688A2E51546A69}PrefabsMissionMaking/Markers/ObjectiveMarkers/OG/OPFOR_ObjectiveMarker.et"
+ Name "{BA688A2E51546A69}PrefabsMissionMaking/Markers/ObjectiveMarkers/OPFOR_ObjectiveMarker.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

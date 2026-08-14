@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{4526D15A702D0E27}Prefabs/Characters/!GS_Characters/Squad Level/COA_AAT.et"
+ Name "{4526D15A702D0E27}Prefabs/!Systems/!Characters/GS_Characters/Squad Level/COA_AAT.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

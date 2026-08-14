@@ -81,7 +81,7 @@ SCR_AIGroup : "{8DE0C0830FE0C33D}Prefabs/Groups/OPFOR/Group_USSR_Base.et" {
  coords 0 0 0
  m_faction "OPFOR"
  m_aUnitPrefabSlots {
-  "{810337D2F231A02D}Prefabs/Characters/!GS_Characters/Crews/COA_Pilot.et" "{9441BEBB9DF7FC1B}Prefabs/Characters/!GS_Characters/Crews/COA_CrewChief.et"
+  "{810337D2F231A02D}Prefabs/!Systems/!Characters/GS_Characters/Crews/COA_Pilot.et" "{9441BEBB9DF7FC1B}Prefabs/!Systems/!Characters/GS_Characters/Crews/COA_CrewChief.et"
  }
  m_bDeleteWhenEmpty 1
  m_iMaxMembers 1

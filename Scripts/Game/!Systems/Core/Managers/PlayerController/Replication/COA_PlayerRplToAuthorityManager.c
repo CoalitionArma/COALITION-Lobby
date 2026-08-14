@@ -74,20 +74,6 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			m_TelemetryManager.LogRPC(rpcName, estimatedBytes);
 	}
 
-	//------------------------------------------------------------------------------------------------
-	//! Resolve a replicated entity without dereferencing a missing or stale replication item.
-	protected IEntity ResolveReplicatedEntity(RplId entityId)
-	{
-		if (entityId == RplId.Invalid())
-			return null;
-
-		RplComponent rplComponent = RplComponent.Cast(Replication.FindItem(entityId));
-		if (!rplComponent)
-			return null;
-
-		return rplComponent.GetEntity();
-	}
-
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 CLIENT/RPC METHODS (lobby-scoped: player init, gamemode/slotting phase, slot mutation, spawn, spectator cam, slot lottery, gear apply/hot-swap, VON channel join)
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -721,7 +707,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		}
 		
 		array<AIAgent> aiAgents = {};
-		array<RplId> entityIds = {};
+		array<IEntity> entities = {};
+		int delayTime;
+		int delay;
 
 		//Get entities in the faction and store them
 		aiWorld.GetAIAgents(aiAgents);
@@ -732,15 +720,8 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 				continue;
 
 			SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(entity);
-			if (!character)
-				continue;
-
-			if (character.GetFactionKey() == faction)
-			{
-				RplId entityId = Replication.FindItemId(entity);
-				if (entityId != RplId.Invalid())
-					entityIds.Insert(entityId);
-			}
+			if (character && character.GetFactionKey() == faction)
+				entities.Insert(character);
 		}
 
 		// Also gather connected human players in the faction, so their gear updates immediately instead of only on reinitialize
@@ -753,19 +734,28 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 				continue;
 
 			SCR_ChimeraCharacter playerCharacter = SCR_ChimeraCharacter.Cast(playerEntity);
-			if (!playerCharacter)
-				continue;
-
-			if (playerCharacter.GetFactionKey() == faction)
-			{
-				RplId entityId = Replication.FindItemId(playerEntity);
-				if (entityId != RplId.Invalid())
-					entityIds.Insert(entityId);
-			}
+			if (playerCharacter && playerCharacter.GetFactionKey() == faction && !entities.Contains(playerCharacter))
+				entities.Insert(playerCharacter);
 		}
 
-		// Queue changes to prevent server freezing
-		UpdateGearSetQueue(entityIds);
+		// SET GEAR SCRIPTS
+		foreach (IEntity entity : entities)
+		{
+			if (entity)
+			{
+				EntityPrefabData prefabData = entity.GetPrefabData();
+				if (prefabData)
+				{
+					ResourceName prefab = prefabData.GetPrefabName();
+					if (COA_RoleHelper.IsValidGearscriptResource(prefab))
+					{
+						delay++;
+						delayTime = (delay * 65); // need a delay to prevent massive lag spikes on mission load (and to see what role actually casued the error lol)
+						GetGame().GetCallqueue().CallLater(UpdateGearSetQueue, delayTime, false, entity, prefab);
+					}	
+				};
+			};
+		}
 		
 		string logMessage = string.Format("%1 was changed to %2", faction, path);
 		m_RplBroadcastManager.LogAdminAction(logMessage, -1 , false, COA_EAdminLogLevel.Low)
@@ -773,32 +763,10 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 
 	
 	//------------------------------------------------------------------------------------------------
-	protected void UpdateGearSetQueue(array<RplId> entityIds, int lastIndex = 0)
+	protected void UpdateGearSetQueue(IEntity entity, ResourceName prefab)
 	{
-		if (!entityIds || lastIndex >= entityIds.Count())
+		if (!entity || !COA_RoleHelper.IsValidGearscriptResource(prefab))
 			return;
-		
-		IEntity entity = ResolveReplicatedEntity(entityIds[lastIndex]);
-		if (!entity)
-		{
-			GetGame().GetCallqueue().CallLater(UpdateGearSetQueue, 50, false, entityIds, lastIndex + 1);
-			return;
-		}
-		
-		// Grab prefab name and check if its a valid gearscript
-		EntityPrefabData prefabData = entity.GetPrefabData();
-		if (!prefabData)
-		{
-			GetGame().GetCallqueue().CallLater(UpdateGearSetQueue, 50, false, entityIds, lastIndex + 1);
-			return;
-		}
-
-		ResourceName prefab = prefabData.GetPrefabName();
-		if (!COA_RoleHelper.IsValidGearscriptResource(prefab))
-		{
-			GetGame().GetCallqueue().CallLater(UpdateGearSetQueue, 50, false, entityIds, lastIndex + 1);
-			return;
-		}
 		
 		// Prevent Lockup and invisible weapon if player
 		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(entity);
@@ -812,9 +780,6 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		COA_GearscriptManager gearscriptManager = COA_GearscriptManager.GetInstance();
 		if (gearscriptManager)
 			gearscriptManager.SetEntityGear(entity, prefab);
-		
-		// Queue next entity
-		GetGame().GetCallqueue().CallLater(UpdateGearSetQueue, 50, false, entityIds, lastIndex + 1);
 	}
 
 	
@@ -1218,6 +1183,14 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		SCR_GroupsManagerComponent groupMan = SCR_GroupsManagerComponent.GetInstance();
 		SCR_AIGroup playerGroup = groupMan.GetPlayerGroup(playerId);
 		if (!playerGroup)
+		{
+		    COA_PlayerRplToOwnerManager.GetInstance().ForwardDeployRequestRejected();
+		    return;
+		}
+
+		//Only the group leader may forward deploy, and only while SafeStart is active - re-validated
+		//here since the client-side menu option is just a UI convenience, not an authority check.
+		if (!playerGroup.IsPlayerLeader(playerId) || !m_SafestartManager || !m_SafestartManager.GetSafestartStatus())
 		{
 		    COA_PlayerRplToOwnerManager.GetInstance().ForwardDeployRequestRejected();
 		    return;

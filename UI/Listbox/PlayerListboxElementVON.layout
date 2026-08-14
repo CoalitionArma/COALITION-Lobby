@@ -31,7 +31,7 @@ ButtonWidgetClass {
         HorizontalAlign 3
        }
        "Is Visible" 0
-       Color 0.044 0.044 0.044 1
+       Color 0.042 0.042 0.042 1
        Texture "{12B6C6BD1A72A47F}UI/Textures/Common/gradientTexture_Dither_up_512.edds"
        Size 40 512
        Mask "{099C73E0F66A5F28}UI/Textures/Common/gradientTexture_Dither_down_512.edds"

@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{9441BEBB9DF7FC1B}Prefabs/Characters/!GS_Characters/Crews/COA_CrewChief.et"
+ Name "{9441BEBB9DF7FC1B}Prefabs/!Systems/!Characters/GS_Characters/Crews/COA_CrewChief.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

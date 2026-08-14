@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{48272EEA386F9B6E}PrefabsMissionMaking/Markers/ObjectiveMarkers/OG/CIVILIAN_ObjectiveMarker.et"
+ Name "{48272EEA386F9B6E}PrefabsMissionMaking/Markers/ObjectiveMarkers/CIVILIAN_ObjectiveMarker.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

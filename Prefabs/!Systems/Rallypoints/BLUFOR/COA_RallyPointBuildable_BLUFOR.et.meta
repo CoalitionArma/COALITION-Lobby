@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{1DE2CFFF2775C07C}Prefabs/Systems/Rallypoints/BLUFOR/COA_RallyPointBuildable_BLUFOR.et"
+ Name "{1DE2CFFF2775C07C}Prefabs/!Systems/Rallypoints/BLUFOR/COA_RallyPointBuildable_BLUFOR.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

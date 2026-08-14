@@ -111,7 +111,7 @@ SCR_AIGroup : "{8DE0C0830FE0C33D}Prefabs/Groups/OPFOR/Group_USSR_Base.et" {
  coords 0 0 0
  m_faction "OPFOR"
  m_aUnitPrefabSlots {
-  "{CC8EDD051CB0C1CE}Prefabs/Characters/!GS_Characters/Squad Level/COA_SL.et" "{0B9A19205D71AD61}Prefabs/Characters/!GS_Characters/Specialties/COA_MAT.et" "{244B3033D92FF7D0}Prefabs/Characters/!GS_Characters/Specialties/COA_AMAT.et" "{0B9A19205D71AD61}Prefabs/Characters/!GS_Characters/Specialties/COA_MAT.et" "{244B3033D92FF7D0}Prefabs/Characters/!GS_Characters/Specialties/COA_AMAT.et"
+  "{CC8EDD051CB0C1CE}Prefabs/!Systems/!Characters/GS_Characters/Squad Level/COA_SL.et" "{0B9A19205D71AD61}Prefabs/!Systems/!Characters/GS_Characters/Specialties/COA_MAT.et" "{244B3033D92FF7D0}Prefabs/!Systems/!Characters/GS_Characters/Specialties/COA_AMAT.et" "{0B9A19205D71AD61}Prefabs/!Systems/!Characters/GS_Characters/Specialties/COA_MAT.et" "{244B3033D92FF7D0}Prefabs/!Systems/!Characters/GS_Characters/Specialties/COA_AMAT.et"
  }
  m_bDeleteWhenEmpty 1
  m_iMaxMembers 1

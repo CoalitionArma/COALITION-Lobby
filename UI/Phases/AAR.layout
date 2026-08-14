@@ -123,7 +123,7 @@ FrameWidgetClass {
       OffsetBottom 14.519
      }
      "Z Order" 1
-     Color 0.198 0.012 0.012 1
+     Color 0.195 0.012 0.012 1
      Size 512 512
      Mask "{E12BB5C5BD00269E}UI/Textures/Common/gradientTexture_Dither_right_512.edds"
      "Transition width" 1
@@ -620,7 +620,7 @@ FrameWidgetClass {
         SizeY 0
         OffsetBottom 0
        }
-       Color 0.016 0.552 0.905 0.129
+       Color 0 0.584 1 0.129
       }
       FrameWidgetClass "{631F7C6DE6B6C63C}" {
        Name "BluforButton"
@@ -649,7 +649,7 @@ FrameWidgetClass {
           SizeY 0
           OffsetBottom 0
          }
-         Color 0.038 0.038 0.038 1
+         Color 0.042 0.042 0.042 1
         }
         TextWidgetClass "{631F7C6DE6B6C63E}" {
          Name "SlotsBlufor"
@@ -784,7 +784,7 @@ FrameWidgetClass {
           SizeY 0
           OffsetBottom 0
          }
-         Color 0.038 0.038 0.038 1
+         Color 0.042 0.042 0.042 1
         }
         TextWidgetClass "{631F7C6DE6B6C636}" {
          Name "SlotsOpfor"
@@ -919,7 +919,7 @@ FrameWidgetClass {
           SizeY 0
           OffsetBottom 0
          }
-         Color 0.038 0.038 0.038 1
+         Color 0.042 0.042 0.042 1
         }
         TextWidgetClass "{631F7C6DE6B64D89}" {
          Name "SlotsIndfor"
@@ -1054,7 +1054,7 @@ FrameWidgetClass {
           SizeY 0
           OffsetBottom 0
          }
-         Color 0.038 0.038 0.038 1
+         Color 0.042 0.042 0.042 1
         }
         TextWidgetClass "{631F7C6DE6B620C8}" {
          Name "SlotsCiv"

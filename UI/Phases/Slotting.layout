@@ -63,7 +63,7 @@ FrameWidgetClass {
       OffsetBottom 0
      }
      "Z Order" 1
-     Color 0 0.584 1 1
+     Color 0.591 0.591 0.591 1
      style outline_4px
     }
     FrameWidgetClass "{6500000000000016}" {
@@ -341,7 +341,7 @@ FrameWidgetClass {
       SizeY 0
       OffsetBottom 0
      }
-     Color 0.029 0.034 0.048 1
+     Color 0.044 0.048 0.062 1
      Size 512 512
      "Transition width" 1
      Progress 0.24
@@ -713,7 +713,7 @@ FrameWidgetClass {
          Name "AdvanceImage"
          Slot ButtonWidgetSlot "{62F06D593F59906A}" {
          }
-         Color 1 1 1 0.8
+         Color 1 1 1 0.85
          Texture "{BBBA870598CED29B}UI/Textures/PlayMenu/ArrowLeft_UI.edds"
          Size 34.5 32
         }
@@ -768,7 +768,7 @@ FrameWidgetClass {
         SizeToContent 1
        }
        Opacity 0.98
-       Color 0.029 0.034 0.048 1
+       Color 0.044 0.048 0.062 1
        Image ""
        Size 40 40
       }
@@ -1195,7 +1195,7 @@ FrameWidgetClass {
            Slot ButtonWidgetSlot "{63122E8A233883FB}" {
             Padding 2 0 0 0
            }
-           Color 1 1 1 0.8
+           Color 1 1 1 0.85
            Texture "{BBBA870598CED29B}UI/Textures/PlayMenu/ArrowLeft_UI.edds"
            Size 15 15
           }
@@ -1407,7 +1407,7 @@ FrameWidgetClass {
       SizeY 0
       OffsetBottom 0
      }
-     Color 0 0.584 1 0.131
+     Color 0.044 0.048 0.062 0.131
      Size 512 512
      "Transition width" 1
      Progress 0.41
@@ -1475,7 +1475,7 @@ FrameWidgetClass {
             SizeY -0.671
             OffsetBottom 0
            }
-           Color 0.016 0.552 0.905 0.129
+           Color 0 0.584 1 0.129
           }
           TextWidgetClass "{62F20560E86DDE0E}" {
            Name "SlotsBlufor"

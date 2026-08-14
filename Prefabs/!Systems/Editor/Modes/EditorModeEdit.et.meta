@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{59EF8ECAE1DCD417}Prefabs/Systems/Editor/Modes/EditorModeEdit.et"
+ Name "{59EF8ECAE1DCD417}Prefabs/!Systems/Editor/Modes/EditorModeEdit.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }
@@ -12,8 +12,6 @@ MetaFileClass {
   EntityTemplateResourceClass PS5 : PC {
   }
   EntityTemplateResourceClass HEADLESS : PC {
-  }
-  EntityTemplateResourceClass Xbox : PC {
   }
  }
 }

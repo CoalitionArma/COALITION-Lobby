@@ -14,11 +14,20 @@ class COA_MenuManager : ScriptComponent
 	int m_iChannelChanges = 0;
 	
 	ref array<int> m_aPlayersTalking = {};
-	
+
 	// Constants for better readability
 	private const string CHANNEL_SEPARATOR = "|";
 	private const string PLAYER_SEPARATOR = ",";
 	private const int DEFAULT_CHANNEL_COUNT = 2; // Deafen and Global
+
+	// Fired client-side (via COA_RplBroadcastManager.RpcDo_UpdatePlayerChannelDelta) whenever a
+	// single player moves between channels, so the spectator menu can patch just the affected rows
+	// instead of reparsing/rebuilding the whole VON channel list.
+	protected ref ScriptInvoker m_OnPlayerChannelChanged = new ScriptInvoker();
+	ScriptInvoker GetOnPlayerChannelChanged()
+	{
+		return m_OnPlayerChannelChanged;
+	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 CHANNEL MANAGEMENT
@@ -130,8 +139,26 @@ class COA_MenuManager : ScriptComponent
 		m_iChannelChanges++;
 		Replication.BumpMe();
 
+		// CleanupEmptyChannels() can remove the player's old (now-empty) channel outright, which
+		// shifts every later channel's index down by one. Run it first and compare the count so we
+		// know whether that happened before deciding whether a surgical notification is safe to send:
+		// if indices shifted, the client's per-channel row tracking would be patching the wrong
+		// channel, so we fall back to the existing m_iChannelChanges poll (full rebuild) instead.
+		int channelCountBeforeCleanup = m_aVONChannels.Count();
 		if (!channelCreation)
 			CleanupEmptyChannels();
+
+		if (m_aVONChannels.Count() == channelCountBeforeCleanup)
+		{
+			// No channel was removed, so channelIndex/previousChannelIndex are still accurate -
+			// notify clients which specific player moved so the spectator menu can patch just the
+			// affected rows. This is a pure notification - the actual channel-membership data is
+			// already covered by the [RplProp] replication of m_aVONChannels above.
+			int notifiedOldIndex = -1;
+			if (wasInChannel)
+				notifiedOldIndex = previousChannelIndex;
+			COA_RplBroadcastManager.GetInstance().UpdatePlayerChannelDelta(playerId, channelIndex, notifiedOldIndex);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

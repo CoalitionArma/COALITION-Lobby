@@ -1,0 +1,253 @@
+ScaleWidgetClass {
+ Name "CameraModeButtons"
+ Slot FrameWidgetSlot "{CFC5CA0000000001}" {
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 350
+  OffsetRight -350
+  SizeY 36
+  OffsetBottom -36
+ }
+ {
+  FrameWidgetClass "{CFC5CA0000000002}" {
+   Name "CameraModeFrame"
+   Slot AlignableSlot "{CFC5CA0000000003}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    ImageWidgetClass "{CFC5CA0000000004}" {
+     Name "Background"
+     Slot FrameWidgetSlot "{CFC5CA0000000005}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+     Color 0 0 0 0.85
+    }
+    HorizontalLayoutWidgetClass "{CFC5CA0000000006}" {
+     Name "CameraModeLayout"
+     Slot FrameWidgetSlot "{CFC5CA0000000007}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+     {
+      FrameWidgetClass "{CFC5CA0000000008}" {
+       Name "HelmetCamButton"
+       Slot LayoutSlot "{CFC5CA0000000009}" {
+        Padding 2 2 1 2
+        SizeMode Fill
+       }
+       {
+        ImageWidgetClass "{CFC5CA0000000010}" {
+         Name "HelmetCamBG"
+         Slot FrameWidgetSlot "{CFC5CA0000000011}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+         }
+         Color 0.144 0.144 0.144 0.6
+        }
+        TextWidgetClass "{CFC5CA0000000012}" {
+         Name "HelmetCamText"
+         Slot FrameWidgetSlot "{CFC5CA0000000013}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+         }
+         Text "Helmet"
+         "Font Size" 14
+         "Min Font Size" 10
+         "Horizontal Alignment" Center
+         "Vertical Alignment" Center
+        }
+        ButtonWidgetClass "{CFC5CA0000000014}" {
+         Name "HelmetCamSelectButton"
+         Slot FrameWidgetSlot "{CFC5CA0000000015}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+         }
+         components {
+          ButtonComponent "{CFC5CA0000000016}" {
+           m_ColorButtonDefault 1 1 1 0
+           m_ColorButtonFocused 1 1 1 0.1
+           m_ColorButtonPressed 1 1 1 0.2
+          }
+          SCR_ButtonTextComponent "{CFC5CA0000000017}" {
+          }
+         }
+        }
+       }
+      }
+      FrameWidgetClass "{CFC5CA0000000018}" {
+       Name "EyeCamButton"
+       Slot LayoutSlot "{CFC5CA0000000019}" {
+        Padding 1 2 1 2
+        SizeMode Fill
+       }
+       {
+        ImageWidgetClass "{CFC5CA0000000020}" {
+         Name "EyeCamBG"
+         Slot FrameWidgetSlot "{CFC5CA0000000021}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+         }
+         Color 0.144 0.144 0.144 0.6
+        }
+        TextWidgetClass "{CFC5CA0000000022}" {
+         Name "EyeCamText"
+         Slot FrameWidgetSlot "{CFC5CA0000000023}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+         }
+         Text "Eye"
+         "Font Size" 14
+         "Min Font Size" 10
+         "Horizontal Alignment" Center
+         "Vertical Alignment" Center
+        }
+        ButtonWidgetClass "{CFC5CA0000000024}" {
+         Name "EyeCamSelectButton"
+         Slot FrameWidgetSlot "{CFC5CA0000000025}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+         }
+         components {
+          ButtonComponent "{CFC5CA0000000026}" {
+           m_ColorButtonDefault 1 1 1 0
+           m_ColorButtonFocused 1 1 1 0.1
+           m_ColorButtonPressed 1 1 1 0.2
+          }
+          SCR_ButtonTextComponent "{CFC5CA0000000027}" {
+          }
+         }
+        }
+       }
+      }
+      FrameWidgetClass "{CFC5CA0000000028}" {
+       Name "OrbitCamButton"
+       Slot LayoutSlot "{CFC5CA0000000029}" {
+        Padding 1 2 2 2
+        SizeMode Fill
+       }
+       {
+        ImageWidgetClass "{CFC5CA0000000030}" {
+         Name "OrbitCamBG"
+         Slot FrameWidgetSlot "{CFC5CA0000000031}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+         }
+         Color 0.144 0.144 0.144 0.6
+        }
+        TextWidgetClass "{CFC5CA0000000032}" {
+         Name "OrbitCamText"
+         Slot FrameWidgetSlot "{CFC5CA0000000033}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+         }
+         Text "Orbit"
+         "Font Size" 14
+         "Min Font Size" 10
+         "Horizontal Alignment" Center
+         "Vertical Alignment" Center
+        }
+        ButtonWidgetClass "{CFC5CA0000000034}" {
+         Name "OrbitCamSelectButton"
+         Slot FrameWidgetSlot "{CFC5CA0000000035}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+         }
+         components {
+          ButtonComponent "{CFC5CA0000000036}" {
+           m_ColorButtonDefault 1 1 1 0
+           m_ColorButtonFocused 1 1 1 0.1
+           m_ColorButtonPressed 1 1 1 0.2
+          }
+          SCR_ButtonTextComponent "{CFC5CA0000000037}" {
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}
