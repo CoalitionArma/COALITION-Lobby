@@ -1188,6 +1188,14 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		    return;
 		}
 
+		//Only the group leader may forward deploy, and only while SafeStart is active - re-validated
+		//here since the client-side menu option is just a UI convenience, not an authority check.
+		if (!playerGroup.IsPlayerLeader(playerId) || !m_SafestartManager || !m_SafestartManager.GetSafestartStatus())
+		{
+		    COA_PlayerRplToOwnerManager.GetInstance().ForwardDeployRequestRejected();
+		    return;
+		}
+
 		//SCR_AIGroup.GetAgents() only yields AI-controlled members, human players have to be found via the player manager.
 		array<int> groupPlayerIds = {};
 		GetGame().GetPlayerManager().GetPlayers(groupPlayerIds);
