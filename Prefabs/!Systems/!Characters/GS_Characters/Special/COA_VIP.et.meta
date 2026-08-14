@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{421E220F53811D41}Prefabs/Characters/!GS_Characters/Special/COA_VIP.et"
+ Name "{421E220F53811D41}Prefabs/!Systems/!Characters/GS_Characters/Special/COA_VIP.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

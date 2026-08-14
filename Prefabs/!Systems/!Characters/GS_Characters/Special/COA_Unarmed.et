@@ -1,4 +1,4 @@
-COA_GearscriptCharacter : "{D7EB93B0550FD158}Prefabs/Characters/!Core/COA_Player.et" {
+COA_GearscriptCharacter : "{D7EB93B0550FD158}Prefabs/!Systems/!Characters/Core/COA_Player.et" {
  ID "520EC961A090B1EE"
  components {
   SCR_EditableCharacterComponent "{520EA1D2F659C85C}" {

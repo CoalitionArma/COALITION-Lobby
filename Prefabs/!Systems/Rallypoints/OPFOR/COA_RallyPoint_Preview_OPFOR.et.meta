@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{214D8C0A45720C3A}Prefabs/Systems/Rallypoints/OPFOR/COA_RallyPoint_Preview_OPFOR.et"
+ Name "{214D8C0A45720C3A}Prefabs/!Systems/Rallypoints/OPFOR/COA_RallyPoint_Preview_OPFOR.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{4ACCBC7F35D46EF7}Prefabs/Characters/!GS_Characters/Crews/COA_IndirectLoader.et"
+ Name "{4ACCBC7F35D46EF7}Prefabs/!Systems/!Characters/GS_Characters/Crews/COA_IndirectLoader.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

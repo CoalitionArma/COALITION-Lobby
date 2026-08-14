@@ -111,7 +111,7 @@ SCR_AIGroup : "{242BC3C6BCE96EA5}Prefabs/Groups/INDFOR/Group_FIA_Base.et" {
  coords 0 0 0
  m_faction "INDFOR"
  m_aUnitPrefabSlots {
-  "{CC8EDD051CB0C1CE}Prefabs/Characters/!GS_Characters/Squad Level/COA_SL.et" "{9E133FF6147DCF5A}Prefabs/Characters/!GS_Characters/Specialties/COA_HAT.et" "{B1C216E5902395EB}Prefabs/Characters/!GS_Characters/Specialties/COA_AHAT.et" "{9E133FF6147DCF5A}Prefabs/Characters/!GS_Characters/Specialties/COA_HAT.et" "{B1C216E5902395EB}Prefabs/Characters/!GS_Characters/Specialties/COA_AHAT.et"
+  "{CC8EDD051CB0C1CE}Prefabs/!Systems/!Characters/GS_Characters/Squad Level/COA_SL.et" "{9E133FF6147DCF5A}Prefabs/!Systems/!Characters/GS_Characters/Specialties/COA_HAT.et" "{B1C216E5902395EB}Prefabs/!Systems/!Characters/GS_Characters/Specialties/COA_AHAT.et" "{9E133FF6147DCF5A}Prefabs/!Systems/!Characters/GS_Characters/Specialties/COA_HAT.et" "{B1C216E5902395EB}Prefabs/!Systems/!Characters/GS_Characters/Specialties/COA_AHAT.et"
  }
  m_bDeleteWhenEmpty 1
  m_iMaxMembers 1

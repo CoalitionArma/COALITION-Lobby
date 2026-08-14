@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{13A97D10A827AE01}Prefabs/Items/Equipment/Radios/SpecRadioBag.et"
+ Name "{13A97D10A827AE01}Prefabs/!Systems/!Spectator/Radios/SpecRadioBag.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

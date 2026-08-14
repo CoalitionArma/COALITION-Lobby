@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{42C91BDBD19B390A}Prefabs/Characters/!GS_Characters/Special/COA_Unarmed.et"
+ Name "{42C91BDBD19B390A}Prefabs/!Systems/!Characters/GS_Characters/Special/COA_Unarmed.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

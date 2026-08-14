@@ -20,7 +20,7 @@ GenericEntity {
  }
  coords 2065.986 47.753 2068.755
  {
-  GenericEntity : "{577981721736900B}Prefabs/Systems/Rallypoints/OPFOR/COA_RallyPoint_OPFOR.et" {
+  GenericEntity : "{577981721736900B}Prefabs/!Systems/Rallypoints/OPFOR/COA_RallyPoint_OPFOR.et" {
    ID "690727B646B31ED2"
    coords 0 0 0
   }

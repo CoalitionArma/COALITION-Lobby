@@ -39,6 +39,7 @@ class COA_GearscriptManager : ScriptComponent
 		// 10APR26 - Pat, this has started causing crashing as of today. No idea why. Commenting out for now.
 		// 3AUG26 - Believe this was simply a bad gearscript on your end. Did some efficency and NPE passes rq just in case.
 		#ifdef WORKBENCH
+		if (m_Gamemode.m_EnableDebug)
 			GetGame().GetCallqueue().CallLater(DEBUG_GearscriptSelfCheck, 1250, false);
 		#endif
 	}

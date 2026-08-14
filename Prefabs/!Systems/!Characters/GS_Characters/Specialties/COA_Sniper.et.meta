@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{DCA2E07271574B14}Prefabs/Characters/!GS_Characters/Specialties/COA_Sniper.et"
+ Name "{DCA2E07271574B14}Prefabs/!Systems/!Characters/GS_Characters/Specialties/COA_Sniper.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

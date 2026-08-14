@@ -28,7 +28,7 @@ COA_RallyPoint {
   SCR_EditorLinkComponent "{69071E1FF5EDAB83}" {
    m_aEntries {
     SCR_EditorLinkEntry "{69071E1FF5EDAB81}" {
-     m_Prefab "{214D8C0A45720C3A}Prefabs/Systems/Rallypoints/OPFOR/COA_RallyPoint_Preview_OPFOR.et"
+     m_Prefab "{214D8C0A45720C3A}Prefabs/!Systems/Rallypoints/OPFOR/COA_RallyPoint_Preview_OPFOR.et"
     }
    }
   }

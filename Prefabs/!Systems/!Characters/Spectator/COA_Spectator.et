@@ -1,4 +1,4 @@
-COA_SpectatorCharacter : "{D7EB93B0550FD158}Prefabs/Characters/!Core/COA_Player.et" {
+COA_SpectatorCharacter : "{D7EB93B0550FD158}Prefabs/!Systems/!Characters/Core/COA_Player.et" {
  ID "520EC961A090B1EE"
  components {
   CharacterSoundComponent "{520EA1D2F659CF84}" {
@@ -143,8 +143,8 @@ COA_SpectatorCharacter : "{D7EB93B0550FD158}Prefabs/Characters/!Core/COA_Player.
   SCR_CharacterIdentityComponent "{5584CBC63E092DBC}" {
    Identity Identity "{5584CBC6363C648B}" {
     VisualIdentity VisualIdentity "{56E6D9456009D1C4}" {
-     Head "{2FC2A1CE68435471}Prefabs/Characters/!Spectator/Body/Head_Invisible.et"
-     Body "{E25DCEC549E17067}Prefabs/Characters/!Spectator/Body/CharacterBasebody_Invisible.et"
+     Head "{2FC2A1CE68435471}Prefabs/!Systems/!Characters/Spectator/Body/Head_Invisible.et"
+     Body "{E25DCEC549E17067}Prefabs/!Systems/!Characters/Spectator/Body/CharacterBasebody_Invisible.et"
     }
     SoundIdentity SoundIdentity "{56E6D945D8F79290}" {
      VoiceID 0
@@ -157,7 +157,7 @@ COA_SpectatorCharacter : "{D7EB93B0550FD158}Prefabs/Characters/!Core/COA_Player.
   BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
    Slots {
     LoadoutSlotInfo Back {
-     Prefab "{13A97D10A827AE01}Prefabs/Items/Equipment/Radios/SpecRadioBag.et"
+     Prefab "{13A97D10A827AE01}Prefabs/!Systems/!Spectator/Radios/SpecRadioBag.et"
     }
    }
   }
