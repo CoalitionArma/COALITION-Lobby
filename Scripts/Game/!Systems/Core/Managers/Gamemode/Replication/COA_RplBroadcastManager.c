@@ -353,7 +353,7 @@ class COA_RplBroadcastManager : ScriptComponent
 	//! Several handlers below (ReplyAdminMessage, CloseAdminTicket, NotifiyTicketAssigned,
 	//! TeleportPlayers) call this as a same-class helper. Also duplicated on the lobby-side
 	//! broadcast manager for its own slotting/gear-swap admin logging.
-	void LogAdminAction(string data, int playerId, bool sendToPlayer)
+	void LogAdminAction(string data, int playerId, bool sendToPlayer, COA_EAdminLogLevel level)
 	{
 		// Telemetry: string + int + bool
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_String(data);
@@ -362,9 +362,9 @@ class COA_RplBroadcastManager : ScriptComponent
 		LogTelemetry("LogAdminAction", bytes);
 
 		#ifdef WORKBENCH
-		RpcDo_LogAdminAction(data, playerId, sendToPlayer);
+		RpcDo_LogAdminAction(data, playerId, sendToPlayer, level);
 		#else
-		Rpc(RpcDo_LogAdminAction, data, playerId, sendToPlayer);
+		Rpc(RpcDo_LogAdminAction, data, playerId, sendToPlayer, level);
 		#endif
 	}
 
@@ -1132,22 +1132,26 @@ class COA_RplBroadcastManager : ScriptComponent
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	void RpcDo_LogAdminAction(string data, int playerId, bool sendToPlayer)
+	void RpcDo_LogAdminAction(string data, int playerId, bool sendToPlayer, COA_EAdminLogLevel level)
 	{
+
+		SCR_ChatComponent chatComponent = GetLocalChatComponent();
+			if (!chatComponent)
+				return;
+
 		// Add the log to the admin menu logs
 		if (SCR_Global.IsAdmin() || m_PermissionManager.IsModerator())
 		{
-			m_AdminMenuManager.StoreAdminLogs(data);
+			m_AdminMenuManager.StoreAdminLogs(data, level);
+
+			if (level == COA_EAdminLogLevel.High)
+				chatComponent.ShowMessage(data);
 		}
 
 		// Only send the log to target player if required
 		if (sendToPlayer)
 		{
 			if (!IsLocalPlayer(playerId))
-				return;
-
-			SCR_ChatComponent chatComponent = GetLocalChatComponent();
-			if (!chatComponent)
 				return;
 
 			// Show the target player the log messages
@@ -1163,7 +1167,8 @@ class COA_RplBroadcastManager : ScriptComponent
 			LogAdminAction(string.Format("Reply to %1: %2", 
 				GetGame().GetPlayerManager().GetPlayerName(playerId), data), 
 				playerId, 
-				false);
+				false,
+				COA_EAdminLogLevel.Low);
 			
 		if (!IsLocalPlayer(playerId))
 			return;
@@ -1184,7 +1189,7 @@ class COA_RplBroadcastManager : ScriptComponent
 		string playerName = GetGame().GetPlayerManager().GetPlayerName(ticketID);
 		
 		if (logAction)
-			LogAdminAction(string.Format("%1 closed %2's ticket", adminName, playerName), -1, false);
+			LogAdminAction(string.Format("%1 closed %2's ticket", adminName, playerName), -1, false, COA_EAdminLogLevel.Low);
 		
 		if (!SCR_Global.IsAdmin() && !m_PermissionManager.IsModerator())
 			return;
@@ -1206,7 +1211,7 @@ class COA_RplBroadcastManager : ScriptComponent
 		string playerName = GetGame().GetPlayerManager().GetPlayerName(ticketID);
 		
 		if (logAction)
-			LogAdminAction(string.Format("%1 assigned to %2's ticket", adminName, playerName), -1, false);
+			LogAdminAction(string.Format("%1 assigned to %2's ticket", adminName, playerName), -1, false, COA_EAdminLogLevel.Low);
 		
 		if (!SCR_Global.IsAdmin() && !m_PermissionManager.IsModerator())
 			return;
@@ -1765,7 +1770,7 @@ class COA_RplBroadcastManager : ScriptComponent
 		{
 			string player1Name = GetGame().GetPlayerManager().GetPlayerName(playerId1);
 			string player2Name = GetGame().GetPlayerManager().GetPlayerName(playerId2);
-			LogAdminAction(string.Format("%1 was teleported to %2", player1Name, player2Name), playerId1, true);
+			LogAdminAction(string.Format("%1 was teleported to %2", player1Name, player2Name), playerId1, true, COA_EAdminLogLevel.Low);
 		}
 		
 		if (!IsLocalPlayer(playerId1))

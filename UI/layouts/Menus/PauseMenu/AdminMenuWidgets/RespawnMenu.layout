@@ -36,11 +36,11 @@ FrameWidgetClass {
     Anchor 0.5 0.5 0.5 0.5
     PositionX -792
     OffsetLeft -792
-    PositionY -380
-    OffsetTop -380
+    PositionY -356
+    OffsetTop -356
     SizeX 293.405
     OffsetRight 498.595
-    SizeY 849.01
+    SizeY 825.01
     OffsetBottom -469.01
    }
    {
@@ -52,14 +52,6 @@ FrameWidgetClass {
       Padding 0 20 0 0
      }
      {
-      ScrollLayoutWidgetClass "{56691148E692435A}" {
-       Prefab "{56691148E692435A}"
-       {
-        VerticalLayoutWidgetClass "{56691148E013D981}" {
-         Prefab "{56691148E013D981}"
-        }
-       }
-      }
       ImageWidgetClass "{5DB6D18100D38307}" {
        Prefab "{5DB6D18100D38307}"
        "Is Visible" 0
@@ -90,11 +82,11 @@ FrameWidgetClass {
     Anchor 0.5 0.5 0.5 0.5
     PositionX -448
     OffsetLeft -448
-    PositionY -380
-    OffsetTop -380
+    PositionY -356
+    OffsetTop -356
     SizeX 293.405
     OffsetRight 154.595
-    SizeY 849.01
+    SizeY 825.01
     OffsetBottom -469.01
    }
    {
@@ -106,14 +98,6 @@ FrameWidgetClass {
       Padding 0 20 0 0
      }
      {
-      ScrollLayoutWidgetClass "{56691148E692435A}" {
-       Prefab "{56691148E692435A}"
-       {
-        VerticalLayoutWidgetClass "{56691148E013D981}" {
-         Prefab "{56691148E013D981}"
-        }
-       }
-      }
       ImageWidgetClass "{5DB6D18100D38307}" {
        Prefab "{5DB6D18100D38307}"
        "Is Visible" 0
@@ -144,11 +128,11 @@ FrameWidgetClass {
     Anchor 0.5 0.5 0.5 0.5
     PositionX -136
     OffsetLeft -136
-    PositionY -380
-    OffsetTop -380
+    PositionY -356
+    OffsetTop -356
     SizeX 293.405
     OffsetRight -157.405
-    SizeY 849.01
+    SizeY 825.01
     OffsetBottom -469.01
    }
    {
@@ -160,14 +144,6 @@ FrameWidgetClass {
       Padding 0 20 0 0
      }
      {
-      ScrollLayoutWidgetClass "{56691148E692435A}" {
-       Prefab "{56691148E692435A}"
-       {
-        VerticalLayoutWidgetClass "{56691148E013D981}" {
-         Prefab "{56691148E013D981}"
-        }
-       }
-      }
       ImageWidgetClass "{5DB6D18100D38307}" {
        Prefab "{5DB6D18100D38307}"
        "Is Visible" 0
@@ -393,6 +369,54 @@ FrameWidgetClass {
      "Min Font Size" 15
     }
    }
+  }
+  ButtonWidgetClass "{6A174D03E0E84FD0}" {
+   Name "OpenTicketFilterButton"
+   Slot FrameWidgetSlot "{62992E477A603216}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -792
+    OffsetLeft -792
+    PositionY -388
+    OffsetTop -388
+    SizeX 24
+    OffsetRight 768
+    SizeY 24
+    OffsetBottom 364
+   }
+   Color 0.013 0.0152 0.0176 1
+   components {
+    SCR_ButtonTextComponent "{62993E178E05DA3C}" {
+     m_bCanBeToggled 1
+     m_bIsToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   Switch toggle
+   {
+    ImageWidgetClass "{6A174D03E0E84FCE}" {
+     Name "OpenTicketFilterButtonImage"
+     Slot ButtonWidgetSlot "{62992E44F11398F5}" {
+     }
+     Texture "{7DEEE956159B85D2}UI/Images/LobbyImages/check.edds"
+     Size 25 25
+    }
+   }
+  }
+  TextWidgetClass "{6A174D03E0E84C16}" {
+   Name "OpenTicketFilterText"
+   Slot FrameWidgetSlot "{6A1525E0342C15E4}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -760
+    OffsetLeft -760
+    PositionY -388
+    OffsetTop -388
+    SizeX 104
+    OffsetRight 656
+    SizeY 24
+    OffsetBottom 364
+   }
+   Text "Open Tickets"
+   "Min Font Size" 20
   }
  }
 }

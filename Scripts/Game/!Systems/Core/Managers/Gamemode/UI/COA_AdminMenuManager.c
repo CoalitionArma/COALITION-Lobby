@@ -70,6 +70,7 @@ class COA_AdminActionLog
 {
 	string timestamp;
 	string action; // Description of the action
+	COA_EAdminLogLevel level;
 }
 
 class COA_Ticket
@@ -116,12 +117,13 @@ class COA_AdminMenuManager : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	//! Stores admin logs for UI
 	//! \param[in] data Description of the action
-	void StoreAdminLogs(string data)
+	void StoreAdminLogs(string data, COA_EAdminLogLevel level)
 	{
 		// Create new log
 		COA_AdminActionLog log = new COA_AdminActionLog();
 		log.action = data;
 		log.timestamp = GetFormattedTimestamp();
+		log.level = level;
 		m_mAdminActions.Insert(log);
 		
 		// Refresh Lists if admin menu is open
@@ -259,7 +261,7 @@ class COA_AdminMenuManager : ScriptComponent
 			adminMenu.GetTicketMessages();
 			adminMenu.GetOpenTickets();
 		}
-		
+
 		adminMenu.PopulateAdminActionsList();
 	}
 

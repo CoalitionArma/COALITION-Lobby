@@ -1,7 +1,5 @@
- /**
- * Administrative menu for server management
- * Provides tools for player management including respawn, gear reset, teleport, etc.
- */
+//------------------------------------------------------------------------------------------------
+//! Administrative menu for server management
 class COA_AdminMenu : ChimeraMenuBase
 {
 	//-----------------------------------------------------------------------------
@@ -83,10 +81,8 @@ class COA_AdminMenu : ChimeraMenuBase
 	// General UI Methods
 	//-----------------------------------------------------------------------------
 
-	/**
-	 * Initialize the menu when it opens
-	 * Sets up all UI elements and displays initial respawn menu
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Initialize the menu when it opens & sets up all UI elements and displays initial respawn menu
 	override void OnMenuOpen()
 	{
 		super.OnMenuOpen();
@@ -106,25 +102,38 @@ class COA_AdminMenu : ChimeraMenuBase
 
 		// Initialize chat panel
 		InitializeChat();
-		
+
 		// Populate Admin Logs
 		PopulateAdminActionsList();
 		
 		// Delay opening of initial menu
 		GetGame().GetCallqueue().Call(DelayedMenuInitialization);
 	}
-	
-	// Set up the initial menu (Tickets)
+
+	//------------------------------------------------------------------------------------------------
+	//! Set up the initial menu (Tickets)
 	protected void DelayedMenuInitialization()
 	{
+		// Setup log filters
+		SCR_ButtonTextComponent filterLogHigh = GetMenuButton("HighFilterButton", m_wRoot);
+		SCR_ButtonTextComponent filterLogMedium = GetMenuButton("MediumFilterButton", m_wRoot);
+		SCR_ButtonTextComponent filterLogLow = GetMenuButton("LowFilterButton", m_wRoot);
+		if (!filterLogLow || !filterLogMedium || !filterLogLow)
+			return;
+		
+		filterLogHigh.m_OnToggled.Insert(ToggleLogLevelFilter);
+		filterLogMedium.m_OnToggled.Insert(ToggleLogLevelFilter);
+		filterLogLow.m_OnToggled.Insert(ToggleLogLevelFilter);
+
 		InitializeTicketMenu();
 		UpdateMenuButtonColors(m_ticketMenuButton);
 	}
 	
-	/**
-	 * Get a list box from the current loaded menu
-	 * @param name of the root widget of the list box
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Get a list box from the current loadded menu
+	//! \param[in] listbox name of the list box located in the provded widget
+	//! \param[in] widget name of widget to search (Default current open menu)
+	//! \return list box component
 	protected SCR_ListBoxComponent GetListBox(string listbox, Widget widget = null)
 	{
 		if (!widget)
@@ -134,10 +143,11 @@ class COA_AdminMenu : ChimeraMenuBase
 		return SCR_ListBoxComponent.Cast(listRoot.FindHandler(SCR_ListBoxComponent));
 	}
 	
-	/**
-	 * Get a button from the current loaded menu
-	 * @param name of the root widget of the button
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Get a button from the current loadded menu
+	//! \param[in] button name of the button located in the provded widget
+	//! \param[in] widget name of widget to search (Default current open menu)
+	//! \return list box component
 	protected SCR_ButtonTextComponent GetMenuButton(string button, Widget widget = null)
 	{
 		if (!widget)
@@ -145,11 +155,10 @@ class COA_AdminMenu : ChimeraMenuBase
 		
 		return SCR_ButtonTextComponent.GetButtonText(button, widget);
 	}
-	
-	/**
-	 * Get a multiline edit box from the current loaded menu
-	 * @param name of the root widget of the edit box
-	 */
+
+	//------------------------------------------------------------------------------------------------
+	//! Get a multiline edit box from the current loaded menu
+	//! \param[in]  name of the root widget of the edit box
 	protected MultilineEditBoxWidget GetMultilineEditBox(string multiEditBox, Widget widget = null)
 	{
 		if (!widget)
@@ -157,11 +166,21 @@ class COA_AdminMenu : ChimeraMenuBase
 		
 		return MultilineEditBoxWidget.Cast(widget.FindAnyWidget(multiEditBox));
 	}
-	
-	/**
-	 * Get a edit box from the current loaded menu
-	 * @param name of the root widget of the edit box
-	 */
+
+	//------------------------------------------------------------------------------------------------
+	//! Get a image widget from the current loaded menu
+	//! \param[in]  name of the image widget
+	protected ImageWidget GetImageWidget(string imagewidget, Widget widget = null)
+	{
+		if (!widget)
+			widget = m_wMenuContent;
+		
+		return ImageWidget.Cast(widget.FindAnyWidget(imagewidget));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Get a edit box from the current loaded menu
+	//! \param[in]  name of the root widget of the edit box
 	protected EditBoxWidget GetEditBox(string EditBox, Widget widget = null)
 	{
 		if (!widget)
@@ -170,9 +189,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		return EditBoxWidget.Cast(widget.FindAnyWidget(EditBox));
 	}
 	
-	/**
-	 * Initialize menu navigation buttons
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Initialize menu navigation buttons
 	protected void InitializeMenuButtons()
 	{
 		// Respawn menu button
@@ -204,9 +222,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		m_GamemodeMenuButton.m_OnClicked.Insert(GamemodeButton);
 	}
 	
-	/**
-	 * Initialize the chat panel
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Initialize the chat panel
 	protected void InitializeChat()
 	{
 		Widget wChatPanel = GetRootWidget().FindAnyWidget("ChatPanel");
@@ -220,9 +237,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		m_ChatPanel.ForceShowFullHistory(); // Load full history
 	}
 
-	/**
-	 * Clean up when menu is closed
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Clean up when menu is closed
 	override void OnMenuClose()
 	{
 		super.OnMenuClose();
@@ -239,9 +255,8 @@ class COA_AdminMenu : ChimeraMenuBase
 			m_ChatPanel.SetAlwaysVisible(false);
 	}
 
-	/**
-	 * Activates the Respawn menu
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Activates the Respawn menu
 	void TicketButton()
 	{
 		UpdateMenuButtonColors(m_ticketMenuButton);
@@ -249,9 +264,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		InitializeTicketMenu();
 	}
 	
-	/**
-	 * Activates the Respawn menu
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Activates the Respawn menu
 	void RespawnButton()
 	{
 		UpdateMenuButtonColors(m_respawnMenuButton);
@@ -259,9 +273,9 @@ class COA_AdminMenu : ChimeraMenuBase
 		InitializeRespawnMenu();
 	}
 
-	/**
-	 * Activates the Reset Gear menu
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Activates the Reset Gear menu
+
 	void ResetGearButton()
 	{
 		UpdateMenuButtonColors(m_resetGearMenuButton);
@@ -269,9 +283,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		InitializeGearMenu();
 	}
 
-	/**
-	 * Activates the Teleport menu
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Activates the Teleport menu
 	void TeleportButton()
 	{
 		UpdateMenuButtonColors(m_teleportMenuButton);
@@ -279,9 +292,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		InitializeTeleportMenu();
 	}
 
-	/**
-	 * Activates the Hint menu
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Activates the Hint menu
 	void HintButton()
 	{
 		UpdateMenuButtonColors(m_hintMenuButton);
@@ -289,9 +301,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		InitializeHintMenu();
 	}
 
-	/**
-	 * Activates the Heal menu
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Activates the Heal menu
 	void HealButton()
 	{
 		UpdateMenuButtonColors(m_healMenuButton);
@@ -299,9 +310,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		InitializeHealMenu();
 	}	
 	
-	/**
-	 * Activates the Gamemode Settings menu
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Activates the Gamemode Settings menu
 	void GamemodeButton()
 	{
 		UpdateMenuButtonColors(m_GamemodeMenuButton);
@@ -309,10 +319,9 @@ class COA_AdminMenu : ChimeraMenuBase
 		InitializeGamemodeMenu();
 	}
 	
-	/**
-	 * Updates menu button colors to highlight the active menu
-	 * @param activeButton The button widget of the active menu button
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Updates menu button colors to highlight the active menu
+	//! \param[in]  activeButton The button widget of the active menu button
 	protected void UpdateMenuButtonColors(SCR_ButtonTextComponent activeButton)
 	{
 		// Default color for inactive buttons
@@ -336,10 +345,9 @@ class COA_AdminMenu : ChimeraMenuBase
 		TextWidget.Cast(m_wRoot.FindAnyWidget("MenuSubTitle")).SetText(title);
 	}
 
-	/**
-	 * Clears all menu elements and data
-	 * Resets visibility and clears event handlers
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Clears all menu elements and data
+	//! Resets visibility and clears event handlers
 	void ClearMenu()
 	{
 		// Remove menu widget
@@ -356,10 +364,9 @@ class COA_AdminMenu : ChimeraMenuBase
 		m_bGameModeMenuOpen = false;
 	}
 
-	/**
-	 * Populates a list box with available roles
-	 * @param list The list box to populate with roles
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Populates a list box with available roles
+	//! \param[in]  list The list box to populate with roles
 	void AddRoles(SCR_ListBoxComponent list)
 	{
 		array<string> roleNames = {};
@@ -371,11 +378,10 @@ class COA_AdminMenu : ChimeraMenuBase
 		}
 	}
 
-	/**
-	 * Gets player ID from player name
-	 * @param name The player name to search for
-	 * @return The matching player ID or 0 if not found
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Gets player ID from player name
+	//! \param[in]  name The player name to search for
+	//! @return The matching player ID or 0 if not found
 	protected int GetplayerIdFromName(string name)
 	{
 		array<int> playerIds = {};
@@ -390,21 +396,19 @@ class COA_AdminMenu : ChimeraMenuBase
 		return 0;
 	}
 
-	/**
-	 * Gets the resource prefab for a given group and role
-	 * @param groupID The group ID
-	 * @param index The role index
-	 * @return The resource name for the corresponding prefab
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Gets the resource prefab for a given group and role
+	//! \param[in]  groupID The group ID
+	//! \param[in]  index The role index
+	//! @return The resource name for the corresponding prefab
 	ResourceName GetPrefab(int index)
 	{
 		ResourceName prefab = COA_RoleHelper.RoleToResource(index);
 		return prefab;
 	}
 
-	/**
-	 * Handle loss of menu focus
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Handle loss of menu focus
 	override void OnMenuFocusLost()
 	{
 		super.OnMenuFocusLost();
@@ -417,10 +421,316 @@ class COA_AdminMenu : ChimeraMenuBase
 			m_InputManager.RemoveActionListener(UIConstants.MENU_ACTION_BACK_WB, EActionTrigger.DOWN, Close);
 		#endif
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Populates a list with active players
+	//! \param[in]  list The list to populate with player names
+	//! \param[in]  selectOpenTicket automatically select player that ticket is selected in the ticket menu
+	//! \param[in]  filterByOpenTickets filter the list by players by open tickets
+	//! \param[in]  filterByGroup filter the list by players by this group
+	//! \param[in]  filterByFaction filter the list by players by this faction
+	protected void PopulatePlayerList(SCR_ListBoxComponent list, bool selectOpenTicket = true, bool filterByOpenTickets = false, SCR_AIGroup filterByGroup = null, Faction filterByFaction = null)
+	{
+		// Clear the list
+		list.Clear();
+
+		// Get all players
+		m_playerManager.GetPlayers(m_allPlayers);
+		TStringArray playerNames = {};
+
+		// Get and sort player names
+		foreach (int playerId : m_allPlayers)
+			playerNames.Insert(m_playerManager.GetPlayerName(playerId));
+
+		playerNames.Sort(false);
+
+		// Add players to list if they're in a group and not spectating
+		foreach (string name : playerNames)
+		{
+			int playerId = GetplayerIdFromName(name);
+			Faction playerFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId);
+			SCR_AIGroup playerGroup = COA_SlottingManager.GetInstance().GetPlayerSlotGroup(playerId);
+
+			if (!playerGroup)
+				continue;
+
+			if (COA_EntityHelper.IsSpectator(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
+				continue;
+			
+			if (filterByOpenTickets && !COA_AdminMenuManager.GetInstance().TicketExists(playerId))
+				continue;
+
+			if (filterByGroup && filterByGroup != playerGroup)
+				continue;
+
+			if (filterByFaction && filterByFaction != playerFaction)
+				continue;
+
+			list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
+		}
+
+		if (selectOpenTicket)
+			SelectOpenTicketOnwer(list);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Populates the list of dead/spectating players
+	//! \param[in]  list The list to populate with player names 
+	//! \param[in]  selectOpenTicket automatically select player that ticket is selected in the ticket menu
+	protected void PopulateDeadPlayersList(SCR_ListBoxComponent list, bool selectOpenTicket = true)
+	{
+		TStringArray playerNames = {};
+
+		// Get and sort player names
+		foreach (int playerId : m_allPlayers)
+			playerNames.Insert(m_playerManager.GetPlayerName(playerId));
+
+		playerNames.Sort(false);
+
+		// Add dead or spectating players to list
+		foreach (string name : playerNames)
+		{
+			int playerId = GetplayerIdFromName(name);
+			Faction playerFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId);
+
+			if (COA_SlottingManager.GetInstance().IsPlayerConsideredDead(playerId) ||
+				COA_EntityHelper.IsSpectator(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
+			{
+				list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
+			}
+		}
+
+		if (selectOpenTicket)
+			SelectOpenTicketOnwer(list);
+	}
 	
-	/**
-	 * Update chat while menu is active
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Populates the list of available groups
+	//! \param[in]  list The list to populate with group names 
+	protected void PopulateGroupsList(SCR_ListBoxComponent list)
+	{
+		foreach (SCR_AIGroup group : m_outGroups)
+		{
+			// Get faction info
+			Faction groupFaction = group.GetFaction();
+			if (!groupFaction)
+				continue;
+				
+			string factionKey = groupFaction.GetFactionKey();
+			if (factionKey.IsEmpty() || factionKey == "SPEC")
+				continue;
+				
+			string factionTag = factionKey.Substring(0, 3);
+			
+			// Add group to list
+			list.AddItem(string.Format("%1 | %2", factionTag, group.GetCustomNameWithOriginal()));
+			m_groupIDList.Insert(group.GetGroupID());
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Populates the list of active factions
+	//! \param[in]  list The list to populate with faction names 
+	protected void PopulateFactionList(SCR_ListBoxComponent list)
+	{
+		// Get all factions
+		GetGame().GetFactionManager().GetFactionsList(m_factions);
+		
+		// Add factions with active players
+		foreach (Faction faction : m_factions)
+		{
+			if (SCR_FactionManager.SGetFactionPlayerCount(faction) > 0)
+			{
+				list.AddItem(faction.GetFactionName());
+				m_selectableFactions.Insert(faction.GetFactionKey());
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Populates the list with players from a selected group
+	//! \param[in]  groupList The list box to filter the player list by
+	//! \param[in]  playerList The list to populate with player names 
+	void SelectGroupByPlayer(SCR_ListBoxComponent groupList, SCR_ListBoxComponent playerList)
+	{
+		if (playerList.GetSelectedItem() < 0)
+			return;
+			
+		// Get selected player ID
+		string playerName = TextWidget.Cast(playerList.GetElementComponent(playerList.GetSelectedItem()).GetRootWidget().FindAnyWidget("Text")).GetText();
+		int playerId = GetplayerIdFromName(playerName);
+		if (playerId == 0)
+			return;
+		
+		SCR_AIGroup selectedGroup = COA_SlottingManager.GetInstance().GetPlayerSlotGroup(playerId);
+		
+		foreach (int i, SCR_AIGroup group : m_outGroups)
+		{
+			if (selectedGroup == group)
+			{
+				// Adjust index for client mode
+				int itemIndex = i;
+				groupList.SetItemSelected(itemIndex, true);
+				return;
+			}
+		};
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Select the current open ticket player in a list
+	//! \param[in]  list The list to select the player on based on the ticket selected in the ticket menu
+	void SelectOpenTicketOnwer(SCR_ListBoxComponent list)
+	{
+		// Find the open ticket selected in the list
+		if (m_iSelectedTicket != -1)
+		{			
+			for (int i = 0; i < list.GetItemCount(); i++)
+			{
+				string ticketName = m_playerManager.GetPlayerName(m_iSelectedTicket);
+				string listName = TextWidget.Cast(list.GetElementComponent(i).GetRootWidget().FindAnyWidget("Text")).GetText();
+				if (ticketName == listName)
+				{
+					list.SetItemSelected(i, true, true);
+					return;
+				}
+			}
+		}
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	//! Search the first player list
+	void SearchList0()
+	{
+		// Load List Box
+		SCR_ListBoxComponent playerList = GetListBox("PlayerListBox0");
+		if (!playerList)
+			return;
+		
+		// Load Search Box
+		EditBoxWidget searchBox = GetEditBox("SearchBox0");
+		if (!searchBox)
+			return;
+		
+		SearchPlayerList(playerList, searchBox.GetText());
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	//! Search the second player list
+	void SearchList1()
+	{
+		// Load List Box
+		SCR_ListBoxComponent playerList = GetListBox("PlayerListBox1");
+		if (!playerList)
+			return;
+		
+		// Load Search Box
+		EditBoxWidget searchBox = GetEditBox("SearchBox1");
+		if (!searchBox)
+			return;
+		
+		SearchPlayerList(playerList, searchBox.GetText());
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	//! Filters a player list based on search text
+	//! \param[in]  list The list box to filter
+	//! \param[in]  searchData The search text to filter by
+	void SearchPlayerList(SCR_ListBoxComponent list, string searchData)
+	{
+		TStringArray playerNames = {};
+		m_playerManager.GetPlayers(m_allPlayers);
+		list.Clear();
+
+		// If search is empty, show all players
+		if (searchData == "")
+		{
+			foreach (int playerId : m_allPlayers)
+				playerNames.Insert(m_playerManager.GetPlayerName(playerId));
+		} 
+		else 
+		{
+			// Otherwise filter by search text
+			string searchLower = searchData;
+			searchLower.ToLower();
+			
+			foreach (int playerId : m_allPlayers)
+			{
+				string playerName = m_playerManager.GetPlayerName(playerId);
+				string playerNameLower = playerName;
+				playerNameLower.ToLower();
+
+				if (playerNameLower.Contains(searchLower))
+					playerNames.Insert(playerName);
+			}
+		}
+
+		// Sort and add filtered players
+		playerNames.Sort(false);
+		foreach (string name : playerNames)
+		{
+			int playerId = GetplayerIdFromName(name);
+			Faction playerFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId);
+			
+			if (!m_groupManagerComponent.GetPlayerGroup(playerId))
+				continue;
+				
+			if (COA_EntityHelper.IsSpectator(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
+				continue;
+			
+			list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Toggle the filter for only players with open tickets in the first player list
+	void ToggleOpenTicketFilter()
+	{
+
+		SCR_ButtonTextComponent menuButtonTicketOpenToggle = GetMenuButton("OpenTicketFilterButton");
+		if (!menuButtonTicketOpenToggle)
+			return;
+
+		SCR_ListBoxComponent playerList = GetListBox("PlayerListBox0");
+		if (!playerList)
+			return;
+
+		ImageWidget check = GetImageWidget("OpenTicketFilterButtonImage");
+		if (!check)
+			return;
+		
+		check.SetVisible(menuButtonTicketOpenToggle.IsToggled());
+		
+		PopulatePlayerList(playerList, false, menuButtonTicketOpenToggle.IsToggled());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Toggle filters for logs
+	 void ToggleLogLevelFilter()
+	 {
+		Print("toggled");
+
+		// Setup log filters
+		SCR_ButtonTextComponent filterLogHigh = GetMenuButton("HighFilterButton", m_wRoot);
+		SCR_ButtonTextComponent filterLogMedium = GetMenuButton("MediumFilterButton", m_wRoot);
+		SCR_ButtonTextComponent filterLogLow = GetMenuButton("LowFilterButton", m_wRoot);
+		if (!filterLogLow || !filterLogMedium || !filterLogLow)
+			return;
+
+		ImageWidget filterLogHighCheck = GetImageWidget("HighFilterButtonImage", m_wRoot);
+		ImageWidget filterLogMediumCheck = GetImageWidget("MediumFilterButtonImage", m_wRoot);
+		ImageWidget filterLogLowCheck = GetImageWidget("LowFilterButtonImage", m_wRoot);
+		if (!filterLogHighCheck || !filterLogMediumCheck || !filterLogLowCheck)
+			return;
+
+		filterLogHighCheck.SetVisible(filterLogHigh.IsToggled());
+		filterLogMediumCheck.SetVisible(filterLogMedium.IsToggled());
+		filterLogLowCheck.SetVisible(filterLogLow.IsToggled());
+
+		PopulateAdminActionsList();
+	 }
+	
+	//------------------------------------------------------------------------------------------------
+	//! Update chat while menu is active
 	float m_fUpdateBuffer = 0;
 	override void OnMenuUpdate(float tDelta)
 	{
@@ -438,9 +748,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		m_fUpdateBuffer += tDelta;
 	}
 	
-	/**
-	 * Handle regaining menu focus
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Handle regaining menu focus
 	override void OnMenuFocusGained()
 	{
 		super.OnMenuFocusGained();
@@ -458,13 +767,10 @@ class COA_AdminMenu : ChimeraMenuBase
 	// Gear Menu Methods
 	//-----------------------------------------------------------------------------
 
-	/**
-	 * Initialize the Gear Reset menu
-	 * Allows admins to reset player gear to role defaults
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Initialize the Gear Reset menu & Allows admins to reset player gear to role defaults
 	void InitializeGearMenu()
 	{
-		
 		// Load menu content widget
         m_wMenuContent = GetGame().GetWorkspace().CreateWidgets("{5C7EC9AAE498F6B6}UI/layouts/Menus/PauseMenu/AdminMenuWidgets/GearMenu.layout");
 		if (!m_wMenuContent)
@@ -499,6 +805,13 @@ class COA_AdminMenu : ChimeraMenuBase
 		menuButton5.m_OnClicked.Insert(AddWrench);
 		menuButton6.m_OnClicked.Insert(AddMedicKit);
 		menuButton7.m_OnClicked.Insert(AddPrimaryAmmo);
+
+		// Setup List Filters
+		SCR_ButtonTextComponent menuButtonTicketOpenToggle = GetMenuButton("OpenTicketFilterButton");
+		if (!menuButtonTicketOpenToggle)
+			return;
+		
+		menuButtonTicketOpenToggle.m_OnToggled.Insert(ToggleOpenTicketFilter);
 		
 		// Setup selection change handler
 		playerList.m_OnChanged.Insert(UpdateDefaultGear);
@@ -506,48 +819,15 @@ class COA_AdminMenu : ChimeraMenuBase
 		// Change menu title
 		UpdateMenuTitle("Gear Reset");
 
-		// Populate player list
-		PopulatePlayerList(playerList);
-		
 		// Add available roles
 		AddRoles(roleList);
-	}
-	
-	/**
-	 * Populates a list with active players
-	 * @param list The list to populate with player names
-	 */
-	protected void PopulatePlayerList(SCR_ListBoxComponent list)
-	{
-		// Get all players
-		m_playerManager.GetPlayers(m_allPlayers);
-		TStringArray playerNames = {};
 
-		// Get and sort player names
-		foreach (int playerId : m_allPlayers)
-			playerNames.Insert(m_playerManager.GetPlayerName(playerId));
-
-		playerNames.Sort(false);
-
-		// Add players to list if they're in a group and not spectating
-		foreach (string name : playerNames)
-		{
-			int playerId = GetplayerIdFromName(name);
-			
-			if (!m_groupManagerComponent.GetPlayerGroup(playerId))
-				continue;
-				
-			if (COA_EntityHelper.IsSpectator(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
-				continue;
-			
-			Faction playerFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId);
-			list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
-		}
+		// Populate player list
+		PopulatePlayerList(playerList, true, menuButtonTicketOpenToggle.IsToggled());
 	}
 
-	/**
-	 * Updates default gear selection based on player selection
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Updates default gear selection based on player selection
 	void UpdateDefaultGear()
 	{
 		// Load List Boxes
@@ -577,9 +857,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		}
 	}
 
-	/**
-	 * Adds leadership radio to selected player
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Adds leadership radio to selected player
 	void AddLeaderRadio()
 	{
 		// Load List Box
@@ -607,9 +886,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		COA_PlayerRplToAuthorityManager.GetInstance().AddItem(playerId, radioPrefab, true);
 	}
 
-	/**
-	 * Adds GI radio to selected player
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Adds GI radio to selected player
 	void AddGIRadio()
 	{
 		// Load List Box
@@ -637,9 +915,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		COA_PlayerRplToAuthorityManager.GetInstance().AddItem(playerId, radioPrefab, true);
 	}
 
-	/**
-	 * Adds binoculars to selected player
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Adds binoculars to selected player
 	void AddBinos()
 	{
 		// Load List Box
@@ -661,9 +938,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		COA_PlayerRplToAuthorityManager.GetInstance().AddItem(playerId, binosPrefab, true);
 	}
 	
-	/**
-	* Adds map to selected player
-	*/
+	//------------------------------------------------------------------------------------------------
+	//! Adds map to selected player
 	void AddMap()
 	{
 		// Load List Box
@@ -685,9 +961,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		COA_PlayerRplToAuthorityManager.GetInstance().AddItem(playerId, mapPrefab, true);
 	}
 
-	/**
-	* Adds wrench to selected player
-	*/
+	//------------------------------------------------------------------------------------------------
+	//! Adds wrench to selected player
 	void AddWrench()
 	{
 		// Load List Box
@@ -709,9 +984,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		COA_PlayerRplToAuthorityManager.GetInstance().AddItem(playerId, wrenchPrefab, true);
 	}
 
-	/**
-	* Adds medic medical items to selected player from their faction's gearscript
-	*/
+	//------------------------------------------------------------------------------------------------
+	//! Adds medic medical items to selected player from their faction's gearscript
 	void AddMedicKit()
 	{
 		// Load List Box
@@ -748,9 +1022,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		}
 	}
 
-	/**
-	* Adds primary weapon ammo to selected player based on their role's gearscript
-	*/
+	//------------------------------------------------------------------------------------------------
+	//! Adds primary weapon ammo to selected player based on their role's gearscript
 	void AddPrimaryAmmo()
 	{
 		// Load List Box
@@ -872,11 +1145,10 @@ class COA_AdminMenu : ChimeraMenuBase
 		}
 	}
 
-	/**
-	 * Gets binoculars prefab for player's faction
-	 * @param playerId The player ID to get binoculars for
-	 * @return The binoculars prefab resource name
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Gets binoculars prefab for player's faction
+	//! \param[in]  playerId The player ID to get binoculars for
+	//! \return The binoculars prefab resource name
 	string GetBinos(int playerId)
 	{
 		// Get player's group and faction
@@ -894,9 +1166,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		return gearConfig.m_sLeadershipBinocularsPrefab;
 	}
 
-	/**
-	 * Reset a player's gear to their role default
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Reset a player's gear to their role default
 	void ResetGear()
 	{
 		// Load List Boxes
@@ -930,10 +1201,9 @@ class COA_AdminMenu : ChimeraMenuBase
 	// Ticket Menu Methods
 	//-----------------------------------------------------------------------------
 
-	/**
-	 * Initialize the ticket menu
-	 * Allows admins to see admin messages
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Initialize the ticket menu
+	//! Allows admins to see admin messages
 	void InitializeTicketMenu()
 	{
 		// Load menu content widget
@@ -970,9 +1240,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		GetOpenTickets();
 	}
 	
-	/**
-	* Assign a admin to a ticket
-	*/
+	//------------------------------------------------------------------------------------------------
+	//! Assign a admin to a ticket
 	void AssignAdminToTicket()
 	{
 		// Load List Boxes
@@ -991,9 +1260,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		COA_PlayerRplToAuthorityManager.GetInstance().AssignAdminTicket(m_iSelectedTicket, adminID, false);
 	}
 	
-	/**
-	* Assign a admin to a ticket
-	*/
+	//------------------------------------------------------------------------------------------------
+	//! Assign a admin to a ticket
 	void CloseAdminTicket()
 	{
 		// Load List Boxes
@@ -1018,9 +1286,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		m_iSelectedTicket = -1;
 	}
 	
-	/**
-	* Reply to a ticket selected in list1
-	*/
+	//------------------------------------------------------------------------------------------------
+	//! Reply to a ticket selected in list1
 	void ReplyToTicket()
 	{
 		// Load List Boxes
@@ -1054,9 +1321,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		replyBox.SetText("");
 	}
 	
-	/**
-	* Request the list of messages from the server
-	*/
+	//------------------------------------------------------------------------------------------------
+	//! Request the list of messages from the server
 	void GetTicketMessages()
 	{
 		int ticketID = -1;
@@ -1096,9 +1362,9 @@ class COA_AdminMenu : ChimeraMenuBase
 		COA_PlayerRplToAuthorityManager.GetInstance().GetTicketMessages(adminID, ticketID);
 	}
 	
-	/**
-	* Populates the list of messages selected in list 1
-	*/
+	//------------------------------------------------------------------------------------------------
+	//! Populates the list of messages selected in list 1
+	//! \param[out]  messages Array of messages in a ticket
 	void PopulateTicketMessages(array<ref COA_TicketMessageData> messages)
 	{
 		if (!messages)
@@ -1119,17 +1385,15 @@ class COA_AdminMenu : ChimeraMenuBase
 
 	}
 	
-	/**
-	* Request the list of open tickets from the server
-	*/
+	//------------------------------------------------------------------------------------------------
+	//! Request the list of open tickets from the server
 	void GetOpenTickets()
 	{	
 		COA_PlayerRplToAuthorityManager.GetInstance().GetOpenTickets(SCR_PlayerController.GetLocalPlayerId());
 	}
 	
-	/**
-	 * Populates the list of players that need help
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Populates the list of players that need help
 	void PopulateOpenTicketList(array<int> tickets)
 	{
 		// Load List Boxes
@@ -1148,9 +1412,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		}
 	}
 	
-	/**
-	* Populates the list of messages selected in list 1
-	*/
+	//------------------------------------------------------------------------------------------------
+	//! Populates the list of messages selected in list 1
 	void PopulateAdminActionsList()
 	{
 		array<ref COA_AdminActionLog> reversed = {};
@@ -1173,10 +1436,34 @@ class COA_AdminMenu : ChimeraMenuBase
 		// Clear old logs 
 		list5.Clear();
 		
+		// Grab current log filters
+		SCR_ButtonTextComponent filterLogHigh = GetMenuButton("HighFilterButton", m_wRoot);
+		SCR_ButtonTextComponent filterLogMedium = GetMenuButton("MediumFilterButton", m_wRoot);
+		SCR_ButtonTextComponent filterLogLow = GetMenuButton("LowFilterButton", m_wRoot);
+		if (!filterLogLow || !filterLogMedium || !filterLogLow)
+			return;
+
 		// Format and add the messages to the list
 		foreach (int i, ref COA_AdminActionLog action : reversed)
 		{
-			list5.AddItem(string.Format("%1 - %2", action.timestamp, action.action));
+			Color textColor = Color.White;
+
+			if (action.level == COA_EAdminLogLevel.High)
+				if (!filterLogHigh.IsToggled())
+					continue;
+				else
+					textColor = Color.Red;
+
+			if (action.level == COA_EAdminLogLevel.Medium)
+				if (!filterLogMedium.IsToggled())
+					continue;
+				else
+					textColor = Color.Orange;
+
+			if (action.level == COA_EAdminLogLevel.Low && !filterLogLow.IsToggled())
+				continue;
+
+			list5.AddItemWithColor(string.Format("%1 - %2", action.timestamp, action.action), textColor);
 		}
 	}
 
@@ -1184,10 +1471,9 @@ class COA_AdminMenu : ChimeraMenuBase
 	// Respawn Menu Methods
 	//-----------------------------------------------------------------------------
 
-	/**
-	 * Initialize the Respawn menu
-	 * Allows admins to respawn dead players
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Initialize the Respawn menu
+	//! Allows admins to respawn dead players
 	void InitializeRespawnMenu()
 	{
 		// Load menu content widget
@@ -1220,8 +1506,15 @@ class COA_AdminMenu : ChimeraMenuBase
 		menuButton4.m_OnClicked.Insert(RespawnSide);
 		
 		// Setup selection change handlers
-		playerList.m_OnChanged.Insert(UpdateSpawnGroupRequest);
-		groupList.m_OnChanged.Insert(UpdateSpawnpoint);
+		playerList.m_OnChanged.Insert(UpdateRespawnSelectedGroup);
+		groupList.m_OnChanged.Insert(UpdateRespawnSpawnpoint);
+
+		// Setup List Filters
+		SCR_ButtonTextComponent menuButtonTicketOpenToggle = GetMenuButton("OpenTicketFilterButton");
+		if (!menuButtonTicketOpenToggle)
+			return;
+		
+		menuButtonTicketOpenToggle.m_OnToggled.Insert(ToggleOpenTicketFilter);
 		
 		// Change title of the menu
 		UpdateMenuTitle("Respawn");
@@ -1231,77 +1524,15 @@ class COA_AdminMenu : ChimeraMenuBase
 		m_outGroups = COA_SlottingManager.GetInstance().GetAllGroups();
 
 		// Populate Dead Players list
-		PopulateDeadPlayersList();
+		PopulatePlayerList(playerList, true, menuButtonTicketOpenToggle.IsToggled());
 		
 		// Populate Groups list
-		PopulateGroupsList();
-	}
-	
-	/**
-	 * Populates the list of dead/spectating players
-	 */
-	protected void PopulateDeadPlayersList()
-	{
-		TStringArray playerNames = {};
-		
-		// Load List Boxes
-		SCR_ListBoxComponent playerList = GetListBox("PlayerListBox0");
-		if (!playerList)
-			return;
-
-		// Get and sort player names
-		foreach (int playerId : m_allPlayers)
-			playerNames.Insert(m_playerManager.GetPlayerName(playerId));
-
-		playerNames.Sort(false);
-
-		// Add dead or spectating players to list
-		foreach (string name : playerNames)
-		{
-			int playerId = GetplayerIdFromName(name);
-			Faction playerFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId);
-
-			if (COA_SlottingManager.GetInstance().IsPlayerConsideredDead(playerId) ||
-				COA_EntityHelper.IsSpectator(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
-			{
-				playerList.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
-			}
-		}
-	}
-	
-	/**
-	 * Populates the list of available groups
-	 */
-	protected void PopulateGroupsList()
-	{
-		foreach (SCR_AIGroup group : m_outGroups)
-		{
-			// Load List Boxes
-			SCR_ListBoxComponent groupList = GetListBox("GroupListBox0");
-			if (!groupList)
-				return;
-			
-			// Get faction info
-			Faction groupFaction = group.GetFaction();
-			if (!groupFaction)
-				continue;
-				
-			string factionKey = groupFaction.GetFactionKey();
-			if (factionKey.IsEmpty() || factionKey == "SPEC")
-				continue;
-				
-			string factionTag = factionKey.Substring(0, 3);
-			
-			// Add group to list
-			groupList.AddItem(string.Format("%1 | %2", factionTag, group.GetCustomNameWithOriginal()));
-			m_groupIDList.Insert(group.GetGroupID());
-		}
+		PopulateGroupsList(groupList);
 	}
 
-	/**
-	 * Requests server to provide group ID for selected player
-	 */
-	void UpdateSpawnGroupRequest()
+	//------------------------------------------------------------------------------------------------
+	//! Requests server to provide group ID for selected player
+	void UpdateRespawnSelectedGroup()
 	{
 		// Load List Boxes
 		SCR_ListBoxComponent playerList = GetListBox("PlayerListBox0");
@@ -1312,36 +1543,12 @@ class COA_AdminMenu : ChimeraMenuBase
 		if (!groupList)
 			return;
 		
-		if (playerList.GetSelectedItem() < 0)
-			return;
-			
-		// Get selected player ID
-		string playerName = TextWidget.Cast(playerList.GetElementComponent(playerList.GetSelectedItem()).GetRootWidget().FindAnyWidget("Text")).GetText();
-		int playerId = GetplayerIdFromName(playerName);
-		if (playerId == 0)
-			return;
-		
-		SCR_AIGroup selectedGroup = COA_SlottingManager.GetInstance().GetPlayerSlotGroup(playerId);
-		
-		foreach (int i, SCR_AIGroup group : m_outGroups)
-		{
-			if (selectedGroup == group)
-			{
-				// Adjust index for client mode
-				int itemIndex = i;
-				if (RplSession.Mode() == RplMode.Client)
-					itemIndex = i - 1;
-
-				groupList.SetItemSelected(itemIndex, true);
-				return;
-			}
-		};
+		SelectGroupByPlayer(groupList, playerList);
 	}
 
-	/**
-	 * Updates spawnpoint list based on selected group
-	 */
-	void UpdateSpawnpoint()
+	//------------------------------------------------------------------------------------------------
+	//! Updates spawnpoint list based on selected group
+	void UpdateRespawnSpawnpoint()
 	{
 		// Load List Boxes
 		SCR_ListBoxComponent respawnPoints = GetListBox("SpawnpointListBox0");
@@ -1382,9 +1589,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		}
 	}
 
-	/**
-	 * Respawns the selected player at the selected spawnpoint and group
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Respawns the selected player at the selected spawnpoint and group
 	void RespawnPlayer()
 	{
 		// Load List Boxes
@@ -1421,9 +1627,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		GetGame().GetCallqueue().CallLater(InitializeRespawnMenu, 1825, false);
 	}
 	
-	/**
-	 * Respawns blufor
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Respawns blufor
 	void RespawnSide()
 	{
 		// Find the button currently focused
@@ -1438,10 +1643,9 @@ class COA_AdminMenu : ChimeraMenuBase
 	// Teleport Menu Methods
 	//-----------------------------------------------------------------------------
 
-	/**
-	 * Initialize the Teleport menu
-	 * Allows admins to teleport players
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Initialize the Teleport menu
+	//! Allows admins to teleport players
 	void InitializeTeleportMenu()
 	{
 		// Load menu content widget
@@ -1452,7 +1656,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		// Load List Boxes
 		SCR_ListBoxComponent playerList0 = GetListBox("PlayerListBox0");
 		SCR_ListBoxComponent playerList1 = GetListBox("PlayerListBox1");
-		if (!playerList0 || !playerList1)
+		SCR_ListBoxComponent groupList = GetListBox("GroupListBox0");
+		if (!playerList0 || !playerList1 || !groupList)
 			return;
 		
 		// Load Menu Buttons
@@ -1470,18 +1675,34 @@ class COA_AdminMenu : ChimeraMenuBase
 		menuButton0.m_OnClicked.Insert(TeleportLocalToSelected);
 		menuButton1.m_OnClicked.Insert(TeleportPlayers);
 		menuButton2.m_OnClicked.Insert(TeleportSelectedToLocal);
+
+		// Setup List Filters
+		SCR_ButtonTextComponent menuButtonTicketOpenToggle = GetMenuButton("OpenTicketFilterButton");
+		if (!menuButtonTicketOpenToggle)
+			return;
 		
+		menuButtonTicketOpenToggle.m_OnToggled.Insert(ToggleOpenTicketFilter);
+
+		// Setup selection change handlers
+		playerList0.m_OnChanged.Insert(UpdateTeleportGroupList);
+		groupList.m_OnChanged.Insert(UpdateTeleportToList);
+
 		// Change title of the menu
 		UpdateMenuTitle("Teleport");
 
+		// Get list of groups
+		m_outGroups = COA_SlottingManager.GetInstance().GetAllGroups();
+
 		// Populate player lists
-		PopulatePlayerList(playerList0);
-		PopulatePlayerList(playerList1);
+		PopulatePlayerList(playerList0, true, menuButtonTicketOpenToggle.IsToggled());
+		PopulatePlayerList(playerList1, false);
+
+		// Populate group list
+		PopulateGroupsList(groupList);
 	}
 
-	/**
-	 * Teleports local player to selected player
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Teleports local player to selected player
 	void TeleportLocalToSelected()
 	{
 		// Load List Boxes
@@ -1503,11 +1724,10 @@ class COA_AdminMenu : ChimeraMenuBase
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	/**
-	 * Teleports a player to another player's location
-	 * @param playerId1 - Player to teleport
-	 * @param playerId2 - Destination player
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Teleports a player to another player's location
+	//! \param[in]  playerId1 - Player to teleport
+	//! \param[in]  playerId2 - Destination player 
 	void TeleportLocalPlayer(int playerId1, int playerId2)
 	{
 		IEntity entity2 = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId2);
@@ -1522,9 +1742,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		SCR_Global.TeleportPlayer(playerId1, teleportLocation);
 	}
 	
-	/**
-	 * Teleports selected player to local player
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Teleports selected player to local player
 	void TeleportSelectedToLocal()
 	{
 		// Load List Boxes
@@ -1545,9 +1764,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		COA_PlayerRplToAuthorityManager.GetInstance().TeleportPlayers(playerId2, SCR_PlayerController.GetLocalPlayerId(), true);
 	}
 
-	/**
-	 * Teleports player 1 to player 2's position
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Teleports player 1 to player 2's position
 	void TeleportPlayers()
 	{
 		// Load List Boxes
@@ -1575,14 +1793,48 @@ class COA_AdminMenu : ChimeraMenuBase
 		COA_PlayerRplToAuthorityManager.GetInstance().TeleportPlayers(playerId1, playerId2, true);
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! Update group selected based on player selected in the first player list
+	void UpdateTeleportGroupList()
+	{
+		SCR_ListBoxComponent playerList = GetListBox("PlayerListBox0");
+		if (!playerList)
+			return;
+
+		SCR_ListBoxComponent groupList = GetListBox("GroupListBox0");
+		if (!groupList)
+			return;
+
+		SelectGroupByPlayer(groupList, playerList)
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	//! Update teleport target from the selected group
+	void UpdateTeleportToList()
+	{
+		SCR_ListBoxComponent playerList = GetListBox("PlayerListBox1");
+		if (!playerList)
+			return;
+
+		SCR_ListBoxComponent groupList = GetListBox("GroupListBox0");
+		if (!groupList)
+			return;
+
+		// Get the ID of the group selected
+		int groupID = m_groupIDList.Get(groupList.GetSelectedItem());
+		if (groupID == -1)
+			return;
+
+		PopulatePlayerList(playerList, false, false, m_groupManagerComponent.FindGroup(groupID));
+	}
+
 	//-----------------------------------------------------------------------------
 	// Hint Menu Methods
 	//-----------------------------------------------------------------------------
 
-	/**
-	 * Initialize the Hint menu
-	 * Allows admins to send hint messages to players
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Initialize the Hint menu
+	//! Allows admins to send hint messages to players
 	void InitializeHintMenu()
 	{
 		// Load menu content widget
@@ -1617,44 +1869,26 @@ class COA_AdminMenu : ChimeraMenuBase
 		menuButton0.m_OnClicked.Insert(SendHintAll);
 		menuButton1.m_OnClicked.Insert(SendHintFaction);
 		menuButton2.m_OnClicked.Insert(SendHintPlayer);
+
+		// Setup List Filters
+		SCR_ButtonTextComponent menuButtonTicketOpenToggle = GetMenuButton("OpenTicketFilterButton");
+		if (!menuButtonTicketOpenToggle)
+			return;
+		
+		menuButtonTicketOpenToggle.m_OnToggled.Insert(ToggleOpenTicketFilter);
 		
 		// Change title of the menu
 		UpdateMenuTitle("Hint");
 
 		// Populate player list
-		PopulatePlayerList(playerList);
+		PopulatePlayerList(playerList, true, menuButtonTicketOpenToggle.IsToggled());
 		
 		// Populate faction list
-		PopulateFactionList();
-	}
-	
-	/**
-	 * Populates the list of active factions
-	 */
-	protected void PopulateFactionList()
-	{
-		// Get all factions
-		GetGame().GetFactionManager().GetFactionsList(m_factions);
-		
-		// Load List Boxes
-		SCR_ListBoxComponent factionList = GetListBox("FactionListBox0");
-		if (!factionList)
-			return;
-		
-		// Add factions with active players
-		foreach (Faction faction : m_factions)
-		{
-			if (SCR_FactionManager.SGetFactionPlayerCount(faction) > 0)
-			{
-				factionList.AddItem(faction.GetFactionName());
-				m_selectableFactions.Insert(faction.GetFactionKey());
-			}
-		}
+		PopulateFactionList(factionList);
 	}
 
-	/**
-	 * Sends hint message to all players
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Sends hint message to all players
 	void SendHintAll()
 	{
 		// Load Reply Box
@@ -1667,9 +1901,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		COA_PlayerRplToAuthorityManager.GetInstance().SendHint(data);
 	}
 
-	/**
-	 * Sends hint message to players in selected faction
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Sends hint message to players in selected faction
 	void SendHintFaction()
 	{
 		// Load List Boxes
@@ -1691,9 +1924,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		COA_PlayerRplToAuthorityManager.GetInstance().SendHint(data, -1, factionKey);
 	}
 
-	/**
-	 * Sends hint message to selected player
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Sends hint message to selected player
 	void SendHintPlayer()
 	{
 		// Load List Boxes
@@ -1725,10 +1957,9 @@ class COA_AdminMenu : ChimeraMenuBase
 	// Heal Menu Methods
 	//-----------------------------------------------------------------------------
 	
-	/**
-	 * Initialize the Heal menu
-	 * Allows admins to heal players and repair vehicles
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Initialize the Heal menu
+	//! Allows admins to heal players and repair vehicles
 	void InitializeHealMenu()
 	{
 		// Load menu content widget
@@ -1752,18 +1983,24 @@ class COA_AdminMenu : ChimeraMenuBase
 		menuButton0.m_OnClicked.Insert(HealPlayer);
 		menuButton1.m_OnClicked.Insert(HealPlayerVehicle);
 		searchButton0.m_OnClicked.Insert(SearchList0);
+
+		// Setup List Filters
+		SCR_ButtonTextComponent menuButtonTicketOpenToggle = GetMenuButton("OpenTicketFilterButton");
+		if (!menuButtonTicketOpenToggle)
+			return;
+		
+		menuButtonTicketOpenToggle.m_OnToggled.Insert(ToggleOpenTicketFilter);
 		
 		// Change title of the menu
 		UpdateMenuTitle("Heal");
 		
 
 		// Populate player list
-		PopulatePlayerList(playerList);
+		PopulatePlayerList(playerList, true, menuButtonTicketOpenToggle.IsToggled());
 	}
 	
-	/**
-	 * Heals the selected player
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Heals the selected player
 	void HealPlayer()
 	{
 		// Load List Boxes
@@ -1784,9 +2021,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		COA_PlayerRplToAuthorityManager.GetInstance().Heal(playerId, true, false);
 	}
 	
-	/**
-	 * Repairs the vehicle of the selected player
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Repairs the vehicle of the selected player
 	void HealPlayerVehicle()
 	{
 		// Load List Boxes
@@ -1811,10 +2047,9 @@ class COA_AdminMenu : ChimeraMenuBase
 	// Gamemode Settings Menu
 	//-----------------------------------------------------------------------------
 
-	/**
-	 * Initialize the Respawn menu
-	 * Allows admins to respawn dead players
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Initialize the Respawn menu
+	//! Allows admins to respawn dead players
 	void InitializeGamemodeMenu()
 	{
 		// Load menu content widget
@@ -1838,9 +2073,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		resetGearButton.m_OnClicked.Insert(ConfirmAction);
 		aarGearButton.m_OnClicked.Insert(EnterAAR);
 		
-		/*
-		*	!!!!! Changing the time delta is done below and in the menu layout !!!!!
-		*/
+		//	!!!!! Changing the time delta is done below and in the menu layout !!!!!
+		
 		// Load Menu Buttons for Game Timer
 		
 		// Time Values
@@ -1856,9 +2090,8 @@ class COA_AdminMenu : ChimeraMenuBase
 			button.m_OnClicked.Insert(UpdateTime);
 		}
 		
-		/*
-		*	!!!!! Changing the ticket delta is done below and in the menu layout !!!!!
-		*/
+		// !!!!! Changing the ticket delta is done below and in the menu layout !!!!!
+		
 		// Load Menu Buttons for Tickets
 		
 		// Faction names
@@ -1925,22 +2158,30 @@ class COA_AdminMenu : ChimeraMenuBase
 		setRespawnTime.m_OnClicked.Insert(SetRespawnTime);
 	}
 	
+	//------------------------------------------------------------------------------------------------
+	//! Toggle wave respawns in the gamemode
 	void ToggleWaveRespawn()
 	{
 		COA_PlayerRplToAuthorityManager.GetInstance().ToggleWaveRespawn();
 	}
 	
+	//------------------------------------------------------------------------------------------------
+	//! Toggle resapwns in the gamemode
 	void ToggleRespawn()
 	{
 		COA_PlayerRplToAuthorityManager.GetInstance().ToggleRespawn();
 	}
 	
+	//------------------------------------------------------------------------------------------------
+	//! Set respawn timer in the gamemode
 	void SetRespawnTime()
 	{
 		int respawnTime = EditBoxWidget.Cast(m_wMenuContent.FindAnyWidget("TicketsInput")).GetText().ToInt();
 		COA_PlayerRplToAuthorityManager.GetInstance().SetRespawnTime(respawnTime);
 	}
 	
+	//------------------------------------------------------------------------------------------------
+	//! Loads list of gearscipt configs for hot swapping (Pre generated in tools)
 	void LoadGearConfigList()
 	{
 		JsonLoadContext ctx = new JsonLoadContext();
@@ -1952,10 +2193,9 @@ class COA_AdminMenu : ChimeraMenuBase
 		ctx.ReadValue("", m_gearsetlist);
 	}
 	
-	/**
-	 * Add time delta based on the button name that was clicked
-	 * !!!!! Changing the time delta is done above and in the menu layout !!!!!
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Add time delta based on the button name that was clicked
+	//! !!!!! Changing the time delta is done above and in the menu layout !!!!!
 	void UpdateTime()
 	{
 		// Find the button currently focused
@@ -1969,6 +2209,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		COA_PlayerRplToAuthorityManager.GetInstance().UpdateTimer(delta);
 	}
 	
+	//------------------------------------------------------------------------------------------------
+	//! Updates the amount respawn tickets in the gamemode based on the faction selected
 	void UpdateTicket()
 	{
 		// Find the button currently focused
@@ -1992,6 +2234,8 @@ class COA_AdminMenu : ChimeraMenuBase
 			rplManager.UpdateTicket(action, faction, delta);
 	}
 	
+	//------------------------------------------------------------------------------------------------
+	//! Updates the gearscript of each active faction
 	void UpdateGearSets()
 	{
 		// Load gearsets section
@@ -2018,6 +2262,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		CloseConfirmAction();
 	}
 	
+	//------------------------------------------------------------------------------------------------
+	//! Conformation popup for enterAAR, ApplyGearSets
 	void ConfirmAction()
 	{
 		// Find the button currently focused
@@ -2046,18 +2292,16 @@ class COA_AdminMenu : ChimeraMenuBase
 		}
 	}
 	
-	/**
-	 * Close confirmation popup
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Close confirmation popup
 	void CloseConfirmAction()
 	{
 		if (m_wConfirmationMenu)
 		 delete m_wConfirmationMenu;
 	}
 	
-	/**
-	 * Advanced the game state to AAR
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Advanced the game state to AAR
 	void EnterAAR()
 	{
 		if (!COA_EGamemodeState.AAR)
@@ -2067,6 +2311,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		CloseConfirmAction();
 	}
 	
+	//------------------------------------------------------------------------------------------------
+	//! Updates the UI Elements
 	void GamemodeMenuUpdate()
 	{	
 		// Get current mission time
@@ -2148,103 +2394,11 @@ class COA_AdminMenu : ChimeraMenuBase
 	}
 	
 	//-----------------------------------------------------------------------------
-	// Search Methods
-	//-----------------------------------------------------------------------------
-	
-	/**
-	 * Search the first player list
-	 */
-	void SearchList0()
-	{
-		// Load List Box
-		SCR_ListBoxComponent playerList = GetListBox("PlayerListBox0");
-		if (!playerList)
-			return;
-		
-		// Load Search Box
-		EditBoxWidget searchBox = GetEditBox("SearchBox0");
-		if (!searchBox)
-			return;
-		
-		SearchPlayerList(playerList, searchBox.GetText());
-	}
-	
-	/**
-	 * Search the second player list
-	 */
-	void SearchList1()
-	{
-		// Load List Box
-		SCR_ListBoxComponent playerList = GetListBox("PlayerListBox1");
-		if (!playerList)
-			return;
-		
-		// Load Search Box
-		EditBoxWidget searchBox = GetEditBox("SearchBox1");
-		if (!searchBox)
-			return;
-		
-		SearchPlayerList(playerList, searchBox.GetText());
-	}
-	
-	/**
-	 * Filters a player list based on search text
-	 * @param list The list box to filter
-	 * @param searchData The search text to filter by
-	 */
-	void SearchPlayerList(SCR_ListBoxComponent list, string searchData)
-	{
-		TStringArray playerNames = {};
-		m_playerManager.GetPlayers(m_allPlayers);
-		list.Clear();
-
-		// If search is empty, show all players
-		if (searchData == "")
-		{
-			foreach (int playerId : m_allPlayers)
-				playerNames.Insert(m_playerManager.GetPlayerName(playerId));
-		} 
-		else 
-		{
-			// Otherwise filter by search text
-			string searchLower = searchData;
-			searchLower.ToLower();
-			
-			foreach (int playerId : m_allPlayers)
-			{
-				string playerName = m_playerManager.GetPlayerName(playerId);
-				string playerNameLower = playerName;
-				playerNameLower.ToLower();
-
-				if (playerNameLower.Contains(searchLower))
-					playerNames.Insert(playerName);
-			}
-		}
-
-		// Sort and add filtered players
-		playerNames.Sort(false);
-		foreach (string name : playerNames)
-		{
-			int playerId = GetplayerIdFromName(name);
-			Faction playerFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId);
-			
-			if (!m_groupManagerComponent.GetPlayerGroup(playerId))
-				continue;
-				
-			if (COA_EntityHelper.IsSpectator(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
-				continue;
-			
-			list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
-		}
-	}
-	
-	//-----------------------------------------------------------------------------
 	// Chat Methods
 	//-----------------------------------------------------------------------------
 	
-	/**
-	 * Handles chat toggle action
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Handles chat toggle action
 	void Action_OnCOA_ChatToggleAction()
 	{
 		if (!m_ChatPanel)
@@ -2253,9 +2407,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		GetGame().GetCallqueue().Call(OpenChatWrap);
 	}
 	
-	/**
-	 * Opens the chat panel if not already open
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Opens the chat panel if not already open
 	void OpenChatWrap()
 	{
 		if (!m_ChatPanel.IsOpen())
@@ -2268,9 +2421,8 @@ class COA_AdminMenu : ChimeraMenuBase
 	// GETTERS
 	//------------------------------------------------------------------------------------------------
 	
-	/**
-	 * Gets the title of the current open page
-	 */
+	//------------------------------------------------------------------------------------------------
+	//! Gets the title of the current open page
 	string GetCurrentOpenTab()
 	{
 		// Get Sub menu title text
