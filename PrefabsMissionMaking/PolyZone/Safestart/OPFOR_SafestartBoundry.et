@@ -52,7 +52,7 @@ PolylineShapeEntity {
    PeriodicQueries 1
    UpdatePeriod 1
    ClassesFilter {
-    "SCR_ChimeraCharacter"
+    "GenericEntity"
    }
    m_polyZoneEffect COA_PolyZoneEffectRestricted "{6586537E1F838450}" {
     m_fKillTime 10

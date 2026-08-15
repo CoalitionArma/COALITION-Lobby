@@ -52,7 +52,7 @@ class COA_PolyZoneTrigger : SCR_BaseTriggerEntity
 			
 			if (!m_aFactionKey.IsEmpty() && character.m_pFactionComponent)
 			{
-				Faction faction = character.m_pFactionComponent.GetDefaultAffiliatedFaction();
+				Faction faction = character.m_pFactionComponent.GetAffiliatedFaction();
 				if (faction && m_aFactionKey.Contains(faction.GetFactionKey()))
 					continue;
 			}
