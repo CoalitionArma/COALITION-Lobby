@@ -1,5 +1,7 @@
 class COA_BorderCheckSystem : GameSystem
 {		
+	protected const float UPDATE_TIME_SECONDS = 1;
+	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 RUNTIME VARIABLES
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -9,22 +11,20 @@ class COA_BorderCheckSystem : GameSystem
 	COA_GameBorder m_PlayerOutsideBorder;
 	SCR_PlayerController m_PlayerController;
 	ref array<COA_GameBorder> m_aBorders = new array<COA_GameBorder>;
+	protected float m_fUpdate;
 
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 UPDATE METHODS
 //=============================================================================================================================================================================================================================================================================================================================================================
-	
-	protected int m_iUpdate;
+
 	//------------------------------------------------------------------------------------------------
 	override void OnUpdatePoint(WorldUpdatePointArgs args)
 	{	
-		m_iUpdate++;
-		
-		// only update every 45 frames
-		if (!(m_iUpdate >= 45))
+		m_fUpdate = m_fUpdate + args.GetTimeSliceSeconds();
+		if (!(m_fUpdate >= UPDATE_TIME_SECONDS))
 			return;
 		else
-			m_iUpdate = 0;
+			m_fUpdate = 0;
 		
 		if (!m_PlayerController)
 			m_PlayerController = SCR_PlayerController.Cast(GetGame().GetPlayerController());
@@ -73,12 +73,9 @@ class COA_BorderCheckSystem : GameSystem
 	//------------------------------------------------------------------------------------------------
 	protected void PlayerLeftBorder(SCR_ChimeraCharacter player, COA_GameBorder border)
 	{
-		if (m_bPlayerHasEffect)
-			return;
-		
 		// Allow Admins to teleport out of the game borders during safestart
-		//if (COA_SafestartManager.GetInstance().GetSafestartStatus() && SCR_Global.IsAdmin(GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(player)))
-		//	return;
+		if (m_bPlayerHasEffect || (COA_SafestartManager.GetInstance().GetSafestartStatus() && SCR_Global.IsAdmin(GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(player))))
+			return;
 		
 		CompartmentAccessComponent compAccess = CompartmentAccessComponent.Cast(player.FindComponent(CompartmentAccessComponent)); // TODO nullcheck
 		if (compAccess)
@@ -87,8 +84,9 @@ class COA_BorderCheckSystem : GameSystem
 			if (compartment)
 			{
 				VehicleHelicopterSimulation heli = VehicleHelicopterSimulation.Cast(compartment.GetVehicle().FindComponent(VehicleHelicopterSimulation));
+				VehicleFixedWingSimulation plane = VehicleFixedWingSimulation.Cast(compartment.GetVehicle().FindComponent(VehicleFixedWingSimulation));
 				
-				if(heli && !border.m_bHeliRestricted)
+				if((heli || plane)&& !border.m_bHeliRestricted)
 					return;
 			}
 		}
@@ -136,7 +134,6 @@ class COA_BorderCheckSystem : GameSystem
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	//! Provides instance of the system
 	static COA_BorderCheckSystem GetInstance()
 	{
 		World world = GetGame().GetWorld();
