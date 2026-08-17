@@ -1020,9 +1020,9 @@ class COA_RplBroadcastManager : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	void BroadcastVehiclePosUpdate(vector pos, int playerId)
+	void ForwardDeployUpdate(vector pos, int playerId)
 	{
-		Rpc(RpcDo_BroadcastVehiclePosUpdate, pos, playerId);
+		Rpc(RpcDo_ForwardDeployUpdate, pos, playerId);
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -1926,9 +1926,16 @@ class COA_RplBroadcastManager : ScriptComponent
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	void RpcDo_BroadcastVehiclePosUpdate(vector pos, int playerId)
+	void RpcDo_ForwardDeployUpdate(vector pos, int playerId)
 	{
+		if (SCR_PlayerController.GetLocalPlayerId() != playerId)
+			return;
+		
 		SCR_Global.TeleportPlayer(playerId, pos, SCR_EPlayerTeleportedReason.NONE);
+		
+		if (COA_BorderCheckSystem.GetInstance())
+			GetGame().GetCallqueue().CallLater(COA_BorderCheckSystem.GetInstance().ForceStopTimer, 1250, false);// Force the border timer off after the maximum time has elapsed for it to detect we left the zone
+		
 	}
 	
 	//------------------------------------------------------------------------------------------------

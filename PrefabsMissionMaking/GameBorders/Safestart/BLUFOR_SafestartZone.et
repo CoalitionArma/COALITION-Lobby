@@ -17,7 +17,7 @@ COA_SafestartBorder {
  m_bReversed 0
  m_aGameBorderSettings COA_GameBorderSettings "{6A20731B721A5579}" {
  }
- m_bHeliRestricted 1
+ m_bAirVehiclesRestricted 1
  m_fHeight 345
  m_fUndergroundHeight 400
  m_Material "{F06785B0378A3C76}Assets/Editor/VirtualArea/BLUFORBoundry.emat"

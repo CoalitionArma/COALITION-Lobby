@@ -97,7 +97,7 @@ class COA_ForwardDeployManager : ScriptComponent
 		SCR_TerrainHelper.SnapToGeometry(finalSpawnLocation, params[3], null);
 		params[3] = finalSpawnLocation;
 		SCR_Global.TeleportPlayer(playerId, finalSpawnLocation, SCR_EPlayerTeleportedReason.NONE);
-		COA_RplBroadcastManager.GetInstance().BroadcastVehiclePosUpdate(finalSpawnLocation, playerId);
+		COA_RplBroadcastManager.GetInstance().ForwardDeployUpdate(finalSpawnLocation, playerId);
 	}
 	
 	//------------------------------------------------------------------------------------------------

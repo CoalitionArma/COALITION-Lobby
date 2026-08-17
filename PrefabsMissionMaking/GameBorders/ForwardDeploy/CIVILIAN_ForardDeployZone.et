@@ -17,7 +17,7 @@ COA_ForwardDeployBorder {
  m_bReversed 0
  m_aGameBorderSettings COA_GameBorderSettings "{6A22030FBAB1585E}" {
  }
- m_bHeliRestricted 1
+ m_bAirVehiclesRestricted 1
  m_fHeight 345
  m_fUndergroundHeight 400
  m_Material "{92E45624495C0978}Assets/Editor/VirtualArea/CIVBoundry.emat"

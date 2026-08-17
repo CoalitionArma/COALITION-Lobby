@@ -9,11 +9,14 @@ class COA_GameBorder : COA_BorderBase
 //=============================================================================================================================================================================================================================================================================================================================================================
 	
 	// ------------------------------------------------------ GENERAL SETTINGS ------------------------------------------------------
-	[Attribute("", category: "Game Border - General")]
-	ref COA_GameBorderSettings m_aGameBorderSettings;
+	[Attribute("10", category: "Game Border - General")]
+	int m_iKillTime;
 	
 	[Attribute("false", category: "Game Border - General")]
-	bool m_bHeliRestricted;
+	bool m_bAirVehiclesRestricted;
+	
+	[Attribute("true", category: "Game Border - General")]
+	bool m_bGroundVehiclesRestricted;
 	
 	// ------------------------------------------------------ MESH SETTINGS --------------------------------------------------------
 	[Attribute("10", category: "Game Border - Mesh")]
@@ -29,6 +32,7 @@ class COA_GameBorder : COA_BorderBase
 	protected bool m_bStretchMaterial;
 	
 	protected SCR_BaseTriggerEntity m_BorderMeshTrigger;
+	protected bool m_bBorderVisible;
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 OVERRIDES
@@ -59,8 +63,10 @@ class COA_GameBorder : COA_BorderBase
 	//------------------------------------------------------------------------------------------------
 	void UpdateAreaMesh(bool visibility = true)
 	{		
-		if (!m_BorderMeshTrigger)
+		if (!m_BorderMeshTrigger || visibility == m_bBorderVisible)
 			return;
+		else
+			m_bBorderVisible = visibility;
 		
 		array<vector> positions = new array<vector>();
 		this.GetPointsPositions(positions);
@@ -84,9 +90,7 @@ class COA_GameBorder : COA_BorderBase
 		
 		MeshObject meshObject = res.GetResource().ToMeshObject();
 		if (meshObject)
-		{
 			m_BorderMeshTrigger.SetObject(meshObject, "");
-		}
 	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================

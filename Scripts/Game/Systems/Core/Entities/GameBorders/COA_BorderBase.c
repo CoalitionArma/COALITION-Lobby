@@ -46,12 +46,14 @@ class COA_BorderBase : PolylineShapeEntity
 	protected ref SharedItemRef m_TextureSharedItem;
 	protected ref SharedItemRef m_TextureBorderSharedItem;
 	protected SCR_MapEntity m_MapEntity;
-	protected ref array<float> m_aPolygon;
 	
 	CanvasWidget m_wCanvasWidget;
 	protected ref PolygonDrawCommand m_DrawPolygon = new PolygonDrawCommand();
 	protected ref LineDrawCommand m_LinePolygon = new LineDrawCommand();
 	protected ref array<ref CanvasWidgetCommand> m_MapDrawCommands = { m_DrawPolygon, m_LinePolygon };
+	
+	protected ref array<float> m_aCached2DPolygon = {};
+	protected ref array<float> m_aCached2DMapPolygon = {};
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 OVERRIDES
@@ -67,7 +69,7 @@ class COA_BorderBase : PolylineShapeEntity
 		onMapOpen.Insert(CreateMapWidget);
 		onMapClose.Insert(DeleteMapWidget);
 		
-		GetGame().GetCallqueue().Call(UpdatePolygon);
+		UpdatePolygon();
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -76,10 +78,10 @@ class COA_BorderBase : PolylineShapeEntity
 		m_DrawPolygon.m_Vertices = new array<float>();
 		m_LinePolygon.m_Vertices = new array<float>();
 		float screenXold, screenYold;
-		for (int i = 0; i < m_aPolygon.Count(); i += 2)
+		for (int i = 0; i < m_aCached2DMapPolygon.Count(); i += 2)
 		{
 			float screenX, screenY;
-			m_MapEntity.WorldToScreen(m_aPolygon[i], m_aPolygon[i+1], screenX, screenY, true);
+			m_MapEntity.WorldToScreen(m_aCached2DMapPolygon[i], m_aCached2DMapPolygon[i+1], screenX, screenY, true);
 			if ((Math.AbsFloat(screenXold - screenX) + Math.AbsFloat(screenYold - screenY)) < 2.1)
 			{
 				continue;
@@ -109,9 +111,24 @@ class COA_BorderBase : PolylineShapeEntity
 	protected void UpdatePolygon()
 	{	
 		array<vector> outPoints = new array<vector>();
-		m_aPolygon = new array<float>();
 		
-		outPoints = GetBorder3DPolygon(outPoints);
+		this.GetPointsPositions(outPoints);
+		vector origin = this.GetOrigin();
+		
+		for (int i = 0; i < outPoints.Count(); i++)
+		{
+			outPoints[i] = outPoints[i] + origin;
+		}
+		for (int i = 0; i < outPoints.Count() - 1; i++)
+		{
+			if ((Math.AbsFloat(outPoints[i][0] - outPoints[i+1][0]) + Math.AbsFloat(outPoints[i][1] - outPoints[i+1][1])) < 0.1)
+			{
+				outPoints.RemoveOrdered(i);
+				i--;
+			}
+		}
+		
+		SCR_Math2D.Get2DPolygon(outPoints, m_aCached2DPolygon);
 		
 		if (m_bReversed)
 		{
@@ -130,29 +147,7 @@ class COA_BorderBase : PolylineShapeEntity
 			outPoints.InsertAt(outPoints[5], 0);
 		}
 			
-		SCR_Math2D.Get2DPolygon(outPoints, m_aPolygon);
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	protected array<vector> GetBorder3DPolygon(array<vector> outPoints)
-	{	
-		this.GetPointsPositions(outPoints);
-		vector origin = this.GetOrigin();
-		
-		for (int i = 0; i < outPoints.Count(); i++)
-		{
-			outPoints[i] = outPoints[i] + origin;
-		}
-		for (int i = 0; i < outPoints.Count() - 1; i++)
-		{
-			if ((Math.AbsFloat(outPoints[i][0] - outPoints[i+1][0]) + Math.AbsFloat(outPoints[i][1] - outPoints[i+1][1])) < 0.1)
-			{
-				outPoints.RemoveOrdered(i);
-				i--;
-			}
-		}
-		
-		return outPoints;
+		SCR_Math2D.Get2DPolygon(outPoints, m_aCached2DMapPolygon);
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -163,7 +158,7 @@ class COA_BorderBase : PolylineShapeEntity
 		else
 			m_MapDrawCommands = { m_DrawPolygon, m_LinePolygon };
 		
-		if (!IsCurrentVisibility())
+		if (!IsCurrentlyVisibleOnMap())
 			return;
 		
 		if (!m_MapEntity)
@@ -212,7 +207,7 @@ class COA_BorderBase : PolylineShapeEntity
 //=============================================================================================================================================================================================================================================================================================================================================================
 	
 	//------------------------------------------------------------------------------------------------	
-	protected bool IsCurrentVisibility()
+	protected bool IsCurrentlyVisibleOnMap()
 	{
 		COA_Gamemode gameMode = COA_Gamemode.GetInstance();
 		if (!gameMode)
@@ -241,14 +236,8 @@ class COA_BorderBase : PolylineShapeEntity
 
 	//------------------------------------------------------------------------------------------------
 	bool IsInsidePolygon(vector position)
-	{	
-		array<float> polygon2D = new array<float>;
-		array<vector> polygon3D = new array<vector>();
-		
-		polygon3D = GetBorder3DPolygon(polygon3D);
-		SCR_Math2D.Get2DPolygon(polygon3D, polygon2D);
-		
-		return Math2D.IsPointInPolygon(polygon2D, position[0], position[2]);
+	{			
+		return Math2D.IsPointInPolygon(m_aCached2DPolygon, position[0], position[2]);
 	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================

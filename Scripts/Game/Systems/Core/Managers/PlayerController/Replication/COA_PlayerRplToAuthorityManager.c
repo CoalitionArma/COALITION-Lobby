@@ -1094,7 +1094,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		else if (action == "Subtract")
 			m_RespawnManager.SubtractTicket(faction, delta, true);
 		
-		string logMessage = string.Format("%1 Tickets Was %3ed From %2", delta, faction, action);
+		string logMessage = string.Format("%1 Tickets Was %3ed For %2", delta, faction, action);
 		m_RplBroadcastManager.LogAdminAction(logMessage, -1, false, COA_EAdminLogLevel.High);
 	}
 	

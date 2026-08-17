@@ -1,12 +1,10 @@
 class COA_GameBorderHUD : SCR_InfoDisplay
 {
-	OverlayWidget m_wVignette;
-	VerticalLayoutWidget m_wEffectsVerticalLayout;
+	protected OverlayWidget m_wVignette;
+	protected VerticalLayoutWidget m_wEffectsVerticalLayout;
+	protected COA_GameBorderEffect m_GameBorderEffect;
 	
-	ref map<COA_EGameBorderEffectType, ResourceName> m_mEffectLayouts = new map<COA_EGameBorderEffectType, ResourceName>();
-	ref map<int, COA_GameBorderEffect> m_mEffects = new map<COA_EGameBorderEffectType, COA_GameBorderEffect>();
-	
-	bool m_bShowVignette = false;
+	bool m_bActive = false;
 	
 	override event void OnStartDraw(IEntity owner)
 	{
@@ -22,92 +20,52 @@ class COA_GameBorderHUD : SCR_InfoDisplay
 		m_wVignette.SetOpacity(0);
 		m_wVignette.SetEnabled(false);
 		
-		// TODO: config
-		m_mEffectLayouts.Insert(COA_EGameBorderEffectType.RestrictedZone, "{934EEEE4F36CE31E}UI/Map/HUD/GameBorderEffects/GameBorderRestrictedZoneEffect.layout");
-		
 		COA_BorderCheckSystem borderCheck = COA_BorderCheckSystem.GetInstance();
 		if (borderCheck)
 			borderCheck.RegisterHUD(this);
 	}
 	
+	//------------------------------------------------------------------------------------------------
 	override protected void UpdateValues(IEntity owner, float timeSlice)
 	{
 		super.UpdateValues(owner, timeSlice);
-		foreach (int id, COA_GameBorderEffect GameBorderEffect : m_mEffects)
-		{
-			GameBorderEffect.Update(timeSlice);
-		}
 		
-		UpdateOverlayVisibility(m_wVignette, m_bShowVignette, timeSlice);
-	}
-
-	protected void UpdateOverlayVisibility(Widget overlay, bool show, float timeSlice)
-	{
-		if (!overlay)
-			return;
-
-		if (show)
-		{
-			overlay.SetEnabled(true);
-			overlay.SetOpacity(Math.Clamp(overlay.GetOpacity() + timeSlice * 5.0, 0, 1));
-			return;
-		}
-
-		float opacity = Math.Clamp(overlay.GetOpacity() - timeSlice * 5.0, 0, 1);
-		overlay.SetOpacity(opacity);
-		if (opacity <= 0)
-			overlay.SetEnabled(false);
+		if (m_GameBorderEffect)
+			m_GameBorderEffect.Update(timeSlice);
 	}
 	
-	void HideAll()
+	//------------------------------------------------------------------------------------------------
+	void ShowEffect(COA_GameBorder border)
 	{
-		foreach (int id, COA_GameBorderEffect effectHUD : m_mEffects)
-		{
-			HideEffect(id);
-		}
-	}
-	
-	void ShowEffect(COA_BorderSettingsContainer effect)
-	{
-		if (!effect || !m_wEffectsVerticalLayout || !m_mEffectLayouts.Contains(effect.m_iType))
+		if (!border || !m_wEffectsVerticalLayout)
 			return;
-
-		if (m_mEffects.Contains(effect.m_iId))
-			HideEffect(effect.m_iId);
 		
-		ResourceName effectLayout = m_mEffectLayouts.Get(effect.m_iType);
+		ResourceName effectLayout = "{934EEEE4F36CE31E}UI/Map/HUD/GameBorderEffects/GameBorderRestrictedZoneEffect.layout";
 		Widget effectWidget = GetGame().GetWorkspace().CreateWidgets(effectLayout, m_wEffectsVerticalLayout);
 		if (!effectWidget)
 			return;
 
-		COA_GameBorderEffect GameBorderEffect = COA_GameBorderEffect.Cast(effectWidget.FindHandler(COA_GameBorderEffect));
-		if (!GameBorderEffect)
+		m_GameBorderEffect = COA_GameBorderEffect.Cast(effectWidget.FindHandler(COA_GameBorderEffect));
+		if (!m_GameBorderEffect)
 		{
 			delete effectWidget;
 			return;
 		}
-
-		GameBorderEffect.SetString(effect.m_sString);
-		GameBorderEffect.SetTime(effect.m_fTime);
-		if (!m_bShowVignette) m_bShowVignette = GameBorderEffect.ShowVignette();
-		m_mEffects.Insert(effect.m_iId, GameBorderEffect);
+		
+		m_GameBorderEffect.SetTime(border.m_iKillTime);
+		m_wVignette.SetOpacity(1);
+		m_wVignette.SetEnabled(true);
+		m_bActive = true;
 	}
 	
-	void HideEffect(int id)
+	//------------------------------------------------------------------------------------------------
+	void HideEffect()
 	{
-		if (!m_mEffects.Contains(id))
-			return;
-		
-		COA_GameBorderEffect effectHUD = m_mEffects.Get(id);
-		if (effectHUD && effectHUD.GetRootWidget())
-			effectHUD.GetRootWidget().RemoveFromHierarchy();
+		if (m_GameBorderEffect && m_GameBorderEffect.GetRootWidget())
+			m_GameBorderEffect.GetRootWidget().RemoveFromHierarchy();
 
-		m_mEffects.Remove(id);
-		m_bShowVignette = false;
-		foreach (int idT, COA_GameBorderEffect GameBorderEffect : m_mEffects)
-		{
-			m_bShowVignette = GameBorderEffect.ShowVignette();
-			if (m_bShowVignette) break;
-		}
+		m_wVignette.SetOpacity(0);
+		m_wVignette.SetEnabled(false);
+		m_bActive = false;
 	}
 }

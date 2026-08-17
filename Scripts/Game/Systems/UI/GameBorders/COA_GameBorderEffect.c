@@ -18,16 +18,6 @@ class COA_GameBorderEffect : SCR_ScriptedWidgetComponent
 		Update(0.0);
 	}
 	
-	void SetString(string str)
-	{
-		m_sString = str;
-	}
-	
-	bool ShowVignette()
-	{
-		return true;
-	}
-	
 	void Update(float timeSlice)
 	{
 		m_fTime -= timeSlice;

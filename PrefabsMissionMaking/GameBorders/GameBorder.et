@@ -13,15 +13,14 @@ COA_GameBorder {
  }
  m_mPolygonTexture "{0BBFCF29D3791890}UI/Images/Zones/zone-plain.edds"
  m_cPolygonColor 0 0 0 1
- m_fPolygonUVScale 4
+ m_fPolygonUVScale 1
  m_cPolygonBorderColor 0 0 0 1
- m_fPolygonBorderWidth 1
+ m_fPolygonBorderUVScale 1
+ m_fPolygonBorderWidth 5
  m_bReversed 1
- m_aGameBorderSettings COA_GameBorderSettings "{6A20731B4C7E6F44}" {
-  m_fKillTime 25
- }
- m_fHeight 300
- m_fUndergroundHeight 400
+ m_iKillTime 25
+ m_fHeight 1000
+ m_fUndergroundHeight 950
  m_Material "{DD4DF8DD2A3A1EAE}Assets/Editor/VirtualArea/GameBoundry.emat"
  {
   SCR_BaseTriggerEntity {

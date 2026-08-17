@@ -6,12 +6,25 @@ class COA_BorderCheckSystem : GameSystem
 //	 RUNTIME VARIABLES
 //=============================================================================================================================================================================================================================================================================================================================================================
 
-	bool m_bPlayerHasEffect = false;
-	COA_GameBorderHUD m_GameBorderHUD;
-	COA_GameBorder m_PlayerOutsideBorder;
-	SCR_PlayerController m_PlayerController;
-	ref array<COA_GameBorder> m_aBorders = new array<COA_GameBorder>;
+	protected COA_GameBorderHUD m_GameBorderHUD;
+	protected SCR_PlayerController m_PlayerController;
+	protected ref array<COA_GameBorder> m_aBorders = new array<COA_GameBorder>;
+	protected ref map<COA_GameBorder, bool> m_mBordersActive = new map<COA_GameBorder, bool>;
 	protected float m_fUpdate;
+	
+//=============================================================================================================================================================================================================================================================================================================================================================
+//	 CONSTRUCTOR/DESTRUCTOR
+//=============================================================================================================================================================================================================================================================================================================================================================
+	
+	void COA_BorderCheckSystem()
+	{
+
+	}
+	
+	void ~COA_BorderCheckSystem()
+	{
+		
+	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 UPDATE METHODS
@@ -26,59 +39,54 @@ class COA_BorderCheckSystem : GameSystem
 		else
 			m_fUpdate = 0;
 		
-		if (!m_PlayerController)
+		if (!m_GameBorderHUD || !m_PlayerController || !m_PlayerController.GetLocalMainEntity())
+		{
 			m_PlayerController = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+			return;
+		}
 		
 		SCR_ChimeraCharacter player = SCR_ChimeraCharacter.Cast(m_PlayerController.GetLocalMainEntity());
 		if (!player)
 			return;
-		
-		bool playerOutsideBorder = false;
-		COA_GameBorder outsideBorder = null;
+
 		foreach (COA_GameBorder border : m_aBorders)
 		{
-			if (!border || !border.m_aGameBorderSettings)
+			if (!border || border.m_aVisibleForFactions.IsEmpty())
 				continue;
 			
-			if (!border.m_aVisibleForFactions.IsEmpty() && player.m_pFactionComponent)
+			if (COA_EntityHelper.IsSpectator(player))
+			{
+				ForceStopTimerAndBorder(border);
+				continue;	
+			};
+			
+			if (player.m_pFactionComponent)
 			{
 				FactionKey factionKey = player.m_pFactionComponent.GetAffiliatedFactionKey();
 				if (!factionKey.IsEmpty() && !border.m_aVisibleForFactions.Contains(factionKey))
 				{
+					ForceStopTimerAndBorder(border);
 					border.UpdateAreaMesh(false);
 					continue;
-				} else {
-					border.UpdateAreaMesh(true);
 				};
-			}
 			
-			if (!border.IsInsidePolygon(player.GetOrigin()))
-			{
-				playerOutsideBorder = true;
-				outsideBorder = border;
-				break;
+				bool isInsidePolygon = border.IsInsidePolygon(player.GetOrigin());
+				border.UpdateAreaMesh(true);
+				
+				if (isInsidePolygon && !m_mBordersActive.Get(border))
+					PlayerEnteredBorder(border, player);
+				else if (!isInsidePolygon && m_mBordersActive.Get(border) && ShouldPlayerBeAffected(player, border))
+					PlayerLeftBorder(border, player);
 			};
 		}
-		
-		if (!COA_EntityHelper.IsSpectator(player) && playerOutsideBorder)
-		{
-			PlayerLeftBorder(player, outsideBorder);
-		} else if (m_PlayerOutsideBorder && m_bPlayerHasEffect) {
-			m_GameBorderHUD.HideEffect(m_PlayerOutsideBorder.m_aGameBorderSettings.GetEffectContainer().m_iId);
-			m_PlayerOutsideBorder = null;
-			m_bPlayerHasEffect = false;
-		}
 	}
-	
+
 	//------------------------------------------------------------------------------------------------
-	protected void PlayerLeftBorder(SCR_ChimeraCharacter player, COA_GameBorder border)
-	{
-		if (m_bPlayerHasEffect)
-			return;
-		
+	protected bool ShouldPlayerBeAffected(SCR_ChimeraCharacter player, COA_GameBorder border)
+	{	
 		// Allow Admins to teleport out of the game borders during safestart
-		if (COA_SafestartManager.GetInstance().GetSafestartStatus() && SCR_Global.IsAdmin(GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(player)))
-			return;
+		if (COA_EntityHelper.IsSpectator(player) || (COA_SafestartManager.GetInstance().GetSafestartStatus() && SCR_Global.IsAdmin(GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(player))))
+			return false;
 		
 		CompartmentAccessComponent compAccess = CompartmentAccessComponent.Cast(player.FindComponent(CompartmentAccessComponent)); // TODO nullcheck
 		if (compAccess)
@@ -88,16 +96,53 @@ class COA_BorderCheckSystem : GameSystem
 			{
 				VehicleHelicopterSimulation heli = VehicleHelicopterSimulation.Cast(compartment.GetVehicle().FindComponent(VehicleHelicopterSimulation));
 				VehicleFixedWingSimulation plane = VehicleFixedWingSimulation.Cast(compartment.GetVehicle().FindComponent(VehicleFixedWingSimulation));
+				VehicleWheeledSimulation wheeled = VehicleWheeledSimulation.Cast(compartment.GetVehicle().FindComponent(VehicleWheeledSimulation));
+				VehicleTrackedSimulation trakced = VehicleTrackedSimulation.Cast(compartment.GetVehicle().FindComponent(VehicleTrackedSimulation));
 				
-				if((heli || plane)&& !border.m_bHeliRestricted)
-					return;
-			}
-		}
+				if (((heli || plane) && !border.m_bAirVehiclesRestricted) || ((wheeled || trakced) && !border.m_bGroundVehiclesRestricted))
+					return false;
+			};
+		};
 		
-		m_bPlayerHasEffect = true;
-		m_PlayerOutsideBorder = border;
-		m_GameBorderHUD.ShowEffect(border.m_aGameBorderSettings.GetEffectContainer());
+		return true;
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	protected void PlayerLeftBorder(COA_GameBorder border, IEntity player)
+	{
+		m_mBordersActive.Set(border, false);
+		
+		if (!m_GameBorderHUD.m_bActive)
+			m_GameBorderHUD.ShowEffect(border);
 	};
+	
+	//------------------------------------------------------------------------------------------------
+	protected void PlayerEnteredBorder(COA_GameBorder border, IEntity player)
+	{
+		m_mBordersActive.Set(border, true);	
+		ForceStopTimer();
+	};
+	
+//=============================================================================================================================================================================================================================================================================================================================================================
+//	 DEATH TIMER STOP METHODS (for external use)
+//=============================================================================================================================================================================================================================================================================================================================================================
+	
+	//------------------------------------------------------------------------------------------------
+	void ForceStopTimerAndBorder(COA_GameBorder border)
+	{
+		if (m_mBordersActive.Get(border))
+		{
+			m_mBordersActive.Set(border, false);
+			ForceStopTimer();
+		};
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	void ForceStopTimer()
+	{
+		if (m_GameBorderHUD && m_GameBorderHUD.m_bActive)
+			m_GameBorderHUD.HideEffect();
+	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 REGISTRATION METHODS
@@ -119,6 +164,11 @@ class COA_BorderCheckSystem : GameSystem
 	void UnRegisterBorder(COA_GameBorder border)
 	{
 		m_aBorders.RemoveItem(border);
+		if (m_mBordersActive.Contains(border))
+		{
+			ForceStopTimer();
+			m_mBordersActive.Remove(border);
+		}
 	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
