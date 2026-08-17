@@ -1,8 +1,6 @@
 COA_PlayerCharacter : "{836E7E39AAC5888B}Prefabs/Characters/Factions/BLUFOR/US_Army/Character_US_Base.et" {
  ID "520EC961A090B1EE"
  components {
-  COA_PolyZoneEffectHandler "{68716877EBA02A6A}" {
-  }
   CharacterWeaponManagerComponent "{5C9CA676383262FD}" {
    DefaultWeaponIndex 0
   }

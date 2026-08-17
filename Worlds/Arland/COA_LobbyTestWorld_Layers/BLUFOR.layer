@@ -1,20 +1,20 @@
-COA_StaticSpawnPoint : "{62865C82AB534D91}PrefabsMissionMaking/Systems/SpawnPoints/BLUFOR_Spawn.et" {
- coords 1225.781 38.174 2813.078
+COA_StaticSpawnPoint : "{62865C82AB534D91}PrefabsMissionMaking/SpawnPoints/SpawnPoints/BLUFOR_Spawn.et" {
+ coords 1190.633 39.154 2775.36
 }
-PolylineShapeEntity : "{8AE1D02BC25C93C5}PrefabsMissionMaking/PolyZone/Safestart/BLUFOR_SafestartBoundry.et" {
+COA_SafestartBorder : "{8AE1D02BC25C93C5}PrefabsMissionMaking/GameBorders/Safestart/BLUFOR_SafestartBoundry.et" {
  coords 1230.972 38 2794.036
  Points {
-  ShapePoint "{659E505E589E0FCC}" {
-   Position 1.314 0 -18.464
+  ShapePoint "{6A20FE4167A6D3D3}" {
+   Position -16.823 0 -43.592
   }
-  ShapePoint "{659E505E591C5D43}" {
-   Position -8.375 0 19.043
+  ShapePoint "{6A20FE416058BA27}" {
+   Position -31.317 0 17.938
   }
-  ShapePoint "{659E505E598C6B6F}" {
-   Position -1.851 0 20.121
+  ShapePoint "{6A20FE416124852B}" {
+   Position -60.218 0 11.352
   }
-  ShapePoint "{659E505E5A107F6E}" {
-   Position 7.817 0 -17.172
+  ShapePoint "{6A20FE4162252187}" {
+   Position -44.901 0 -50.57
   }
  }
 }

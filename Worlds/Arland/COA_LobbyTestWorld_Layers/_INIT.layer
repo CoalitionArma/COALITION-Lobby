@@ -75,7 +75,7 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/!Systems/!Lobby/COA_Lobby.et
    m_bRandomWeatherChanges 0
   }
  }
- coords 1228.604 37.813 2845.828
+ coords 1167.261 38.672 2773.479
  m_bRespawnEnabled 0
  m_bWaveRespawn 0
  m_bRallyPointsEnabled 0
@@ -1085,8 +1085,8 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/!Systems/!Lobby/COA_Lobby.et
   }
  }
 }
-PolylineShapeEntity : "{318DDE6633C34CF1}PrefabsMissionMaking/PolyZone/GameBoundry.et" {
- coords 1237.725 37.908 2830.09
+COA_GameBorder : "{318DDE6633C34CF1}PrefabsMissionMaking/GameBorders/GameBorder.et" {
+ coords 1239.986 37.908 2827.883
  Points {
   ShapePoint "{659E505EE50F4D29}" {
    Position -154.59 0 -371.974
@@ -1173,4 +1173,9 @@ PolylineShapeEntity : "{318DDE6633C34CF1}PrefabsMissionMaking/PolyZone/GameBound
    Position -108.952 0 -365.069
   }
  }
+ m_fPolygonUVScale 1
+ m_fPolygonBorderUVScale 1
+ m_fPolygonBorderWidth 5
+ m_fHeight 1000
+ m_fUndergroundHeight 950
 }

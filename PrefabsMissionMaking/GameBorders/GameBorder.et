@@ -1,0 +1,38 @@
+COA_GameBorder {
+ ID "658635BEF7631DCE"
+ components {
+  RplComponent "{6A2171210D28C7CB}" {
+  }
+  Hierarchy "{6A217123253F8302}" {
+  }
+ }
+ IsClosed 1
+ LineColor 0 0 0 1
+ m_aVisibleForFactions {
+  "BLUFOR" "OPFOR" "INDFOR" "CIV" "SPEC"
+ }
+ m_mPolygonTexture "{0BBFCF29D3791890}UI/Images/Zones/zone-plain.edds"
+ m_cPolygonColor 0 0 0 1
+ m_fPolygonUVScale 4
+ m_cPolygonBorderColor 0 0 0 1
+ m_fPolygonBorderWidth 1
+ m_bReversed 1
+ m_aGameBorderSettings COA_GameBorderSettings "{6A20731B4C7E6F44}" {
+  m_fKillTime 25
+ }
+ m_fHeight 300
+ m_fUndergroundHeight 400
+ m_Material "{DD4DF8DD2A3A1EAE}Assets/Editor/VirtualArea/GameBoundry.emat"
+ {
+  SCR_BaseTriggerEntity {
+   ID "6A21712131856BE0"
+   components {
+    RplComponent "{6A217121558CB9E1}" {
+    }
+    Hierarchy "{6A217123210852F6}" {
+    }
+   }
+   TriggerShapeType Polyline
+  }
+ }
+}

@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{85AD1A3A28F1CC62}PrefabsMissionMaking/GameBorders/Safestart/INDFOR_ForardDeployBoundry.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

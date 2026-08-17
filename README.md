@@ -10,7 +10,7 @@ An Arma Reforger addon providing the core mission-flow foundation used by [COALI
 - **Player & character identity**: `COA_PlayerController` and its manager suite (camera, chat commands, keybinds, settings, RPC authority/ownership, poly zones, scripted markers), the `COA_PlayerCharacter`/`COA_SpectatorCharacter`/`COA_GearscriptCharacter` entity classes, and region-specific identity pools under `Configs/Identities`.
 - **Spawn points**: group, rally, static, and vehicle spawn point entities used to place players into the world once slotted.
 - **Admin tooling**: an in-pause-menu `COA_AdminMenuManager`/Admin Menu UI covering game mode control, teleport, heal, gear, respawn control, and a player ticket/report queue.
-- **Poly zone & manual marker system**: `COA_PolyZone` triggers with faction-restriction and screen-blur effects (used for safestart/forward-deploy boundaries), plus a manual map-marker placement system.
+- **Poly zone & manual marker system**: `COA_GameBorder` triggers with faction-restriction and screen-blur effects (used for safestart/forward-deploy boundaries), plus a manual map-marker placement system.
 - **Spectator system**: spectator camera, freecam menu, damage reports, and entity/label overlays for observing matches before spawning or after death.
 - **CVON integration**: overrides layered on top of the community CVON VON addon (`ModdedOverrides/CVON`) for group/radio/VON behavior.
 - **Lobby UI**: briefing, slotting, respawn, and admin menu layouts, player/squad/ticket list boxes, spectator HUD, hint display, and supporting icons under `UI/`.

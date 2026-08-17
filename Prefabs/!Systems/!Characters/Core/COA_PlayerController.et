@@ -11,8 +11,6 @@ COA_PlayerController : "{225E51284CC95CFA}Prefabs/Characters/Core/DefaultPlayerC
     }
     COA_PlayerMenuManager "{68C4425E8FB6F16D}" {
     }
-    COA_PlayerPolyZoneManager "{68C4425E89BF5FE0}" {
-    }
     COA_PlayerRplToAuthorityManager "{68C4425EB437D844}" {
     }
     COA_PlayerRplToOwnerManager "{68C5417AC359912D}" {
@@ -33,8 +31,8 @@ COA_PlayerController : "{225E51284CC95CFA}Prefabs/Characters/Core/DefaultPlayerC
     SCR_InfoDisplayExtended "{5CEAB7FB9DF29AC5}" {
      m_bShowWhenCreated 0
     }
-    COA_PolyZoneHUD "{658642B70DA90C1B}" {
-     m_LayoutPath "{B9A11E3F0DADF929}UI/Map/HUD/PolyZoneHUD.layout"
+    COA_GameBorderHUD "{658642B70DA90C1B}" {
+     m_LayoutPath "{B9A11E3F0DADF929}UI/Map/HUD/GameBorderHUD.layout"
      m_eLayer OVERLAY
     }
     COA_SafeStartDisplay "{61303B9E05796EC7}" {

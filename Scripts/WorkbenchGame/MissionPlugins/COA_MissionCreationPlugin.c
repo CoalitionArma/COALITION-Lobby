@@ -41,7 +41,7 @@ class COA_MissionWorldCreationPlugin : WorkbenchPlugin
 		api.CreateSubsceneLayer(1, "SPAWNPOINTS");
 		api.CreateSubsceneLayer(1, "SPAWNPOINTSGROUPS");
 		api.CreateSubsceneLayer(1, "OBJECTIVES");
-		api.CreateSubsceneLayer(1, "POLYZONES");
+		api.CreateSubsceneLayer(1, "GameBorderS");
 		api.CreateSubsceneLayer(1, "VEHICLES");
 		api.CreateSubsceneLayer(1, "PROPS");
 		

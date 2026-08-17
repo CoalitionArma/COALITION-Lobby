@@ -1,0 +1,36 @@
+COA_ForwardDeployBorder {
+ ID "6A217822224E6DD4"
+ components {
+  RplComponent "{6A217822224ED692}" {
+  }
+  Hierarchy "{6A217822224ED571}" {
+  }
+ }
+ IsClosed 1
+ LineColor 0 0.1255 0.502 1
+ m_aVisibleForFactions {
+  "BLUFOR"
+ }
+ m_cPolygonColor 0 0.125 0.503 0.176
+ m_cPolygonBorderColor 0 0.125 0.502 1
+ m_fPolygonBorderWidth 6
+ m_bReversed 0
+ m_aGameBorderSettings COA_GameBorderSettings "{6A217822224ED57D}" {
+ }
+ m_bHeliRestricted 1
+ m_fHeight 345
+ m_fUndergroundHeight 400
+ m_Material "{F06785B0378A3C76}Assets/Editor/VirtualArea/BLUFORBoundry.emat"
+ {
+  SCR_BaseTriggerEntity {
+   ID "6A217822224ED6E8"
+   components {
+    RplComponent "{6A217822224ED565}" {
+    }
+    Hierarchy "{6A217822224ED564}" {
+    }
+   }
+   TriggerShapeType Polyline
+  }
+ }
+}
