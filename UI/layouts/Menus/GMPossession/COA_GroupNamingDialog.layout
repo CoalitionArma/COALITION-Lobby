@@ -1,0 +1,144 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ {
+  FrameWidgetClass "{9B47E2A6114F80E1}" {
+   Name "MenuBackground"
+   Slot FrameWidgetSlot "{9B47E2A6114F80E2}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -960
+    OffsetLeft -960
+    PositionY -540
+    OffsetTop -540
+    SizeX 1920
+    OffsetRight -960
+    SizeY 1080
+    OffsetBottom -540
+   }
+   {
+    ImageWidgetClass "{9B47E2A6114F80E3}" {
+     Name "Background"
+     Slot FrameWidgetSlot "{9B47E2A6114F80E4}" {
+      Anchor 0.5 0.5 0.5 0.5
+      PositionX -212
+      OffsetLeft -212
+      PositionY -140
+      OffsetTop -140
+      SizeX 424
+      OffsetRight -212
+      SizeY 280
+      OffsetBottom -140
+     }
+     Color 0.013 0.0152 0.0176 1
+     "Inherit Color" 1
+     Size 3840 2160
+    }
+   }
+  }
+  TextWidgetClass "{9B47E2A6114F80C9}" {
+   Name "Title"
+   Slot FrameWidgetSlot "{9B47E2A6114F80CA}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -204
+    OffsetLeft -204
+    PositionY -124
+    OffsetTop -124
+    SizeX 408
+    OffsetRight -204
+    SizeY 40
+    OffsetBottom 84
+   }
+   "Z Order" 1
+   Clipping False
+   Text "Name this squad"
+   "Font Size" 20
+   "Min Font Size" 10
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{9B47E2A6114F80CB}" {
+   }
+   Offset 0 0
+  }
+  EditBoxWidgetClass "{9B47E2A6114F80CD}" {
+   Name "Name"
+   Slot FrameWidgetSlot "{9B47E2A6114F80CE}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -190
+    OffsetLeft -190
+    PositionY -20
+    OffsetTop -20
+    SizeX 380
+    OffsetRight -190
+    SizeY 40
+    OffsetBottom -20
+   }
+   "Z Order" 1
+   "Font Size" 16
+   "Use placeholder text" 1
+   "Placeholder text" "Squad name"
+  }
+  ButtonWidgetClass "{9B47E2A6114F80D1}" {
+   Name "Cancel"
+   Slot FrameWidgetSlot "{9B47E2A6114F80D2}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -92
+    OffsetLeft -92
+    PositionY 90
+    OffsetTop 90
+    SizeX 80
+    OffsetRight 12
+    SizeY 40
+    OffsetBottom -130
+   }
+   "Z Order" 1
+   Color 0.013 0.0152 0.0176 1
+   components {
+    SCR_ButtonTextComponent "{9B47E2A6114F80D9}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{9B47E2A6114F80D3}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{9B47E2A6114F80D4}" {
+     }
+     Text "Cancel"
+     "Font Size" 15
+     "Min Font Size" 15
+    }
+   }
+  }
+  ButtonWidgetClass "{9B47E2A6114F80D5}" {
+   Name "Confirm"
+   Slot FrameWidgetSlot "{9B47E2A6114F80D6}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 12
+    OffsetLeft 12
+    PositionY 90
+    OffsetTop 90
+    SizeX 80
+    OffsetRight -92
+    SizeY 40
+    OffsetBottom -130
+   }
+   "Z Order" 1
+   Color 0.013 0.0152 0.0176 1
+   components {
+    SCR_ButtonTextComponent "{9B47E2A6114F80DA}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{9B47E2A6114F80D7}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{9B47E2A6114F80D8}" {
+     }
+     Text "Confirm"
+     "Font Size" 15
+     "Min Font Size" 15
+    }
+   }
+  }
+ }
+}

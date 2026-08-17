@@ -257,7 +257,14 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	void SendHint(string data, int playerId = -1, string factionKey = "")
 	{
-		Rpc(RpcAsk_SendHint, data, playerId, factionKey); 
+		Rpc(RpcAsk_SendHint, data, playerId, factionKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sent by COA_GroupNamingDialog once a GM confirms a name for a group they're marking joinable.
+	void RequestMarkGroupJoinable(RplId groupId, FactionKey factionKey, string customName)
+	{
+		Rpc(RpcAsk_MarkGroupJoinable, groupId, factionKey, customName);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1004,7 +1011,42 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		m_RplBroadcastManager.SendHint(data, playerId, factionKey);
 	}
 
-	
+	//------------------------------------------------------------------------------------------------
+	//! Server-side handler for COA_GroupNamingDialog's confirm button. This is a direct client-
+	//! reachable RPC (not gated by the editor context action's CanBeShown/CanBePerformed, which are
+	//! only client-side UI hints), so the caller's Game Master status is re-checked here using
+	//! EPlayerRole.GAME_MASTER - a server-authoritative role flag SCR_EditorManagerEntity itself
+	//! maintains, not something a modified client can forge. The caller's identity is resolved from
+	//! this component's own owning PlayerController (GetOwner()) rather than trusting any
+	//! client-supplied player ID, since this component is attached per-player and the RPC always
+	//! arrives in the context of whichever controller actually sent it.
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_MarkGroupJoinable(RplId groupId, FactionKey factionKey, string customName)
+	{
+		// Telemetry: RplId + 2 strings
+		int bytes = COA_BandwidthTelemetryManager.EstimateSize_RplId();
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_String(factionKey);
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_String(customName);
+		LogTelemetry("RpcAsk_MarkGroupJoinable", bytes);
+
+		PlayerController ownerController = PlayerController.Cast(GetOwner());
+		if (!ownerController)
+			return;
+
+		int callerId = ownerController.GetPlayerId();
+		if (!GetGame().GetPlayerManager().HasPlayerRole(callerId, EPlayerRole.GAME_MASTER))
+			return;
+
+		SCR_AIGroup group = COA_EntityHelper.GetGroupFromRplId(groupId);
+		if (!group)
+			return;
+
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+		if (slottingManager)
+			slottingManager.RegisterGMPossessionGroup(group, factionKey, customName);
+	}
+
+
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_Heal(int playerId, bool logAction, bool isVehicle)

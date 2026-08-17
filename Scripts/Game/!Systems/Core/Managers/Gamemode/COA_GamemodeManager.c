@@ -64,7 +64,15 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		SCR_PlayerController playerController = SCR_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
 		if (!playerController)
 			return false;
-			
+
+		// GM possession-slot short-circuit: if this player's slot maps to a pre-existing, GM-placed
+		// AI body (see COA_SlottingManager.RegisterGMPossessionGroup), possess that specific entity
+		// instead of running the spawn-a-fresh-character flow below.
+		int gmSlotId = m_SlottingManager.GetPlayerSlotID(playerId);
+		RplId possessionTargetId;
+		if (gmSlotId >= 0 && COA_GMPossessionManager.GetInstance().TryGetPossessionTarget(gmSlotId, possessionTargetId))
+			return InitilizePossessionPlayer(playerId, gmSlotId, possessionTargetId, playerController);
+
 		COA_PlayerCharacter playerCharacter = null;
 		Faction faction = null;
 		bool alreadyCreated;
@@ -127,6 +135,37 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 
 			m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, playerRplComp.Id());
 		};
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hands a GM-placed AI body over to a player instead of spawning a fresh character. If the body
+	//! has already died before anyone claimed the slot, the possession entry is consumed anyway and
+	//! initialization is retried, which now falls through to the normal role-based spawn (using the
+	//! role COA_GMRoleGuessHelper guessed at registration time) - so nobody gets stranded.
+	protected bool InitilizePossessionPlayer(int playerId, int slotId, RplId targetEntityId, SCR_PlayerController playerController)
+	{
+		SCR_ChimeraCharacter targetCharacter = COA_EntityHelper.GetCharacterFromRplId(targetEntityId);
+
+		if (!targetCharacter || !COA_DamageHelper.CheckIfEntityAlive(targetCharacter))
+		{
+			COA_GMPossessionManager.GetInstance().ConsumePossessionSlot(slotId);
+			return InitilizePlayer(playerId);
+		}
+
+		Faction faction = m_SlottingManager.GetPlayerSlotFaction(playerId);
+		m_MenuManager.RemovePlayerFromAnyChannel(playerId, false);
+
+		COA_PlayerHelper.AssignFactionToPlayer(playerController, faction);
+		COA_PossessionHelper.PossessExistingEntity(playerController, targetCharacter);
+
+		AssignPlayerToGroup(playerId);
+
+		m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, targetEntityId);
+
+		// One-shot: never intercept this slot again, regardless of what happens to the player from here.
+		COA_GMPossessionManager.GetInstance().ConsumePossessionSlot(slotId);
 
 		return true;
 	}
