@@ -429,7 +429,7 @@ class COA_AdminMenu : ChimeraMenuBase
 	//! \param[in]  filterByOpenTickets filter the list by players by open tickets
 	//! \param[in]  filterByGroup filter the list by players by this group
 	//! \param[in]  filterByFaction filter the list by players by this faction
-	protected void PopulatePlayerList(SCR_ListBoxComponent list, bool selectOpenTicket = true, bool filterByOpenTickets = false, SCR_AIGroup filterByGroup = null, Faction filterByFaction = null)
+	protected void PopulatePlayerList(SCR_ListBoxComponent list, bool selectOpenTicket = true, bool filterByOpenTickets = false, SCR_AIGroup filterByGroup = null, Faction filterByFaction = null, bool filterDeadOnly = false)
 	{
 		// Clear the list
 		list.Clear();
@@ -454,9 +454,15 @@ class COA_AdminMenu : ChimeraMenuBase
 			if (!playerGroup)
 				continue;
 
-			if (COA_EntityHelper.IsSpectator(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
+			bool isSpectating = COA_EntityHelper.IsSpectator(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId));
+
+			// Respawn-style lists should only ever offer players who are actually eligible to be respawned
+			if (filterDeadOnly && !COA_SlottingManager.GetInstance().IsPlayerConsideredDead(playerId) && !isSpectating)
 				continue;
-			
+
+			if (!filterDeadOnly && isSpectating)
+				continue;
+
 			if (filterByOpenTickets && !COA_AdminMenuManager.GetInstance().TicketExists(playerId))
 				continue;
 
@@ -664,19 +670,27 @@ class COA_AdminMenu : ChimeraMenuBase
 			}
 		}
 
+		// Respawn's search box operates on the same dead/spectating-only list as its initial population
+		bool filterDeadOnly = GetCurrentOpenTab() == "Respawn";
+
 		// Sort and add filtered players
 		playerNames.Sort(false);
 		foreach (string name : playerNames)
 		{
 			int playerId = GetplayerIdFromName(name);
 			Faction playerFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId);
-			
+
 			if (!m_groupManagerComponent.GetPlayerGroup(playerId))
 				continue;
-				
-			if (COA_EntityHelper.IsSpectator(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
+
+			bool isSpectating = COA_EntityHelper.IsSpectator(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId));
+
+			if (filterDeadOnly && !COA_SlottingManager.GetInstance().IsPlayerConsideredDead(playerId) && !isSpectating)
 				continue;
-			
+
+			if (!filterDeadOnly && isSpectating)
+				continue;
+
 			list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
 		}
 	}
@@ -699,8 +713,8 @@ class COA_AdminMenu : ChimeraMenuBase
 			return;
 		
 		check.SetVisible(menuButtonTicketOpenToggle.IsToggled());
-		
-		PopulatePlayerList(playerList, false, menuButtonTicketOpenToggle.IsToggled());
+
+		PopulatePlayerList(playerList, false, menuButtonTicketOpenToggle.IsToggled(), filterDeadOnly: GetCurrentOpenTab() == "Respawn");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1524,7 +1538,7 @@ class COA_AdminMenu : ChimeraMenuBase
 		m_outGroups = COA_SlottingManager.GetInstance().GetAllGroups();
 
 		// Populate Dead Players list
-		PopulatePlayerList(playerList, true, menuButtonTicketOpenToggle.IsToggled());
+		PopulatePlayerList(playerList, true, menuButtonTicketOpenToggle.IsToggled(), filterDeadOnly: true);
 		
 		// Populate Groups list
 		PopulateGroupsList(groupList);

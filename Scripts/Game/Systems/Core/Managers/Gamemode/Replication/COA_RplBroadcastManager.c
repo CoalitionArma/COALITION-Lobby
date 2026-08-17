@@ -1164,17 +1164,21 @@ class COA_RplBroadcastManager : ScriptComponent
 	void RpcDo_ReplyAdminMessage(string data, int playerId, int adminID, bool logAction)
 	{
 		if (logAction)
-			LogAdminAction(string.Format("Reply to %1: %2", 
-				GetGame().GetPlayerManager().GetPlayerName(playerId), data), 
-				playerId, 
+			LogAdminAction(string.Format("Reply to %1: %2",
+				GetGame().GetPlayerManager().GetPlayerName(playerId), data),
+				playerId,
 				false,
 				COA_EAdminLogLevel.Low);
-			
-		if (!IsLocalPlayer(playerId))
-			return;
 
 		SCR_ChatComponent chatComponent = GetLocalChatComponent();
 		if (!chatComponent)
+			return;
+
+		// Show the reply to other admins/mods too, so ticket responses stay visible to the whole team
+		if ((SCR_Global.IsAdmin() || m_PermissionManager.IsModerator()) && !IsLocalPlayer(playerId))
+			chatComponent.ShowMessage(string.Format("Reply to %1: %2", GetGame().GetPlayerManager().GetPlayerName(playerId), data));
+
+		if (!IsLocalPlayer(playerId))
 			return;
 
 		chatComponent.ShowMessage(string.Format("Admin: %1", data));
@@ -1770,7 +1774,7 @@ class COA_RplBroadcastManager : ScriptComponent
 		{
 			string player1Name = GetGame().GetPlayerManager().GetPlayerName(playerId1);
 			string player2Name = GetGame().GetPlayerManager().GetPlayerName(playerId2);
-			LogAdminAction(string.Format("%1 Was Teleported To %2", player1Name, player2Name), playerId1, true, COA_EAdminLogLevel.Low);
+			LogAdminAction(string.Format("%1 Was Teleported To %2", player1Name, player2Name), playerId1, true, COA_EAdminLogLevel.Medium);
 		}
 		
 		if (!IsLocalPlayer(playerId1))
