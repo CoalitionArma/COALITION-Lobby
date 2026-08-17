@@ -1073,7 +1073,7 @@ class COA_RplBroadcastManager : ScriptComponent
 		} else {
 			// Check if it's a new ticket and let admins know
 			if (!ticketExists)
-				chatComponent.ShowMessage(string.Format("%1 has created a ticket", playerName));
+				chatComponent.ShowMessage(string.Format("%1 Has Created A Ticket", playerName));
 			
 			// Show the player's message in admin chat
 			chatComponent.ShowMessage(string.Format("%1: %2", playerName, data));
@@ -1189,7 +1189,7 @@ class COA_RplBroadcastManager : ScriptComponent
 		string playerName = GetGame().GetPlayerManager().GetPlayerName(ticketID);
 		
 		if (logAction)
-			LogAdminAction(string.Format("%1 closed %2's ticket", adminName, playerName), -1, false, COA_EAdminLogLevel.Low);
+			LogAdminAction(string.Format("%1 Closed %2's Ticket", adminName, playerName), -1, false, COA_EAdminLogLevel.Low);
 		
 		if (!SCR_Global.IsAdmin() && !m_PermissionManager.IsModerator())
 			return;
@@ -1199,7 +1199,7 @@ class COA_RplBroadcastManager : ScriptComponent
 			return;
 		
 		// Display an admin closed a ticket
-		chatComponent.ShowMessage(string.Format("%1 closed %2's ticket", adminName, playerName));
+		chatComponent.ShowMessage(string.Format("%1 Closed %2's Ticket", adminName, playerName));
 	}
 
 	
@@ -1211,7 +1211,7 @@ class COA_RplBroadcastManager : ScriptComponent
 		string playerName = GetGame().GetPlayerManager().GetPlayerName(ticketID);
 		
 		if (logAction)
-			LogAdminAction(string.Format("%1 assigned to %2's ticket", adminName, playerName), -1, false, COA_EAdminLogLevel.Low);
+			LogAdminAction(string.Format("%1 Assigned To %2's Ticket", adminName, playerName), -1, false, COA_EAdminLogLevel.Low);
 		
 		if (!SCR_Global.IsAdmin() && !m_PermissionManager.IsModerator())
 			return;
@@ -1221,7 +1221,7 @@ class COA_RplBroadcastManager : ScriptComponent
 			return;
 
 		// Display an admin assigned them self to the ticket
-		chatComponent.ShowMessage(string.Format("%1 assigned to %2's ticket", adminName, playerName));
+		chatComponent.ShowMessage(string.Format("%1 Assigned To %2's Ticket", adminName, playerName));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1770,7 +1770,7 @@ class COA_RplBroadcastManager : ScriptComponent
 		{
 			string player1Name = GetGame().GetPlayerManager().GetPlayerName(playerId1);
 			string player2Name = GetGame().GetPlayerManager().GetPlayerName(playerId2);
-			LogAdminAction(string.Format("%1 was teleported to %2", player1Name, player2Name), playerId1, true, COA_EAdminLogLevel.Low);
+			LogAdminAction(string.Format("%1 Was Teleported To %2", player1Name, player2Name), playerId1, true, COA_EAdminLogLevel.Low);
 		}
 		
 		if (!IsLocalPlayer(playerId1))
