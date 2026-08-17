@@ -1185,17 +1185,12 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		cursorWorldPos[1] = SCR_TerrainHelper.GetTerrainY(cursorWorldPos);
 		foreach (IEntity zone: COA_ForwardDeployManager.GetInstance().GetForwardDeployZones())
 		{
-			COA_GameBorder zoneComp = COA_GameBorder.Cast(zone.FindComponent(COA_GameBorder));
-			if (!zoneComp)
+			COA_GameBorder border = COA_GameBorder.Cast(zone);
+			
+			if (!border || !border.IsInsidePolygon(Vector(cursorWorldPos[0], 0, cursorWorldPos[2])) || !border.m_aVisibleForFactions.Contains(factionKey))
 				continue;
 			
-			if (!zoneComp.IsInsidePolygon(Vector(cursorWorldPos[0], 0, cursorWorldPos[2])))
-				continue;
-			
-			if (!zoneComp.m_aVisibleForFactions.Contains(factionKey))
-				continue;
-			
-			GameBorder = zone;
+			GameBorder = border;
 			break;
 		}
 		

@@ -113,11 +113,8 @@ class COA_ForwardDeployManager : ScriptComponent
 		bool isActive = false;
 		foreach (IEntity zone: m_aForwardDeployZones)
 		{
-			COA_GameBorder GameBorder = COA_GameBorder.Cast(zone.FindComponent(COA_GameBorder));
-			if (!GameBorder)
-				continue;
-
-			if(!GameBorder.m_aVisibleForFactions.Contains(factionKey))
+			COA_GameBorder border = COA_GameBorder.Cast(zone);
+			if (!border || !border.m_aVisibleForFactions.Contains(factionKey))
 				continue;
 			
 			isActive = true;
