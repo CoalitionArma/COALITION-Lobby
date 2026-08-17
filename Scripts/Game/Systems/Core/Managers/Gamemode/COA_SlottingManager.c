@@ -712,7 +712,142 @@ class COA_SlottingManager : ScriptComponent
 		
 		Print(string.Format("[COA_SlottingManager] Client removed slot %1", slotId), LogLevel.VERBOSE);
 	}
-	
+
+//=============================================================================================================================================================================================================================================================================================================================================================
+//	 GM POSSESSION SLOTS
+//=============================================================================================================================================================================================================================================================================================================================================================
+
+	//------------------------------------------------------------------------------------------------
+	//! Turns every member of a GM-placed AI group (including the leader) into an individually
+	//! pickable slot, reusing the same slot-ID counter (m_iLatestSlotID) and client-notification
+	//! path (m_RplBroadcastManager.UpdateSlotData) InitilizeSlotsForFaction already uses for
+	//! config-driven groups. Called from COA_MarkGroupJoinableAction.Perform (server-only) once a
+	//! GM has confirmed a name for the group in COA_GroupNamingDialog.
+	//! \param[in] group the GM-placed group to register - every current agent becomes a slot
+	//! \param[in] factionKey the group's faction - OPFOR/BLUFOR/INDFOR only, never CIV
+	//! \param[in] customName GM-typed name for the group header; falls back to an auto-generated
+	//!            "<faction> <composition>" name (e.g. "BLUFOR Sniper Team") if left empty
+	void RegisterGMPossessionGroup(SCR_AIGroup group, FactionKey factionKey, string customName = "")
+	{
+		if (!Replication.IsServer() || !group || factionKey.IsEmpty() || factionKey == "CIV")
+			return;
+
+		COA_SafestartManager safestart = COA_SafestartManager.GetInstance();
+		if (!safestart || !safestart.GetSafestartStatus())
+			return;
+
+		if (COA_GMPossessionManager.GetInstance().IsGroupAlreadyRegistered(group))
+			return;
+
+		RplComponent groupRplComp = RplComponent.Cast(group.FindComponent(RplComponent));
+		if (!groupRplComp)
+			return;
+
+		array<AIAgent> agents = {};
+		group.GetAgents(agents);
+		if (agents.IsEmpty())
+			return;
+
+		// First pass: guess every member's role up front so the header name/icon can reflect the
+		// group's actual composition before any slot is created or broadcast. One entry per agent,
+		// index-aligned with `agents` (RIFLEMAN placeholder for a null-entity agent, which the
+		// second pass below skips anyway before ever reading it back).
+		array<COA_EGearRole> memberRoles = {};
+		foreach (AIAgent agent : agents)
+		{
+			IEntity memberEntity = agent.GetControlledEntity();
+			if (memberEntity)
+				memberRoles.Insert(COA_GMRoleGuessHelper.GuessRoleForEntity(memberEntity));
+			else
+				memberRoles.Insert(COA_EGearRole.RIFLEMAN);
+		}
+
+		// Give the group a proper sequential ID (config-driven slotting groups all claim IDs
+		// starting at 1000 - see SCR_GroupsManagerComponent.AssignGroupID/m_iLatestGroupID) so
+		// GetAllGroups() below, which sorts purely by SCR_AIGroup.GetGroupID(), places this group
+		// after all of them instead of at -1 (its unset default, which always sorts first).
+		SCR_GroupsManagerComponent.GetInstance().AssignGroupID(group);
+		group.COA_ForceResync();   // m_iGroupID isn't an [RplProp] - push a fresh snapshot so already-connected clients see the new ID too
+
+		COA_EFlagType guessedFlag = COA_GMFlagGuessHelper.GuessFlagForRoles(memberRoles);
+		group.SetGroupFlag(guessedFlag, true);
+
+		if (customName.IsEmpty())
+		{
+			string flagLabel = typename.EnumToString(COA_EFlagType, guessedFlag);
+			flagLabel.Replace("_", " ");   // Replace mutates in place and returns a match count, not a string
+			customName = factionKey + " " + flagLabel;
+		}
+		group.SetCustomName(customName, 0);
+
+		// Clean this group's slots up automatically if the GM deletes it later.
+		SCR_EditableGroupComponent editableGroupComp = SCR_EditableGroupComponent.Cast(group.FindComponent(SCR_EditableGroupComponent));
+		if (editableGroupComp)
+			editableGroupComp.GetOnDeleted().Insert(OnPossessionGroupDeleted);
+
+		foreach (int i, AIAgent agent : agents)
+		{
+			IEntity memberEntity = agent.GetControlledEntity();
+			if (!memberEntity)
+				continue;
+
+			RplComponent memberRplComp = RplComponent.Cast(memberEntity.FindComponent(RplComponent));
+			if (!memberRplComp)
+				continue;
+
+			COA_SlotData slotData = new COA_SlotData();
+			slotData.SetSlotCurrentGroup(groupRplComp.Id());
+			slotData.SetSlotFactionKey(factionKey);
+			slotData.SetSlotRole(memberRoles.Get(i));
+			slotData.SetSlotCurrentCharacter(memberRplComp.Id());   // the body already exists - no spawn needed
+
+			m_iLatestSlotID++;
+			slotData.SetSlotId(m_iLatestSlotID);
+			m_mSlotsMap.Set(m_iLatestSlotID, slotData);
+
+			COA_GMPossessionManager.GetInstance().RegisterPossessionSlot(m_iLatestSlotID, memberRplComp.Id(), groupRplComp.Id());
+
+			m_RplBroadcastManager.UpdateSlotData(slotData);   // same call InitilizeSlotsForFaction makes per slot - replicates it and fires GetOnSlottingUpdate() client-side
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Fired via SCR_EditableGroupComponent.GetOnDeleted() when a GM-marked group is deleted from the
+	//! editor. Removes every slot it registered; COA_SlottingMenu recomputes each faction's slot
+	//! count live from m_mSlotsMap every time GetOnSlottingUpdate() fires (see InitSlots/
+	//! UpdateFactionSlotCounts), so removing the slots is enough on its own - no separate count
+	//! refresh is needed.
+	protected void OnPossessionGroupDeleted(IEntity owner)
+	{
+		if (!Replication.IsServer() || !owner)
+			return;
+
+		RplComponent groupRplComp = RplComponent.Cast(owner.FindComponent(RplComponent));
+		if (!groupRplComp)
+			return;
+
+		array<int> slotIds = GetAllSlotIDsForGroup(groupRplComp.Id());
+		foreach (int slotId : slotIds)
+			RemoveSlot(slotId);
+
+		COA_GMPossessionManager.GetInstance().UnregisterGroup(groupRplComp.Id(), slotIds);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-side slot removal. RemoveSlotClient (above) only ever runs client-side (it explicitly
+	//! no-ops "if (Replication.IsServer()) return;"), since nothing before the GM possession feature
+	//! ever needed to remove a slot after mission start - config-driven slots live for the whole
+	//! mission. This mirrors that removal onto the server's own m_mSlotsMap and reuses the already-
+	//! built m_RplBroadcastManager.RemoveSlot() round trip to notify clients.
+	protected void RemoveSlot(int slotId)
+	{
+		if (!Replication.IsServer() || !m_mSlotsMap.Contains(slotId))
+			return;
+
+		m_mSlotsMap.Remove(slotId);
+		m_RplBroadcastManager.RemoveSlot(slotId);
+	}
+
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 REPLICATION
 //=============================================================================================================================================================================================================================================================================================================================================================

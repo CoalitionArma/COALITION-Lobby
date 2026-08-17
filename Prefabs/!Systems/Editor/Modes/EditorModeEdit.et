@@ -1,6 +1,21 @@
 SCR_EditorModeEntity : "{E56F54E533ACE527}Prefabs/Editor/Modes/EditorModeBase.et" {
  ID "54F0A77282A3AA3B"
  components {
+  SCR_ContextActionsEditorComponent "{518AEC2A62FE8325}" {
+   m_ActionsLists {
+    SCR_EditorActionList "{54B2AA71F2ECD6D7}" {
+     m_Actions {
+      COA_MarkGroupJoinableAction "{6A2376D5871A8046}" {
+       m_Info SCR_UIInfo "{6A2376D5B9E071CC}" {
+        Name "Make Group Playable"
+        Description "Makes the group appear in slotting"
+        Icon "{EDF4F5B6130B6A16}UI/Textures/Editor/ContextMenu/ContextAction_Play.edds"
+       }
+      }
+     }
+    }
+   }
+  }
   SCR_PlacingEditorComponent "{5145484399BAA2E7}" {
    m_Registries {
     SCR_PlaceableEntitiesRegistry "{64468232E859A47C}" : "{6D7BC9B4C66AE7B9}Configs/Systems/Entities/PlaceableEntities/COA_PlacableEntitiesRegestry_BLUFOR.conf" {
