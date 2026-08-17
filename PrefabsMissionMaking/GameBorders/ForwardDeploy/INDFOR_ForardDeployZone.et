@@ -15,7 +15,7 @@ COA_ForwardDeployBorder {
  m_cPolygonBorderColor 0 0.502 0.125 1
  m_fPolygonBorderWidth 6
  m_bReversed 0
- m_aGameBorderSettings COA_GameBorderSettings "{6A217822562A04B8}" {
+ m_aGameBorderSettings COA_GameBorderSettings "{6A22030FA760A0C7}" {
  }
  m_bHeliRestricted 1
  m_fHeight 345

@@ -39,11 +39,13 @@ class COA_GameBorderEffect : SCR_ScriptedWidgetComponent
 		
 		if (m_fTime <= 0 && !m_bTriggerd)
 		{
-			DamageManagerComponent damageManager = DamageManagerComponent.Cast(SCR_PlayerController.GetLocalMainEntity().FindComponent(DamageManagerComponent));
-			if (!damageManager || damageManager.GetState() == EDamageState.DESTROYED)
-				return;
-			damageManager.SetHealthScaled(0);
-			m_bTriggerd = true;
-		}
+			COA_PlayerRplToAuthorityManager authRplManager = COA_PlayerRplToAuthorityManager.GetInstance();
+			
+			if (authRplManager)
+			{
+				authRplManager.BorderKill(SCR_PlayerController.GetLocalPlayerId());
+				m_bTriggerd = true;
+			};
+		};
 	}
 }

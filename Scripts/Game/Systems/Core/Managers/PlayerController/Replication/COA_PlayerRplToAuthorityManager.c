@@ -327,6 +327,12 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
+	void BorderKill(int playerId)
+	{
+		Rpc(RpcAsk_BorderKill, playerId); 
+	}
+	
+	//------------------------------------------------------------------------------------------------
 	void RequestForwardDeploy(vector cursorWorldPos, string factionKey, int playerId)
 	{
 		Rpc(RpcAsk_RequestForwardDeploy, cursorWorldPos, factionKey, playerId);
@@ -1039,7 +1045,6 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			m_RplBroadcastManager.LogAdminAction(logMessage, playerId, true, COA_EAdminLogLevel.Low);
 		}
 	}
-
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
@@ -1147,6 +1152,28 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		CVON_VONGameModeComponent cvon = CVON_VONGameModeComponent.GetInstance();
 		if (cvon)
 			cvon.TogglePlayerListening(playerId, input);
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_BorderKill(int playerId)
+	{
+		// Telemetry: int + 2 bools
+		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int();
+		LogTelemetry("RpcAsk_BorderKill", bytes);
+		
+		IEntity playerEntity = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!playerEntity)
+			return;
+
+		SCR_DamageManagerComponent damageManager = SCR_DamageManagerComponent.Cast(playerEntity.FindComponent(SCR_DamageManagerComponent));
+		if (!damageManager || damageManager.GetState() == EDamageState.DESTROYED)
+			return;
+		damageManager.SetHealthScaled(0);
+
+		string playerName = GetGame().GetPlayerManager().GetPlayerName(playerId);
+		string logMessage = string.Format("%1 left a game border and was killed", playerName);
+		m_RplBroadcastManager.LogAdminAction(logMessage, playerId, true, COA_EAdminLogLevel.High);
 	}
 	
 	//------------------------------------------------------------------------------------------------

@@ -73,8 +73,11 @@ class COA_BorderCheckSystem : GameSystem
 	//------------------------------------------------------------------------------------------------
 	protected void PlayerLeftBorder(SCR_ChimeraCharacter player, COA_GameBorder border)
 	{
+		if (m_bPlayerHasEffect)
+			return;
+		
 		// Allow Admins to teleport out of the game borders during safestart
-		if (m_bPlayerHasEffect || (COA_SafestartManager.GetInstance().GetSafestartStatus() && SCR_Global.IsAdmin(GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(player))))
+		if (COA_SafestartManager.GetInstance().GetSafestartStatus() && SCR_Global.IsAdmin(GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(player)))
 			return;
 		
 		CompartmentAccessComponent compAccess = CompartmentAccessComponent.Cast(player.FindComponent(CompartmentAccessComponent)); // TODO nullcheck
