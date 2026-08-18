@@ -642,7 +642,7 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		
 		if (m_bNVGActivated)
 		{
-			world.SetCameraPostProcessEffect(cameraId, 16, PostProcessEffectType.HDR, "{511CD467ED159EA2}Assets/Items/Equipment/NVG/pvs14/data/NVG_Spectator_HDR.emat");
+			world.SetCameraPostProcessEffect(cameraId, 16, PostProcessEffectType.HDR, "{511CD467ED159EA2}Assets/Materials/Nightvision/NVG_Spectator_HDR.emat");
 			world.SetCameraHDRBrightness(cameraId, 0.4);
 		}
 		else
