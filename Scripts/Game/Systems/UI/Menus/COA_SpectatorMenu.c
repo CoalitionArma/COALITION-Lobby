@@ -602,8 +602,15 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	{
 		if (!m_wHelmetCamBG || !m_wEyeCamBG || !m_wOrbitCamBG)
 			return;
-
+		
 		Color active = Color.FromRGBA(0, 149, 255, 153);
+		SCR_ChimeraCharacter player = SCR_ChimeraCharacter.Cast(m_eSpecEntity);
+		if (!player)
+			return;
+		
+		if (player.m_pFactionComponent && player.m_pFactionComponent.GetAffiliatedFaction())
+			active = player.m_pFactionComponent.GetAffiliatedFaction().GetFactionColor();
+
 		Color inactive = Color.FromRGBA(37, 37, 37, 153);
 
 		m_wHelmetCamBG.SetColor(inactive);

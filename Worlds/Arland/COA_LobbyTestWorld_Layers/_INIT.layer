@@ -1176,6 +1176,4 @@ COA_GameBorder : "{318DDE6633C34CF1}PrefabsMissionMaking/GameBorders/GameBorder.
  m_fPolygonUVScale 1
  m_fPolygonBorderUVScale 1
  m_fPolygonBorderWidth 5
- m_fHeight 1000
- m_fUndergroundHeight 950
 }

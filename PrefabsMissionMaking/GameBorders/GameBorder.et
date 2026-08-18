@@ -19,8 +19,8 @@ COA_GameBorder {
  m_fPolygonBorderWidth 5
  m_bReversed 1
  m_iKillTime 25
- m_fHeight 1000
- m_fUndergroundHeight 950
+ m_fHeight 250
+ m_fUndergroundHeight 2000
  m_Material "{DD4DF8DD2A3A1EAE}Assets/Editor/VirtualArea/GameBoundry.emat"
  {
   SCR_BaseTriggerEntity {
