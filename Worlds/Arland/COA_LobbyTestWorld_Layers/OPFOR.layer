@@ -1,20 +1,26 @@
-COA_StaticSpawnPoint : "{0B3312C6940005B9}PrefabsMissionMaking/Systems/SpawnPoints/OPFOR_Spawn.et" {
- coords 1237.293 37.974 2816.348
+COA_StaticSpawnPoint : "{0B3312C6940005B9}PrefabsMissionMaking/SpawnPoints/SpawnPoints/OPFOR_Spawn.et" {
+ coords 1140.526 39.356 2763.447
+ {
+  COA_ManualMarker {
+   ID "68682AC1849E53AF"
+   coords 0 0.001 0
+  }
+ }
 }
-PolylineShapeEntity : "{D8E7812AC12E29EB}PrefabsMissionMaking/PolyZone/Safestart/OPFOR_SafestartBoundry.et" {
+COA_SafestartBorder : "{D8E7812AC12E29EB}PrefabsMissionMaking/GameBorders/Safestart/OPFOR_SafestartBoundry.et" {
  coords 1240.502 38.009 2796.924
  Points {
-  ShapePoint "{659E505E35F18D93}" {
-   Position 1.694 0 -19.379
+  ShapePoint "{6A20FE4292BD30CA}" {
+   Position -89.801 0 2.572
   }
-  ShapePoint "{659E505E36BB67DC}" {
-   Position -7.726 0 18.759
+  ShapePoint "{6A20FE4293432564}" {
+   Position -73.355 0 -58.833
   }
-  ShapePoint "{659E505E376F6BA8}" {
-   Position 3.113 0 22.097
+  ShapePoint "{6A20FE429C39F291}" {
+   Position -103.674 0 -67.331
   }
-  ShapePoint "{659E505E303B1FC6}" {
-   Position 12.859 0 -16.514
+  ShapePoint "{6A20FE429CDBA2C2}" {
+   Position -119.956 0 -5.592
   }
  }
 }

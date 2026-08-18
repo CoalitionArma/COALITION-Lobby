@@ -1,0 +1,36 @@
+COA_ForwardDeployBorder {
+ ID "6A217822297B4DD5"
+ components {
+  RplComponent "{6A217822297B4DC7}" {
+  }
+  Hierarchy "{6A217822297B4DCC}" {
+  }
+ }
+ IsClosed 1
+ LineColor 0.251 0 0.502 1
+ m_aVisibleForFactions {
+  "CIV"
+ }
+ m_cPolygonColor 0.25 0 0.503 0.176
+ m_cPolygonBorderColor 0.251 0 0.502 1
+ m_fPolygonBorderWidth 6
+ m_bReversed 0
+ m_aGameBorderSettings COA_GameBorderSettings "{6A22030FBAB1585E}" {
+ }
+ m_bAirVehiclesRestricted 1
+ m_fHeight 345
+ m_fUndergroundHeight 400
+ m_Material "{92E45624495C0978}Assets/Editor/VirtualArea/CIVBoundry.emat"
+ {
+  SCR_BaseTriggerEntity {
+   ID "6A217822297B4DD4"
+   components {
+    RplComponent "{6A217822297B4DFC}" {
+    }
+    Hierarchy "{6A217822297B4DF8}" {
+    }
+   }
+   TriggerShapeType Polyline
+  }
+ }
+}

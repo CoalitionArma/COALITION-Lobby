@@ -1,0 +1,36 @@
+COA_SafestartBorder {
+ ID "6586537E5441D009"
+ components {
+  RplComponent "{6A1F6BE838DD2F69}" {
+  }
+  Hierarchy "{6A21782010FDCBA9}" {
+  }
+ }
+ IsClosed 1
+ LineColor 0 0.502 0.1255 1
+ m_aVisibleForFactions {
+  "INDFOR"
+ }
+ m_cPolygonColor 0 0.502 0.125 0.176
+ m_cPolygonBorderColor 0 0.502 0.125 1
+ m_fPolygonBorderWidth 6
+ m_bReversed 0
+ m_aGameBorderSettings COA_GameBorderSettings "{6A20731B798940BF}" {
+ }
+ m_bAirVehiclesRestricted 1
+ m_fHeight 345
+ m_fUndergroundHeight 400
+ m_Material "{B57778D641C08057}Assets/Editor/VirtualArea/INDFORBoundry.emat"
+ {
+  SCR_BaseTriggerEntity {
+   ID "6A2178201A395169"
+   components {
+    RplComponent "{6A21782007C19A98}" {
+    }
+    Hierarchy "{6A217820017F4EE6}" {
+    }
+   }
+   TriggerShapeType Polyline
+  }
+ }
+}

@@ -1,0 +1,36 @@
+COA_ForwardDeployBorder {
+ ID "6A2178225E060115"
+ components {
+  RplComponent "{6A2178225E06011E}" {
+  }
+  Hierarchy "{6A2178225E060106}" {
+  }
+ }
+ IsClosed 1
+ LineColor 0.502 0 0 1
+ m_aVisibleForFactions {
+  "OPFOR"
+ }
+ m_cPolygonColor 0.502 0 0 0.176
+ m_cPolygonBorderColor 0.502 0 0 1
+ m_fPolygonBorderWidth 6
+ m_bReversed 0
+ m_aGameBorderSettings COA_GameBorderSettings "{6A22030FA3FE832F}" {
+ }
+ m_bAirVehiclesRestricted 1
+ m_fHeight 345
+ m_fUndergroundHeight 400
+ m_Material "{29F38F4EC62E9D57}Assets/Editor/VirtualArea/OPFORBoundry.emat"
+ {
+  SCR_BaseTriggerEntity {
+   ID "6A2178225E060114"
+   components {
+    RplComponent "{6A2178225E06010B}" {
+    }
+    Hierarchy "{6A2178225E060135}" {
+    }
+   }
+   TriggerShapeType Polyline
+  }
+ }
+}

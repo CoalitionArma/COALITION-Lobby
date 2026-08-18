@@ -1567,7 +1567,7 @@ FrameWidgetClass {
         OffsetBottom 5.096
        }
        Opacity 0.5
-       Texture "{AAC9CD790A7F63FA}UI/Images/SpecImages/compass.edds"
+       Texture "{AAC9CD790A7F63FA}UI/Images/SpecImages/Spec_Compass.edds"
        Size 1920 1080
        "Shadow Offset" 0 0
        "Shadow Size Increase" 0.1 0.1
@@ -1587,7 +1587,7 @@ FrameWidgetClass {
         OffsetBottom 0.306
        }
        Opacity 0.5
-       Texture "{AAC9CD790A7F63FA}UI/Images/SpecImages/compass.edds"
+       Texture "{AAC9CD790A7F63FA}UI/Images/SpecImages/Spec_Compass.edds"
        Size 1920 1080
        "Shadow Size Increase" 0.1 0.1
        "Shadow Color" 0.095 0 0 1
@@ -1606,7 +1606,7 @@ FrameWidgetClass {
         OffsetBottom -0.364
        }
        Opacity 0.5
-       Texture "{AAC9CD790A7F63FA}UI/Images/SpecImages/compass.edds"
+       Texture "{AAC9CD790A7F63FA}UI/Images/SpecImages/Spec_Compass.edds"
        Size 1920 1080
        "Shadow Size Increase" 0.1 0.1
        "Shadow Color" 0.095 0 0 1

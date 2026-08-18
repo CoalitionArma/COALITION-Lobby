@@ -32,6 +32,12 @@ Vehicle : "{4597626AF36C0858}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320.et" {
    }
    m_fDustTopSpeed 60
   }
+  SCR_VehicleDustPerWheel "{5476BC43E4910F64}" {
+   m_aWheels + {
+    4 5
+   }
+   m_fDustTopSpeed 60
+  }
   SCR_VehicleFactionAffiliationComponent "{5882CBD9AC741CEC}" {
    "faction affiliation" "OPFOR"
   }
