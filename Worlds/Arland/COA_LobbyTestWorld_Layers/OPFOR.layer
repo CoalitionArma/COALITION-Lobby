@@ -7,7 +7,7 @@ COA_StaticSpawnPoint : "{0B3312C6940005B9}PrefabsMissionMaking/SpawnPoints/Spawn
   }
  }
 }
-COA_SafestartBorder : "{D8E7812AC12E29EB}PrefabsMissionMaking/GameBorders/Safestart/OPFOR_SafestartBoundry.et" {
+COA_SafestartBorder : "{D8E7812AC12E29EB}PrefabsMissionMaking/GameBorders/Safestart/OPFOR_SafestartZone.et" {
  coords 1240.502 38.009 2796.924
  Points {
   ShapePoint "{6A20FE4292BD30CA}" {

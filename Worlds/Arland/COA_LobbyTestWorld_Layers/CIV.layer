@@ -1,4 +1,4 @@
-COA_SafestartBorder : "{2150339CD6D25BF2}PrefabsMissionMaking/GameBorders/Safestart/CIVILIAN_SafestartBoundry.et" {
+COA_SafestartBorder : "{2150339CD6D25BF2}PrefabsMissionMaking/GameBorders/Safestart/CIVILIAN_SafestartZone.et" {
  coords 1108.842 37.781 2758.237
  Points {
   ShapePoint "{6A20FE42D252BF60}" {

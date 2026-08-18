@@ -54,7 +54,7 @@ COA_StaticSpawnPoint {
    }
    m_bAutoRegister ALWAYS
    m_vIconPos 0 0 0
-   m_AccessKey 769
+   m_AccessKey DEFAULT
    m_Flags 69
   }
   SCR_FactionAffiliationComponent "{6490426ED5F5FBAB}" {
@@ -72,7 +72,7 @@ COA_StaticSpawnPoint {
    }
   }
   RplComponent "{649042617FCFD793}" {
-   Streamable Disabled
+   "Rpl State Override" Runtime
   }
  }
  Flags 0x400 0

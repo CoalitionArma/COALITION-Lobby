@@ -1,4 +1,4 @@
-COA_SafestartBorder : "{36DDFCD0D6C43000}PrefabsMissionMaking/GameBorders/Safestart/INDFOR_SafestartBoundry.et" {
+COA_SafestartBorder : "{36DDFCD0D6C43000}PrefabsMissionMaking/GameBorders/Safestart/INDFOR_SafestartZone.et" {
  coords 1153.533 37.999 2830.048
  Points {
   ShapePoint "{6A20FE42F7D8DED2}" {

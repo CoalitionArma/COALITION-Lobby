@@ -39,6 +39,7 @@ class COA_BorderCheckSystem : GameSystem
 		else
 			m_fUpdate = 0;
 		
+		// -------------------- Bunch O Checks--------------------
 		if (!m_GameBorderHUD || !m_PlayerController || !m_PlayerController.GetLocalMainEntity())
 		{
 			m_PlayerController = SCR_PlayerController.Cast(GetGame().GetPlayerController());
@@ -49,6 +50,7 @@ class COA_BorderCheckSystem : GameSystem
 		if (!player)
 			return;
 
+		// -------------------- Main Border Loop --------------------
 		foreach (COA_GameBorder border : m_aBorders)
 		{
 			if (!border || border.m_aVisibleForFactions.IsEmpty())
@@ -56,6 +58,7 @@ class COA_BorderCheckSystem : GameSystem
 			
 			if (player.m_pFactionComponent)
 			{
+				// -------------------- Faction / Spec Handling --------------------
 				FactionKey factionKey = player.m_pFactionComponent.GetAffiliatedFactionKey();
 				if ((!factionKey.IsEmpty() && !border.m_aVisibleForFactions.Contains(factionKey)))
 				{
@@ -66,6 +69,7 @@ class COA_BorderCheckSystem : GameSystem
 					continue;
 				};
 			
+				// -------------------- Actual "Trigger" Logic --------------------
 				bool isInsidePolygon = border.IsInsidePolygon(player.GetOrigin());
 				border.UpdateAreaMesh(true);
 				
