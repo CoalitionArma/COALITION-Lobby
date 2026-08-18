@@ -324,8 +324,7 @@ modded class SCR_MapMarkersUI
 		// Sets up faction colors, character portrait icon and label text via existing logic
 		icon.SetEntity(character, "Spine3");
 
-		// Clicking the icon follows that player in third-person orbit and closes the map. Reuses
-		// the icon's existing MMB-follow handler (COA_SpectatorLabelIconCharacter.OnMMBClicked)
+		// Clicking the icon follows that player in third-person orbit and closes the map. Reuses LMB
 		// as the click action, so this needs the active spectator menu wired in first.
 		COA_SpectatorMenu specMenu = COA_SpectatorMenu.Cast(GetGame().GetMenuManager().GetTopMenu());
 		if (specMenu)
@@ -341,7 +340,7 @@ modded class SCR_MapMarkersUI
 			SCR_ButtonTextComponent button = icon.GetButton();
 			if (specMenu && button)
 			{
-				button.m_OnClicked.Insert(icon.OnMMBClicked);
+				button.m_OnClicked.Insert(icon.OnLMBClicked);
 				button.m_OnClicked.Insert(COA_OnSpectatorPlayerIconClicked);
 			}
 		}

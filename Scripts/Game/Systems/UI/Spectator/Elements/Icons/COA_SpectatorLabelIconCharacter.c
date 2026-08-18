@@ -74,23 +74,13 @@ class COA_SpectatorLabelIconCharacter : COA_SpectatorLabelIcon
 	}
 
 	//------------------------------------------------------------------------------------------------
-	// Called when the player middle-clicks this icon.
-	// Bypasses cursor hit-testing by using the already-known m_eEntity directly.
-	//------------------------------------------------------------------------------------------------
-	void OnMMBClicked()
-	{
-		if (m_SpectatorMenu && m_eEntity)
-			m_SpectatorMenu.SelectSpecCursorTPP(m_eEntity);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	// Called when the player left-clicks this icon (FPP / helmet cam).
 	// Bypasses cursor hit-testing by using the already-known m_eEntity directly.
 	//------------------------------------------------------------------------------------------------
 	void OnLMBClicked()
 	{
 		if (m_SpectatorMenu && m_eEntity)
-			m_SpectatorMenu.SelectSpecCursorFPP(m_eEntity);
+			m_SpectatorMenu.SelectSpecCursor(m_eEntity);
 	}
 
 	//------------------------------------------------------------------------------------------------

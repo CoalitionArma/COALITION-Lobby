@@ -5,34 +5,20 @@ class COA_PlayerCharacterClass : SCR_ChimeraCharacterClass
 class COA_PlayerCharacter : SCR_ChimeraCharacter
 {
 //=============================================================================================================================================================================================================================================================================================================================================================
-//	 DISABLE AI METHODS
+//	 CONSTRUCTOR/DESTRUCTOR
 //=============================================================================================================================================================================================================================================================================================================================================================
 	
-	//------------------------------------------------------------------------------------------------
-	void DisableAI()
+	void COA_PlayerCharacter(IEntitySource src, IEntity parent)
 	{
-		AIControlComponent aiComponent = AIControlComponent.Cast(this.FindComponent(AIControlComponent));
-		if (!aiComponent)
-			return;
-		
-		AIAgent agent = aiComponent.GetAIAgent();
-		if (!agent)
-			return;
-		
-		agent.DeactivateAI();
-		
-		// Double-check deactivation next frame
-		GetGame().GetCallqueue().Call(DisableAIWrap, aiComponent);
+		COA_Gamemode gamemode = COA_Gamemode.GetInstance();
+		if(gamemode)
+			gamemode.AddActiveCharacter(this);
 	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void DisableAIWrap(AIControlComponent aiComponent)
+	
+	void ~COA_PlayerCharacter()
 	{
-		if (!aiComponent)
-			return;
-		
-		AIAgent agent = aiComponent.GetAIAgent();
-		if (agent)
-			agent.DeactivateAI();
+		COA_Gamemode gamemode = COA_Gamemode.GetInstance();
+		if(gamemode)
+			gamemode.RemoveActiveCharacter(this);
 	}
 }

@@ -57,9 +57,12 @@ class COA_BorderCheckSystem : GameSystem
 			if (player.m_pFactionComponent)
 			{
 				FactionKey factionKey = player.m_pFactionComponent.GetAffiliatedFactionKey();
-				if (COA_EntityHelper.IsSpectator(player) || (!factionKey.IsEmpty() && !border.m_aVisibleForFactions.Contains(factionKey)))
+				if ((!factionKey.IsEmpty() && !border.m_aVisibleForFactions.Contains(factionKey)))
 				{
 					ForceKillBorderCheck(border);
+					continue;
+				} else if (COA_EntityHelper.IsSpectator(player)) { // We still want spectators to see borders they're supposed to see (game border), just not be affected by them.
+					ForceKillBorderCheck(border, true);
 					continue;
 				};
 			
@@ -86,7 +89,7 @@ class COA_BorderCheckSystem : GameSystem
 			return false;
 	#endif
 		
-		CompartmentAccessComponent compAccess = CompartmentAccessComponent.Cast(player.FindComponent(CompartmentAccessComponent)); // TODO nullcheck
+		CompartmentAccessComponent compAccess = CompartmentAccessComponent.Cast(player.FindComponent(CompartmentAccessComponent));
 		if (compAccess)
 		{
 			BaseCompartmentSlot compartment = compAccess.GetCompartment();
@@ -120,7 +123,7 @@ class COA_BorderCheckSystem : GameSystem
 		m_mBordersActive.Set(border, true);	
 		
 		foreach (COA_GameBorder checkBorder : m_aBorders)
-			if (checkBorder != border && (COA_SafestartBorder.Cast(checkBorder) || COA_ForwardDeployBorder.Cast(checkBorder))) // Allows players to teleport/move between the same factions safestart and forward deploy zones
+			if (checkBorder != border && (COA_SafestartBorder.Cast(checkBorder) || COA_ForwardDeployBorder.Cast(checkBorder))) // Allows players to teleport/move between safestart and forward deploy zones
 				m_mBordersActive.Set(checkBorder, false);
 		
 		ForceStopTimer();
@@ -131,9 +134,10 @@ class COA_BorderCheckSystem : GameSystem
 //=============================================================================================================================================================================================================================================================================================================================================================
 	
 	//------------------------------------------------------------------------------------------------
-	void ForceKillBorderCheck(COA_GameBorder border)
+	void ForceKillBorderCheck(COA_GameBorder border, bool borderMeshVisible = false)
 	{
-		border.UpdateAreaMesh(false);
+		border.UpdateAreaMesh(borderMeshVisible);
+		
 		if (m_mBordersActive.Get(border))
 		{
 			m_mBordersActive.Set(border, false);

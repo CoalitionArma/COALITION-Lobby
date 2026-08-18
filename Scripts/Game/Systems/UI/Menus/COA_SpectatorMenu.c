@@ -60,13 +60,12 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	
 	// State tracking
 	protected bool m_bIsMapOpened = false;                   // Flag indicating if map is open
-	protected bool m_bFPPEntityValidityCheck;                // Flag for first-person perspective validity
 	protected int m_iLocalChannelUpdates = 0;                // Counter for local channel updates
 	protected bool m_bHideUi = false;                        // Flag indicating if UI is hidden
 	ref array<Widget> m_aRequest = {};            			  // Array of request widgets
 	protected bool m_bFrameEventRegistered = false;          // Flag to track if frame event is registered
 	protected bool m_bTPPMode = false;                       // True = third-person camera, false = first-person (helmet cam)
-	protected int m_iCamCycle = 0;                           // 0 = helmet FPP, 1 = eye-cam, 2 = TPP orbit - see ToggleCameraMode
+	protected int m_iCamCycle = 2;                           // 0 = helmet FPP, 1 = eye-cam, 2 = TPP orbit - see ToggleCameraMode
 	
 	// Last kill world position, updated by OnKillfeedNotification, used by Action_TeleportToKill
 	protected vector m_vLastKillPosition = vector.Zero;
@@ -967,7 +966,6 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			{
 				// Reset spectator entity and unregister frame event
 				m_eSpecEntity = null;
-				m_bFPPEntityValidityCheck = false;
 				UnregisterFrameEvent();
 				
 				// Reset camera angle after leaving FPP
@@ -981,10 +979,9 @@ class COA_SpectatorMenu: ChimeraMenuBase
 				{
 					RegisterFrameEvent();
 				}
-				m_bFPPEntityValidityCheck = true;
 			}
 		} 
-		else if(!m_eSpecEntity && m_bFPPEntityValidityCheck)
+		else if(!m_eSpecEntity)
 		{
 			// Reset camera roll when not spectating and unregister frame event
 			vector mat = cameraManager.m_eCamera.GetAngles();
@@ -1098,89 +1095,21 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		IEntity localMainEnt = SCR_PlayerController.GetLocalMainEntity();
 		
 		//------------------------------------------------------------------------------------------------
-		// ALL SLOT-BASED CHARACTERS
+		// ALL LOBBY-BASED CHARACTERS
 		//------------------------------------------------------------------------------------------------
-		
-		map<int, ref COA_SlotData> slotMap = COA_SlottingManager.GetInstance().GetSlotMap();
-		
-		if (slotMap && !slotMap.IsEmpty())
+		if(m_Gamemode)
 		{
-			foreach (int slotId, COA_SlotData slotData : slotMap)
-			{		
-				RplId slotRplId = slotData.GetSlotCurrentCharacter();
-				
-				if(slotRplId != RplId.Invalid() && Replication.FindItem(slotRplId))
+			foreach (COA_PlayerCharacter lobbyEntity : m_Gamemode.GetActiveCharacters())
+			{	
+				if (lobbyEntity && lobbyEntity != localMainEnt)
 				{
-					RplComponent slotRplComponent = RplComponent.Cast(Replication.FindItem(slotRplId));
-					IEntity entity;
-					if (slotRplComponent)
-						entity = slotRplComponent.GetEntity();
-					
-					if(entity && entity != localMainEnt)
-					{
-						comparisonRplIds.Insert(slotRplId);
-						SetIconForEntity(entity, slotRplId);
-					};
-				};
-			};
-		};
-		
-		//------------------------------------------------------------------------------------------------
-		// ALL SPECTATORS
-		//------------------------------------------------------------------------------------------------
-		
-		PlayerManager playermanager = GetGame().GetPlayerManager();
-		
-		if (playermanager)
-		{
-			array<int> arrayplayerIds = {};
-			
-			playermanager.GetAllPlayers(arrayplayerIds);
-			
-			foreach (int playerId : arrayplayerIds)
-			{
-				IEntity playerEntity = playermanager.GetPlayerControlledEntity(playerId);
-				
-				if (playerEntity && COA_EntityHelper.IsSpectator(playerEntity) && playerEntity != localMainEnt)
-				{
-					RplComponent playerRplComponent = RplComponent.Cast(playerEntity.FindComponent(RplComponent));
+					RplComponent playerRplComponent = RplComponent.Cast(lobbyEntity.FindComponent(RplComponent));
 					if (!playerRplComponent)
 						continue;
 
 					RplId playerRplId = playerRplComponent.Id();
 					comparisonRplIds.Insert(playerRplId);
-					SetIconForEntity(playerEntity, playerRplId);
-				};
-			};
-		};
-		
-		//------------------------------------------------------------------------------------------------
-		// ALL AI
-		//------------------------------------------------------------------------------------------------
-		
-		AIWorld aiworld = GetGame().GetAIWorld();
-		
-		if (aiworld)
-		{
-			array<AIAgent> arrayAIAgents = {};
-			
-			GetGame().GetAIWorld().GetAIAgents(arrayAIAgents);
-			
-			foreach (AIAgent aiAgent : arrayAIAgents)
-			{
-				IEntity aiEntity = aiAgent.GetControlledEntity();
-				
-				SCR_ChimeraCharacter aiCharacter = SCR_ChimeraCharacter.Cast(aiEntity);
-				
-				if(aiCharacter && aiCharacter != localMainEnt)
-				{
-					RplComponent aiRplComponent = RplComponent.Cast(aiCharacter.FindComponent(RplComponent));
-					if (!aiRplComponent)
-						continue;
-
-					RplId aiRplId = aiRplComponent.Id();
-					comparisonRplIds.Insert(aiRplId);
-					SetIconForEntity(aiCharacter, aiRplId);
+					SetIconForEntity(lobbyEntity, playerRplId);
 				};
 			};
 		};
@@ -1282,12 +1211,6 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			
 			// LMB — follow in FPP (helmet cam) via direct entity reference, bypassing cursor hit-testing
 			spectatorIcon.GetButton().m_OnClicked.Insert(spectatorIcon.OnLMBClicked);
-			
-			// MMB — follow in TPP; wire directly through the icon handler so the entity
-			// is passed via m_eEntity rather than unreliable cursor hit-testing at callback time
-			Widget labelButton = spectatorIconWidget.FindAnyWidget("LabelButton");
-			if (labelButton)
-				ButtonActionComponent.GetOnAction(labelButton, true, 2).Insert(spectatorIcon.OnMMBClicked);
 		}
 		
 		spectatorIcon.SetEntity(entity, "Spine3");
@@ -1958,66 +1881,6 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			GetGame().GetCallqueue().CallLater(UpdateRadioFrequency, 200, false);
 		}
 	}
-	
-	/**
-	 * Selects an entity to spectate based on cursor position (left-click = FPP / helmet cam)
-	 */
-	void SelectSpecCursor()
-	{
-		SelectSpecCursorInternal(false);
-	}
-
-	/**
-	 * Selects an entity to spectate in TPP based on cursor position (middle-click via ButtonActionComponent).
-	 * If already latched in TPP mode, middle-clicking again releases the latch and returns to free cam.
-	 */
-	void SelectSpecCursorTPPCursor()
-	{
-		// Second MMB click — release the latch
-		if (m_bTPPMode && m_bFrameEventRegistered)
-		{
-			m_bTPPMode = false;
-			m_eSpecEntity = null;
-			UnregisterFrameEvent();
-			return;
-		}
-		SelectSpecCursorInternal(true);
-	}
-
-	/**
-	 * Selects a specific entity to spectate in third-person mode.
-	 * Called directly from the icon's right-click handler with the known entity,
-	 * bypassing cursor hit-testing which is unreliable inside OnMouseButtonDown.
-	 * @param entity - The entity to follow in TPP mode
-	 */
-	void SelectSpecCursorTPP(IEntity entity)
-	{
-		if (!entity)
-			return;
-		
-		IEntity specEntity = SCR_PlayerController.GetLocalMainEntity();
-		if (!COA_EntityHelper.IsSpectator(specEntity))
-			return;
-		
-		// Toggle off if already following this entity in TPP mode
-		if (m_bTPPMode && m_bFrameEventRegistered && m_eSpecEntity == entity)
-		{
-			m_bTPPMode = false;
-			m_eSpecEntity = null;
-			UnregisterFrameEvent();
-			return;
-		}
-
-		m_bTPPMode = true;
-		m_iCamCycle = 2;
-		m_eSpecEntity = entity;
-		m_bFPPEntityValidityCheck = true;
-
-		COA_PlayerCameraManager camManager = COA_PlayerCameraManager.GetInstance();
-		camManager.SetCameraOnRailsEntity(m_eSpecEntity, true);
-		m_bFrameEventRegistered = true;
-		UpdateCameraModeButtonsUI();
-	}
 
 	/**
 	 * Selects a specific entity to spectate in true first-person (eye cam) mode - the default for
@@ -2025,7 +1888,7 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	 * bypassing cursor hit-testing which is unreliable inside button callbacks.
 	 * @param entity - The entity to follow in eye-cam mode
 	 */
-	void SelectSpecCursorFPP(IEntity entity)
+	void SelectSpecCursor(IEntity entity)
 	{
 		if (!entity)
 			return;
@@ -2035,55 +1898,18 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			return;
 
 		// Toggle off if already following this entity in FPP mode (helmet or eye cam)
-		if (!m_bTPPMode && m_bFrameEventRegistered && m_eSpecEntity == entity)
+		if (m_bFrameEventRegistered && m_eSpecEntity == entity)
 		{
-			m_bTPPMode = false;
 			m_eSpecEntity = null;
 			UnregisterFrameEvent();
 			return;
-		}
-
-		m_bTPPMode = false;
-		m_iCamCycle = 1;
+		};
+			
 		m_eSpecEntity = entity;
-		m_bFPPEntityValidityCheck = true;
 
-		COA_PlayerCameraManager camManager = COA_PlayerCameraManager.GetInstance();
-		camManager.SetCameraOnRailsEntityEyeMode(m_eSpecEntity);
 		m_bFrameEventRegistered = true;
+		SetCameraMode(m_iCamCycle);
 		UpdateCameraModeButtonsUI();
-	}
-
-	/**
-	 * Internal implementation for cursor-based entity selection (left-click only).
-	 * @param tpp - True to use third-person camera, false for first-person helmet cam
-	 */
-	protected void SelectSpecCursorInternal(bool tpp)
-	{
-		// Get widget under cursor
-		Widget cursorWidget = WidgetManager.GetWidgetUnderCursor();
-		if (!cursorWidget)
-			return;
-			
-		// Get parent widget
-		Widget parentWidget = cursorWidget.GetParent();
-		if (!parentWidget)
-			return;
-			
-		// Find spectator icon handler
-		COA_SpectatorLabelIconCharacter iconHandler = COA_SpectatorLabelIconCharacter.Cast(
-			parentWidget.FindHandler(COA_SpectatorLabelIconCharacter)
-		);
-		
-		if (!iconHandler)
-			return;
-		
-		if (iconHandler.m_eEntity)
-		{
-			m_bTPPMode = tpp;
-			m_eSpecEntity = iconHandler.m_eEntity;
-			RegisterFrameEvent();
-		}
 	}
 	
 	/**
@@ -2686,7 +2512,6 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		if (m_eSpecEntity)
 		{
 			m_eSpecEntity = null;
-			m_bFPPEntityValidityCheck = false;
 			UnregisterFrameEvent();
 		}
 
