@@ -54,19 +54,12 @@ class COA_BorderCheckSystem : GameSystem
 			if (!border || border.m_aVisibleForFactions.IsEmpty())
 				continue;
 			
-			if (COA_EntityHelper.IsSpectator(player))
-			{
-				ForceStopTimerAndBorder(border);
-				continue;	
-			};
-			
 			if (player.m_pFactionComponent)
 			{
 				FactionKey factionKey = player.m_pFactionComponent.GetAffiliatedFactionKey();
-				if (!factionKey.IsEmpty() && !border.m_aVisibleForFactions.Contains(factionKey))
+				if (COA_EntityHelper.IsSpectator(player) || (!factionKey.IsEmpty() && !border.m_aVisibleForFactions.Contains(factionKey)))
 				{
-					ForceStopTimerAndBorder(border);
-					border.UpdateAreaMesh(false);
+					ForceKillBorderCheck(border);
 					continue;
 				};
 			
@@ -84,9 +77,14 @@ class COA_BorderCheckSystem : GameSystem
 	//------------------------------------------------------------------------------------------------
 	protected bool ShouldPlayerBeAffected(SCR_ChimeraCharacter player, COA_GameBorder border)
 	{	
+	#ifdef WORKBENCH
+		if (COA_EntityHelper.IsSpectator(player))
+			return false;
+	#else
 		// Allow Admins to teleport out of the game borders during safestart
 		if (COA_EntityHelper.IsSpectator(player) || (COA_SafestartManager.GetInstance().GetSafestartStatus() && SCR_Global.IsAdmin(GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(player))))
 			return false;
+	#endif
 		
 		CompartmentAccessComponent compAccess = CompartmentAccessComponent.Cast(player.FindComponent(CompartmentAccessComponent)); // TODO nullcheck
 		if (compAccess)
@@ -120,6 +118,11 @@ class COA_BorderCheckSystem : GameSystem
 	protected void PlayerEnteredBorder(COA_GameBorder border, IEntity player)
 	{
 		m_mBordersActive.Set(border, true);	
+		
+		foreach (COA_GameBorder checkBorder : m_aBorders)
+			if (checkBorder != border && (COA_SafestartBorder.Cast(checkBorder) || COA_ForwardDeployBorder.Cast(checkBorder))) // Allows players to teleport/move between the same factions safestart and forward deploy zones
+				m_mBordersActive.Set(checkBorder, false);
+		
 		ForceStopTimer();
 	};
 	
@@ -128,8 +131,9 @@ class COA_BorderCheckSystem : GameSystem
 //=============================================================================================================================================================================================================================================================================================================================================================
 	
 	//------------------------------------------------------------------------------------------------
-	void ForceStopTimerAndBorder(COA_GameBorder border)
+	void ForceKillBorderCheck(COA_GameBorder border)
 	{
+		border.UpdateAreaMesh(false);
 		if (m_mBordersActive.Get(border))
 		{
 			m_mBordersActive.Set(border, false);

@@ -62,6 +62,9 @@ class COA_BorderBase : PolylineShapeEntity
 	//------------------------------------------------------------------------------------------------
 	override void EOnInit(IEntity owner)
 	{
+		if (!GetGame().InPlayMode())
+			return;
+		
 		m_MapEntity = SCR_MapEntity.GetMapInstance();
 		ScriptInvokerBase<MapConfigurationInvoker> onMapOpen = m_MapEntity.GetOnMapOpen();
 		ScriptInvokerBase<MapConfigurationInvoker> onMapClose = m_MapEntity.GetOnMapClose();
