@@ -97,6 +97,8 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		if (!playerCharacter)
 			return false;
 		
+		playerCharacter.MarkIsPlayer();
+		
 		RplComponent playerRplComp = RplComponent.Cast(playerCharacter.FindComponent(RplComponent));
 		if (!playerRplComp)
 			return false;
@@ -133,10 +135,49 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 				if (m_SlottingManager.IsPlayerInASlot(playerId) && m_SlottingManager.IsPlayerConsideredDead(playerId) && m_RespawnManager.CanPlayerRespawn(playerCharacter, faction.GetFactionKey(), playerId))
 					m_RplBroadcastManager.SendRespawnScreen(playerId);
 
-			m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, playerRplComp.Id());
+			m_RplBroadcastManager.VerifyPlayerBroadcast(playerId, playerRplComp.Id());
 		};
 
 		return true;
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	void FinalizeInitilizePlayer(int playerId, RplId playerCharID)
+	{
+		COA_GearscriptManager gearscriptManager = COA_GearscriptManager.GetInstance();
+		IEntity playerCharacter = COA_EntityHelper.GetCharacterFromRplId(playerCharID);
+		
+		if (!gearscriptManager || !playerCharacter)
+			return;
+		
+		COA_GearscriptCharacter gsCharacter = COA_GearscriptCharacter.Cast(playerCharacter);
+		if (gsCharacter)
+		{
+			GetGame().GetCallqueue().Call(gearscriptManager.SetEntityGear, gsCharacter, gsCharacter.GetPrefabData().GetPrefabName()); // gear gets set on a seprate thread than the check, mimicing how it's setup in COA_GearscriptCharacter.
+			CheckGearAssignment(playerId, playerCharID, gsCharacter);
+		} else // Spectators/special characters just get forced into the final phase of init.
+			m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, playerCharID);
+	}
+	
+	protected const int GEAR_INIT_RETRY_DELAY_MS = 200;
+	protected const int MAX_GEAR_INIT_RETRIES = 20; // ~4 seconds at 200ms interval
+	//------------------------------------------------------------------------------------------------
+	protected void CheckGearAssignment(int playerId, RplId playerCharID, COA_GearscriptCharacter character, int retryCount = 0)
+	{
+		// If references are not initialized
+		if (!character.IsGearApplied()) {
+			retryCount++;
+			if (retryCount >= MAX_GEAR_INIT_RETRIES)
+			{
+				Print(string.Format("[Coalition Lobby] WARNING: Failed to initialize gear for character %1 after %2 attempts", playerCharID, retryCount), LogLevel.WARNING);
+				return;
+			}
+
+			GetGame().GetCallqueue().CallLater(CheckGearAssignment, GEAR_INIT_RETRY_DELAY_MS, false, playerId, playerCharID, character, retryCount);
+			return;
+		};
+		
+		m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, playerCharID);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -197,8 +238,6 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		if (!playerCharacter || playerCharacter.GetCharacterController().IsDead())
 		{
 			alreadyCreated = false;
-			
-			m_RplBroadcastManager.SendCharacterLoadingScreen(playerId);
 			playerCharacter = SpawnPlayableCharacter(playerId, spawnPointID, entityRplID);
 			
 			if (!playerCharacter)
