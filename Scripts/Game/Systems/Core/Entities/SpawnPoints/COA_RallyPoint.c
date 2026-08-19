@@ -48,6 +48,9 @@ class COA_RallyPoint: GenericEntity
 		
 		if (COA_RespawnManager.GetInstance())
 			COA_RespawnManager.GetInstance().RegisterRespawnPoint(m_SpawnPointSettings, this);
+
+		if (COA_Gamemode.GetInstance().m_bSpawnBlockEnabled)
+			GetGame().GetCallqueue().CallLater(UpdateFlagProximity, (int)(COA_Gamemode.GetInstance().m_iSpawnBlockFrequancy * 1000), true);
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -91,5 +94,80 @@ class COA_RallyPoint: GenericEntity
 		
 		if (COA_RespawnManager.GetInstance())
 			COA_RespawnManager.GetInstance().UnRegisterRespawnPoint(m_iLocallyStoredId);
+
+		if (COA_Gamemode.GetInstance().m_bSpawnBlockEnabled)
+			GetGame().GetCallqueue().Remove(UpdateFlagProximity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void UpdateFlagProximity()
+	{
+		array<vector> enemyPositions = {};
+		CollectFactionCharacterPositions(m_SpawnPointSettings.GetSpawnPointFaction(), enemyPositions);
+
+		int blockRadius = COA_Gamemode.GetInstance().m_iSpawnBlockRadius;
+
+		float radiusSq = blockRadius * blockRadius;
+
+		vector flagOrigin = this.GetOrigin();
+
+		bool block = false;
+
+		foreach (vector enemyPosition : enemyPositions)
+		{
+			if (vector.DistanceSq(flagOrigin, enemyPosition) <= radiusSq)
+			{
+				block = true;
+				break;
+			}
+		}
+
+		if (m_SpawnPointSettings.GetIsSpawnPointBlocked() == block)
+			return;
+
+		m_SpawnPointSettings.SetSpawnPointBlocked(block);
+
+		COA_RplBroadcastManager.GetInstance().SpawnPointBlockChanged(m_SpawnPointSettings.GetSpawnPointId(), block);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void CollectFactionCharacterPositions(int faction, notnull array<vector> positions)
+	{
+		FactionKey factionKey = SCR_Enum.GetEnumName(COA_EFactions, faction);
+		array<COA_PlayerCharacter> characters = COA_Gamemode.GetInstance().GetActiveCharacters();
+
+		foreach (COA_PlayerCharacter character : characters)
+		{
+			if (COA_EntityHelper.IsSpectator(character))
+				continue;
+
+			// Skip the dead so corpses do not keep a flag locked down.
+			SCR_DamageManagerComponent damageManager = SCR_DamageManagerComponent.Cast(character.FindComponent(SCR_DamageManagerComponent));
+			if (damageManager && damageManager.GetState() == EDamageState.DESTROYED)
+				continue;
+
+			FactionKey characterFactionKey = GetCharacterFactionKey(character);
+			if (characterFactionKey == factionKey || characterFactionKey == "")
+				continue;
+
+			positions.Insert(character.GetOrigin());
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static FactionKey GetCharacterFactionKey(IEntity entity)
+	{
+		if (!entity)
+			return "";
+
+		FactionAffiliationComponent affiliation = FactionAffiliationComponent.Cast(entity.FindComponent(FactionAffiliationComponent));
+		if (!affiliation)
+			return "";
+
+		Faction faction = affiliation.GetAffiliatedFaction();
+		if (!faction)
+			return "";
+
+		return faction.GetFactionKey();
 	}
 };

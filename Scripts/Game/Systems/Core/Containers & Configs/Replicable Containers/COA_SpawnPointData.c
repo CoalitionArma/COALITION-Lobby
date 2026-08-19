@@ -34,6 +34,7 @@ class COA_SpawnPointData
 	protected int m_iSpawnPointId;
 	protected RplId m_iSpawnPointEntity = RplId.Invalid();
 	protected bool m_bIsTemp;
+	protected bool m_bIsBlocked = false;
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 UPDATE METHODS
@@ -53,9 +54,10 @@ class COA_SpawnPointData
 			SetSpawnPointFaction(newSpawnData.GetSpawnPointFaction());
 			SetSpawnPointId(newSpawnData.GetSpawnPointId());
 			SetSpawnPointEntity(newSpawnData.GetSpawnPointEntity());
+			SetSpawnPointBlocked(newSpawnData.GetIsSpawnPointBlocked());
 		};
 	}
-	
+
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 SETTERS
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -101,7 +103,13 @@ class COA_SpawnPointData
 	{
 		m_sRestrictedToGroup = RestrictedToGroup;
 	}
-	
+
+	//------------------------------------------------------------------------------------------------
+	void SetSpawnPointBlocked(bool block)
+	{
+		m_bIsBlocked = block;
+	}
+
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 GETTERS
@@ -166,7 +174,12 @@ class COA_SpawnPointData
 	{
 		return m_sRestrictedToGroup;
 	}
-	
+
+	//------------------------------------------------------------------------------------------------
+	bool GetIsSpawnPointBlocked()
+	{
+		return m_bIsBlocked;
+	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 REPLICATION METHODS
@@ -181,6 +194,7 @@ class COA_SpawnPointData
 		writer.WriteInt(m_iSpawnPointFaction);
 		writer.WriteInt(m_iSpawnPointId);
 		writer.WriteRplId(m_iSpawnPointEntity);
+		writer.WriteBool(m_bIsBlocked);
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -192,6 +206,7 @@ class COA_SpawnPointData
 		reader.ReadInt(m_iSpawnPointFaction);
 		reader.ReadInt(m_iSpawnPointId);
 		reader.ReadRplId(m_iSpawnPointEntity);
+		reader.ReadBool(m_bIsBlocked);
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -203,6 +218,7 @@ class COA_SpawnPointData
 		snapshot.SerializeBytes(instance.m_iSpawnPointFaction, 4);
 		snapshot.SerializeBytes(instance.m_iSpawnPointId, 4);
 		snapshot.SerializeBytes(instance.m_iSpawnPointEntity, 4);
+		snapshot.SerializeBool(instance.m_bIsBlocked);
 	    return true;
 	}
 	
@@ -215,6 +231,7 @@ class COA_SpawnPointData
 		snapshot.SerializeBytes(instance.m_iSpawnPointFaction, 4);
 		snapshot.SerializeBytes(instance.m_iSpawnPointId, 4);
 		snapshot.SerializeBytes(instance.m_iSpawnPointEntity, 4);
+		snapshot.SerializeBool(instance.m_bIsBlocked);
 	    return true;
 	}
 	
@@ -227,6 +244,7 @@ class COA_SpawnPointData
 		snapshot.EncodeInt(packet);
 		snapshot.EncodeInt(packet);
 		snapshot.EncodeInt(packet);
+		snapshot.EncodeBool(packet);
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -238,6 +256,7 @@ class COA_SpawnPointData
 		snapshot.DecodeInt(packet);
 		snapshot.DecodeInt(packet);
 		snapshot.DecodeInt(packet);
+		snapshot.DecodeBool(packet);
 	    return true;
 	}
 	
@@ -247,6 +266,7 @@ class COA_SpawnPointData
 	    return lhs.CompareSnapshots(rhs, 4)
 		&& lhs.CompareStringSnapshots(rhs)
 		&& lhs.CompareStringSnapshots(rhs)
+		&& lhs.CompareSnapshots(rhs, 4)
 		&& lhs.CompareSnapshots(rhs, 4)
 		&& lhs.CompareSnapshots(rhs, 4)
 		&& lhs.CompareSnapshots(rhs, 4);
@@ -260,6 +280,7 @@ class COA_SpawnPointData
 		&& snapshot.CompareString(instance.m_sRestrictedToGroup)
 		&& snapshot.Compare(instance.m_iSpawnPointFaction, 4)
 		&& snapshot.Compare(instance.m_iSpawnPointId, 4)
-		&& snapshot.Compare(instance.m_iSpawnPointEntity, 4);
+		&& snapshot.Compare(instance.m_iSpawnPointEntity, 4)
+		&& snapshot.Compare(instance.m_bIsBlocked, 4);
 	}
 }

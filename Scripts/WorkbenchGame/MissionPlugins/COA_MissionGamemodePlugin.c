@@ -31,6 +31,9 @@ class COA_MissionGamemodePlugin : WorkbenchPlugin
 	protected bool m_bRallyPointsEnabled;
 
 	[Attribute("0", "auto", "", category: "Mission Settings - Respawn")]
+	protected bool m_bSpawnBlockEnabled;
+
+	[Attribute("0", "auto", "", category: "Mission Settings - Respawn")]
 	protected bool m_bWaveRespawn;
 
 	[Attribute("0", UIWidgets.EditBox, "Minutes before mission end when respawns disable (0 = never disable)", category: "Mission Settings - Respawn")]
@@ -80,6 +83,7 @@ class COA_MissionGamemodePlugin : WorkbenchPlugin
 		m_bDisableJIP = gamemode.m_bLockUnusedSlots;
 		m_bRespawnEnabled = gamemode.m_bRespawnEnabled;
 		m_bRallyPointsEnabled = gamemode.m_bRallyPointsEnabled;
+		m_bSpawnBlockEnabled = gamemode.m_bSpawnBlockEnabled;
 		m_bWaveRespawn = gamemode.m_bWaveRespawn;
 		m_iTimeToRespawn = gamemode.m_iTimeToRespawn;
 		m_iRespawnCutoffMinutes = gamemode.m_iRespawnCutoffMinutes;
@@ -142,6 +146,7 @@ class COA_MissionGamemodePlugin : WorkbenchPlugin
 		api.SetVariableValue(entitySource, null, "m_bLockUnusedSlots", m_bDisableJIP.ToString());
 		api.SetVariableValue(entitySource, null, "m_bRespawnEnabled", m_bRespawnEnabled.ToString());
 		api.SetVariableValue(entitySource, null, "m_bRallyPointsEnabled", m_bRallyPointsEnabled.ToString());
+		api.SetVariableValue(entitySource, null, "m_bSpawnBlockEnabled", m_bSpawnBlockEnabled.ToString());
 		api.SetVariableValue(entitySource, null, "m_bWaveRespawn", m_bWaveRespawn.ToString());
 		api.SetVariableValue(entitySource, null, "m_iTimeToRespawn", m_iTimeToRespawn.ToString());
 		api.SetVariableValue(entitySource, null, "m_iRespawnCutoffMinutes", m_iRespawnCutoffMinutes.ToString());
