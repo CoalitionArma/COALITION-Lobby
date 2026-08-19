@@ -20,8 +20,8 @@ class COA_PlayerControllerManager : ScriptComponent
 	protected COA_Gamemode m_Gamemode;                      // Reference to the active gamemode
 	protected COA_PlayerRplToAuthorityManager m_PlayerRplToAuthorityManager;  // Network authority manager
 	protected COA_PlayerCameraManager m_CameraManager;                  // Reference to the local camera manager
-	protected const int PLAYER_CLIENT_INIT_RETRY_DELAY_MS = 100;
-	protected const int MAX_PLAYER_CLIENT_INIT_RETRIES = 40; // ~4 seconds at 100ms interval
+	protected const int PLAYER_CLIENT_INIT_RETRY_DELAY_MS = 200;
+	protected const int MAX_PLAYER_CLIENT_INIT_RETRIES = 20; // ~4 seconds at 200ms interval
 
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 COMPONENT INITIALIZATION
@@ -37,9 +37,7 @@ class COA_PlayerControllerManager : ScriptComponent
 			return;
 		
 		// Get references to required systems
-		m_Gamemode = COA_Gamemode.GetInstance();
-		m_PlayerRplToAuthorityManager = COA_PlayerRplToAuthorityManager.GetInstance();
-		m_CameraManager = COA_PlayerCameraManager.GetInstance();
+		InitializeManagers();
 		
 		// Only mute audio during briefing/slotting/AAR — explicit state check prevents muting JIP players
 		// joining mid-game, and avoids muting on null gamemode (timing edge case)
@@ -52,27 +50,33 @@ class COA_PlayerControllerManager : ScriptComponent
 		GetGame().GetCallqueue().Call(COA_PlayerMenuManager.GetInstance().OpenCurrentStateMenu);
 	}
 	
+	//------------------------------------------------------------------------------------------------
+	protected void InitializeManagers()
+	{
+		m_Gamemode = COA_Gamemode.GetInstance();
+		m_PlayerRplToAuthorityManager = COA_PlayerRplToAuthorityManager.GetInstance();
+		m_CameraManager = COA_PlayerCameraManager.GetInstance();
+	}
+	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 PLAYER INITIALIZATION
 //=============================================================================================================================================================================================================================================================================================================================================================
 
 	//------------------------------------------------------------------------------------------------
-	//! Initializes the player client
-	//! Cleans up previous camera, closes menus, and sets up player-specific settings
-	//! \param[in] playerCharacter - The spectator entity the server created and set to this player
-	void InitilizePlayerClient(RplId playerCharID, int retryCount = 0)
+	void VerifyClientCharacter(RplId playerCharID, int retryCount = 0)
 	{
 		// Get player character
 		IEntity playerCharacter = COA_EntityHelper.GetCharacterFromRplId(playerCharID);
-		SCR_ChimeraCharacter chimeraCharacter = SCR_ChimeraCharacter.Cast(playerCharacter);
-
-		m_Gamemode = COA_Gamemode.GetInstance();
-		m_PlayerRplToAuthorityManager = COA_PlayerRplToAuthorityManager.GetInstance();
-		m_CameraManager = COA_PlayerCameraManager.GetInstance();
+		SCR_PlayerController playerController = SCR_PlayerController.Cast(GetOwner());
+		SCR_PlayerFactionAffiliationComponent playerFactionAffiliation = SCR_PlayerFactionAffiliationComponent.Cast(playerController.FindComponent(SCR_PlayerFactionAffiliationComponent));
 		
-		// If dependencies are not replicated/initialized yet, retry briefly and then stop.
-		if (!playerCharacter || !chimeraCharacter || !m_Gamemode || !m_CameraManager || !m_PlayerRplToAuthorityManager)
-		{
+		// If references are not initialized
+		if (!playerCharacter 
+			|| !playerController 
+			|| !m_PlayerRplToAuthorityManager
+			|| playerCharacter != playerController.GetLocalMainEntity()
+			|| playerController.GetLocalMainEntityFaction() != playerFactionAffiliation.GetAffiliatedFaction()
+		) { // retry briefly and then stop
 			retryCount++;
 			if (retryCount >= MAX_PLAYER_CLIENT_INIT_RETRIES)
 			{
@@ -80,9 +84,26 @@ class COA_PlayerControllerManager : ScriptComponent
 				return;
 			}
 
-			GetGame().GetCallqueue().CallLater(InitilizePlayerClient, PLAYER_CLIENT_INIT_RETRY_DELAY_MS, false, playerCharID, retryCount);
+			GetGame().GetCallqueue().CallLater(VerifyClientCharacter, PLAYER_CLIENT_INIT_RETRY_DELAY_MS, false, playerCharID, retryCount);
 			return;
 		};
+		
+		// We passed all checks and now we call up to the server to get our gear and finilized client Initialization with InitilizePlayerClient;
+		m_PlayerRplToAuthorityManager.FinalizeInitilizePlayer(playerController.GetPlayerId(), playerCharID);
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	//! Initializes the player client
+	//! Cleans up previous camera, closes menus, and sets up player-specific settings
+	//! \param[in] playerCharacter - The spectator entity the server created and set to this player
+	void InitilizePlayerClient(RplId playerCharID)
+	{
+		// Get player character
+		IEntity playerCharacter = COA_EntityHelper.GetCharacterFromRplId(playerCharID);
+		
+		// Should never happen due to VerifyClientCharacter, but just in case
+		if (!playerCharacter)
+			return;
 		
 		// Close all menus
 		if (m_Gamemode.m_GamemodeState == COA_EGamemodeState.GAME)
@@ -96,15 +117,14 @@ class COA_PlayerControllerManager : ScriptComponent
 		m_CameraManager.DisableCameraOnRails();
 		
 		if (COA_EntityHelper.IsSpectator(playerCharacter))
-			InitilizeLocalSpectator(playerCharacter);
+			InitilizeLocalSpectator();
 		else
 			InitilizeLocalCharacter();
 	}
 	
 	//------------------------------------------------------------------------------------------------
 	//! Initilizes players if they have a valid spectator entity
-	//! \param[in] playerCharacter - The spectator entity the server created and set to this player
-	void InitilizeLocalSpectator(IEntity playerCharacter)
+	protected void InitilizeLocalSpectator()
 	{
 		m_CameraManager.InitilizeSpecCamera();
 		
@@ -125,7 +145,7 @@ class COA_PlayerControllerManager : ScriptComponent
 	
 	//------------------------------------------------------------------------------------------------
 	//! Initilizes players if they have a valid slotted character
-	void InitilizeLocalCharacter()
+	protected void InitilizeLocalCharacter()
 	{
 		// Clean up previous camera if exists
 		if (m_CameraManager.m_eCamera)
