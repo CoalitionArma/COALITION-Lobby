@@ -427,20 +427,6 @@ class COA_RplBroadcastManager : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	void SendCharacterLoadingScreen(int playerId)
-	{
-		// Telemetry: int
-		LogTelemetry("SendCharacterLoadingScreen", COA_BandwidthTelemetryManager.EstimateSize_Int());
-		
-		#ifdef WORKBENCH
-		RpcDo_SendCharacterLoadingScreen(playerId);
-		#else
-		Rpc(RpcDo_SendCharacterLoadingScreen, playerId);
-		#endif
-	}
-
-
-	//------------------------------------------------------------------------------------------------
 	void InitilizePlayerBroadcast(int playerId, RplId playerCharID)
 	{
 		// Telemetry: int + RplId
@@ -1843,16 +1829,6 @@ class COA_RplBroadcastManager : ScriptComponent
 
 		hint.ShowHint(data, 8000);
 	}	
-	
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	void RpcDo_SendCharacterLoadingScreen(int playerId)
-	{
-		if (SCR_PlayerController.GetLocalPlayerId() != playerId)
-			return;
-		
-		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.COA_CharacterLoading);
-	};
 
 	
 	//------------------------------------------------------------------------------------------------

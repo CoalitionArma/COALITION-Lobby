@@ -86,6 +86,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	void RequestInitilizePlayer(int playerId)
 	{
+		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.COA_CharacterLoading);
 		Rpc(RpcAsk_RequestInitilizePlayer, playerId); 
 	}
 

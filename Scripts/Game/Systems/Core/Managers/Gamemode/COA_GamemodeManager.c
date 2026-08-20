@@ -197,8 +197,6 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		if (!playerCharacter || playerCharacter.GetCharacterController().IsDead())
 		{
 			alreadyCreated = false;
-			
-			m_RplBroadcastManager.SendCharacterLoadingScreen(playerId);
 			playerCharacter = SpawnPlayableCharacter(playerId, spawnPointID, entityRplID);
 			
 			if (!playerCharacter)
