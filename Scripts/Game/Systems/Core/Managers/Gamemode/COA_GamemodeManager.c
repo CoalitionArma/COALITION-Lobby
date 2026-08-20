@@ -17,10 +17,6 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 	protected COA_MenuManager m_MenuManager;
 	protected COA_Gamemode m_Gamemode;
 
-	// Keyed by the awaited character's RplId so each in-flight wait stays alive (ref-counted) until
-	// it resolves or times out - see COA_GearAppliedWaiter below.
-	protected ref map<RplId, ref COA_GearAppliedWaiter> m_mGearAppliedWaiters = new map<RplId, ref COA_GearAppliedWaiter>();
-
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{	
@@ -137,7 +133,11 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 				if (m_SlottingManager.IsPlayerInASlot(playerId) && m_SlottingManager.IsPlayerConsideredDead(playerId) && m_RespawnManager.CanPlayerRespawn(playerCharacter, faction.GetFactionKey(), playerId))
 					m_RplBroadcastManager.SendRespawnScreen(playerId);
 
-			m_RplBroadcastManager.VerifyPlayerBroadcast(playerId, playerRplComp.Id());
+			// Gear is applied uniformly for every character (player or not) via
+			// COA_GearscriptCharacter's own deferred end-of-frame EOnInit pass - no server-orchestrated
+			// verify/finalize round-trip needed. The client verifies its own readiness locally in
+			// COA_PlayerControllerManager.InitilizePlayerClient once it receives this broadcast.
+			m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, playerRplComp.Id());
 
 			OnPlayerInitialized(playerId, playerCharacter, playerRplComp, COA_EntityHelper.IsSpectator(playerCharacter));
 		};
@@ -147,39 +147,11 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Extension point for mods: called once a player has been possessed/spectator-assigned and
-	//! VerifyPlayerBroadcast has been sent, for both the normal spawn path (above) and the GM-possession
-	//! path (InitilizePossessionPlayer, below). Override instead of copying InitilizePlayer wholesale.
+	//! InitilizePlayerBroadcast has been sent, for both the normal spawn path (above) and the
+	//! GM-possession path (InitilizePossessionPlayer, below). Override instead of copying
+	//! InitilizePlayer wholesale.
 	protected void OnPlayerInitialized(int playerId, IEntity playerCharacter, RplComponent playerRplComp, bool isSpectator)
 	{
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void FinalizeInitilizePlayer(int playerId, RplId playerCharID)
-	{
-		COA_GearscriptManager gearscriptManager = COA_GearscriptManager.GetInstance();
-		IEntity playerCharacter = COA_EntityHelper.GetCharacterFromRplId(playerCharID);
-		
-		if (!gearscriptManager || !playerCharacter)
-			return;
-		
-		COA_GearscriptCharacter gsCharacter = COA_GearscriptCharacter.Cast(playerCharacter);
-		if (gsCharacter)
-		{
-			GetGame().GetCallqueue().Call(gearscriptManager.SetEntityGear, gsCharacter, gsCharacter.GetPrefabData().GetPrefabName()); // gear gets set on a seprate thread than the check, mimicing how it's setup in COA_GearscriptCharacter.
-
-			COA_GearAppliedWaiter waiter = new COA_GearAppliedWaiter();
-			waiter.Setup(this, playerId, playerCharID, gsCharacter);
-			m_mGearAppliedWaiters.Set(playerCharID, waiter);
-			waiter.Start(COA_GearAppliedWaiter.INTERVAL_MS, COA_GearAppliedWaiter.MAX_ATTEMPTS, string.Format("Gear applied for character %1", playerCharID));
-		} else // Spectators/special characters just get forced into the final phase of init.
-			m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, playerCharID);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Called by COA_GearAppliedWaiter once it resolves or times out, so it can be released.
-	void RemoveGearAppliedWaiter(RplId playerCharID)
-	{
-		m_mGearAppliedWaiters.Remove(playerCharID);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -416,53 +388,5 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 	static COA_GamemodeManager GetInstance()
 	{
 		return m_sInstance;
-	}
-}
-
-//! Waits for a spawned character's gearscript to finish applying before broadcasting init-complete.
-//! See COA_GamemodeManager.FinalizeInitilizePlayer.
-class COA_GearAppliedWaiter : COA_RetryWaiter
-{
-	static const int INTERVAL_MS = 200;
-	static const int MAX_ATTEMPTS = 20; // ~4 seconds at 200ms interval
-
-	protected COA_GamemodeManager m_Owner;
-	protected int m_iPlayerId;
-	protected RplId m_PlayerCharID;
-	protected COA_GearscriptCharacter m_Character;
-
-	//------------------------------------------------------------------------------------------------
-	void Setup(COA_GamemodeManager owner, int playerId, RplId playerCharID, COA_GearscriptCharacter character)
-	{
-		m_Owner = owner;
-		m_iPlayerId = playerId;
-		m_PlayerCharID = playerCharID;
-		m_Character = character;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected override bool IsConditionMet()
-	{
-		return m_Character && m_Character.IsGearApplied();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected override void OnReady()
-	{
-		COA_RplBroadcastManager broadcastManager = COA_RplBroadcastManager.GetInstance();
-		if (broadcastManager)
-			broadcastManager.InitilizePlayerBroadcast(m_iPlayerId, m_PlayerCharID);
-
-		if (m_Owner)
-			m_Owner.RemoveGearAppliedWaiter(m_PlayerCharID);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected override void OnTimeout()
-	{
-		Print(string.Format("[Coalition Lobby] WARNING: Failed to initialize gear for character %1 after %2 attempts", m_PlayerCharID, MAX_ATTEMPTS), LogLevel.WARNING);
-
-		if (m_Owner)
-			m_Owner.RemoveGearAppliedWaiter(m_PlayerCharID);
 	}
 }
