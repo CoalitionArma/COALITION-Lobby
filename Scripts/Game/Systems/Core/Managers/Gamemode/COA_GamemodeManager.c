@@ -16,7 +16,7 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 	protected COA_RespawnManager m_RespawnManager;
 	protected COA_MenuManager m_MenuManager;
 	protected COA_Gamemode m_Gamemode;
-	
+
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{	
@@ -133,41 +133,25 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 				if (m_SlottingManager.IsPlayerInASlot(playerId) && m_SlottingManager.IsPlayerConsideredDead(playerId) && m_RespawnManager.CanPlayerRespawn(playerCharacter, faction.GetFactionKey(), playerId))
 					m_RplBroadcastManager.SendRespawnScreen(playerId);
 
+			// Gear is applied uniformly for every character (player or not) via
+			// COA_GearscriptCharacter's own deferred end-of-frame EOnInit pass - no server-orchestrated
+			// verify/finalize round-trip needed. The client verifies its own readiness locally in
+			// COA_PlayerControllerManager.InitilizePlayerClient once it receives this broadcast.
 			m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, playerRplComp.Id());
+
+			OnPlayerInitialized(playerId, playerCharacter, playerRplComp, COA_EntityHelper.IsSpectator(playerCharacter));
 		};
 
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Hands a GM-placed AI body over to a player instead of spawning a fresh character. If the body
-	//! has already died before anyone claimed the slot, the possession entry is consumed anyway and
-	//! initialization is retried, which now falls through to the normal role-based spawn (using the
-	//! role COA_GMRoleGuessHelper guessed at registration time) - so nobody gets stranded.
-	protected bool InitilizePossessionPlayer(int playerId, int slotId, RplId targetEntityId, SCR_PlayerController playerController)
+	//! Extension point for mods: called once a player has been possessed/spectator-assigned and
+	//! InitilizePlayerBroadcast has been sent, for both the normal spawn path (above) and the
+	//! GM-possession path (InitilizePossessionPlayer, below). Override instead of copying
+	//! InitilizePlayer wholesale.
+	protected void OnPlayerInitialized(int playerId, IEntity playerCharacter, RplComponent playerRplComp, bool isSpectator)
 	{
-		SCR_ChimeraCharacter targetCharacter = COA_EntityHelper.GetCharacterFromRplId(targetEntityId);
-
-		if (!targetCharacter || !COA_DamageHelper.CheckIfEntityAlive(targetCharacter))
-		{
-			COA_GMPossessionManager.GetInstance().ConsumePossessionSlot(slotId);
-			return InitilizePlayer(playerId);
-		}
-
-		Faction faction = m_SlottingManager.GetPlayerSlotFaction(playerId);
-		m_MenuManager.RemovePlayerFromAnyChannel(playerId, false);
-
-		COA_PlayerHelper.AssignFactionToPlayer(playerController, faction);
-		COA_PossessionHelper.PossessExistingEntity(playerController, targetCharacter);
-
-		AssignPlayerToGroup(playerId);
-
-		m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, targetEntityId);
-
-		// One-shot: never intercept this slot again, regardless of what happens to the player from here.
-		COA_GMPossessionManager.GetInstance().ConsumePossessionSlot(slotId);
-
-		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -342,6 +326,44 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		SCR_PlayerControllerGroupComponent groupComponent = SCR_PlayerControllerGroupComponent.GetPlayerControllerComponent(playerId);
 		if (groupComponent)
 			groupComponent.RPC_AskJoinGroup(groupId);
+	}
+	
+//=============================================================================================================================================================================================================================================================================================================================================================
+//	 GM CHARACTER HELPERS
+//=============================================================================================================================================================================================================================================================================================================================================================
+	
+	//------------------------------------------------------------------------------------------------
+	//! Hands a GM-placed AI body over to a player instead of spawning a fresh character. If the body
+	//! has already died before anyone claimed the slot, the possession entry is consumed anyway and
+	//! initialization is retried, which now falls through to the normal role-based spawn (using the
+	//! role COA_GMRoleGuessHelper guessed at registration time) - so nobody gets stranded.
+	protected bool InitilizePossessionPlayer(int playerId, int slotId, RplId targetEntityId, SCR_PlayerController playerController)
+	{
+		SCR_ChimeraCharacter targetCharacter = COA_EntityHelper.GetCharacterFromRplId(targetEntityId);
+
+		if (!targetCharacter || !COA_DamageHelper.CheckIfEntityAlive(targetCharacter))
+		{
+			COA_GMPossessionManager.GetInstance().ConsumePossessionSlot(slotId);
+			return InitilizePlayer(playerId);
+		}
+
+		Faction faction = m_SlottingManager.GetPlayerSlotFaction(playerId);
+		m_MenuManager.RemovePlayerFromAnyChannel(playerId, false);
+
+		COA_PlayerHelper.AssignFactionToPlayer(playerController, faction);
+		COA_PossessionHelper.PossessExistingEntity(playerController, targetCharacter);
+
+		AssignPlayerToGroup(playerId);
+
+		m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, targetEntityId);
+
+		RplComponent targetRplComp = RplComponent.Cast(targetCharacter.FindComponent(RplComponent));
+		OnPlayerInitialized(playerId, targetCharacter, targetRplComp, false);
+
+		// One-shot: never intercept this slot again, regardless of what happens to the player from here.
+		COA_GMPossessionManager.GetInstance().ConsumePossessionSlot(slotId);
+
+		return true;
 	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================

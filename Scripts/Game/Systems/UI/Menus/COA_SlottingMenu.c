@@ -3,6 +3,10 @@ class COA_SlottingMenu: ChimeraMenuBase
 	//---------------------------------------------------------------------
 	// UI Widgets
 	//---------------------------------------------------------------------
+	// Guards InitilizePlayer() so the explicit "confirm" button and the auto-fire in UpdateSlotInPlace
+	// (both of which call it) can't both send a RequestInitilizePlayer RPC for the same slot pick.
+	protected bool m_bInitializeRequested = false;
+
 	protected Widget m_wRoot;                   // Root widget for the entire menu
 	protected ImageWidget m_wPreview;           // Phase indicator for preview phase
 	protected ImageWidget m_wSlotting;          // Phase indicator for slotting phase
@@ -92,7 +96,9 @@ class COA_SlottingMenu: ChimeraMenuBase
 			Close();
 			return;
 		}
-		
+
+		m_bInitializeRequested = false;
+
 		// Add input event listeners
 		SetupInputListeners();
 		
@@ -693,11 +699,18 @@ class COA_SlottingMenu: ChimeraMenuBase
 	 */
 	void InitilizePlayer()
 	{
+		// The explicit "confirm" button and the auto-fire in UpdateSlotInPlace can both reach this in
+		// the same slot pick - only send the request once.
+		if (m_bInitializeRequested)
+			return;
+		m_bInitializeRequested = true;
+
 		// Close the slotting menu
 		GetGame().GetMenuManager().CloseMenuByPreset(ChimeraMenuPreset.COA_SlottingMenu);
-		
-		// Request server to initialize the local player
-		COA_PlayerRplToAuthorityManager.GetInstance().RequestInitilizePlayer(SCR_PlayerController.GetLocalPlayerId());
+
+		// Request server to initialize the local player. Not a mass-join batch - this is a single,
+		// standalone confirm, so it skips the staggered batch queue meant for connect/round-start bursts.
+		COA_PlayerRplToAuthorityManager.GetInstance().RequestInitilizePlayer(SCR_PlayerController.GetLocalPlayerId(), false);
 	}
 	
 	/**

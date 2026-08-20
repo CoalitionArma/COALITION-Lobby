@@ -84,10 +84,14 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 //=============================================================================================================================================================================================================================================================================================================================================================
 	
 	//------------------------------------------------------------------------------------------------
-	void RequestInitilizePlayer(int playerId)
+	//! \param[in] isMassJoinBatch Forwarded to COA_Gamemode.QueuePlayerInitialization - leave true for
+	//! connect/round-start callers so they still get smoothed by the staggered batch queue; pass false
+	//! only for a standalone request (e.g. a single mid-session slotting-menu confirm) that should run
+	//! immediately instead of waiting behind that queue.
+	void RequestInitilizePlayer(int playerId, bool isMassJoinBatch = true)
 	{
 		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.COA_CharacterLoading);
-		Rpc(RpcAsk_RequestInitilizePlayer, playerId); 
+		Rpc(RpcAsk_RequestInitilizePlayer, playerId, isMassJoinBatch);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -352,13 +356,16 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_RequestInitilizePlayer(int playerId)
+	// Default parameter values aren't supported on RPCs - RequestInitilizePlayer (below) always passes
+	// both arguments explicitly, so this method doesn't need one.
+	protected void RpcAsk_RequestInitilizePlayer(int playerId, bool isMassJoinBatch)
 	{
-		// Telemetry: int
-		LogTelemetry("RpcAsk_RequestInitilizePlayer", COA_BandwidthTelemetryManager.EstimateSize_Int());
-		
-		// Use staggered initialization system to prevent server overload
-		m_Gamemode.QueuePlayerInitialization(playerId);
+		// Telemetry: int, bool
+		LogTelemetry("RpcAsk_RequestInitilizePlayer", COA_BandwidthTelemetryManager.EstimateSize_Int() + COA_BandwidthTelemetryManager.EstimateSize_Bool());
+
+		// Use staggered initialization system to prevent server overload during connect/round-start
+		// bursts; a standalone request (isMassJoinBatch = false) skips straight to InitilizePlayer.
+		m_Gamemode.QueuePlayerInitialization(playerId, isMassJoinBatch);
 	}
 
 	
