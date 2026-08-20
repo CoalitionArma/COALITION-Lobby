@@ -86,14 +86,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	void RequestInitilizePlayer(int playerId)
 	{
-		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.COA_CharacterLoading);
 		Rpc(RpcAsk_RequestInitilizePlayer, playerId); 
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	void FinalizeInitilizePlayer(int playerId, RplId playerCharID)
-	{
-		Rpc(RpcAsk_FinalizeInitilizePlayer, playerId, playerCharID); 
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -366,19 +359,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		// Use staggered initialization system to prevent server overload
 		m_Gamemode.QueuePlayerInitialization(playerId);
 	}
-	
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_FinalizeInitilizePlayer(int playerId, RplId playerCharID)
-	{
-		// Telemetry: int
-		LogTelemetry("RpcAsk_FinalizeInitilizePlayer", COA_BandwidthTelemetryManager.EstimateSize_Int());
-		
-		COA_GamemodeManager gamemodeManager = COA_GamemodeManager.GetInstance();
-		
-		if (gamemodeManager)
-			gamemodeManager.FinalizeInitilizePlayer(playerId, playerCharID);
-	}
+
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
