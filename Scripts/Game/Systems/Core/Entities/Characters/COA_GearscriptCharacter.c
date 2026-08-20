@@ -5,6 +5,7 @@ class COA_GearscriptCharacterClass : COA_PlayerCharacterClass
 class COA_GearscriptCharacter : COA_PlayerCharacter
 {
 	protected COA_EGearRole m_GearRole;
+
 	//! Set once a gearscript has been applied to this character, so the deferred EOnInit pass cannot
 	//! wipe and rebuild a loadout that some other path (arsenal, gear reset) already applied.
 	protected bool m_bGearApplied;
@@ -43,7 +44,7 @@ class COA_GearscriptCharacter : COA_PlayerCharacter
 	//! End-of-frame gearscript pass, skipped if the gear was already applied synchronously.
 	protected void ApplyDeferredGear()
 	{
-		if (m_bGearApplied || m_bIsPlayer) // We DON'T want to set gear on entities that are going to be players as they get gear set through the init system
+		if (m_bGearApplied)
 			return;
 
 		COA_GearscriptManager gearscriptManager = COA_GearscriptManager.GetInstance();

@@ -93,12 +93,6 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.COA_CharacterLoading);
 		Rpc(RpcAsk_RequestInitilizePlayer, playerId, isMassJoinBatch);
 	}
-	
-	//------------------------------------------------------------------------------------------------
-	void FinalizeInitilizePlayer(int playerId, RplId playerCharID)
-	{
-		Rpc(RpcAsk_FinalizeInitilizePlayer, playerId, playerCharID); 
-	}
 
 	//------------------------------------------------------------------------------------------------
 	void ToggleSideReady(string setReady, string playerName, bool adminForced)
@@ -373,19 +367,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		// bursts; a standalone request (isMassJoinBatch = false) skips straight to InitilizePlayer.
 		m_Gamemode.QueuePlayerInitialization(playerId, isMassJoinBatch);
 	}
-	
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_FinalizeInitilizePlayer(int playerId, RplId playerCharID)
-	{
-		// Telemetry: int
-		LogTelemetry("RpcAsk_FinalizeInitilizePlayer", COA_BandwidthTelemetryManager.EstimateSize_Int());
-		
-		COA_GamemodeManager gamemodeManager = COA_GamemodeManager.GetInstance();
-		
-		if (gamemodeManager)
-			gamemodeManager.FinalizeInitilizePlayer(playerId, playerCharID);
-	}
+
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]

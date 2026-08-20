@@ -101,8 +101,6 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		if (!playerCharacter)
 			return false;
 		
-		playerCharacter.MarkIsPlayer();
-		
 		RplComponent playerRplComp = RplComponent.Cast(playerCharacter.FindComponent(RplComponent));
 		if (!playerRplComp)
 			return false;
