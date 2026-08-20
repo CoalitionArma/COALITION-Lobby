@@ -104,10 +104,6 @@ class COA_SpectatorLabelIcon : SCR_ScriptedWidgetComponent
 	 */
 	void Update()
 	{
-		// Skip processing if entity is invalid
-		if (!m_eEntity)
-			return;
-			
 		// Calculate world position (either entity origin or specific bone position)
 		UpdateWorldPosition();
 		
@@ -119,7 +115,7 @@ class COA_SpectatorLabelIcon : SCR_ScriptedWidgetComponent
 		m_fDistanceToIcon = vector.Distance(cameraPosition, m_vWorldPosition);
 		
 		// Hide if behind camera or too far away
-		if (screenPosition[2] < 0 || m_fDistanceToIcon > m_fMaxIconDistance)
+		if (!m_eEntity || screenPosition[2] < 0 || m_fDistanceToIcon > m_fMaxIconDistance)
 		{
 			m_wRoot.SetOpacity(0.0);
 			m_wRoot.SetEnabled(false); // Disable so the invisible widget cannot block player clicks
