@@ -88,16 +88,14 @@ class COA_SpectatorLabelIconCharacter : COA_SpectatorLabelIcon
 	//------------------------------------------------------------------------------------------------
 	override void Update()
 	{
-		if (!m_eEntity)
-			return;
-		
 		// Let the base class handle world-position projection, distance measurement,
 		// far-distance hard-culling, label visibility, icon sizing and z-ordering.
 		super.Update();
-		
+		vector screenPosition = GetGame().GetWorkspace().ProjWorldToScreen(m_vWorldPosition, GetGame().GetWorld());
+
 		// Soft-fade icons as the camera pulls away, so they dissolve smoothly rather
 		// than popping out at the hard-cull distance.
-		if (m_fDistanceToIcon >= CHAR_ICON_FADE_FAR)
+		if (!m_eEntity || screenPosition[2] < 0 || m_fDistanceToIcon >= CHAR_ICON_FADE_FAR)
 		{
 			m_wRoot.SetOpacity(0.0);
 			m_wRoot.SetEnabled(false); // Disable so the invisible widget cannot block player clicks

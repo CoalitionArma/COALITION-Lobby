@@ -56,10 +56,6 @@ class COA_GearscriptManager : ScriptComponent
 	{
 		if (!entity)
 			return;
-		
-		COA_GearscriptCharacter gearscriptCharacter = COA_GearscriptCharacter.Cast(entity);
-		if (!gearscriptCharacter)
-			return;
 
 		// Determine faction from resource name
 		FactionKey factionKey = COA_EntityHelper.DetermineFactionKey(entity);
@@ -87,8 +83,16 @@ class COA_GearscriptManager : ScriptComponent
 
 		// Get role and clear entity
 		COA_EGearRole role = COA_RoleHelper.ResourceToRole(resourceNameToScan);
-		
-		gearscriptCharacter.SetGearRole(role);
+
+		COA_GearscriptCharacter gearscriptCharacter = COA_GearscriptCharacter.Cast(entity);
+		if (gearscriptCharacter)
+		{
+			gearscriptCharacter.SetGearRole(role);
+
+			// Claim the character before any gear is touched, so the deferred EOnInit pass cannot
+			// re-enter and wipe a loadout this call is midway through applying.
+			gearscriptCharacter.MarkGearApplied();
+		}
 
 		ClearEntityGear(inventory, inventoryManager);
 
@@ -119,8 +123,6 @@ class COA_GearscriptManager : ScriptComponent
 		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(entity);
 		if (playerId > 0)
 			InitializeCharacterRadios(entity, playerId);
-		
-		gearscriptCharacter.MarkGearApplied();
 	}
 
 	//------------------------------------------------------------------------------------------------

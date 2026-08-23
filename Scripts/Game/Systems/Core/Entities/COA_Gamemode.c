@@ -577,7 +577,11 @@ class COA_Gamemode : SCR_BaseGameMode
 	//! Queue a player for staggered initialization
 	//! Prevents server overload by batching player spawns
 	//! \param[in] playerId ID of the player to initialize
-	void QueuePlayerInitialization(int playerId)
+	//! \param[in] isMassJoinBatch Set false for a single, standalone init request (e.g. a mid-session
+	//! slotting-menu confirm) so it isn't held up by the staggered batching this queue exists to smooth
+	//! out during connect/round-start bursts - it runs immediately instead, falling back to the queue
+	//! only if that immediate attempt fails.
+	void QueuePlayerInitialization(int playerId, bool isMassJoinBatch = true)
 	{
 		if (playerId <= 0)
 			return;
@@ -585,7 +589,16 @@ class COA_Gamemode : SCR_BaseGameMode
 		// Don't queue if already pending
 		if (m_aPendingPlayerInitializations.Contains(playerId))
 			return;
-		
+
+		if (!isMassJoinBatch)
+		{
+			if (!m_GamemodeManager)
+				m_GamemodeManager = COA_GamemodeManager.GetInstance();
+
+			if (m_GamemodeManager && m_GamemodeManager.InitilizePlayer(playerId))
+				return;
+		}
+
 		m_aPendingPlayerInitializations.Insert(playerId);
 		m_mPlayerInitializationRetries.Set(playerId, 0);
 		

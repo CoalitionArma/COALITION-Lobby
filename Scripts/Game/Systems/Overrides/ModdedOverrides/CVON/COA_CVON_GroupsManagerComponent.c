@@ -149,7 +149,7 @@ modded class SCR_GroupsManagerComponent
 
 			bool m_bFrequencyFound = false;
 			CVON_RadioComponent radioComp = CVON_RadioComponent.Cast(radio.FindComponent(CVON_RadioComponent));
-			if (!radioComp || radioComp.m_aChannels.Find(playersGroupName) + 1 <= 0)
+			if (!radioComp)
 				continue;
 
 			switch (radioComp.m_eRadioType)

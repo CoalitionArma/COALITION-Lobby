@@ -425,22 +425,7 @@ class COA_RplBroadcastManager : ScriptComponent
 		Rpc(RpcDo_RefreshAdminMenuLists);
 		#endif
 	}
-
-	//------------------------------------------------------------------------------------------------
-	void VerifyPlayerBroadcast(int playerId, RplId playerCharID)
-	{
-		// Telemetry: int + RplId
-		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int();
-		bytes += COA_BandwidthTelemetryManager.EstimateSize_RplId();
-		LogTelemetry("InitilizePlayerBroadcast", bytes);
-		
-		#ifdef WORKBENCH
-		RpcDo_VerifyPlayerBroadcast(playerId, playerCharID);
-		#else
-		Rpc(RpcDo_VerifyPlayerBroadcast, playerId, playerCharID);
-		#endif
-	}
-
+	
 	//------------------------------------------------------------------------------------------------
 	void InitilizePlayerBroadcast(int playerId, RplId playerCharID)
 	{
@@ -1855,15 +1840,6 @@ class COA_RplBroadcastManager : ScriptComponent
 		hint.ShowHint(data, 8000);
 	}	
 
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	void RpcDo_VerifyPlayerBroadcast(int playerId, RplId playerCharID)
-	{
-		if (!IsLocalPlayer(playerId))
-			return;
-
-		COA_PlayerControllerManager.GetInstance().VerifyClientCharacter(playerCharID);
-	}
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]

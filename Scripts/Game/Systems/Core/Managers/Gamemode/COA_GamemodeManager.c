@@ -16,7 +16,7 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 	protected COA_RespawnManager m_RespawnManager;
 	protected COA_MenuManager m_MenuManager;
 	protected COA_Gamemode m_Gamemode;
-	
+
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{	
@@ -97,8 +97,6 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		if (!playerCharacter)
 			return false;
 		
-		playerCharacter.MarkIsPlayer();
-		
 		RplComponent playerRplComp = RplComponent.Cast(playerCharacter.FindComponent(RplComponent));
 		if (!playerRplComp)
 			return false;
@@ -135,49 +133,25 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 				if (m_SlottingManager.IsPlayerInASlot(playerId) && m_SlottingManager.IsPlayerConsideredDead(playerId) && m_RespawnManager.CanPlayerRespawn(playerCharacter, faction.GetFactionKey(), playerId))
 					m_RplBroadcastManager.SendRespawnScreen(playerId);
 
-			m_RplBroadcastManager.VerifyPlayerBroadcast(playerId, playerRplComp.Id());
+			// Gear is applied uniformly for every character (player or not) via
+			// COA_GearscriptCharacter's own deferred end-of-frame EOnInit pass - no server-orchestrated
+			// verify/finalize round-trip needed. The client verifies its own readiness locally in
+			// COA_PlayerControllerManager.InitilizePlayerClient once it receives this broadcast.
+			m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, playerRplComp.Id());
+
+			OnPlayerInitialized(playerId, playerCharacter, playerRplComp, COA_EntityHelper.IsSpectator(playerCharacter));
 		};
 
 		return true;
 	}
-	
-	//------------------------------------------------------------------------------------------------
-	void FinalizeInitilizePlayer(int playerId, RplId playerCharID)
-	{
-		COA_GearscriptManager gearscriptManager = COA_GearscriptManager.GetInstance();
-		IEntity playerCharacter = COA_EntityHelper.GetCharacterFromRplId(playerCharID);
-		
-		if (!gearscriptManager || !playerCharacter)
-			return;
-		
-		COA_GearscriptCharacter gsCharacter = COA_GearscriptCharacter.Cast(playerCharacter);
-		if (gsCharacter)
-		{
-			GetGame().GetCallqueue().Call(gearscriptManager.SetEntityGear, gsCharacter, gsCharacter.GetPrefabData().GetPrefabName()); // gear gets set on a seprate thread than the check, mimicing how it's setup in COA_GearscriptCharacter.
-			CheckGearAssignment(playerId, playerCharID, gsCharacter);
-		} else // Spectators/special characters just get forced into the final phase of init.
-			m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, playerCharID);
-	}
-	
-	protected const int GEAR_INIT_RETRY_DELAY_MS = 200;
-	protected const int MAX_GEAR_INIT_RETRIES = 20; // ~4 seconds at 200ms interval
-	//------------------------------------------------------------------------------------------------
-	protected void CheckGearAssignment(int playerId, RplId playerCharID, COA_GearscriptCharacter character, int retryCount = 0)
-	{
-		// If references are not initialized
-		if (!character.IsGearApplied()) {
-			retryCount++;
-			if (retryCount >= MAX_GEAR_INIT_RETRIES)
-			{
-				Print(string.Format("[Coalition Lobby] WARNING: Failed to initialize gear for character %1 after %2 attempts", playerCharID, retryCount), LogLevel.WARNING);
-				return;
-			}
 
-			GetGame().GetCallqueue().CallLater(CheckGearAssignment, GEAR_INIT_RETRY_DELAY_MS, false, playerId, playerCharID, character, retryCount);
-			return;
-		};
-		
-		m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, playerCharID);
+	//------------------------------------------------------------------------------------------------
+	//! Extension point for mods: called once a player has been possessed/spectator-assigned and
+	//! InitilizePlayerBroadcast has been sent, for both the normal spawn path (above) and the
+	//! GM-possession path (InitilizePossessionPlayer, below). Override instead of copying
+	//! InitilizePlayer wholesale.
+	protected void OnPlayerInitialized(int playerId, IEntity playerCharacter, RplComponent playerRplComp, bool isSpectator)
+	{
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -382,6 +356,9 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		AssignPlayerToGroup(playerId);
 
 		m_RplBroadcastManager.InitilizePlayerBroadcast(playerId, targetEntityId);
+
+		RplComponent targetRplComp = RplComponent.Cast(targetCharacter.FindComponent(RplComponent));
+		OnPlayerInitialized(playerId, targetCharacter, targetRplComp, false);
 
 		// One-shot: never intercept this slot again, regardless of what happens to the player from here.
 		COA_GMPossessionManager.GetInstance().ConsumePossessionSlot(slotId);
