@@ -721,8 +721,6 @@ class COA_AdminMenu : ChimeraMenuBase
 	//! Toggle filters for logs
 	 void ToggleLogLevelFilter()
 	 {
-		Print("toggled");
-
 		// Setup log filters
 		SCR_ButtonTextComponent filterLogHigh = GetMenuButton("HighFilterButton", m_wRoot);
 		SCR_ButtonTextComponent filterLogMedium = GetMenuButton("MediumFilterButton", m_wRoot);
