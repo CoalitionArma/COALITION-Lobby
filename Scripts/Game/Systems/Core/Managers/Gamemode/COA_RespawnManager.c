@@ -737,7 +737,7 @@ class COA_RespawnManager : ScriptComponent
 		if (staticSpawn && staticSpawn.m_bIsDefaultSpawn)
 			return true;
 		
-		COA_VehicleSpawnPoint vehSpawn = COA_VehicleSpawnPoint.Cast(entity);
+		 COA_MobileSpawnPoint vehSpawn =  COA_MobileSpawnPoint.Cast(entity);
 		if (vehSpawn && vehSpawn.m_bIsDefaultSpawn)
 			return true;
 		
@@ -751,7 +751,7 @@ class COA_RespawnManager : ScriptComponent
 		if (staticSpawn)
 			staticSpawn.SetLocalSpawnPointId(spawnPointId);
 		
-		COA_VehicleSpawnPoint vehSpawn = COA_VehicleSpawnPoint.Cast(spawnPointEntity);
+		 COA_MobileSpawnPoint vehSpawn =  COA_MobileSpawnPoint.Cast(spawnPointEntity);
 		if (vehSpawn)
 			vehSpawn.SetLocalSpawnPointId(spawnPointId);
 		

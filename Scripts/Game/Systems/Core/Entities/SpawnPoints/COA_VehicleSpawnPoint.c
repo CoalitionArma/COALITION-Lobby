@@ -1,9 +1,9 @@
-class COA_VehicleSpawnPointClass : COA_SpawnPointClass
+class  COA_MobileSpawnPointClass : COA_SpawnPointClass
 {
 	
 }
 
-class COA_VehicleSpawnPoint: COA_SpawnPoint
+class  COA_MobileSpawnPoint: COA_SpawnPoint
 {
 	
 };
