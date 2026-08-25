@@ -139,34 +139,46 @@ class COA_EntityHelper
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Finds a live position to use for forward deploy: the origin of the group's first alive, spawned member.
+	//! Finds a live position to use for forward deploy: the group leader's position if they're alive
+	//! and spawned, otherwise any other living, spawned member (so a dead/unspawned leader doesn't
+	//! just break forward deploy for the whole squad).
 	//! \param[in] group Group to find a live position for.
-	//! \param[out] outOrigin World position of the first alive, spawned member found.
+	//! \param[out] outOrigin World position of the leader, or failing that, another living member.
 	//! \return True if a valid position was found, false if the group has no living spawned members.
 	static bool GetGroupOrigin(SCR_AIGroup group, out vector outOrigin)
 	{
 		if (!group)
 			return false;
 
+		if (GetLiveCharacterOrigin(group.GetLeaderEntity(), outOrigin))
+			return true;
+
 		array<int> playerIds = group.GetPlayerIDs();
 		foreach (int playerId : playerIds)
 		{
-			IEntity controlled = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
-			if (!controlled)
-				continue;
-
-			SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(controlled);
-			if (!character)
-				continue;
-
-			SCR_DamageManagerComponent damageManager = character.GetDamageManager();
-			if (damageManager && damageManager.GetState() == EDamageState.DESTROYED)
-				continue;
-
-			outOrigin = character.GetOrigin();
-			return true;
+			if (GetLiveCharacterOrigin(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId), outOrigin))
+				return true;
 		}
 
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Outputs entity's position if it's a living, spawned character. Used by GetGroupOrigin.
+	static bool GetLiveCharacterOrigin(IEntity entity, out vector outOrigin)
+	{
+		if (!entity)
+			return false;
+
+		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(entity);
+		if (!character)
+			return false;
+
+		SCR_DamageManagerComponent damageManager = character.GetDamageManager();
+		if (damageManager && damageManager.GetState() == EDamageState.DESTROYED)
+			return false;
+
+		outOrigin = character.GetOrigin();
+		return true;
 	}
 }
