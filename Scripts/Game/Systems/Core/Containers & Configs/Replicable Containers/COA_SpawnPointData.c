@@ -26,6 +26,15 @@ class COA_SpawnPointData
 	
 	[Attribute("true", "auto", "If this Spawn Point conforms to the terrain before spawning the entity (prevents players spawning too high off the ground)")]
 	protected bool m_bSpawnPointConformsToTerrain;
+
+	[Attribute("100", "auto", "How far away in meters enemy faction will block this spawnpoint (Keep in mind this is RADIUS, not diameter)", category: "Gamemode Settings - Spawn")]
+	protected int m_iSpawnBlockRadius;
+
+	[Attribute("5", "auto", "How often to check for near by enemy factions", category: "Gamemode Settings - Spawn")]
+	protected int m_iSpawnBlockFrequancy;
+	
+	[Attribute("true", "auto", "If enabled, players cannot spawn when enemy units are nearby to spawnpoints", category: "Gamemode Settings - Advanced")]
+	bool m_bSpawnBlockEnabled;
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 RUNTIME VARIABLES
@@ -110,7 +119,18 @@ class COA_SpawnPointData
 		m_bIsBlocked = block;
 	}
 
-	
+	//------------------------------------------------------------------------------------------------
+	void SetSpawnPointBlockRadius(int radius)
+	{
+		m_iSpawnBlockRadius = radius;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetSpawnPointBlockFrequency(int frequancy)
+	{
+		m_iSpawnBlockFrequancy = frequancy;
+	}
+
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 GETTERS
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -179,6 +199,18 @@ class COA_SpawnPointData
 	bool GetIsSpawnPointBlocked()
 	{
 		return m_bIsBlocked;
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	int GetSpawnPointBlockRadius()
+	{
+		return m_iSpawnPointRadius;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetSpawnPointBlockedFrequency()
+	{
+		return m_iSpawnBlockFrequancy;
 	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================

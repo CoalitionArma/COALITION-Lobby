@@ -42,9 +42,6 @@ class COA_Gamemode : SCR_BaseGameMode
 	[Attribute("0", UIWidgets.Hidden)]
 	bool m_bRallyPointsEnabled;
 
-	[Attribute("0", UIWidgets.Hidden)]
-	bool m_bSpawnBlockEnabled;
-
 	[Attribute("60", UIWidgets.Hidden)]
 	int m_iTimeToRespawn;
 	
@@ -147,12 +144,6 @@ class COA_Gamemode : SCR_BaseGameMode
 
 	[Attribute("false", UIWidgets.CheckBox, desc: "If enabled, players spawn at a random point among CIV's spawn points flagged 'Is Default Spawn' instead of always the same one", category: "Gamemode Settings - Spawn")]
 	bool m_bCIVILIANRandomizeSpawnpoints;
-
-	[Attribute("100", "auto", "How far away in meters enemy faction will block this spawnpoint (Keep in mind this is RADIUS, not diameter)", category: "Gamemode Settings - Spawn")]
-	int m_iSpawnBlockRadius;
-
-	[Attribute("5", "auto", "How often to check for near by enemy factions", category: "Gamemode Settings - Spawn")]
-	int m_iSpawnBlockFrequancy;
 
 	// Weather and Time Settings
 	//------------------------------------------------------------------------------------
