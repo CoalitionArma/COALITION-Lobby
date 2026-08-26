@@ -1,8 +1,8 @@
-class COA_SpawnPointClass : GenericEntityClass
+class COA_SpawnPointClass : VehicleClass
 {
 }
 
-class COA_SpawnPoint: GenericEntity
+class COA_SpawnPoint: Vehicle
 {
 	[Attribute("0", "auto", "Is this a default respawn point for its faction. Flag several to build a spawn pool: normally the first one is used, but if the faction's 'Randomize Spawnpoints' setting is enabled, one is picked at random from the flagged points at each initial/automatic spawn", category: "Spawn Point Settings")]
 	bool m_bIsDefaultSpawn;
