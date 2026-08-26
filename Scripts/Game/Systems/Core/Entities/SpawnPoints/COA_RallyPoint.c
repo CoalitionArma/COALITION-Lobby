@@ -8,6 +8,12 @@ class COA_RallyPoint: COA_StaticSpawnPoint
 	protected Faction m_faction;
 
 	//------------------------------------------------------------------------------------------------
+	override void EOnInit(IEntity owner)
+	{
+		
+	};
+
+	//------------------------------------------------------------------------------------------------
 	void SetupRallyPoint()
 	{
 		array<string> factions = new array<string>();
