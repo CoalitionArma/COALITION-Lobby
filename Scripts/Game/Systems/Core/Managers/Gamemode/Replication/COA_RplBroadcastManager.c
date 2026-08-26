@@ -1010,6 +1010,16 @@ class COA_RplBroadcastManager : ScriptComponent
 	{
 		Rpc(RpcDo_ForwardDeployUpdate, pos, playerId);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	void SpawnPointBlockChanged(int spawnPointID, bool block)
+	{
+		#ifdef WORKBENCH
+		RpcDo_SpawnPointBlockChanged(spawnPointID, block);
+		#else
+		Rpc(RpcDo_SpawnPointBlockChanged, spawnPointID, block);
+		#endif
+	}
 	
 	//------------------------------------------------------------------------------------------------
 	void BroadcastOutro(string winningFaction = "")
@@ -1912,6 +1922,19 @@ class COA_RplBroadcastManager : ScriptComponent
 		if (COA_BorderCheckSystem.GetInstance())
 			GetGame().GetCallqueue().CallLater(COA_BorderCheckSystem.GetInstance().ForceStopTimer, 1250, false);// Force the border timer off after the maximum time has elapsed for it to detect we left the zone
 		
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_SpawnPointBlockChanged(int spawnPointID, bool block)
+	{
+		COA_SpawnPointData spawnPoint = m_RespawnManager.GetInstance().GetSpawnPoint(spawnPointID);
+		if (!spawnPoint)
+			return;
+
+		spawnPoint.SetSpawnPointBlocked(block);
+		
+		m_RespawnManager.ForceSpawnPointsUpdated();
 	}
 	
 	//------------------------------------------------------------------------------------------------

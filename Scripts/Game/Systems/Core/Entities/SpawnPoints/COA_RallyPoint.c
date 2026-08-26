@@ -1,15 +1,17 @@
-class COA_RallyPointClass : GenericEntityClass
+class COA_RallyPointClass : COA_StaticSpawnPointClass
 {
 }
 
-class COA_RallyPoint: GenericEntity
+class COA_RallyPoint: COA_StaticSpawnPoint
 {	
-	ref COA_SpawnPointData m_SpawnPointSettings = new COA_SpawnPointData();
-	
-	protected int m_iLocallyStoredId;
-	
 	protected SCR_AIGroup m_group;
 	protected Faction m_faction;
+
+	//------------------------------------------------------------------------------------------------
+	override void EOnInit(IEntity owner)
+	{
+		
+	};
 
 	//------------------------------------------------------------------------------------------------
 	void SetupRallyPoint()
@@ -48,18 +50,9 @@ class COA_RallyPoint: GenericEntity
 		
 		if (COA_RespawnManager.GetInstance())
 			COA_RespawnManager.GetInstance().RegisterRespawnPoint(m_SpawnPointSettings, this);
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	int GetLocalSpawnPointId()
-	{
-		return m_iLocallyStoredId;
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	void SetLocalSpawnPointId(int spawnPointId)
-	{
-		m_iLocallyStoredId = spawnPointId;
+
+		if (m_SpawnPointSettings.m_bSpawnBlockEnabled)
+			GetGame().GetCallqueue().CallLater(UpdateFlagProximity, (int)(m_SpawnPointSettings.GetSpawnPointBlockedFrequency() * 1000), true);
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -80,16 +73,5 @@ class COA_RallyPoint: GenericEntity
 			if (rally.m_group == m_group)			
 				SCR_EntityHelper.DeleteEntityAndChildren(entity);
 		}
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	void ~COA_RallyPoint()
-	{
-		// Only server should unregister respawn points
-		if (!GetGame().InPlayMode() || !Replication.IsServer())
-			return;
-		
-		if (COA_RespawnManager.GetInstance())
-			COA_RespawnManager.GetInstance().UnRegisterRespawnPoint(m_iLocallyStoredId);
 	}
 };

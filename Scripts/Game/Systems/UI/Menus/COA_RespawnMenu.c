@@ -80,7 +80,15 @@ class COA_RespawnMenu: ChimeraMenuBase
 	
 	protected void PopulateListBox()
 	{
-		m_aSpawnPoints.Clear();
+		// Clearup old data
+		if (m_aSpawnPoints)
+			m_aSpawnPoints.Clear();
+
+		if (m_wSpawnListBox)
+			m_wSpawnListBox.Clear();
+
+		RemoveAllSpawnPointMarker();
+
 		COA_RespawnManager respawnManager = COA_RespawnManager.GetInstance();
 		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
 		int playerID = GetGame().GetPlayerController().GetPlayerId();
@@ -89,7 +97,7 @@ class COA_RespawnMenu: ChimeraMenuBase
 		m_group = slottingManager.GetPlayerSlotGroup(playerID);
 
 		array<COA_SpawnPointData> factionRespawnPoints = respawnManager.GetFactionSpawnpoints(m_factionKey, m_group);
-		
+
 		// Populates spawnpoints list with players faction spawns entites and create their markers on the map
 		int index = 0;
 		foreach(COA_SpawnPointData spawnPointData : factionRespawnPoints)
@@ -106,13 +114,16 @@ class COA_RespawnMenu: ChimeraMenuBase
 			CreateSpawnPointMarker(spawnPointData.GetSpawnPointName(), worldPos);
 			
 			// Add option to menu and store the component with it
-			m_wSpawnListBox.AddItem(spawnPointData.GetSpawnPointName());
-			
-			if (index == 0)
+			if (spawnPointData.GetIsSpawnPointBlocked())
+				m_wSpawnListBox.AddItemWithColor(string.Format("%1 (Blocked by Enemy)", spawnPointData.GetSpawnPointName()), Color.Red);
+			else
+				m_wSpawnListBox.AddItem(spawnPointData.GetSpawnPointName());
+
+			if (m_wSpawnListBox.GetSelectedItem() == -1 && !spawnPointData.GetIsSpawnPointBlocked())
 			{
-				m_wSpawnListBox.SetItemSelected(index, true, true, true);
-				GetGame().GetCallqueue().CallLater(UpdateSpawnSelection, 500, false);
+				m_wSpawnListBox.SetItemSelected(index, true)
 			}
+
 			index++;
 		}
 	}
@@ -138,9 +149,6 @@ class COA_RespawnMenu: ChimeraMenuBase
 	 */
 	protected void OnSpawnpointStateChanged()
 	{	
-		RemoveAllSpawnPointMarker();
-		m_wSpawnListBox.Clear();
-		
 		GetGame().GetCallqueue().Call(PopulateListBox);
 	}
 	
@@ -381,6 +389,16 @@ class COA_RespawnMenu: ChimeraMenuBase
 		// Grab the entity from the rplID
 		COA_SpawnPointData spawnPointData = m_aSpawnPoints[m_wSpawnListBox.GetSelectedItem()];
 		IEntity point = COA_EntityHelper.GetEntityFromRplId(spawnPointData.GetSpawnPointEntity());
+
+		// Check if the selected point is blocked
+		if (spawnPointData.GetIsSpawnPointBlocked())
+		{
+			int selectedItem = m_wSpawnListBox.GetSelectedItem();
+
+			m_wSpawnListBox.SetItemSelected(selectedItem, false, false);
+
+			return;
+		}
 		
 		// Pan the map to the spawn point
 		PanMapToSpawnPoint(point);
@@ -411,6 +429,9 @@ class COA_RespawnMenu: ChimeraMenuBase
 	{
 		COA_RespawnManager rm = COA_RespawnManager.GetInstance();
 		if (!rm)
+			return;
+
+		if (m_wSpawnListBox.GetSelectedItem() == -1)
 			return;
 		
 		if (rm.m_RespawnConfirmed)

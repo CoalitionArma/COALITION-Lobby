@@ -1,4 +1,4 @@
-COA_VehicleSpawnPoint {
+ COA_MobileSpawnPoint {
  ID "66B4D3266B413460"
  components {
   EventHandlerManagerComponent "{66B4D3266825E3C4}" {
