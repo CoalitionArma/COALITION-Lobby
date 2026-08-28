@@ -218,6 +218,9 @@ class COA_Gamemode : SCR_BaseGameMode
 	// player ID changes between disconnect and reconnect (possible on dedicated servers).
 	//------------------------------------------------------------------------------------
 	protected ref map<string, int> m_mReconnectSlotByGuid = new map<string, int>();
+
+	// Caches each connected player's identity GUID, captured once at OnPlayerAuditSuccess
+	protected ref map<int, string> m_mPlayerGuidById = new map<int, string>();
 	
 	//Store a list of all custom lobby characters active in the world to be used by game systems (spectator, zeus, etc)
 	//------------------------------------------------------------------------------------
@@ -424,7 +427,10 @@ class COA_Gamemode : SCR_BaseGameMode
 
 		// Get player's BI account GUID for privilege checks
 		string playerGUID = SCR_PlayerIdentityUtils.GetPlayerIdentityId(iPlayerID);
-		
+
+		if (IsMaster() && !playerGUID.IsEmpty())
+			m_mPlayerGuidById.Set(iPlayerID, playerGUID);
+
 		// Check if player is the mission designer and grant admin chat
 		SCR_MissionHeader missionHeader = SCR_MissionHeader.Cast(GetGame().GetMissionHeader());
 
@@ -440,19 +446,35 @@ class COA_Gamemode : SCR_BaseGameMode
 	//! Called after a player is disconnected.
 	protected override void OnPlayerDisconnected(int playerId, KickCauseCode cause, int timeout)
 	{
+		// Hand the disconnecting player's controlled entity's RplComponent back to the server
+		if (IsMaster())
+		{
+			IEntity disconnectingEntity = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+			if (disconnectingEntity)
+			{
+				RplComponent disconnectingRpl = RplComponent.Cast(disconnectingEntity.FindComponent(RplComponent));
+				if (disconnectingRpl)
+					disconnectingRpl.GiveExt(RplIdentity.Local(), false);
+			}
+		}
+
 		m_OnPlayerDisconnected.Invoke(playerId, cause, timeout);
-		
+
 		// Save slot association by GUID before any cleanup so the player can reclaim their
 		// slot on reconnect even if their numeric player ID changes (dedicated-server behaviour).
+		//
+		// Read the GUID from the cache populated at OnPlayerAuditSuccess rather than calling
+		// GetPlayerIdentityId(playerId) again here
 		if (IsMaster() && m_SlottingManager)
 		{
-			string disconnectGuid = SCR_PlayerIdentityUtils.GetPlayerIdentityId(playerId);
-			if (!disconnectGuid.IsEmpty())
+			string disconnectGuid;
+			if (m_mPlayerGuidById.Find(playerId, disconnectGuid) && !disconnectGuid.IsEmpty())
 			{
 				int disconnectSlotId = m_SlottingManager.GetPlayerSlotID(playerId);
 				if (disconnectSlotId >= 0)
 					m_mReconnectSlotByGuid.Set(disconnectGuid, disconnectSlotId);
 			}
+			m_mPlayerGuidById.Remove(playerId);
 		}
 		
 		// RespawnSystemComponent is not a SCR_BaseGameModeComponent, so for now we have to

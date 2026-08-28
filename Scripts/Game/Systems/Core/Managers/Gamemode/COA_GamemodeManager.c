@@ -130,7 +130,7 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 			}
 			else
 				//Sends the player the respawn screen if they reconnect while dead
-				if (m_SlottingManager.IsPlayerInASlot(playerId) && m_SlottingManager.IsPlayerConsideredDead(playerId) && m_RespawnManager.CanPlayerRespawn(playerCharacter, faction.GetFactionKey(), playerId))
+				if (m_SlottingManager.IsPlayerInASlot(playerId) && m_SlottingManager.IsPlayerConsideredDead(playerId) && m_RespawnManager.CanPlayerRespawn(null, faction.GetFactionKey(), playerId))
 					m_RplBroadcastManager.SendRespawnScreen(playerId);
 
 			// Gear is applied uniformly for every character (player or not) via
