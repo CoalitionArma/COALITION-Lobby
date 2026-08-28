@@ -603,7 +603,7 @@ class COA_GearscriptManager : ScriptComponent
 			bool inserted = false;
 			BaseInventoryStorageComponent charStorageComp = inventoryManager.FindStorageForResourceInsert(item, inventory);
 			
-			if (SCR_EquipmentStorageComponent.Cast(charStorageComp)) // needed for flashlights, wristwatches, binoculars, etc to automatically assign themselves to their correct slot.
+			if (charStorageComp && SCR_EquipmentStorageComponent.Cast(charStorageComp)) // needed for flashlights, wristwatches, binoculars, etc to automatically assign themselves to their correct slot.
 				inserted = inventoryManager.TrySpawnPrefabToStorage(item, charStorageComp, cb: new SCR_PrefabSpawnCallback(inventory));
 			
 			if (!inserted)
@@ -618,7 +618,7 @@ class COA_GearscriptManager : ScriptComponent
 						{	
 							BaseInventoryStorageComponent storageTo = inventoryManager.FindStorageForResourceInsert(item, clothingStorage, EStoragePurpose.PURPOSE_ANY); // certain vests/storage comp have hidden storage components in them, we use this to rat them out.
 							
-							if (!storageTo) // if they dont have hidden storage components, jsut default to the base storage comp.
+							if (!storageTo) // if they dont have hidden storage components, just default to the base storage comp.
 								storageTo = clothingStorage;
 							
 							inserted = inventoryManager.TrySpawnPrefabToStorage(item, storageTo, cb: new SCR_PrefabSpawnCallback(inventory));
