@@ -57,8 +57,18 @@ modded class SCR_InventoryStorageManagerComponent : ScriptedInventoryStorageMana
 		// Call the parent implementation first
 		super.OnItemAdded(storageOwner, item);
 		
+		if (RplSession.Mode() != RplMode.Client)
+			return;
+		
+		// Certain items (medkits, wrenches, etc) need to have their faction affiliation comp set. so we do that here
+		FactionAffiliationComponent itemFacComp = FactionAffiliationComponent.Cast(item.FindComponent(FactionAffiliationComponent));
+		FactionAffiliationComponent charFacComp = FactionAffiliationComponent.Cast(storageOwner.GetOwner().FindComponent(FactionAffiliationComponent));
+		
+		if (itemFacComp && charFacComp && !charFacComp.GetAffiliatedFactionKey().IsEmpty())
+			itemFacComp.SetAffiliatedFactionByKey(charFacComp.GetAffiliatedFactionKey());
+		
 		// Skip radio validation if espionage is allowed and not in client mode
-		if (COA_Gamemode.GetInstance() && RplSession.Mode() != RplMode.Client && COA_Gamemode.GetInstance().m_bMissionAllowsEspionage)
+		if (COA_Gamemode.GetInstance() && COA_Gamemode.GetInstance().m_bMissionAllowsEspionage)
 			return;
 
 		// Check if the item is a radio

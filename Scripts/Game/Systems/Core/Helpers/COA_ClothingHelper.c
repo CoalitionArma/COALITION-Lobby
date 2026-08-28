@@ -31,9 +31,13 @@ class COA_ClothingHelper
 			if (slotInt == 123456789)
 				slotInt = -1;
 			
-			bool spawned = inventoryManager.TrySpawnPrefabToStorage(clothing, inventory, slotInt);
+			bool spawned = inventoryManager.TrySpawnPrefabToStorage(clothing, inventory, slotInt, EStoragePurpose.PURPOSE_DEPOSIT, new SCR_PrefabSpawnCallback(inventory)); //backpacks, pants, shirts, etc.
 			if (!spawned)
-				COA_LoggingHelper.LogItemError(clothing, inventory.GetOwner(), "CLOTHING");
+			{
+				spawned = inventoryManager.TrySpawnPrefabToStorage(clothing, inventory, slotInt, EStoragePurpose.PURPOSE_EQUIPMENT_ATTACHMENT, new SCR_PrefabSpawnCallback(inventory)); //armoured vests, helmets, etc.
+				if (!spawned)
+					COA_LoggingHelper.LogItemError(clothing, inventory.GetOwner(), "CLOTHING");
+			};
 		}
 
 		// Handle previously removed items
