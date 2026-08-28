@@ -1,5 +1,9 @@
 modded class SCR_EditorManagerEntity
 {
+	// Keeps the retry alive if the controlled entity hasn't reverted to the spectator main entity
+	// yet when the editor closes - see the GAME-state branch of OpenUI below.
+	protected ref COA_EditorExitSpectatorWaiter m_EditorExitSpectatorWaiter;
+
 	//----------------------------------------------------------------
 	// True when the local player is allowed unlimited editor access
 	// (spectators, moderators and admins). Used both to decide the
@@ -182,12 +186,60 @@ modded class SCR_EditorManagerEntity
 				// Initialize spectator camera if player is spectating
 				bool isSpectator = COA_EntityHelper.IsSpectator(SCR_PlayerController.GetLocalMainEntity());
 				bool isSameEntity = SCR_PlayerController.GetLocalControlledEntity() == SCR_PlayerController.GetLocalMainEntity();
-				
-				if (isSpectator && isSameEntity)
-					GetGame().GetCallqueue().CallLater(COA_PlayerRplToAuthorityManager.GetInstance().RequestInitilizePlayer, 200, false, SCR_PlayerController.GetLocalPlayerId());
-				
+
+				// TEMP DIAGNOSTIC
+				// If isSameEntity is false here, GetLocalControlledEntity() is still some leftover
+				// editor/ArmaVision camera instead of having reverted to the spectator main entity, so
+				// the re-init call below never fires and the player is left on that free camera.
+				Print(string.Format("[CRF_GM_EXIT_DIAG] OpenUI GAME branch: isSpectator=%1 isSameEntity=%2 controlled=%3 main=%4",
+					isSpectator, isSameEntity, SCR_PlayerController.GetLocalControlledEntity(), SCR_PlayerController.GetLocalMainEntity()), LogLevel.NORMAL);
+
+				if (isSpectator)
+				{
+					if (isSameEntity)
+					{
+						GetGame().GetCallqueue().CallLater(COA_PlayerRplToAuthorityManager.GetInstance().RequestInitilizePlayer, 200, false, SCR_PlayerController.GetLocalPlayerId());
+					}
+					else
+					{
+						// Controlled entity hasn't reverted to the spectator main entity yet (still on
+						// a leftover editor/ArmaVision camera) - wait briefly instead of leaving the
+						// player stuck there with no further attempt to re-initialize.
+						m_EditorExitSpectatorWaiter = new COA_EditorExitSpectatorWaiter();
+						m_EditorExitSpectatorWaiter.Start(COA_EditorExitSpectatorWaiter.INTERVAL_MS, COA_EditorExitSpectatorWaiter.MAX_ATTEMPTS, "Editor exit -> spectator camera re-init");
+					}
+				}
+
 				break;
 			}
 		}
+	}
+}
+
+//! Waits for the local controlled entity to revert to the spectator main entity after the editor
+//! closes, then re-initializes the spectator camera. See SCR_EditorManagerEntity.OpenUI.
+class COA_EditorExitSpectatorWaiter : COA_RetryWaiter
+{
+	static const int INTERVAL_MS = 100;
+	static const int MAX_ATTEMPTS = 20; // ~2 seconds
+
+	//------------------------------------------------------------------------------------------------
+	protected override bool IsConditionMet()
+	{
+		IEntity controlled = SCR_PlayerController.GetLocalControlledEntity();
+		IEntity main = SCR_PlayerController.GetLocalMainEntity();
+		return controlled && main && controlled == main;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected override void OnReady()
+	{
+		GetGame().GetCallqueue().CallLater(COA_PlayerRplToAuthorityManager.GetInstance().RequestInitilizePlayer, 200, false, SCR_PlayerController.GetLocalPlayerId());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected override void OnTimeout()
+	{
+		Print("[Coalition Lobby] WARNING: Player's controlled entity never reverted to the spectator main entity after closing the editor - spectator camera was not re-initialized.", LogLevel.WARNING);
 	}
 }
