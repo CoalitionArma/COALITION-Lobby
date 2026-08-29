@@ -76,6 +76,7 @@ class COA_AdminMenu : ChimeraMenuBase
 	protected ref COA_GearScriptConfigStruct m_gearsetlist;
 	
 	protected bool m_bGameModeMenuOpen = false;
+	protected ref array<int> m_CachedTickets = {};
 	
 	//-----------------------------------------------------------------------------
 	// General UI Methods
@@ -275,7 +276,6 @@ class COA_AdminMenu : ChimeraMenuBase
 
 	//------------------------------------------------------------------------------------------------
 	//! Activates the Reset Gear menu
-
 	void ResetGearButton()
 	{
 		UpdateMenuButtonColors(m_resetGearMenuButton);
@@ -340,6 +340,7 @@ class COA_AdminMenu : ChimeraMenuBase
 		activeButton.GetRootWidget().SetColor(Color.FromSRGBA(18, 20, 22, 255));
 	}
 	
+	//------------------------------------------------------------------------------------------------ 	
 	protected void UpdateMenuTitle(string title)
 	{
 		TextWidget.Cast(m_wRoot.FindAnyWidget("MenuSubTitle")).SetText(title);
@@ -429,6 +430,7 @@ class COA_AdminMenu : ChimeraMenuBase
 	//! \param[in]  filterByOpenTickets filter the list by players by open tickets
 	//! \param[in]  filterByGroup filter the list by players by this group
 	//! \param[in]  filterByFaction filter the list by players by this faction
+	//! \param[in]  filterDeadOnly filter the list by dead players
 	protected void PopulatePlayerList(SCR_ListBoxComponent list, bool selectOpenTicket = true, bool filterByOpenTickets = false, SCR_AIGroup filterByGroup = null, Faction filterByFaction = null, bool filterDeadOnly = false)
 	{
 		// Clear the list
@@ -463,7 +465,7 @@ class COA_AdminMenu : ChimeraMenuBase
 			if (!filterDeadOnly && isSpectating)
 				continue;
 
-			if (filterByOpenTickets && !COA_AdminMenuManager.GetInstance().TicketExists(playerId))
+			if (filterByOpenTickets && !m_CachedTickets.Contains(playerId))
 				continue;
 
 			if (filterByGroup && filterByGroup != playerGroup)
@@ -473,37 +475,6 @@ class COA_AdminMenu : ChimeraMenuBase
 				continue;
 
 			list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
-		}
-
-		if (selectOpenTicket)
-			SelectOpenTicketOnwer(list);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Populates the list of dead/spectating players
-	//! \param[in]  list The list to populate with player names 
-	//! \param[in]  selectOpenTicket automatically select player that ticket is selected in the ticket menu
-	protected void PopulateDeadPlayersList(SCR_ListBoxComponent list, bool selectOpenTicket = true)
-	{
-		TStringArray playerNames = {};
-
-		// Get and sort player names
-		foreach (int playerId : m_allPlayers)
-			playerNames.Insert(m_playerManager.GetPlayerName(playerId));
-
-		playerNames.Sort(false);
-
-		// Add dead or spectating players to list
-		foreach (string name : playerNames)
-		{
-			int playerId = GetplayerIdFromName(name);
-			Faction playerFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId);
-
-			if (COA_SlottingManager.GetInstance().IsPlayerConsideredDead(playerId) ||
-				COA_EntityHelper.IsSpectator(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
-			{
-				list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
-			}
 		}
 
 		if (selectOpenTicket)
@@ -1415,6 +1386,8 @@ class COA_AdminMenu : ChimeraMenuBase
 		
 		// Clear old ticket list
 		playerList.Clear();
+		
+		m_CachedTickets = tickets;
 
 		// Add the list of tickets with their IDs
 		foreach (int playerId : tickets)
