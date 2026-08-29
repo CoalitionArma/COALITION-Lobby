@@ -198,7 +198,7 @@ modded class SCR_EditorManagerEntity
 				{
 					if (isSameEntity)
 					{
-						GetGame().GetCallqueue().CallLater(COA_PlayerRplToAuthorityManager.GetInstance().RequestInitilizePlayer, 200, false, SCR_PlayerController.GetLocalPlayerId());
+						GetGame().GetCallqueue().CallLater(COA_PlayerRplToAuthorityManager.GetInstance().RequestInitilizePlayer, 500, false, SCR_PlayerController.GetLocalPlayerId(), false);
 					}
 					else
 					{
