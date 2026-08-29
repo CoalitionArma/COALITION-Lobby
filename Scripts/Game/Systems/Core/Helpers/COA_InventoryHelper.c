@@ -48,20 +48,26 @@ class COA_InventoryHelper
 			COA_GearscriptManager.GetRolesConfig().FindRoleConfig(role).m_aItems.Contains(COA_EGearscriptItems.MEDIC_ITEMS) && 
 			SCR_BaseContainerTools.FindComponentSource(itemSource, "SCR_ConsumableItemComponent");
 		
-		bool isRadio = !isGL && !isThrowable && !isMagazine && !isMedical && 
-			SCR_BaseContainerTools.FindComponentSource(itemSource, "BaseRadioComponent");
+		bool isEquipment = !isGL && !isThrowable && !isMagazine && !isMedical && 
+			(SCR_BaseContainerTools.FindComponentSource(itemSource, "BaseRadioComponent") ||
+			SCR_BaseContainerTools.FindComponentSource(itemSource, "SCR_CompassComponent") ||
+			SCR_BaseContainerTools.FindComponentSource(itemSource, "SCR_MapGadgetComponent") ||
+			SCR_BaseContainerTools.FindComponentSource(itemSource, "SCR_BallisticTableComponent"));
 		
-		bool isExplosive = !isGL && !isThrowable && !isMagazine && !isMedical && !isRadio && 
+		bool isExplosive = !isGL && !isThrowable && !isMagazine && !isMedical && !isEquipment && 
 			(SCR_BaseContainerTools.FindComponentSource(itemSource, "SCR_DetonatorGadgetComponent") || 
 			SCR_BaseContainerTools.FindComponentSource(itemSource, "SCR_ExplosiveChargeComponent") ||
 			SCR_BaseContainerTools.FindComponentSource(itemSource, "SCR_MineWeaponComponent"));
 		
-		bool isTool = !isGL && !isThrowable && !isMagazine && !isMedical && !isRadio && !isExplosive && 
+		bool isTool = !isGL && !isThrowable && !isMagazine && !isMedical && !isEquipment && !isExplosive && 
 			(SCR_BaseContainerTools.FindComponentSource(itemSource, "SCR_RepairSupportStationComponent") ||
 			SCR_BaseContainerTools.FindComponentSource(itemSource, "SCR_HealSupportStationComponent"));
 		
-		bool isBino = !isGL && !isThrowable && !isMagazine && !isMedical && !isRadio && !isExplosive && !isTool &&
+		bool isBino = !isGL && !isThrowable && !isMagazine && !isMedical && !isEquipment && !isExplosive && !isTool &&
 			SCR_BaseContainerTools.FindComponentSource(itemSource, "SCR_BinocularsComponent");
+	
+		bool isFlashlight = !isGL && !isThrowable && !isMagazine && !isMedical && !isEquipment && !isExplosive && !isTool && !isBino &&
+			SCR_BaseContainerTools.FindComponentSource(itemSource, "SCR_FlashlightComponent");
 		
 		switch (true)
 		{
@@ -78,11 +84,11 @@ class COA_InventoryHelper
 			}
 			//--------------------------------------------------------------------------
 			// Throwables go in pants, vest primarily
-			case isThrowable : {
+			case (isThrowable) : {
 				clothingIDs = {
-					COA_EGearscriptClothing.PANTS, 
 					COA_EGearscriptClothing.VEST, 
 					COA_EGearscriptClothing.ARMOREDVEST, 
+					COA_EGearscriptClothing.PANTS, 
 					COA_EGearscriptClothing.BACKPACK
 				}; break;
 			}
@@ -91,20 +97,31 @@ class COA_InventoryHelper
 			case (isGL) : {
 				clothingIDs = {
 					COA_EGearscriptClothing.VEST,
+					COA_EGearscriptClothing.ARMOREDVEST, 
 					COA_EGearscriptClothing.PANTS, 
 					COA_EGearscriptClothing.BACKPACK,
-					COA_EGearscriptClothing.ARMOREDVEST, 
 					COA_EGearscriptClothing.SHIRT
 				}; break;
 			}
 			//--------------------------------------------------------------------------
-			// Radios go in pants, shirt, vest primarily
-			case (isRadio || isBino) : {
+			// Equipment go in pants, shirt, vest primarily
+			case (isEquipment) : {
 				clothingIDs = {
 					COA_EGearscriptClothing.SHIRT, 
 					COA_EGearscriptClothing.PANTS, 
+					COA_EGearscriptClothing.ARMOREDVEST, 
+					COA_EGearscriptClothing.VEST, 
+					COA_EGearscriptClothing.BACKPACK
+				}; break;
+			}
+			//--------------------------------------------------------------------------
+			// Flashlights/Binos go in Vests, ArmouredVests, primarily
+			case (isFlashlight || isBino) : {
+				clothingIDs = {
 					COA_EGearscriptClothing.VEST, 
 					COA_EGearscriptClothing.ARMOREDVEST, 
+					COA_EGearscriptClothing.SHIRT, 
+					COA_EGearscriptClothing.PANTS, 
 					COA_EGearscriptClothing.BACKPACK
 				}; break;
 			}
@@ -112,8 +129,8 @@ class COA_InventoryHelper
 			// Non-sorted items go in shirt, pants, vest primarily
 			default : {
 				clothingIDs = {
-					COA_EGearscriptClothing.SHIRT, 
 					COA_EGearscriptClothing.PANTS, 
+					COA_EGearscriptClothing.SHIRT, 
 					COA_EGearscriptClothing.VEST, 
 					COA_EGearscriptClothing.ARMOREDVEST, 
 					COA_EGearscriptClothing.BACKPACK

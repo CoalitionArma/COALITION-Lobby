@@ -600,32 +600,40 @@ class COA_GearscriptManager : ScriptComponent
 		
 		for (int i = 1; i <= itemAmount; i++)
 		{
-			bool spawned = false;
-
-			foreach (int clothingID : clothingIDs)
+			bool inserted = false;
+			BaseInventoryStorageComponent charStorageComp = inventoryManager.FindStorageForResourceInsert(item, inventory);
+			
+			if (charStorageComp && SCR_EquipmentStorageComponent.Cast(charStorageComp)) // needed for flashlights, wristwatches, binoculars, etc to automatically assign themselves to their correct slot.
+				inserted = inventoryManager.TrySpawnPrefabToStorage(item, charStorageComp, cb: new SCR_PrefabSpawnCallback(inventory));
+			
+			if (!inserted)
 			{
-				IEntity clothing = inventory.Get(clothingID);
-				if (clothing)
+				foreach (int clothingID : clothingIDs)
 				{
-					BaseInventoryStorageComponent clothingStorage = BaseInventoryStorageComponent.Cast(clothing.FindComponent(BaseInventoryStorageComponent));
-					if (clothingStorage)
+					IEntity clothing = inventory.Get(clothingID);
+					if (clothing)
 					{
-						if (inventoryManager.CanInsertResourceInStorage(item, clothingStorage))
-							spawned = inventoryManager.TrySpawnPrefabToStorage(item, clothingStorage);
-						
-						if (!spawned && clothingID == COA_EGearscriptClothing.VEST) // unable to insert directly into some vests storage comp, so we just let the item/inventoryManager decide (99% of the time it's a vest)
-							spawned = inventoryManager.TrySpawnPrefabToStorage(item);
-						
-						if (spawned)
-							break;
+						BaseInventoryStorageComponent clothingStorage = BaseInventoryStorageComponent.Cast(clothing.FindComponent(BaseInventoryStorageComponent));
+						if (clothingStorage)
+						{	
+							BaseInventoryStorageComponent storageTo = inventoryManager.FindStorageForResourceInsert(item, clothingStorage, EStoragePurpose.PURPOSE_ANY); // certain vests/storage comp have hidden storage components in them, we use this to rat them out.
+							
+							if (!storageTo) // if they dont have hidden storage components, just default to the base storage comp.
+								storageTo = clothingStorage;
+							
+							inserted = inventoryManager.TrySpawnPrefabToStorage(item, storageTo, cb: new SCR_PrefabSpawnCallback(inventory));
+							
+							if (inserted)
+								break;
+						};
 					};
-				};
-			}
+				}
+			};
 			
-			if (!spawned) // One final effort is all that remains
-				spawned = inventoryManager.TrySpawnPrefabToStorage(item);
+			if (!inserted) // One final effort is all that remains
+				inserted = inventoryManager.TrySpawnPrefabToStorage(item, cb: new SCR_PrefabSpawnCallback(inventory));
 			
-			if (!spawned)
+			if (!inserted)
 				COA_LoggingHelper.LogItemError(item, inventoryManager.GetOwner());
 		};
 	}
