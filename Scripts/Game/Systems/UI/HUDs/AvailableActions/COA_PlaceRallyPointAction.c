@@ -50,6 +50,6 @@ class COA_PlaceRallyPointAction : ScriptComponent
         if (playerId == -1)
             return; 
         
-       COA_PlayerRplToAuthorityManager.GetInstance().RequestSpawnRallypoint(playerId);
+       COA_PlayerRplToAuthorityManager.GetInstance().RequestPlaceRallypoint(playerId);
     }
 }

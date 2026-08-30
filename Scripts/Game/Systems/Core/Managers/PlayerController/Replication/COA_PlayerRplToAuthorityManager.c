@@ -351,9 +351,15 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void RequestSpawnRallypoint(int playerId)
+	void RequestPlaceRallypoint(int playerId)
 	{
-		Rpc(RpcAsk_SpawnRallypoint, playerId);
+		Rpc(RpcAsk_PlaceRallypoint, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void RequestDestroyRallypoint(RplId rallyPointId)
+	{
+		Rpc(RpcAsk_DestroyRallypoint, rallyPointId);
 	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -1349,7 +1355,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_SpawnRallypoint(int playerId)
+	protected void RpcAsk_PlaceRallypoint(int playerId)
 	{
 		ResourceName rallyPrefabName;
 
@@ -1390,6 +1396,21 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			return;
 
 		rallyPoint.SetupRallyPoint(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_DestroyRallypoint(RplId rallyPointId)
+	{
+		IEntity rallyPoint = COA_EntityHelper.GetEntityFromRplId(rallyPointId);
+		if (!rallyPoint)
+			return;
+
+		COA_RallyPoint rallyPointComponent = COA_RallyPoint.Cast(rallyPoint);
+		if (!rallyPointComponent)
+			return;
+
+		rallyPointComponent.DestroyRallPoint();
 	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================

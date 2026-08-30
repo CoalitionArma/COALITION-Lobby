@@ -13,11 +13,11 @@ class COA_DestroyRallypointAction : ScriptedUserAction
 		if (!pOwnerEntity || !pUserEntity)
 			return;
 
-		COA_RallyPoint rallyPoint = COA_RallyPoint.Cast(pOwnerEntity);
-		if (!rallyPoint)
-			return;
+		RplId entityRplId;
 
-		rallyPoint.DestroyRallPoint();
+		COA_ReplicationHelper.GetRplId(pOwnerEntity, entityRplId);
+
+		COA_PlayerRplToAuthorityManager.GetInstance().RequestDestroyRallypoint(entityRplId);
 	}
 	
 	//------------------------------------------------------------------------------------------------
