@@ -349,6 +349,12 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	{
 		Rpc(RpcAsk_RequestForwardDeploy, cursorWorldPos, factionKey, playerId);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	void RequestSpawnRallypoint(int playerId)
+	{
+		Rpc(RpcAsk_SpawnRallypoint, playerId);
+	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 REPLICATION METHODS
@@ -1339,6 +1345,51 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			}
 			COA_ForwardDeployManager.GetInstance().CreateForwardDeployRequest(currentPlayerId, cursorWorldPos);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_SpawnRallypoint(int playerId)
+	{
+		ResourceName rallyPrefabName;
+
+		IEntity character = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!character)
+			return;
+
+		if (!COA_RoleHelper.IsSquadLeaderRole(character))
+			return;
+
+		Faction faction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId);
+		if (!faction)
+			return;
+
+		switch(faction.GetFactionKey())
+		{
+			case SCR_Enum.GetEnumName(COA_EFactions, 0): rallyPrefabName = "{C839E8BC81D3C490}"; break;
+			case SCR_Enum.GetEnumName(COA_EFactions, 1): rallyPrefabName = "{577981721736900B}"; break;
+			case SCR_Enum.GetEnumName(COA_EFactions, 2): rallyPrefabName = "{577981721736900B}"; break;
+			case SCR_Enum.GetEnumName(COA_EFactions, 3): rallyPrefabName = "{C839E8BC81D3C490}"; break;
+		}
+		
+		Resource rallyPrefab = Resource.Load(rallyPrefabName);
+		if (!rallyPrefab)
+			return;
+
+		EntitySpawnParams spawnParams = new EntitySpawnParams();
+		spawnParams.TransformMode = ETransformMode.WORLD;
+
+		COA_EntityHelper.GetSafeSpawnTransform(character, 2, true, true, spawnParams.Transform);
+
+		IEntity rallyEntity = GetGame().SpawnEntityPrefab(rallyPrefab, GetGame().GetWorld(), spawnParams);
+		if (!rallyEntity)
+			return;
+		
+		COA_RallyPoint rallyPoint = COA_RallyPoint.Cast(rallyEntity);
+		if (!rallyPoint)
+			return;
+
+		rallyPoint.SetupRallyPoint(playerId);
 	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================

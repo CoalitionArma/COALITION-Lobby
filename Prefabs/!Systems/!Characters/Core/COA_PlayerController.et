@@ -11,6 +11,18 @@ COA_PlayerController : "{225E51284CC95CFA}Prefabs/Characters/Core/DefaultPlayerC
     }
     COA_PlayerMenuManager "{68C4425E8FB6F16D}" {
     }
+    COA_PlayerRedialMenuManager "{6A377959804477F1}" {
+     components {
+      COA_PlaceRallyPointAction "{6A3C4B6DDFC59CA4}" {
+      }
+     }
+     m_RadialMenuController SCR_RadialMenuController "{6A377959A899B18C}" {
+      m_RMControls SCR_RadialMenuControllerInputs "{6A377959AE104630}" {
+       m_bPerformOnClose 0
+       m_bShowWhileUnconcious 0
+      }
+     }
+    }
     COA_PlayerRplToAuthorityManager "{68C4425EB437D844}" {
     }
     COA_PlayerRplToOwnerManager "{68C5417AC359912D}" {
