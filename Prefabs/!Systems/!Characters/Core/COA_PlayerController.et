@@ -11,7 +11,7 @@ COA_PlayerController : "{225E51284CC95CFA}Prefabs/Characters/Core/DefaultPlayerC
     }
     COA_PlayerMenuManager "{68C4425E8FB6F16D}" {
     }
-    COA_PlayerRedialMenuManager "{6A377959804477F1}" {
+    COA_PlayerRadialMenuManager "{6A377959804477F1}" {
      components {
       COA_PlaceRallyPointAction "{6A3C4B6DDFC59CA4}" {
       }

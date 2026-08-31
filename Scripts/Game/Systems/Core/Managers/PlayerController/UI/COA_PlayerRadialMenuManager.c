@@ -1,22 +1,23 @@
-class COA_PlayerRedialMenuManagerClass : ScriptComponentClass
+class COA_PlayerRadialMenuManagerClass : ScriptComponentClass
 {
 
 }
 
-class COA_PlayerRedialMenuAction
+class COA_PlayerRadialMenuAction
 {
     string catagoryID;
     SCR_SelectionMenuEntry entry;
 }
 
-class COA_PlayerRedialMenuManager : ScriptComponent
+//! see COA_PlaceRallyPointAction for example of usage
+class COA_PlayerRadialMenuManager : ScriptComponent
 {
     [Attribute()]
     protected ref SCR_RadialMenuController m_RadialMenuController;
 
     protected SCR_RadialMenu m_RadialMenu;
 
-    protected ref array<ref COA_PlayerRedialMenuAction> m_aRegisteredActions = {};
+    protected ref array<ref COA_PlayerRadialMenuAction> m_aRegisteredActions = {};
 
     protected ref ScriptInvoker<SCR_SelectionMenuEntry> m_OnActionPerformed = new ScriptInvoker<SCR_SelectionMenuEntry>();
     protected ref ScriptInvoker m_OnBeforeOpen = new ScriptInvoker();
@@ -31,16 +32,22 @@ class COA_PlayerRedialMenuManager : ScriptComponent
         m_RadialMenuController.GetOnTakeControl().Insert(OnTakeControl);
         m_RadialMenuController.GetOnControllerChanged().Insert(OnControllerChanged);
 
-        GetGame().GetInputManager().AddActionListener("COA_OpenPlayerRedialMenu", EActionTrigger.DOWN, OpenRadialMenu);
+        GetGame().GetInputManager().AddActionListener("COA_OpenPlayerRadialMenu", EActionTrigger.DOWN, OpenRadialMenu);
     }
 
     //------------------------------------------------------------------------------------------------
+    //! Returns the callback invoker triggered when a radial menu option is selected.
+    //! Used by external systems to react to a player choosing an item from the redial menu.
+    //! \return ScriptInvoker for the selected menu entry.
     ScriptInvoker<SCR_SelectionMenuEntry> GetOnActionPerformed()
     {
         return m_OnActionPerformed;
     }
 
     //------------------------------------------------------------------------------------------------
+    //! Returns the callback invoker triggered immediately before the radial menu is populated.
+    //! Used to prepare or refresh menu entries before the redial menu is opened.
+    //! \return ScriptInvoker invoked before the menu is built.
     ScriptInvoker GetOnBeforeOpen()
     {
         return m_OnBeforeOpen;
@@ -117,7 +124,7 @@ class COA_PlayerRedialMenuManager : ScriptComponent
 
         array<ref SCR_SelectionMenuCategoryEntry> categories = {};
 
-        foreach (COA_PlayerRedialMenuAction action : m_aRegisteredActions)
+        foreach (COA_PlayerRadialMenuAction action : m_aRegisteredActions)
         {
             if (!action.entry || !action.entry.IsEnabled())
                 continue;
@@ -149,9 +156,14 @@ class COA_PlayerRedialMenuManager : ScriptComponent
     }
 
     //------------------------------------------------------------------------------------------------
+    //! Adds a menu option to the player radial menu.
+    //! This registers a single entry for a category and makes it available when the redial menu is built.
+    //! Use this to add quick actions, toggles, or utility entries to the player's radial menu.
+    //! \param[in] catagoryName Name of the category/group the entry should belong to. Entries with the same category name are grouped together under one radial menu section.
+    //! \param[in] entry The SCR_SelectionMenuEntry to register. It will be displayed and invoked when the user selects it from the radial menu.
     void RegisterEntry(string catagoryName, SCR_SelectionMenuEntry entry)
     {
-        COA_PlayerRedialMenuAction action = new COA_PlayerRedialMenuAction();
+        COA_PlayerRadialMenuAction action = new COA_PlayerRadialMenuAction();
         action.catagoryID = catagoryName;
         action.entry = entry;
 
@@ -159,9 +171,9 @@ class COA_PlayerRedialMenuManager : ScriptComponent
     }
     
     //------------------------------------------------------------------------------------------------
-    void ~COA_PlayerRedialMenuManager()
+    void ~COA_PlayerRadialMenuManager()
     {
-        GetGame().GetInputManager().RemoveActionListener("COA_OpenPlayerRedialMenu", EActionTrigger.DOWN, OpenRadialMenu);
+        GetGame().GetInputManager().RemoveActionListener("COA_OpenPlayerRadialMenu", EActionTrigger.DOWN, OpenRadialMenu);
 
         if (m_RadialMenuController)
         {

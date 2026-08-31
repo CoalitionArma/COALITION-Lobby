@@ -11,17 +11,17 @@ class COA_PlaceRallyPointAction : ScriptComponent
     {
         super.OnPostInit(owner);
 
-        COA_PlayerRedialMenuManager radialMenu = COA_PlayerRedialMenuManager.Cast(owner.FindComponent(COA_PlayerRedialMenuManager));
+        COA_PlayerRadialMenuManager radialMenu = COA_PlayerRadialMenuManager.Cast(owner.FindComponent(COA_PlayerRadialMenuManager));
         if (!radialMenu)
             return;
 
         m_Action = new SCR_SelectionMenuEntry();
         m_Action.SetId("placeables_rallypoint");
         m_Action.SetName("Rallypoint");
-        m_Action.GetOnPerform().Insert(OnPerformAction);
 
         radialMenu.RegisterEntry("Placeables", m_Action);
         radialMenu.GetOnBeforeOpen().Insert(UpdateAvailability);
+        radialMenu.GetOnActionPerformed().Insert(OnPerformAction)
     }
 
     //------------------------------------------------------------------------------------------------
