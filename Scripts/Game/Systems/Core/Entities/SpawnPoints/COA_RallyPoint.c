@@ -82,8 +82,14 @@ class COA_RallyPoint: COA_StaticSpawnPoint
 	//------------------------------------------------------------------------------------------------
 	void DestroyRallPoint()
 	{
-		AudioSystem.TerminateSound(this.m_AudioSystem);
-
 		SCR_EntityHelper.DeleteEntityAndChildren(this);
+	}
+
+	void ~COA_RallyPoint()
+	{
+		if (!m_AudioSystem)
+			return;
+		
+		AudioSystem.TerminateSound(this.m_AudioSystem);
 	}
 };
