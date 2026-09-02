@@ -78,7 +78,7 @@ COA_Gamemode COA_Lobby : "{6A996BBFCEB37E78}Prefabs/!Systems/!Lobby/COA_Lobby.et
  coords 1167.261 38.672 2773.479
  m_bRespawnEnabled 0
  m_bWaveRespawn 0
- m_bRallyPointsEnabled 0
+ m_bRallyPointsEnabled 1
  m_iTimeToRespawn 60
  m_iRespawnCutoffMinutes 0
  m_eRespawnMode 0
