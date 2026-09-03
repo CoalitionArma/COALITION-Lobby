@@ -145,6 +145,18 @@ class COA_Gamemode : SCR_BaseGameMode
 	[Attribute("false", UIWidgets.CheckBox, desc: "If enabled, players spawn at a random point among CIV's spawn points flagged 'Is Default Spawn' instead of always the same one", category: "Gamemode Settings - Spawn")]
 	bool m_bCIVILIANRandomizeSpawnpoints;
 
+	[Attribute("", UIWidgets.ResourceNamePicker, params: "et", desc: "Rally point prefab for BLUFOR", category: "Gamemode Settings - Spawn")]
+	ResourceName m_rBLUFORRallyPrefab;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, params: "et", desc: "Rally point prefab for OPFOR", category: "Gamemode Settings - Spawn")]
+	ResourceName m_rOPFORRallyPrefab;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, params: "et", desc: "Rally point prefab for INDFOR", category: "Gamemode Settings - Spawn")]
+	ResourceName m_rINDFORRallyPrefab;
+	
+	[Attribute("", UIWidgets.ResourceNamePicker, params: "et", desc: "Rally point prefab for CIVILIAN", category: "Gamemode Settings - Spawn")]
+	ResourceName m_rCIVILIANRallyPrefab;
+
 	// Weather and Time Settings
 	//------------------------------------------------------------------------------------
 	[Attribute("1", UIWidgets.Slider, "Time scale applied once the mission starts (after briefing/slotting). 1 = normal speed, 2 = twice as fast, etc.", "0.1 12 0.1", category: "Mission Settings - Weather & Time")]

@@ -181,4 +181,35 @@ class COA_EntityHelper
 		outOrigin = character.GetOrigin();
 		return true;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Utilize spawn point information to get positional data for spawning a character entity
+	//! \param[in] spawnPointData data of the spawn point we are spawning at
+	//! \param[out] trasnformOut spawn location
+	static void GetSafeSpawnTransform(IEntity spawnPointEntity, int SpawnRadius, bool SnapToGeometry, bool ConfromToTerrain, out vector trasnformOut[4])
+	{
+		vector baseTransform[4];
+		if (spawnPointEntity)
+			spawnPointEntity.GetWorldTransform(baseTransform);
+		
+		// Add random offset to prevent exact position overlap
+		float angle = Math.RandomFloat01() * Math.PI2;
+		float dist = Math.RandomFloat01() * SpawnRadius;
+		vector offset = Vector(Math.Cos(angle) * dist, 0, Math.Sin(angle) * dist);
+		
+		baseTransform[3] = baseTransform[3] + offset;
+		
+		vector surface;
+		// Snap to terrain geometry
+		if (SnapToGeometry)
+			SCR_TerrainHelper.SnapToGeometry(surface, baseTransform[3], {}, GetGame().GetWorld());
+		
+		if (surface != vector.Zero && ConfromToTerrain)
+		{
+			baseTransform[3] = surface;
+			SCR_TerrainHelper.OrientToTerrain(baseTransform);
+		}
+		
+		trasnformOut = baseTransform;
+	}
 }

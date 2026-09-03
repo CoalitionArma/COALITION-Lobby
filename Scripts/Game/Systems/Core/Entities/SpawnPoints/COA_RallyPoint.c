@@ -6,29 +6,31 @@ class COA_RallyPoint: COA_StaticSpawnPoint
 {	
 	protected SCR_AIGroup m_group;
 	protected Faction m_faction;
+	protected AudioHandle m_AudioSystem;
 
 	//------------------------------------------------------------------------------------------------
 	override void EOnInit(IEntity owner)
 	{
-		
+		vector transform[4];
+		owner.GetWorldTransform(transform);
+
+		AudioSystem.PlayEvent("{EFFB3D8065A486E3}", "SOUND_DEPLOY", transform);
+		m_AudioSystem = AudioSystem.PlayEvent("{EFFB3D8065A486E3}", "SOUND_DEPLOYED_RADIO_CHATTER", transform);
+
+		if (m_SpawnPointSettings)
+			return;
+
+		m_SpawnPointSettings = new COA_SpawnPointData();
 	};
 
 	//------------------------------------------------------------------------------------------------
-	void SetupRallyPoint()
+	void SetupRallyPoint(int playerId)
 	{
 		array<string> factions = new array<string>();
 		SCR_Enum.GetEnumNames(COA_EFactions, factions);
 		
-		SCR_CampaignBuildingCompositionComponent compositionComponent = SCR_CampaignBuildingCompositionComponent.Cast(this.FindComponent(SCR_CampaignBuildingCompositionComponent));
-		if (!compositionComponent)
-			return;
-		
 		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
 		if (!slottingManager)
-			return;
-		
-		int playerId = compositionComponent.GetBuilderId();
-		if (playerId == -1)
 			return;
 
 		m_group = slottingManager.GetPlayerSlotGroup(playerId);
@@ -38,10 +40,10 @@ class COA_RallyPoint: COA_StaticSpawnPoint
 		m_faction = slottingManager.GetPlayerSlotFaction(playerId);
 		if (!m_faction)
 			return;
+
+		RemovePreviousRallyPoint();
 		
 		string groupCustomName = m_group.GetCustomNameWithOriginal();
-		
-		RemovePreviousRallyPoint();
 		
 		m_SpawnPointSettings.SetSpawnPointName(groupCustomName + " RP");
 		m_SpawnPointSettings.SetSpawnPointFaction(factions.Find(m_faction.GetFactionKey()));
@@ -66,12 +68,28 @@ class COA_RallyPoint: COA_StaticSpawnPoint
 			if (!entity)
 				continue;
 			
-			COA_RallyPoint rally = COA_RallyPoint.Cast(entity);
-			if (!rally)
+			COA_RallyPoint rallyPoint = COA_RallyPoint.Cast(entity);
+			if (!rallyPoint)
 				continue;
-			
-			if (rally.m_group == m_group)			
-				SCR_EntityHelper.DeleteEntityAndChildren(entity);
+
+			if (rallyPoint.m_group != m_group)
+				return;
+
+			rallyPoint.DestroyRallPoint();
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void DestroyRallPoint()
+	{
+		SCR_EntityHelper.DeleteEntityAndChildren(this);
+	}
+
+	void ~COA_RallyPoint()
+	{
+		if (!m_AudioSystem)
+			return;
+		
+		AudioSystem.TerminateSound(this.m_AudioSystem);
 	}
 };

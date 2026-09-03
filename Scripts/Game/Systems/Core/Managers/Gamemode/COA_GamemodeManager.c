@@ -220,7 +220,18 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 		// Setup spawn parameters
 		EntitySpawnParams spawnParams = new EntitySpawnParams();
 		spawnParams.TransformMode = ETransformMode.WORLD;
-		GetSafeSpawnTransform(spawnPointData, spawnParams.Transform);
+
+		IEntity spawnPointEntity = COA_EntityHelper.GetEntityFromRplId(spawnPointData.GetSpawnPointEntity());
+		if (!spawnPointEntity)
+			return null;
+
+		COA_EntityHelper.GetSafeSpawnTransform(
+			spawnPointEntity,
+			spawnPointData.GetSpawnPointRadius(),
+			spawnPointData.GetIfSpawnPointSafetyCheck(),
+			spawnPointData.GetIfSpawnPointConformsToTerrain(), 
+			spawnParams.Transform
+		);
 		
 		COA_PlayerCharacter playerCharacter = COA_PlayerCharacter.Cast(
 			GetGame().SpawnEntityPrefab(m_ResourceCache.GetCachedResource(resourceName), GetGame().GetWorld(), spawnParams)
@@ -275,39 +286,6 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 PLAYER INIT HELPERS
 //=============================================================================================================================================================================================================================================================================================================================================================
-	
-	//------------------------------------------------------------------------------------------------
-	//! Utilize spawn point information to get positional data for spawning a character entity
-	//! \param[in] spawnPointData data of the spawn point we are spawning at
-	//! \param[out] trasnformOut spawn location
-	protected void GetSafeSpawnTransform(COA_SpawnPointData spawnPointData, out vector trasnformOut[4])
-	{
-		vector baseTransform[4];
-		IEntity spawnPointEnt = COA_EntityHelper.GetEntityFromRplId(spawnPointData.GetSpawnPointEntity());
-		if (spawnPointEnt)
-			spawnPointEnt.GetWorldTransform(baseTransform);
-		
-		// Add random offset to prevent exact position overlap
-		float angle = Math.RandomFloat01() * Math.PI2;
-		float dist = Math.RandomFloat01() * spawnPointData.GetSpawnPointRadius();
-		vector offset = Vector(Math.Cos(angle) * dist, 0, Math.Sin(angle) * dist);
-		
-		baseTransform[3] = baseTransform[3] + offset;
-		
-		vector surface;
-		// Snap to terrain geometry
-		if (spawnPointData.GetIfSpawnPointSafetyCheck())
-			SCR_TerrainHelper.SnapToGeometry(surface, baseTransform[3], {}, GetGame().GetWorld());
-		
-		if (surface != vector.Zero && spawnPointData.GetIfSpawnPointConformsToTerrain())
-		{
-			baseTransform[3] = surface;
-			SCR_TerrainHelper.OrientToTerrain(baseTransform);
-		}
-		
-		trasnformOut = baseTransform;
-	}
-
 	//------------------------------------------------------------------------------------------------
 	//! Assign player to their slotted group.
 	//! \param[in] playerId ID of the player to assign

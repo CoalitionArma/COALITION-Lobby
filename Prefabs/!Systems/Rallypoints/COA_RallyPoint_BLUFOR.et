@@ -1,0 +1,62 @@
+COA_RallyPoint {
+ ID "68F8E4F459DA6D1D"
+ components {
+  RigidBody "{68F8E4F456B51110}" {
+  }
+  ActionsManagerComponent "{6A3C444200C9B3CA}" {
+   ActionContexts {
+    UserActionContext "{6A3C444201AD6A66}" {
+     ContextName "default"
+     Position PointInfo "{6A3C4B6D73816C3C}" {
+      Offset 0 0.4725 -0.0267
+     }
+     Radius 1.25
+    }
+   }
+   additionalActions {
+    COA_DestroyRallypointAction "{6A3C4E5B34DBB3DE}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6A3C4E5B28367570}" {
+      Name "Destroy Rally"
+     }
+     VisibilityRange 1.5
+     Duration 2.5
+    }
+   }
+  }
+  RplComponent "{6A3C088FC1A3EC91}" {
+  }
+  Hierarchy "{6A3B7E607DCD48FD}" {
+  }
+ }
+ coords -8.625 8.882 11.974
+ {
+  $grp GenericEntity {
+   {
+    ID "690700E80CFC0E0B"
+    components {
+     MeshObject "{690700E8103197AC}" {
+      Object "{B982CAE1F85001D0}Assets/Items/Equipment/Backpacks/Backpack_ALICE_Medium/Backpack_ALICE_Medium_item.xob"
+     }
+     Hierarchy "{6A3B7E6073E4C9D6}" {
+     }
+    }
+    coords 0.034 0.037 0.088
+   }
+   {
+    ID "690700E8DCF13655"
+    components {
+     MeshObject "{690700E8DB5C7B8D}" {
+      Object "{D29C3ADD27E3E71A}Assets/Items/Equipment/Radios/Radio_ANPRC77/Radio_ANPRC77_01_item.xob"
+     }
+     Hierarchy "{6A3B7E607771D680}" {
+     }
+    }
+    coords 0.04 0.238 -0.218
+    angles -76.4 180 180
+   }
+  }
+ }
+}

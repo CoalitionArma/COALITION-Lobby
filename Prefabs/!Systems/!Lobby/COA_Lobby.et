@@ -184,6 +184,10 @@ COA_Gamemode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" {
    }
   }
  }
+ m_rBLUFORRallyPrefab "{C839E8BC81D3C490}Prefabs/!Systems/Rallypoints/COA_RallyPoint_BLUFOR.et"
+ m_rOPFORRallyPrefab "{577981721736900B}Prefabs/!Systems/Rallypoints/COA_RallyPoint_OPFOR.et"
+ m_rINDFORRallyPrefab "{577981721736900B}Prefabs/!Systems/Rallypoints/COA_RallyPoint_OPFOR.et"
+ m_rCIVILIANRallyPrefab "{C839E8BC81D3C490}Prefabs/!Systems/Rallypoints/COA_RallyPoint_BLUFOR.et"
  m_BLUFORGearScriptSettings COA_GearScriptContainer "{64570ACB9B419A7B}" {
   m_rGearScript "{D3B6188EF875E2C4}Configs/Gearscripts/Standard/COA_GS_US80s.conf"
   m_rShortRangeRadioPrefab "{E82129A6CC014808}Prefabs/Items/Equipment/Radios/Radio_ANPRC152.et"

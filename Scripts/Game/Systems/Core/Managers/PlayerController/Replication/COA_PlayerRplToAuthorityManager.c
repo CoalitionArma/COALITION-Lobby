@@ -349,6 +349,18 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	{
 		Rpc(RpcAsk_RequestForwardDeploy, cursorWorldPos, factionKey, playerId);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	void RequestPlaceRallypoint(int playerId)
+	{
+		Rpc(RpcAsk_PlaceRallypoint, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void RequestDestroyRallypoint(RplId rallyPointId)
+	{
+		Rpc(RpcAsk_DestroyRallypoint, rallyPointId);
+	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 REPLICATION METHODS
@@ -1339,6 +1351,68 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			}
 			COA_ForwardDeployManager.GetInstance().CreateForwardDeployRequest(currentPlayerId, cursorWorldPos);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_PlaceRallypoint(int playerId)
+	{
+		ResourceName rallyPrefabName;
+
+		IEntity character = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!character)
+			return;
+
+		if (!COA_RoleHelper.IsSquadLeaderRole(character))
+			return;
+
+		Faction faction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId);
+		if (!faction)
+			return;
+
+		switch(faction.GetFactionKey())
+		{
+			case SCR_Enum.GetEnumName(COA_EFactions, 0): rallyPrefabName = m_Gamemode.m_rBLUFORRallyPrefab; break;
+			case SCR_Enum.GetEnumName(COA_EFactions, 1): rallyPrefabName = m_Gamemode.m_rOPFORRallyPrefab; break;
+			case SCR_Enum.GetEnumName(COA_EFactions, 2): rallyPrefabName = m_Gamemode.m_rINDFORRallyPrefab; break;
+			case SCR_Enum.GetEnumName(COA_EFactions, 3): rallyPrefabName = m_Gamemode.m_rCIVILIANRallyPrefab; break;
+		}
+
+		Print(rallyPrefabName);
+		
+		Resource rallyPrefab = Resource.Load(rallyPrefabName);
+		if (!rallyPrefab)
+			return;
+
+		EntitySpawnParams spawnParams = new EntitySpawnParams();
+		spawnParams.TransformMode = ETransformMode.WORLD;
+
+		COA_EntityHelper.GetSafeSpawnTransform(character, 2, true, true, spawnParams.Transform);
+
+		IEntity rallyEntity = GetGame().SpawnEntityPrefab(rallyPrefab, GetGame().GetWorld(), spawnParams);
+		if (!rallyEntity)
+			return;
+		
+		COA_RallyPoint rallyPoint = COA_RallyPoint.Cast(rallyEntity);
+		if (!rallyPoint)
+			return;
+
+		rallyPoint.SetupRallyPoint(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_DestroyRallypoint(RplId rallyPointId)
+	{
+		IEntity rallyPoint = COA_EntityHelper.GetEntityFromRplId(rallyPointId);
+		if (!rallyPoint)
+			return;
+
+		COA_RallyPoint rallyPointComponent = COA_RallyPoint.Cast(rallyPoint);
+		if (!rallyPointComponent)
+			return;
+
+		rallyPointComponent.DestroyRallPoint();
 	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================
