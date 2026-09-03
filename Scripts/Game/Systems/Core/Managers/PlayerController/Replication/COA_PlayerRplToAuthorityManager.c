@@ -1372,11 +1372,13 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 
 		switch(faction.GetFactionKey())
 		{
-			case SCR_Enum.GetEnumName(COA_EFactions, 0): rallyPrefabName = "{C839E8BC81D3C490}"; break;
-			case SCR_Enum.GetEnumName(COA_EFactions, 1): rallyPrefabName = "{577981721736900B}"; break;
-			case SCR_Enum.GetEnumName(COA_EFactions, 2): rallyPrefabName = "{577981721736900B}"; break;
-			case SCR_Enum.GetEnumName(COA_EFactions, 3): rallyPrefabName = "{C839E8BC81D3C490}"; break;
+			case SCR_Enum.GetEnumName(COA_EFactions, 0): rallyPrefabName = m_Gamemode.m_rBLUFORRallyPrefab; break;
+			case SCR_Enum.GetEnumName(COA_EFactions, 1): rallyPrefabName = m_Gamemode.m_rOPFORRallyPrefab; break;
+			case SCR_Enum.GetEnumName(COA_EFactions, 2): rallyPrefabName = m_Gamemode.m_rINDFORRallyPrefab; break;
+			case SCR_Enum.GetEnumName(COA_EFactions, 3): rallyPrefabName = m_Gamemode.m_rCIVILIANRallyPrefab; break;
 		}
+
+		Print(rallyPrefabName);
 		
 		Resource rallyPrefab = Resource.Load(rallyPrefabName);
 		if (!rallyPrefab)
