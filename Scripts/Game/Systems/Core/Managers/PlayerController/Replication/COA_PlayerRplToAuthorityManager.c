@@ -1377,8 +1377,6 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			case SCR_Enum.GetEnumName(COA_EFactions, 2): rallyPrefabName = m_Gamemode.m_rINDFORRallyPrefab; break;
 			case SCR_Enum.GetEnumName(COA_EFactions, 3): rallyPrefabName = m_Gamemode.m_rCIVILIANRallyPrefab; break;
 		}
-
-		Print(rallyPrefabName);
 		
 		Resource rallyPrefab = Resource.Load(rallyPrefabName);
 		if (!rallyPrefab)
