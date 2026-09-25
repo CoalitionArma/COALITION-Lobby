@@ -51,7 +51,40 @@ class COA_EntityHelper
 
 		return false;
 	}
-	
+
+	//------------------------------------------------------------------------------------------------
+	//! Park the local spectator entity far above the map so its voice never reaches anyone through proximity.
+	//! Vanilla VON also plays a radio transmission as direct speech around the speaker, so a spectator entity near
+	//! alive players is heard by them even when talking on the spectator channel radio. Each player gets their own
+	//! cell (500m apart, well outside direct speech range) so spectators only hear each other over the radio.
+	//! Same approach as PlayableSelector's PS_PlayableControllerComponent.UpdatePosition.
+	static void ParkLocalSpectatorForVoN()
+	{
+		IEntity specEntity = SCR_PlayerController.GetLocalMainEntity();
+		if (!specEntity || !IsSpectator(specEntity))
+			return;
+
+		// 20x20 grid spans ~14km diagonally, comfortably inside the spectator radio's 50km transmitting range
+		int playerId = SCR_PlayerController.GetLocalPlayerId();
+		int cell = playerId - (playerId / 400) * 400;
+		int column = cell - (cell / 20) * 20;
+		int row = cell / 20;
+		vector parkPosition = Vector(500 * column, 100000, 500 * row);
+
+		if (vector.DistanceSq(specEntity.GetOrigin(), parkPosition) < 1)
+			return;
+
+		vector mat[4];
+		Math3D.MatrixIdentity4(mat);
+		mat[3] = parkPosition;
+
+		BaseGameEntity bgEntity = BaseGameEntity.Cast(specEntity);
+		if (bgEntity)
+			bgEntity.Teleport(mat);
+		else
+			specEntity.SetWorldTransform(mat);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Validate the proveied vector to ensure we arent spawning in a state that would cause errors or crashes
 	//! \param[in] vectorToCheck vector to check

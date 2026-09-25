@@ -148,6 +148,10 @@ class COA_SpectatorLabelIcon : SCR_ScriptedWidgetComponent
 	 */
 	protected void UpdateWorldPosition()
 	{
+		// Entity can be deleted under us (e.g. a spectator entity removed when its player slots in) - Update() hides the icon
+		if (!m_eEntity)
+			return;
+
 		m_vWorldPosition = m_eEntity.GetOrigin();
 		
 		// If tracking a specific bone, calculate its world position

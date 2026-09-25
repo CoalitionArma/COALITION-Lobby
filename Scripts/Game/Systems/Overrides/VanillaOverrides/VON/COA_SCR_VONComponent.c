@@ -2,11 +2,14 @@ modded class SCR_VoNComponent
 {
 	protected COA_Gamemode m_Gamemode;
 	protected COA_MenuManager m_MenuManager;
-	
+	protected IEntity m_OwnerEntity; // VoNComponent has no GetOwner()
+
 	//------------------------------------------------------------------------------------------------
 	//! Constructor - Initializes component and gets required manager instances
 	void SCR_VoNComponent(IEntityComponentSource src, IEntity ent, IEntity parent)
 	{
+		m_OwnerEntity = ent;
+
 		// Get singleton instances needed for voice functionality
 		m_Gamemode = COA_Gamemode.GetInstance();
 		m_MenuManager = COA_MenuManager.GetInstance();
@@ -18,6 +21,15 @@ modded class SCR_VoNComponent
 	{
 		if (!CVON_VONGameModeComponent.GetInstance())
 		{
+			// Spectators may only talk over their spectator channel radio, never direct (proximity) speech.
+			// Backstop to COA_EntityHelper.ParkLocalSpectatorForVoN keeping the entity away from alive players.
+			// Skipping super alone does not stop the engine transmitting, SetCapture(false) is required.
+			if (!transmitter && COA_EntityHelper.IsSpectator(m_OwnerEntity))
+			{
+				SetCapture(false);
+				return;
+			}
+
 			// Check if this is direct speech in spectator mode that should be restricted
 			if (!m_Gamemode || m_Gamemode.m_GamemodeState != COA_EGamemodeState.GAME)
 			{

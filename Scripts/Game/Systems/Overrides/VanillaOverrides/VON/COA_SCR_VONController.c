@@ -25,13 +25,43 @@ modded class SCR_VONController
 	}
 	
 	//------------------------------------------------------------------------------------------------
+	//! True when CVON is disabled and the VoN component being driven belongs to a spectator entity.
+	//! Spectators then transmit exclusively through the lobby menus' channel radio (see COA_SpectatorMenu.Action_VONon),
+	//! so vanilla VON (direct / direct toggle / channel keys) must never capture for them. Backstop to
+	//! COA_EntityHelper.ParkLocalSpectatorForVoN, which keeps the entity out of proximity range of everyone.
+	protected bool IsSpectatorVONBlocked()
+	{
+		if (CVON_VONGameModeComponent.GetInstance())
+			return false;
+
+		SCR_PlayerController playerController = SCR_PlayerController.Cast(GetOwner());
+		if (!playerController)
+			return false;
+
+		return COA_EntityHelper.IsSpectator(playerController.GetControlledEntity());
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override protected bool ActivateVON(notnull SCR_VONEntry entry, EVONTransmitType transmitType = EVONTransmitType.NONE)
 	{
+		if (IsSpectatorVONBlocked())
+			return false;
+
 		MenuBase topMenu = GetGame().GetMenuManager().GetTopMenu();
 		if (topMenu)
 			if(topMenu.IsInherited(COA_Outro))
 				return false;
 		return super.ActivateVON(entry, transmitType);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Prevent the direct speech toggle from latching on (and showing its HUD indicator) for spectators
+	override protected void SetVONProximityToggle(bool activate)
+	{
+		if (activate && IsSpectatorVONBlocked())
+			return;
+
+		super.SetVONProximityToggle(activate);
 	}
 	
 	//------------------------------------------------------------------------------------------------

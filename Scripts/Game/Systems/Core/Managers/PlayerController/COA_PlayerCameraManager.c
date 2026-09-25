@@ -43,7 +43,7 @@ class COA_PlayerCameraManager : ScriptComponent
 		m_eCamera.SetAngles(Vector(mat[0], mat[1], 0));
 		
 		if (!CVON_VONGameModeComponent.GetInstance())
-			COA_SpectatorCamera.Cast(m_eCamera).AttatchSpectatorToCamera(m_eCamera);
+			COA_EntityHelper.ParkLocalSpectatorForVoN();
 		
 		// Switch to spectator camera
 		GetGame().GetCameraManager().SetCamera(CameraBase.Cast(m_eCamera));
