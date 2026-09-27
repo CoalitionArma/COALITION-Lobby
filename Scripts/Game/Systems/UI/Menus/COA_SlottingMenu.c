@@ -54,6 +54,7 @@ class COA_SlottingMenu: ChimeraMenuBase
 	//---------------------------------------------------------------------
 	protected Faction m_fSelectedFaction;       // Currently selected faction
 	protected int m_iSelectedplayerId = 0;      // Currently selected player ID
+	protected string m_sPlayerListSignature;    // Player list state last rendered by UpdatePlayerLists()
 	protected int m_LocalSlottingState;         // Local copy of slotting state
 	
 	//---------------------------------------------------------------------
@@ -1740,7 +1741,14 @@ class COA_SlottingMenu: ChimeraMenuBase
 		// Get all player IDs
 		array<int> playerIds = {};
 		GetGame().GetPlayerManager().GetAllPlayers(playerIds);
-		
+
+		// Called every frame - rebuilding re-creates every row's layout and reloads its faction flag texture
+		// (a world flag texture logs a GUI error per load), so only rebuild when something the rows show changed
+		string signature = BuildPlayerListSignature(playerIds);
+		if (signature == m_sPlayerListSignature)
+			return;
+		m_sPlayerListSignature = signature;
+
 		// Clear the player list
 		m_cPlayerListBoxComponent.Clear();
 		
@@ -1763,6 +1771,47 @@ class COA_SlottingMenu: ChimeraMenuBase
 		}
 	}
 	
+	/**
+	 * Captures everything a player list row displays (order, name, faction icon, status color, talking)
+	 * so UpdatePlayerLists() can skip rebuilding when nothing changed
+	 * @param playerIds - All player IDs from the player manager
+	 * @return Signature string of the current player list state
+	 */
+	private string BuildPlayerListSignature(array<int> playerIds)
+	{
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		COA_PermissionManager permissionManager = COA_PermissionManager.GetInstance();
+		string signature = m_iSelectedplayerId.ToString();
+
+		foreach (int playerId : playerIds)
+		{
+			if (!playerManager.IsPlayerConnected(playerId))
+				continue;
+
+			string factionKey;
+			Faction playerFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(playerId, true);
+			if (playerFaction)
+				factionKey = playerFaction.GetFactionKey();
+
+			signature += string.Format("|%1:%2:%3:%4:%5:%6:%7", playerId, playerManager.GetPlayerName(playerId), factionKey,
+				SCR_Global.IsAdmin(playerId), permissionManager.IsModerator(playerId), permissionManager.IsDonator(playerId), IsPlayerShownTalking(playerId));
+		}
+
+		return signature;
+	}
+
+	/**
+	 * @param playerId - ID of the player
+	 * @return True if the player list should show this player as talking
+	 */
+	private bool IsPlayerShownTalking(int playerId)
+	{
+		if (!CVON_VONGameModeComponent.GetInstance())
+			return m_MenuManager.m_aPlayersTalking.Contains(playerId);
+
+		return playerId == SCR_PlayerController.GetLocalPlayerId() && m_VONController.m_bIsBroadcasting;
+	}
+
 	private void SetPlayerStatusColor(int playerId, SCR_ListBoxElementComponent comp)
 	{
 		// Selected player
@@ -1822,19 +1871,8 @@ class COA_SlottingMenu: ChimeraMenuBase
 		SetPlayerStatusColor(playerId, comp);
 		
 		// Highlight players who are talking
-		if (!CVON_VONGameModeComponent.GetInstance())
-		{
-			if (m_MenuManager.m_aPlayersTalking.Contains(playerId))
-				comp.SetTalking();
-		}
-		else
-		{
-			if (playerId == SCR_PlayerController.GetLocalPlayerId())
-			{
-				if (m_VONController.m_bIsBroadcasting)
-					comp.SetTalking();
-			}
-		}
+		if (IsPlayerShownTalking(playerId))
+			comp.SetTalking();
 	}
 	
 	/**

@@ -40,6 +40,10 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	protected ref array<Widget> m_aGroupIconWidgets = {};    // Array of group icon UI widgets
 	protected ref array<ref COA_SpectatorLabelIconGroup> m_aGroupIcons = {}; // Array of group icon handlers
 
+	// Faction flag caching for UpdateFactionUI()
+	protected ref map<string, ResourceName> m_mFactionIconCache = new map<string, ResourceName>();
+	protected ref map<string, ResourceName> m_mLoadedFactionFlag = new map<string, ResourceName>();
+
 	// Row tracking for incremental UpdateSlots() (group-scoped patch instead of full Clear+rebuild)
 	protected ref map<SCR_AIGroup, int> m_mGroupHeaderIndex = new map<SCR_AIGroup, int>();
 	protected ref map<SCR_AIGroup, ref array<int>> m_mGroupSlotIndices = new map<SCR_AIGroup, ref array<int>>();
@@ -2267,37 +2271,44 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		if (buttonWidget)
 			buttonWidget.SetVisible(true);
 		
-		// Determine faction icon
+		// Determine faction icon (resolved once per faction - it cannot change mid-mission)
 		ResourceName iconPath;
-		
-		// Try to get icon from gearscript first
-		ResourceName gearScriptResource = COA_Gamemode.GetInstance().GetGearScriptResource(factionKey);
-		if (!gearScriptResource.IsEmpty())
+		if (!m_mFactionIconCache.Find(factionKey, iconPath))
 		{
-			COA_GearScriptConfig gearConfig = COA_GearScriptConfig.Cast(
-				BaseContainerTools.CreateInstanceFromContainer(
-					BaseContainerTools.LoadContainer(gearScriptResource).GetResource().ToBaseContainer()
-				)
-			);
-			
-			if (gearConfig && !gearConfig.m_FactionIcon.IsEmpty())
+			// Try to get icon from gearscript first
+			ResourceName gearScriptResource = COA_Gamemode.GetInstance().GetGearScriptResource(factionKey);
+			if (!gearScriptResource.IsEmpty())
 			{
-				iconPath = gearConfig.m_FactionIcon;
+				COA_GearScriptConfig gearConfig = COA_GearScriptConfig.Cast(
+					BaseContainerTools.CreateInstanceFromContainer(
+						BaseContainerTools.LoadContainer(gearScriptResource).GetResource().ToBaseContainer()
+					)
+				);
+
+				if (gearConfig && !gearConfig.m_FactionIcon.IsEmpty())
+				{
+					iconPath = gearConfig.m_FactionIcon;
+				}
 			}
+
+			// Fallback to default faction flag
+			if (iconPath.IsEmpty())
+			{
+				SCR_Faction faction = SCR_Faction.Cast(GetGame().GetFactionManager().GetFactionByKey(factionKey));
+				if (faction)
+					iconPath = faction.GetFactionFlag();
+			}
+
+			m_mFactionIconCache.Set(factionKey, iconPath);
 		}
-		
-		// Fallback to default faction flag
-		if (iconPath.IsEmpty())
-		{
-			SCR_Faction faction = SCR_Faction.Cast(GetGame().GetFactionManager().GetFactionByKey(factionKey));
-			if (faction)
-				iconPath = faction.GetFactionFlag();
-		}
-		
-		// Set flag image and player count ratio
+
+		// Set flag image (only when it changed) and player count ratio
 		ImageWidget flagImage = ImageWidget.Cast(flagWidget);
-		if (flagImage && !iconPath.IsEmpty())
+		if (flagImage && !iconPath.IsEmpty() && m_mLoadedFactionFlag.Get(factionKey) != iconPath)
+		{
 			flagImage.LoadImageTexture(0, iconPath);
+			m_mLoadedFactionFlag.Set(factionKey, iconPath);
+		}
 			
 		TextWidget ratioText = TextWidget.Cast(ratioWidget);
 		if (ratioText)

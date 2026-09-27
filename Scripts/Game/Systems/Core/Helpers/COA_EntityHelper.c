@@ -56,20 +56,23 @@ class COA_EntityHelper
 	//! Park the local spectator entity far above the map so its voice never reaches anyone through proximity.
 	//! Vanilla VON also plays a radio transmission as direct speech around the speaker, so a spectator entity near
 	//! alive players is heard by them even when talking on the spectator channel radio. Each player gets their own
-	//! cell (500m apart, well outside direct speech range) so spectators only hear each other over the radio.
+	//! cell (40m apart, outside direct speech range) so spectators only hear each other over the radio.
 	//! Same approach as PlayableSelector's PS_PlayableControllerComponent.UpdatePosition.
+	//! The grid is kept compact on purpose: the spectator radio (SpecRadioBag.et) only needs to cover it, and a
+	//! long transmitting range makes the server evaluate every radio on the map for each spectator transmission.
 	static void ParkLocalSpectatorForVoN()
 	{
 		IEntity specEntity = SCR_PlayerController.GetLocalMainEntity();
 		if (!specEntity || !IsSpectator(specEntity))
 			return;
 
-		// 20x20 grid spans ~14km diagonally, comfortably inside the spectator radio's 50km transmitting range
+		// 7x7x7 cube at 40m spacing: 343 cells, ~416m corner to corner - keep inside SpecRadioBag.et's 500m transmitting range
 		int playerId = SCR_PlayerController.GetLocalPlayerId();
-		int cell = playerId - (playerId / 400) * 400;
-		int column = cell - (cell / 20) * 20;
-		int row = cell / 20;
-		vector parkPosition = Vector(500 * column, 100000, 500 * row);
+		int cell = playerId - (playerId / 343) * 343;
+		int x = cell - (cell / 7) * 7;
+		int y = (cell / 7) - (cell / 49) * 7;
+		int z = cell / 49;
+		vector parkPosition = Vector(40 * x, 100000 + 40 * y, 40 * z);
 
 		if (vector.DistanceSq(specEntity.GetOrigin(), parkPosition) < 1)
 			return;

@@ -7,6 +7,7 @@ class COA_Hint : SCR_ScriptedWidgetComponent
 	protected TextWidget m_wText;            // Text widget that displays the hint message
 	protected ImageWidget m_wBG;             // Background image widget
 	protected float m_fEndTime;              // Time when the hint should disappear
+	protected bool m_bLoopsRemoved;          // DestroyHint() already removed the callqueue loops
 	
 	//------------------------------------------------------------------------------------------------
 	// Called when this component is attached to a widget
@@ -69,6 +70,7 @@ class COA_Hint : SCR_ScriptedWidgetComponent
 			GetGame().GetCallqueue().Remove(HintLoop);
 			GetGame().GetCallqueue().Remove(FadeAndDeleteHintLoop);
 		}
+		m_bLoopsRemoved = true;
 
 		Widget widget = m_wMainWidget;
 		m_wMainWidget = null;
@@ -133,7 +135,10 @@ class COA_Hint : SCR_ScriptedWidgetComponent
 	
 	void ~COA_Hint()
 	{
-		if (GetGame())
+		// When destroyed through DestroyHint() we are running inside FadeAndDeleteHintLoop, i.e. inside the
+		// callqueue tick (game.c OnUpdate) - touching the callqueue from the destructor then throws a
+		// NullPointerError. DestroyHint() already removed both loops, so only clean up for other teardown paths.
+		if (!m_bLoopsRemoved && GetGame() && GetGame().GetCallqueue())
 		{
 			GetGame().GetCallqueue().Remove(HintLoop);
 			GetGame().GetCallqueue().Remove(FadeAndDeleteHintLoop);

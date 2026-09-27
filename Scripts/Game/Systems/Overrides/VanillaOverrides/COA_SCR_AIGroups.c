@@ -24,6 +24,42 @@ modded class SCR_AIGroup
 		if (COA_GMPossessionManager.GetInstance().IsGroupAlreadyRegistered(this))
 			return GetCustomName();
 
+		// See GetCustomName - skip vanilla's SocialComponent.IsRestricted check for script-named groups
+		if (m_iNameAuthorID <= 0)
+		{
+			string company, platoon, squad, character, format;
+			GetCallsigns(company, platoon, squad, character, format);
+			string originalName = string.Format(format, company, platoon, squad, character);
+
+			if (m_sCustomName.IsEmpty())
+				return originalName;
+
+			return m_sCustomName + " ( " + originalName + " )";
+		}
+
 		return super.GetCustomNameWithOriginal();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Group names/descriptions set by script (slotting, GM possession) have no player author (ID <= 0).
+	//! Vanilla still asks SocialComponent.IsRestricted about that author, which logs
+	//! "SocialComponent::IsRestricted: Invalid otherPlayerID." on every call - and nametags and spectator
+	//! group icons call these every frame (millions of client log lines per session). A non-player author
+	//! can never be restricted, so return the text directly.
+	override string GetCustomName()
+	{
+		if (m_iNameAuthorID <= 0)
+			return m_sCustomName;
+
+		return super.GetCustomName();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string GetCustomDescription()
+	{
+		if (m_iDescriptionAuthorID <= 0)
+			return m_sCustomDescription;
+
+		return super.GetCustomDescription();
 	}
 }

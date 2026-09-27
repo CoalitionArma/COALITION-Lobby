@@ -109,19 +109,19 @@ class COA_PlayerController : SCR_PlayerController
 		if (COA_EntityHelper.IsSpectator(GetControlledEntity()))
 			return;
 		
-		//Still trying to update with a spectator radio. No clue why this happens as theres the check above by whatever.
+		// m_aRadios can still hold the spectator radio right after switching entity. Match on the GUID only -
+		// the path this used to compare against was stale (SpecRadioBag.et lives in Prefabs/!Systems/!Spectator/Radios/),
+		// so the check never matched.
 		foreach (IEntity radio: m_aRadios)
 		{
 			if (!radio)
 				continue;
-			
+
 			if (!radio.GetPrefabData())
 				continue;
-			
-			if (!radio.GetPrefabData().GetPrefabName())
-				continue;
-			
-			if (radio.GetPrefabData().GetPrefabName() == "{13A97D10A827AE01}Prefabs/Items/Equipment/Radios/SpecRadioBag.et")
+
+			string prefabName = radio.GetPrefabData().GetPrefabName();
+			if (prefabName.StartsWith("{13A97D10A827AE01}"))
 				return;
 		}
 		
