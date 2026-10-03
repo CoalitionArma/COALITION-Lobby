@@ -1107,21 +1107,13 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		// CLEAR ICONS THAT DONT EXIST
 		//------------------------------------------------------------------------------------------------
 		
-		array<int> indexesToDelete = {};
-		
-		foreach (RplId rplId : m_aEntityIcons)
+		// Walk from the end so RemoveOrdered doesn't shift the indices still to be checked
+		for (int index = m_aEntityIcons.Count() - 1; index >= 0; index--)
 		{
-			if(!rplId || !rplId.IsValid() || !comparisonRplIds.Contains(rplId))
-			{
-				int index = m_aEntityIcons.Find(rplId);
-				
-				if(index != -1)
-					indexesToDelete.Insert(index);
-			}
-		};
-		
-		foreach (int index : indexesToDelete)
-		{
+			RplId rplId = m_aEntityIcons[index];
+			if (rplId.IsValid() && comparisonRplIds.Contains(rplId))
+				continue;
+
 			m_aEntityIcons.RemoveOrdered(index);
 			delete m_aSpectatorWidgets.Get(index);
 			m_aSpectatorWidgets.RemoveOrdered(index);

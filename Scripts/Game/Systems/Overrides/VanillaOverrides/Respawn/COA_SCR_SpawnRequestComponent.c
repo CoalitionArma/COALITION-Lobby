@@ -15,6 +15,9 @@
  * Fix: return early and schedule a deferred retry so m_HandlerComponent is resolved once
  * SCR_RespawnSystemComponent becomes available, ensuring the full vanilla possess-spawn path
  * (including OnPlayerSpawnFinalize_S / data collector notification) is used when possible.
+ *
+ * Because super is skipped, this body must be re-synced with vanilla OnPostInit after every game update
+ * (1.8 added the m_OnControlledEntityChanged -> OnControlledEntityChanged_S observer subscription).
  */
 modded class SCR_SpawnRequestComponent
 {
@@ -36,6 +39,10 @@ modded class SCR_SpawnRequestComponent
 				Type().ToString(), SCR_PlayerController, SCR_RespawnComponent),
 				LogLevel.ERROR);
 		}
+
+		// 1.8: keep the per-player ObserversSystem MP observer following the controlled entity (vanilla does this here too)
+		if (m_PlayerController && Replication.IsServer())
+			m_PlayerController.m_OnControlledEntityChanged.Insert(OnControlledEntityChanged_S);
 
 		m_RplComponent = RplComponent.Cast(owner.FindComponent(RplComponent));
 		if (!m_RplComponent)
