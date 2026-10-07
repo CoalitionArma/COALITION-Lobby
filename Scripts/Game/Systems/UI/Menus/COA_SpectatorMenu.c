@@ -783,6 +783,9 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	/**
 	 * Updates the compass UI based on camera orientation
 	 */
+	// Width in pixels of one full 360-degree compass tile (see UpdateCompass)
+	protected const float COMPASS_TILE_WIDTH = 1880;
+
 	void UpdateCompass()
 	{
 		// Get camera yaw angle (double negation cancels — equivalent to raw [0] value)
@@ -799,7 +802,10 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		
 		// Only shift horizontally — vertical offsets are pinned to the exact layout values
 		// so the bar cannot shift up/down regardless of yaw.
-		float scroll = 1880 * (yaw / 360);
+		// COMPASS_TILE_WIDTH must equal the width of each of the three Compass/Compass0/Compass1
+		// tiles in SpectatorHUD.layout, which must sit edge to edge exactly one tile apart - otherwise
+		// a seam shows up at certain headings and the strip jumps when wrapping past north.
+		float scroll = COMPASS_TILE_WIDTH * (yaw / 360);
 		FrameSlot.SetOffsets(compassMoveable, -1090 - scroll, -67.785, -2750 + scroll, -990.214);
 	}
 	

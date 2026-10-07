@@ -1561,8 +1561,8 @@ FrameWidgetClass {
         OffsetLeft 1477.99
         PositionY -5.096
         OffsetTop -5.096
-        SizeX -2697.69
-        OffsetRight 1219.7
+        SizeX -2700.243
+        OffsetRight 1222.253
         SizeY 0
         OffsetBottom 5.096
        }
@@ -1577,14 +1577,14 @@ FrameWidgetClass {
        Name "Compass0"
        Slot FrameWidgetSlot "{6335338FD7906532}" {
         Anchor 0 0 1 1
-        PositionX -450.048
-        OffsetLeft -450.048
-        PositionY -0.306
-        OffsetTop -0.306
-        SizeX -2661.89
-        OffsetRight 3111.94
+        PositionX -402.01
+        OffsetLeft -402.01
+        PositionY -5.096
+        OffsetTop -5.096
+        SizeX -2700.243
+        OffsetRight 3102.253
         SizeY 0
-        OffsetBottom 0.306
+        OffsetBottom 5.096
        }
        Opacity 0.5
        Texture "{AAC9CD790A7F63FA}UI/Images/SpecImages/Spec_Compass.edds"
@@ -1596,14 +1596,14 @@ FrameWidgetClass {
        Name "Compass1"
        Slot FrameWidgetSlot "{6335338FD7906532}" {
         Anchor 0 0 1 1
-        PositionX 3350.02
-        OffsetLeft 3350.02
-        PositionY 0.364
-        OffsetTop 0.364
-        SizeX -2661.9
-        OffsetRight -688.115
+        PositionX 3357.99
+        OffsetLeft 3357.99
+        PositionY -5.096
+        OffsetTop -5.096
+        SizeX -2700.243
+        OffsetRight -657.747
         SizeY 0
-        OffsetBottom -0.364
+        OffsetBottom 5.096
        }
        Opacity 0.5
        Texture "{AAC9CD790A7F63FA}UI/Images/SpecImages/Spec_Compass.edds"
