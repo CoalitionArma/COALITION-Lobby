@@ -793,7 +793,7 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		if (yaw < 0)
 			yaw += 360;
 		
-		FrameWidget compassMoveable = FrameWidget.Cast(m_wRoot.FindAnyWidget("CompassFrameMoveable"));
+		FrameWidget compassMoveable = FrameWidget.Cast(GetCachedWidget("CompassFrameMoveable"));
 		if (!compassMoveable)
 			return;
 		
@@ -857,9 +857,11 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		if (m_ChatPanel)
 			m_ChatPanel.OnUpdateChat(tDelta);
 		
-		// Set kill feed type to dead local
-		SCR_NotificationSenderComponent sender = SCR_NotificationSenderComponent.Cast(GetGame().GetGameMode().FindComponent(SCR_NotificationSenderComponent));
-		sender.SetKillFeedTypeDeadLocal();
+		// Set kill feed type to dead local (re-applied each frame: it depends on whether the editor is open)
+		if (!m_KillFeedSender)
+			m_KillFeedSender = SCR_NotificationSenderComponent.Cast(GetGame().GetGameMode().FindComponent(SCR_NotificationSenderComponent));
+		if (m_KillFeedSender)
+			m_KillFeedSender.SetKillFeedTypeDeadLocal();
 		
 		UpdateTimer();
 		
@@ -1331,6 +1333,34 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	 * Update UI panel visibility based on cursor position
 	 * @param tDelta - Time since last frame
 	 */
+	// Widgets looked up by name from OnMenuUpdate, cached because FindAnyWidget searches the whole tree
+	protected ref map<string, Widget> m_mCachedWidgets = new map<string, Widget>();
+	protected Widget m_wCachedWidgetsRoot;
+	protected SCR_NotificationSenderComponent m_KillFeedSender;
+
+	//------------------------------------------------------------------------------------------------
+	//! FindAnyWidget with a per-menu cache. OnMenuUpdate looks the same widgets up every frame, and
+	//! each FindAnyWidget call is a recursive search of the whole menu layout. The cache resets if
+	//! m_wRoot is replaced.
+	protected Widget GetCachedWidget(string name)
+	{
+		if (m_wCachedWidgetsRoot != m_wRoot)
+		{
+			m_mCachedWidgets.Clear();
+			m_wCachedWidgetsRoot = m_wRoot;
+		}
+
+		Widget widget = m_mCachedWidgets.Get(name);
+		if (widget)
+			return widget;
+
+		widget = m_wRoot.FindAnyWidget(name);
+		if (widget)
+			m_mCachedWidgets.Set(name, widget);
+
+		return widget;
+	}
+
 	protected void UpdateUIPanelVisibility(float tDelta)
 	{
 		// Get cursor position
@@ -1354,8 +1384,8 @@ class COA_SpectatorMenu: ChimeraMenuBase
 				leftSlotX = 0;
 			
 			FrameSlot.SetPosX(m_wFrameSlots, leftSlotX);
-			m_wRoot.FindAnyWidget("SliderBGL").SetVisible(false);
-			m_wRoot.FindAnyWidget("ArrowL").SetVisible(false);
+			GetCachedWidget("SliderBGL").SetVisible(false);
+			GetCachedWidget("ArrowL").SetVisible(false);
 		}
 		else
 		{
@@ -1365,8 +1395,8 @@ class COA_SpectatorMenu: ChimeraMenuBase
 				leftSlotX = -200;
 			
 			FrameSlot.SetPosX(m_wFrameSlots, leftSlotX);
-			m_wRoot.FindAnyWidget("SliderBGL").SetVisible(true);
-			m_wRoot.FindAnyWidget("ArrowL").SetVisible(true);
+			GetCachedWidget("SliderBGL").SetVisible(true);
+			GetCachedWidget("ArrowL").SetVisible(true);
 		}
 		
 		// Update VON channels panel visibility
@@ -1381,8 +1411,8 @@ class COA_SpectatorMenu: ChimeraMenuBase
 				leftVONX = -220;
 			
 			FrameSlot.SetPosX(m_wFrameChannels, leftVONX);
-			m_wRoot.FindAnyWidget("SliderBGR").SetVisible(false);
-			m_wRoot.FindAnyWidget("ArrowR").SetVisible(false);
+			GetCachedWidget("SliderBGR").SetVisible(false);
+			GetCachedWidget("ArrowR").SetVisible(false);
 		}
 		else
 		{
@@ -1392,8 +1422,8 @@ class COA_SpectatorMenu: ChimeraMenuBase
 				leftVONX = -20;
 			
 			FrameSlot.SetPosX(m_wFrameChannels, leftVONX);
-			m_wRoot.FindAnyWidget("SliderBGR").SetVisible(true);
-			m_wRoot.FindAnyWidget("ArrowR").SetVisible(true);
+			GetCachedWidget("SliderBGR").SetVisible(true);
+			GetCachedWidget("ArrowR").SetVisible(true);
 		}
 		
 		// Update VON channels panel visibility
@@ -1408,8 +1438,8 @@ class COA_SpectatorMenu: ChimeraMenuBase
 				leftGameInfoX = 0;
 			
 			FrameSlot.SetPosX(m_wFrameGameInfo, leftGameInfoX);
-			m_wRoot.FindAnyWidget("SliderBGLL").SetVisible(false);
-			m_wRoot.FindAnyWidget("ArrowLL").SetVisible(false);
+			GetCachedWidget("SliderBGLL").SetVisible(false);
+			GetCachedWidget("ArrowLL").SetVisible(false);
 		}
 		else
 		{
@@ -1419,8 +1449,8 @@ class COA_SpectatorMenu: ChimeraMenuBase
 				leftGameInfoX = -150;
 			
 			FrameSlot.SetPosX(m_wFrameGameInfo, leftGameInfoX);
-			m_wRoot.FindAnyWidget("SliderBGLL").SetVisible(true);
-			m_wRoot.FindAnyWidget("ArrowLL").SetVisible(true);
+			GetCachedWidget("SliderBGLL").SetVisible(true);
+			GetCachedWidget("ArrowLL").SetVisible(true);
 		}
 	}
 	

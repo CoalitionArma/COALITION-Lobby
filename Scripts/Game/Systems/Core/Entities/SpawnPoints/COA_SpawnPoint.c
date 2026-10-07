@@ -47,15 +47,12 @@ class COA_SpawnPoint: Vehicle
 		if (!GetGame().InPlayMode() || !Replication.IsServer())
 			return;
 		
+		// Always cancel the repeating proximity check, even during world teardown when the game
+		// mode is already gone. Remove() is a no-op if nothing was queued.
+		GetGame().GetCallqueue().Remove(UpdateFlagProximity);
+
 		if (COA_RespawnManager.GetInstance())
 			COA_RespawnManager.GetInstance().UnRegisterRespawnPoint(m_iLocallyStoredId);
-
-		COA_Gamemode gamemode = COA_Gamemode.GetInstance();
-		if (!gamemode)
-			return;
-
-		if (m_SpawnPointSettings.m_bSpawnBlockEnabled)
-			GetGame().GetCallqueue().Remove(UpdateFlagProximity);
 	}
 
 	//------------------------------------------------------------------------------------------------

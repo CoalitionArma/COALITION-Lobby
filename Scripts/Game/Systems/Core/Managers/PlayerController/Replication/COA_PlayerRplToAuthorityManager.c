@@ -23,7 +23,11 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	protected COA_RplBroadcastManager m_RplBroadcastManager;
 	protected COA_BandwidthTelemetryManager m_TelemetryManager;
 	protected SCR_GroupsManagerComponent m_GroupsManagerComponent;
-	
+
+	// How close (squared metres) a player must be to a rally point to destroy it. Generous compared
+	// to the user-action range to allow for movement and latency.
+	protected const float RALLYPOINT_INTERACT_DISTANCE_SQ = 100;
+
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 MANAGER INITIALIZATION
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -54,6 +58,85 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		m_RplBroadcastManager = COA_RplBroadcastManager.GetInstance();
 		m_TelemetryManager = COA_BandwidthTelemetryManager.GetInstance();
 		m_GroupsManagerComponent = SCR_GroupsManagerComponent.GetInstance();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The player who sent the RPC being handled. This component sits on each player's own
+	//! controller, so this is server-authoritative, unlike a player ID passed in by the client.
+	protected int GetCallerPlayerId()
+	{
+		PlayerController ownerController = PlayerController.Cast(GetOwner());
+		if (!ownerController)
+			return 0;
+
+		return ownerController.GetPlayerId();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-side permission check for admin/moderator-only requests. The client-side checks in the
+	//! accessors above are only UI convenience; a modified client can call any RPC directly.
+	protected bool IsCallerStaff()
+	{
+		int callerId = GetCallerPlayerId();
+		if (callerId <= 0)
+			return false;
+
+		if (SCR_Global.IsAdmin(callerId))
+			return true;
+
+		return m_PermissionManager && m_PermissionManager.IsModerator(callerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Creator of a custom VON channel, parsed from its name ("Name's Channel (PlayerID)|players...").
+	//! \return the creator's player ID, or 0 if the channel is invalid or has no creator
+	protected int GetChannelCreatorId(int channel)
+	{
+		if (!m_MenuManager || channel < 0 || channel >= m_MenuManager.m_aVONChannels.Count())
+			return 0;
+
+		array<string> channelSplit = {};
+		m_MenuManager.m_aVONChannels[channel].Split("|", channelSplit, true);
+		if (channelSplit.IsEmpty())
+			return 0;
+
+		string channelName = channelSplit[0];
+		int openParen = channelName.IndexOf("(");
+		int closeParen = channelName.IndexOf(")");
+		if (openParen == -1 || closeParen == -1 || closeParen <= openParen)
+			return 0;
+
+		return channelName.Substring(openParen + 1, closeParen - openParen - 1).ToInt();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-side check for admin-only requests (those the client UI gates on SCR_Global.IsAdmin()).
+	protected bool IsCallerAdmin()
+	{
+		int callerId = GetCallerPlayerId();
+		return callerId > 0 && SCR_Global.IsAdmin(callerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-side check for requests a player may make for themselves, and staff for anyone.
+	protected bool IsCallerSelfOrStaff(int playerId)
+	{
+		int callerId = GetCallerPlayerId();
+		if (callerId <= 0)
+			return false;
+
+		return playerId == callerId || IsCallerStaff();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tell the requesting player their forward deploy was rejected. Uses the owner manager on this
+	//! same controller - COA_PlayerRplToOwnerManager.GetInstance() is a different, arbitrary player
+	//! on the server.
+	protected void RejectForwardDeploy()
+	{
+		COA_PlayerRplToOwnerManager ownerManager = COA_PlayerRplToOwnerManager.Cast(GetOwner().FindComponent(COA_PlayerRplToOwnerManager));
+		if (ownerManager)
+			ownerManager.ForwardDeployRequestRejected();
 	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -372,6 +455,8 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	// both arguments explicitly, so this method doesn't need one.
 	protected void RpcAsk_RequestInitilizePlayer(int playerId, bool isMassJoinBatch)
 	{
+		playerId = GetCallerPlayerId(); // act on the sender, never a client-supplied ID
+
 		// Telemetry: int, bool
 		LogTelemetry("RpcAsk_RequestInitilizePlayer", COA_BandwidthTelemetryManager.EstimateSize_Int() + COA_BandwidthTelemetryManager.EstimateSize_Bool());
 
@@ -390,7 +475,38 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_String(playerName);
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
 		LogTelemetry("RpcAsk_ToggleSideReady", bytes);
-		
+
+		// Mirror COA_PlayerKeybindManager's rules on the server: only admins may force-ready, and
+		// otherwise only a group leader may toggle their OWN faction. The announced name is the
+		// sender's real name, not a client-supplied string.
+		int callerId = GetCallerPlayerId();
+		if (callerId <= 0)
+			return;
+
+		playerName = GetGame().GetPlayerManager().GetPlayerName(callerId);
+
+		if (adminForced)
+		{
+			if (!IsCallerAdmin())
+				return;
+		}
+		else
+		{
+			SCR_AIGroup callerGroup;
+			if (m_GroupsManagerComponent)
+				callerGroup = m_GroupsManagerComponent.GetPlayerGroup(callerId);
+			if (!callerGroup || !callerGroup.IsPlayerLeader(callerId))
+				return;
+
+			SCR_FactionManager factionManager = SCR_FactionManager.Cast(GetGame().GetFactionManager());
+			if (!factionManager)
+				return;
+
+			Faction callerFaction = factionManager.GetPlayerFaction(callerId);
+			if (!callerFaction || callerFaction.GetFactionKey() != setReady)
+				return;
+		}
+
 		m_SafestartManager.ToggleSideReady(setReady, playerName, adminForced);
 	}
 
@@ -399,6 +515,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_RequestAdvanceGamemodeState(bool overriden, string winningFaction)
 	{
+		if (!IsCallerAdmin())
+			return;
+
 		// Telemetry: bool
 		LogTelemetry("RpcAsk_RequestAdvanceGamemodeState", COA_BandwidthTelemetryManager.EstimateSize_Bool());
 		
@@ -410,6 +529,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_RequestAdvanceSlottingPhase()
 	{
+		if (!IsCallerAdmin())
+			return;
+
 		// Telemetry: no parameters
 		LogTelemetry("RpcAsk_RequestAdvanceSlottingPhase", 0);
 		
@@ -422,7 +544,22 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	{
 		// Telemetry: 2 ints
 		LogTelemetry("RpcAsk_UpdateSlotPlayerID", COA_BandwidthTelemetryManager.EstimateSize_Int() * 2);
-		
+
+		// Admins may slot/kick anyone (COA_SlottingMenu admin controls). Everyone else may only
+		// claim an unlocked slot for themselves, or leave the slot they are currently in.
+		if (!IsCallerAdmin())
+		{
+			int callerId = GetCallerPlayerId();
+			COA_SlotData slotData = m_SlottingManager.GetSlotData(slotId);
+			if (callerId <= 0 || !slotData)
+				return;
+
+			bool claimingForSelf = playerId == callerId && !slotData.GetIsLockedSlot();
+			bool leavingOwnSlot = playerId == 0 && slotData.GetSlotCurrentPlayerId() == callerId;
+			if (!claimingForSelf && !leavingOwnSlot)
+				return;
+		}
+
 		m_SlottingManager.UpdateSlotPlayerID(slotId, playerId);
 	}
 
@@ -431,6 +568,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_UpdateSlotLockedState(int slotId, bool input)
 	{
+		if (!IsCallerAdmin())
+			return;
+
 		// Telemetry: int + bool
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int();
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
@@ -444,6 +584,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	void RpcAsk_UpdateGroupLockedState(RplId groupRplId, bool input)
 	{
+		if (!IsCallerAdmin())
+			return;
+
 		// Telemetry: RplId + bool
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_RplId();
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
@@ -463,6 +606,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_UpdateSlotDeathState(int slotId, bool input)
 	{
+		if (!IsCallerAdmin())
+			return;
+
 		// Telemetry: int + bool
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int();
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
@@ -476,6 +622,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_UpdateSlotRole(int slotId, COA_EGearRole role)
 	{
+		if (!IsCallerAdmin())
+			return;
+
 		// Telemetry: int + int
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int();
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Int();
@@ -489,6 +638,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_UpdateSlotGroup(int slotId, RplId groupRplId)
 	{
+		if (!IsCallerAdmin())
+			return;
+
 		// Telemetry: int + RplId
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int();
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_RplId();
@@ -502,6 +654,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_UpdateSlotCharacter(int slotId, RplId charId)
 	{
+		if (!IsCallerAdmin())
+			return;
+
 		// Telemetry: int + RplId
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int();
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_RplId();
@@ -515,6 +670,8 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_RespawnPlayer(int playerId, int spawnPointID)
 	{
+		playerId = GetCallerPlayerId(); // act on the sender, never a client-supplied ID
+
 		// Telemetry: int + int
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int();
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Int();
@@ -528,36 +685,18 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_RequestToJoinChannel(int channel, int requestId)
 	{
+		requestId = GetCallerPlayerId(); // act on the sender, never a client-supplied ID
+
 		// Telemetry: 2 ints
 		LogTelemetry("RpcAsk_RequestToJoinChannel", COA_BandwidthTelemetryManager.EstimateSize_Int() * 2);
 		
 		Print(string.Format("[VON] Server processing join request: channel=%1, requestId=%2", channel, requestId), LogLevel.NORMAL);
 		
 		// Instead of using BroadcastManager, handle the request directly on the server
-		if (channel < 0 || channel >= m_MenuManager.m_aVONChannels.Count())
+		int creatorId = GetChannelCreatorId(channel);
+		if (creatorId <= 0)
 			return;
-		
-		// Extract channel creator ID from channel name
-		// Channel name format: "PlayerName's Channel (PlayerID)|players..."
-		string channelString = m_MenuManager.m_aVONChannels[channel];
-		array<string> channelSplit = {};
-		channelString.Split("|", channelSplit, true);
-		
-		if (channelSplit.Count() == 0)
-			return;
-		
-		string channelName = channelSplit[0];
-		
-		// Find the creator ID from the channel name format: "Name's Channel (ID)"
-		int openParen = channelName.IndexOf("(");
-		int closeParen = channelName.IndexOf(")");
-		
-		if (openParen == -1 || closeParen == -1 || closeParen <= openParen)
-			return;
-		
-		string creatorIdStr = channelName.Substring(openParen + 1, closeParen - openParen - 1);
-		int creatorId = creatorIdStr.ToInt();
-		
+
 		// Don't send a request if the requester is the channel creator
 		if (creatorId == requestId)
 		{
@@ -578,6 +717,8 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_CheckVONRegister(int playerId)
 	{
+		playerId = GetCallerPlayerId(); // act on the sender, never a client-supplied ID
+
 		// Telemetry: int
 		LogTelemetry("RpcAsk_CheckVONRegister", COA_BandwidthTelemetryManager.EstimateSize_Int());
 		
@@ -593,6 +734,8 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_CreateChannel(int playerId)
 	{
+		playerId = GetCallerPlayerId(); // act on the sender, never a client-supplied ID
+
 		// Telemetry: int
 		LogTelemetry("RpcAsk_CreateChannel", COA_BandwidthTelemetryManager.EstimateSize_Int());
 		
@@ -609,7 +752,12 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	{
 		// Telemetry: 2 ints
 		LogTelemetry("RpcAsk_JoinChannel", COA_BandwidthTelemetryManager.EstimateSize_Int() * 2);
-		
+
+		// A player may join a channel themselves; adding someone else is only allowed for the
+		// channel's creator (accepting a join request, COA_MenuManager.Accept) or staff.
+		if (!IsCallerSelfOrStaff(playerId) && GetChannelCreatorId(channel) != GetCallerPlayerId())
+			return;
+
 		m_MenuManager.AddPlayerToChannel(playerId, channel, false);
 	}
 
@@ -618,6 +766,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_SpawnOnGroup(int playerId, int playerIDToSpawnOn, int groupID, bool logAction)
 	{
+		if (!IsCallerStaff())
+			return;
+
 		// Telemetry: 3 ints + bool
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int() * 3;
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
@@ -673,6 +824,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_ResetGear(int playerId, ResourceName prefab, bool logAction)
 	{
+		if (!IsCallerSelfOrStaff(playerId))
+			return;
+
 		// Telemetry: int + ResourceName + bool
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int();
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_ResourceName(prefab);
@@ -723,6 +877,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_UpdateGearSet(string faction, ResourceName path)
 	{
+		if (!IsCallerStaff())
+			return;
+
 		// Telemetry: string + ResourceName
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_String(faction);
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_ResourceName(path);
@@ -735,7 +892,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		SCR_AIWorld aiWorld = SCR_AIWorld.Cast(GetGame().GetAIWorld());
 		if (!aiWorld)
 		{
-			Print("ERROR: AIworld not found, can't update gear sets");
+			Print("[COA_PlayerRplToAuthorityManager] AIworld not found, can't update gear sets", LogLevel.ERROR);
 			return;
 		}
 		
@@ -820,6 +977,8 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_MoveSpecCamToSlot(int slotID, int playerId)
 	{
+		playerId = GetCallerPlayerId(); // act on the sender, never a client-supplied ID
+
 		// Get slot data from the slotting manager
 		COA_SlotData slotData = COA_SlottingManager.GetInstance().GetSlotData(slotID);
 		if (!slotData)
@@ -848,8 +1007,14 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_String(data);
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Int();
 		LogTelemetry("RpcAsk_SendAdminMessage", bytes);
-		
-		// Broadcast a new ticket/message to admins
+
+		// A ticket is always from the player who sent it - never trust the client-supplied ID,
+		// or a modified client could open tickets in someone else's name.
+		playerID = GetCallerPlayerId();
+		if (playerID <= 0)
+			return;
+
+		// Send the new ticket/message to admins
 		bool ticketExists = m_AdminMenuManager.TicketExists(playerID);
 		m_RplBroadcastManager.SendAdminMessage(data, playerID, ticketExists);
 		
@@ -867,7 +1032,11 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Int() * 2;
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
 		LogTelemetry("RpcAsk_ReplyAdminMessage", bytes);
-		
+
+		if (!IsCallerStaff())
+			return;
+		adminID = GetCallerPlayerId();
+
 		// Create a new ticket or/and add reply to existing ticket
 		m_AdminMenuManager.NewTicketMessage(playerId, adminID, data);
 		
@@ -884,7 +1053,11 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int() * 2;
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
 		LogTelemetry("RpcAsk_CloseAdminTicket", bytes);
-		
+
+		if (!IsCallerStaff())
+			return;
+		adminID = GetCallerPlayerId();
+
 		m_AdminMenuManager.CloseTicket(ticketID);
 		
 		// Broadcast to admins that ticket was clsoed
@@ -900,7 +1073,11 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int() * 2;
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
 		LogTelemetry("RpcAsk_AssignAdminTicket", bytes);
-		
+
+		if (!IsCallerStaff())
+			return;
+		adminID = GetCallerPlayerId();
+
 		m_AdminMenuManager.AssignAdminTicket(ticketID, adminID);
 	}
 
@@ -909,7 +1086,10 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_GetOpenTickets(int playerID)
 	{
-		m_RplBroadcastManager.GetOpenTickets(playerID);
+		if (!IsCallerStaff())
+			return;
+
+		m_RplBroadcastManager.GetOpenTickets(GetCallerPlayerId());
 	}
 
 	
@@ -917,7 +1097,10 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_GetTicketMessages(int playerID, int ticketID)
 	{
-		m_RplBroadcastManager.GetTicketMessages(playerID, ticketID);
+		if (!IsCallerStaff())
+			return;
+
+		m_RplBroadcastManager.GetTicketMessages(GetCallerPlayerId(), ticketID);
 	}
 
 	
@@ -925,6 +1108,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_RespawnFaction(FactionKey faction, bool logAction)
 	{
+		if (!IsCallerStaff())
+			return;
+
 		// Telemetry: string (FactionKey) + bool
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_String(faction);
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
@@ -944,6 +1130,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_AddItem(int playerId, string prefab, bool logAction)
 	{
+		if (!IsCallerStaff())
+			return;
+
 		// Telemetry: int + string + bool
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int();
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_String(prefab);
@@ -988,7 +1177,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			if (resourceSpawned.FindComponent(CVON_RadioComponent))
 			{
 				GetGame().GetCallqueue().CallLater(InitializePlayerRadiosDelayed, 500, false, playerId);
-				COA_PlayerRplToOwnerManager ownerManager = COA_PlayerRplToOwnerManager.GetInstance();
+				COA_PlayerRplToOwnerManager ownerManager = COA_PlayerRplToOwnerManager.GetForPlayer(playerId);
 				if (ownerManager)
 					ownerManager.InitializeRadioFromServer();
 			
@@ -1015,6 +1204,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_TeleportPlayers(int playerId1, int playerId2, bool logAction)
 	{
+		if (!IsCallerStaff())
+			return;
+
 		// Telemetry: 2 ints + bool
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int() * 2;
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
@@ -1028,6 +1220,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_SendHint(string data, int playerId, string factionKey)
 	{
+		if (!IsCallerStaff())
+			return;
+
 		// Telemetry: 2 strings + int
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_String(data);
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_String(factionKey);
@@ -1077,6 +1272,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_Heal(int playerId, bool logAction, bool isVehicle)
 	{
+		if (!IsCallerStaff())
+			return;
+
 		// Telemetry: int + 2 bools
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int();
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool() * 2;
@@ -1118,6 +1316,11 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
 		LogTelemetry("RpcAsk_LogAdminAction", bytes);
 		
+		// Regular players do log actions (e.g. taking arsenal items in CRF_SCR_InventoryMenuUI), but
+		// only staff may push a log line into another player's chat.
+		if (!IsCallerStaff())
+			sendToPlayer = false;
+
 		m_RplBroadcastManager.LogAdminAction(data, playerId, sendToPlayer, level);
 	}
 	
@@ -1125,6 +1328,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_UpdateTimer(int delta)
 	{
+		if (!IsCallerStaff())
+			return;
+
 		// Telemetry: int
 		LogTelemetry("RpcAsk_UpdateTimer", COA_BandwidthTelemetryManager.EstimateSize_Int());
 		
@@ -1145,6 +1351,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_UpdateTicket(string action, FactionKey faction, int delta)
 	{
+		if (!IsCallerStaff())
+			return;
+
 		// Telemetry: 2 strings + int
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_String(action);
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_String(faction);
@@ -1164,6 +1373,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_ToggleWaveRespawn()
 	{
+		if (!IsCallerStaff())
+			return;
+
 		// Telemetry: no parameters
 		LogTelemetry("RpcAsk_ToggleWaveRespawn", 0);
 		
@@ -1175,6 +1387,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_ToggleRespawn()
 	{
+		if (!IsCallerStaff())
+			return;
+
 		// Telemetry: no parameters
 		LogTelemetry("RpcAsk_ToggleRespawn", 0);
 		
@@ -1185,6 +1400,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_SetRespawnTime(int seconds)
 	{
+		if (!IsCallerStaff())
+			return;
+
 		// Telemetry: int
 		LogTelemetry("RpcAsk_SetRespawnTime", COA_BandwidthTelemetryManager.EstimateSize_Int());
 		
@@ -1196,6 +1414,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_CleanUpBodies()
 	{
+		if (!IsCallerStaff() && !GetGame().GetPlayerManager().HasPlayerRole(GetCallerPlayerId(), EPlayerRole.GAME_MASTER))
+			return;
+
 		// Telemetry: no parameters
 		LogTelemetry("RpcAsk_CleanUpBodies", 0);
 		
@@ -1206,6 +1427,8 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_TogglePlayerLisntening(int playerId, bool input)
 	{
+		playerId = GetCallerPlayerId(); // act on the sender, never a client-supplied ID
+
 		// Telemetry: int + bool
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int();
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
@@ -1220,6 +1443,8 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_BorderKill(int playerId)
 	{
+		playerId = GetCallerPlayerId(); // act on the sender, never a client-supplied ID
+
 		// Telemetry: int + 2 bools
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_Int();
 		LogTelemetry("RpcAsk_BorderKill", bytes);
@@ -1242,6 +1467,8 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_RequestForwardDeploy(vector cursorWorldPos, string factionKey, int playerId)
 	{
+		playerId = GetCallerPlayerId(); // act on the sender, never a client-supplied ID
+
 		LogTelemetry("RpcAsk_RequestForwardDeploy", COA_BandwidthTelemetryManager.EstimateSize_Vector() + COA_BandwidthTelemetryManager.EstimateSize_String(factionKey) + COA_BandwidthTelemetryManager.EstimateSize_Int());
 		IEntity GameBorder;
 		cursorWorldPos[1] = SCR_TerrainHelper.GetTerrainY(cursorWorldPos);
@@ -1258,7 +1485,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		
 		if (!GameBorder)
 		{
-			COA_PlayerRplToOwnerManager.GetInstance().ForwardDeployRequestRejected();
+			RejectForwardDeploy();
 			return;
 		}
 		
@@ -1268,7 +1495,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		SCR_AIGroup playerGroup = groupMan.GetPlayerGroup(playerId);
 		if (!playerGroup)
 		{
-		    COA_PlayerRplToOwnerManager.GetInstance().ForwardDeployRequestRejected();
+		    RejectForwardDeploy();
 		    return;
 		}
 
@@ -1276,7 +1503,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		//here since the client-side menu option is just a UI convenience, not an authority check.
 		if (!playerGroup.IsPlayerLeader(playerId) || !m_SafestartManager || !m_SafestartManager.GetSafestartStatus())
 		{
-		    COA_PlayerRplToOwnerManager.GetInstance().ForwardDeployRequestRejected();
+		    RejectForwardDeploy();
 		    return;
 		}
 
@@ -1357,6 +1584,8 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_PlaceRallypoint(int playerId)
 	{
+		playerId = GetCallerPlayerId(); // act on the sender, never a client-supplied ID
+
 		ResourceName rallyPrefabName;
 
 		IEntity character = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
@@ -1378,8 +1607,6 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			case SCR_Enum.GetEnumName(COA_EFactions, 3): rallyPrefabName = m_Gamemode.m_rCIVILIANRallyPrefab; break;
 		}
 
-		Print(rallyPrefabName);
-		
 		Resource rallyPrefab = Resource.Load(rallyPrefabName);
 		if (!rallyPrefab)
 			return;
@@ -1407,6 +1634,15 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		IEntity rallyPoint = COA_EntityHelper.GetEntityFromRplId(rallyPointId);
 		if (!rallyPoint)
 			return;
+
+		// Anyone may destroy a rally point (COA_DestroyRallypointAction), but only by interacting
+		// with it - so the sender must actually be standing near it.
+		if (!IsCallerStaff())
+		{
+			IEntity callerEntity = GetGame().GetPlayerManager().GetPlayerControlledEntity(GetCallerPlayerId());
+			if (!callerEntity || vector.DistanceSq(callerEntity.GetOrigin(), rallyPoint.GetOrigin()) > RALLYPOINT_INTERACT_DISTANCE_SQ)
+				return;
+		}
 
 		COA_RallyPoint rallyPointComponent = COA_RallyPoint.Cast(rallyPoint);
 		if (!rallyPointComponent)

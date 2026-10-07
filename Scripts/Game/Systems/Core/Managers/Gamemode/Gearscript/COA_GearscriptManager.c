@@ -136,7 +136,7 @@ class COA_GearscriptManager : ScriptComponent
 			return;
 
 		COA_PlayerController pc = COA_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
-		COA_PlayerRplToOwnerManager rplToOwnerManager = COA_PlayerRplToOwnerManager.GetInstance();
+		COA_PlayerRplToOwnerManager rplToOwnerManager = COA_PlayerRplToOwnerManager.GetForPlayer(playerId);
 		// Cache groups manager reference - PERFORMANCE OPTIMIZATION
 		SCR_GroupsManagerComponent groupsMan = SCR_GroupsManagerComponent.GetInstance();
 

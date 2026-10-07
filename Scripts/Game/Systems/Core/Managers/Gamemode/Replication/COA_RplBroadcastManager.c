@@ -321,32 +321,52 @@ class COA_RplBroadcastManager : ScriptComponent
 		int bytes = COA_BandwidthTelemetryManager.EstimateSize_String(data);
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Int();
 		LogTelemetry("SendAdminMessage", bytes);
-		
-		#ifdef WORKBENCH
-		RpcDo_SendAdminMessage(data, playerID, ticketExists);
-		#else
-		Rpc(RpcDo_SendAdminMessage, data, playerID, ticketExists);
-		#endif
+
+		// Ticket text goes to staff only, not to every client
+		array<int> recipients = {};
+		CollectAdminRecipients(recipients);
+		foreach (int recipientId : recipients)
+		{
+			COA_PlayerRplToOwnerManager ownerManager = COA_PlayerRplToOwnerManager.GetForPlayer(recipientId);
+			if (ownerManager)
+				ownerManager.ReceiveAdminMessage(data, playerID, ticketExists);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: send the open ticket list to the requesting admin only
 	void GetOpenTickets(int playerID)
 	{
-		#ifdef WORKBENCH
-		RpcDo_GetOpenTickets(playerID, COA_AdminMenuManager.GetInstance().GetOpenTickets());
-		#else
-		Rpc(RpcDo_GetOpenTickets, playerID, COA_AdminMenuManager.GetInstance().GetOpenTickets());
-		#endif
+		COA_PlayerRplToOwnerManager ownerManager = COA_PlayerRplToOwnerManager.GetForPlayer(playerID);
+		if (ownerManager)
+			ownerManager.ReceiveOpenTickets(playerID, COA_AdminMenuManager.GetInstance().GetOpenTickets());
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: send a ticket's message history to the requesting admin only
 	void GetTicketMessages(int playerID, int ticketID)
 	{
-		#ifdef WORKBENCH
-		RpcDo_GetTicketMessages(playerID, COA_AdminMenuManager.GetInstance().GetTicketMessages(ticketID));
-		#else
-		Rpc(RpcDo_GetTicketMessages, playerID, COA_AdminMenuManager.GetInstance().GetTicketMessages(ticketID));
-		#endif
+		COA_PlayerRplToOwnerManager ownerManager = COA_PlayerRplToOwnerManager.GetForPlayer(playerID);
+		if (ownerManager)
+			ownerManager.ReceiveTicketMessages(playerID, COA_AdminMenuManager.GetInstance().GetTicketMessages(ticketID));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: collect the connected players allowed to receive admin traffic - admins and
+	//! moderators, plus optionally one extra player (e.g. the player a ticket reply is for).
+	protected void CollectAdminRecipients(notnull array<int> recipients, int extraPlayerId = -1)
+	{
+		array<int> players = {};
+		GetGame().GetPlayerManager().GetPlayers(players);
+
+		COA_PermissionManager permissionManager = COA_PermissionManager.GetInstance();
+		foreach (int playerId : players)
+		{
+			if (playerId == extraPlayerId
+				|| SCR_Global.IsAdmin(playerId)
+				|| (permissionManager && permissionManager.IsModerator(playerId)))
+				recipients.Insert(playerId);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -361,11 +381,30 @@ class COA_RplBroadcastManager : ScriptComponent
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
 		LogTelemetry("LogAdminAction", bytes);
 
-		#ifdef WORKBENCH
-		RpcDo_LogAdminAction(data, playerId, sendToPlayer, level);
-		#else
-		Rpc(RpcDo_LogAdminAction, data, playerId, sendToPlayer, level);
-		#endif
+		if (!Replication.IsServer())
+		{
+			// Unchanged legacy path for the few callers that run client-side
+			#ifdef WORKBENCH
+			RpcDo_LogAdminAction(data, playerId, sendToPlayer, level);
+			#else
+			Rpc(RpcDo_LogAdminAction, data, playerId, sendToPlayer, level);
+			#endif
+			return;
+		}
+
+		// Admin logs go to staff only (plus the affected player when sendToPlayer is set)
+		int extraPlayerId = -1;
+		if (sendToPlayer)
+			extraPlayerId = playerId;
+
+		array<int> recipients = {};
+		CollectAdminRecipients(recipients, extraPlayerId);
+		foreach (int recipientId : recipients)
+		{
+			COA_PlayerRplToOwnerManager ownerManager = COA_PlayerRplToOwnerManager.GetForPlayer(recipientId);
+			if (ownerManager)
+				ownerManager.ReceiveAdminLog(data, playerId, sendToPlayer, level);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -376,12 +415,20 @@ class COA_RplBroadcastManager : ScriptComponent
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Int() * 2;
 		bytes += COA_BandwidthTelemetryManager.EstimateSize_Bool();
 		LogTelemetry("ReplyAdminMessage", bytes);
-		
-		#ifdef WORKBENCH
-		RpcDo_ReplyAdminMessage(data, playerId, adminID, logAction);
-		#else
-		Rpc(RpcDo_ReplyAdminMessage, data, playerId, adminID, logAction);
-		#endif
+
+		// Log once here on the server rather than having every recipient re-log it
+		if (logAction)
+			LogAdminAction(string.Format("Reply to %1: %2", GetGame().GetPlayerManager().GetPlayerName(playerId), data), playerId, false, COA_EAdminLogLevel.Low);
+
+		// The reply goes to staff and the player it is for, not to every client
+		array<int> recipients = {};
+		CollectAdminRecipients(recipients, playerId);
+		foreach (int recipientId : recipients)
+		{
+			COA_PlayerRplToOwnerManager ownerManager = COA_PlayerRplToOwnerManager.GetForPlayer(recipientId);
+			if (ownerManager)
+				ownerManager.ReceiveAdminReply(data, playerId, adminID);
+		}
 	}
 
 	

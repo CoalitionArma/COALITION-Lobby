@@ -20,7 +20,8 @@ class COA_PreviewMenu: ChimeraMenuBase
 	//--- Data Storage ---
 	protected bool m_bMapOpened = false;                      // Tracks whether OpenMap has been queued to prevent duplicate calls
 	protected bool m_bFocusOnDescription = false;             // Tracks which panel controller focus should jump to next
-	
+	protected string m_sPlayerListSignature;                  // Last player list state, so the list is only rebuilt when it changes
+
 	//--- MENU LIFECYCLE METHODS ---
 	
 	/**
@@ -327,9 +328,9 @@ class COA_PreviewMenu: ChimeraMenuBase
 		// Update time display
 		UpdateTimeDisplay();
 		
-		// Update player list
-		UpdatePlayerList();
-		
+		// Update player list (only rebuilt when something it shows has changed)
+		RefreshPlayerListIfChanged();
+
 		// Check for admin privileges
 		CheckAdminPrivileges();
 		
@@ -410,6 +411,67 @@ class COA_PreviewMenu: ChimeraMenuBase
 		}
 	}
 	
+	/**
+	 * Called every frame from OnMenuUpdate. UpdatePlayerList() re-creates every row's layout, so it
+	 * is only called when something the rows show has changed - the same approach as
+	 * COA_SlottingMenu.UpdatePlayerLists(). Event-driven refreshes (OnPlayerInfoUpdated,
+	 * OnPlayerRosterChanged) still call UpdatePlayerList() directly.
+	 */
+	protected void RefreshPlayerListIfChanged()
+	{
+		string signature = BuildPlayerListSignature();
+		if (signature == m_sPlayerListSignature)
+			return;
+
+		m_sPlayerListSignature = signature;
+		UpdatePlayerList();
+	}
+
+	/**
+	 * Captures everything a player list row displays (order, name, status color, talking)
+	 * @return Signature string of the current player list state
+	 */
+	protected string BuildPlayerListSignature()
+	{
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		COA_PermissionManager permissionManager = COA_PermissionManager.GetInstance();
+
+		array<int> playerIds = {};
+		playerManager.GetAllPlayers(playerIds);
+
+		string signature;
+		foreach (int playerId : playerIds)
+		{
+			if (!playerManager.IsPlayerConnected(playerId))
+				continue;
+
+			bool isModerator = false;
+			bool isDonator = false;
+			if (permissionManager)
+			{
+				isModerator = permissionManager.IsModerator(playerId);
+				isDonator = permissionManager.IsDonator(playerId);
+			}
+
+			signature += string.Format("|%1:%2:%3:%4:%5:%6", playerId, playerManager.GetPlayerName(playerId),
+				SCR_Global.IsAdmin(playerId), isModerator, isDonator, IsPlayerShownTalking(playerId));
+		}
+
+		return signature;
+	}
+
+	/**
+	 * @param playerId - ID of the player
+	 * @return True if the player list shows this player as talking (mirrors UpdatePlayerList)
+	 */
+	protected bool IsPlayerShownTalking(int playerId)
+	{
+		if (!CVON_VONGameModeComponent.GetInstance())
+			return m_MenuManager && m_MenuManager.m_aPlayersTalking.Contains(playerId);
+
+		return playerId == SCR_PlayerController.GetLocalPlayerId() && m_VONController && m_VONController.m_bIsBroadcasting;
+	}
+
 	void SetTalking() {
 		ImageWidget wid = ImageWidget.Cast(m_wRoot.FindAnyWidget("VONSpeaker"));
 		

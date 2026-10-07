@@ -1648,7 +1648,7 @@ class COA_SlottingMenu: ChimeraMenuBase
 		
 		// Update player count text
 		int playerCount = GetGame().GetPlayerManager().GetPlayerCount();
-		TextWidget.Cast(m_wRoot.FindAnyWidget("PlayersText")).SetText("Players: " + playerCount);
+		TextWidget.Cast(GetCachedWidget("PlayersText")).SetText("Players: " + playerCount);
 		
 		// Update faction ratio calculation
 		UpdateRatioCalculation(playerCount);
@@ -1729,13 +1729,42 @@ class COA_SlottingMenu: ChimeraMenuBase
 		else
 			hourString = hours.ToString();
 		
-		TextWidget.Cast(m_wRoot.FindAnyWidget("TimeText")).SetText("Time: " + hourString + ":" + minuteString);
+		TextWidget.Cast(GetCachedWidget("TimeText")).SetText("Time: " + hourString + ":" + minuteString);
 	}
 	
 	/**
 	 * Updates player lists in the UI
 	 * Shows admins first, then regular players
 	 */
+	// Widgets looked up by name from OnMenuUpdate, cached because FindAnyWidget searches the whole tree
+	protected ref map<string, Widget> m_mCachedWidgets = new map<string, Widget>();
+	protected Widget m_wCachedWidgetsRoot;
+
+	/**
+	 * FindAnyWidget with a per-menu cache. OnMenuUpdate looks the same widgets up every frame, and
+	 * each FindAnyWidget call is a recursive search of the whole menu layout.
+	 * @param name - Widget name
+	 * @return The widget, or null if it does not exist
+	 */
+	protected Widget GetCachedWidget(string name)
+	{
+		if (m_wCachedWidgetsRoot != m_wRoot)
+		{
+			m_mCachedWidgets.Clear();
+			m_wCachedWidgetsRoot = m_wRoot;
+		}
+
+		Widget widget = m_mCachedWidgets.Get(name);
+		if (widget)
+			return widget;
+
+		widget = m_wRoot.FindAnyWidget(name);
+		if (widget)
+			m_mCachedWidgets.Set(name, widget);
+
+		return widget;
+	}
+
 	private void UpdatePlayerLists()
 	{
 		// Get all player IDs
@@ -1901,8 +1930,8 @@ class COA_SlottingMenu: ChimeraMenuBase
 	private void UpdateRatioCalculation(int playerCount)
 	{
 		// Get ratio values from UI
-		int leftRatio = EditBoxWidget.Cast(m_wRoot.FindAnyWidget("RatioBox1")).GetText().ToInt();
-		int rightRatio = EditBoxWidget.Cast(m_wRoot.FindAnyWidget("RatioBox2")).GetText().ToInt();
+		int leftRatio = EditBoxWidget.Cast(GetCachedWidget("RatioBox1")).GetText().ToInt();
+		int rightRatio = EditBoxWidget.Cast(GetCachedWidget("RatioBox2")).GetText().ToInt();
 		
 		// Avoid division by zero
 		if(leftRatio + rightRatio == 0)
@@ -1912,7 +1941,7 @@ class COA_SlottingMenu: ChimeraMenuBase
 		int leftPlayers = Math.Round(playerCount / (leftRatio + rightRatio) * leftRatio);
 		int rightPlayers = Math.Round(playerCount / (leftRatio + rightRatio) * rightRatio);
 		
-		TextWidget.Cast(m_wRoot.FindAnyWidget("Final")).SetText(leftPlayers.ToString() + " : " + rightPlayers.ToString());
+		TextWidget.Cast(GetCachedWidget("Final")).SetText(leftPlayers.ToString() + " : " + rightPlayers.ToString());
 	}
 	
 	/**
@@ -1925,37 +1954,37 @@ class COA_SlottingMenu: ChimeraMenuBase
 		// Update BLUFOR slot count if faction is valid
 		if(slottingManager.IsFactionValid("BLUFOR"))
 		{
-			TextWidget.Cast(m_wRoot.FindAnyWidget("SlotsBlufor")).SetText(m_iTakenBluforSlots.ToString() + "/" + m_iBluforSlots);
-			ImageWidget.Cast(m_wRoot.FindAnyWidget("BluforFactionLockBG")).SetColor(Color.FromRGBA(63, 63, 63, 0));
-			ImageWidget.Cast(m_wRoot.FindAnyWidget("BluforFactionLock")).SetColor(Color.FromRGBA(255, 255, 255, 0));
-			ButtonWidget.Cast(m_wRoot.FindAnyWidget("ButtonBlufor")).SetEnabled(true);
+			TextWidget.Cast(GetCachedWidget("SlotsBlufor")).SetText(m_iTakenBluforSlots.ToString() + "/" + m_iBluforSlots);
+			ImageWidget.Cast(GetCachedWidget("BluforFactionLockBG")).SetColor(Color.FromRGBA(63, 63, 63, 0));
+			ImageWidget.Cast(GetCachedWidget("BluforFactionLock")).SetColor(Color.FromRGBA(255, 255, 255, 0));
+			ButtonWidget.Cast(GetCachedWidget("ButtonBlufor")).SetEnabled(true);
 		}
 
 		// Update OPFOR slot count if faction is valid
 		if(slottingManager.IsFactionValid("OPFOR"))
 		{
-			TextWidget.Cast(m_wRoot.FindAnyWidget("SlotsOpfor")).SetText(m_iTakenOpforSlots.ToString() + "/" + m_iOpforSlots);
-			ImageWidget.Cast(m_wRoot.FindAnyWidget("OpforFactionLockBG")).SetColor(Color.FromRGBA(63, 63, 63, 0));
-			ImageWidget.Cast(m_wRoot.FindAnyWidget("OpforFactionLock")).SetColor(Color.FromRGBA(255, 255, 255, 0));
-			ButtonWidget.Cast(m_wRoot.FindAnyWidget("ButtonOpfor")).SetEnabled(true);
+			TextWidget.Cast(GetCachedWidget("SlotsOpfor")).SetText(m_iTakenOpforSlots.ToString() + "/" + m_iOpforSlots);
+			ImageWidget.Cast(GetCachedWidget("OpforFactionLockBG")).SetColor(Color.FromRGBA(63, 63, 63, 0));
+			ImageWidget.Cast(GetCachedWidget("OpforFactionLock")).SetColor(Color.FromRGBA(255, 255, 255, 0));
+			ButtonWidget.Cast(GetCachedWidget("ButtonOpfor")).SetEnabled(true);
 		}
 
 		// Update INDFOR slot count if faction is valid
 		if(slottingManager.IsFactionValid("INDFOR"))
 		{
-			TextWidget.Cast(m_wRoot.FindAnyWidget("SlotsIndfor")).SetText(m_iTakenIndforSlots.ToString() + "/" + m_iIndforSlots);
-			ImageWidget.Cast(m_wRoot.FindAnyWidget("IndforFactionLockBG")).SetColor(Color.FromRGBA(63, 63, 63, 0));
-			ImageWidget.Cast(m_wRoot.FindAnyWidget("IndforFactionLock")).SetColor(Color.FromRGBA(255, 255, 255, 0));
-			ButtonWidget.Cast(m_wRoot.FindAnyWidget("ButtonIndfor")).SetEnabled(true);
+			TextWidget.Cast(GetCachedWidget("SlotsIndfor")).SetText(m_iTakenIndforSlots.ToString() + "/" + m_iIndforSlots);
+			ImageWidget.Cast(GetCachedWidget("IndforFactionLockBG")).SetColor(Color.FromRGBA(63, 63, 63, 0));
+			ImageWidget.Cast(GetCachedWidget("IndforFactionLock")).SetColor(Color.FromRGBA(255, 255, 255, 0));
+			ButtonWidget.Cast(GetCachedWidget("ButtonIndfor")).SetEnabled(true);
 		}
 
 		// Update CIV slot count if faction is valid
 		if(slottingManager.IsFactionValid("CIV"))
 		{
-			TextWidget.Cast(m_wRoot.FindAnyWidget("SlotsCiv")).SetText(m_iTakenCivSlots.ToString() + "/" + m_iCivSlots);
-			ImageWidget.Cast(m_wRoot.FindAnyWidget("CivFactionLockBG")).SetColor(Color.FromRGBA(63, 63, 63, 0));
-			ImageWidget.Cast(m_wRoot.FindAnyWidget("CivFactionLock")).SetColor(Color.FromRGBA(255, 255, 255, 0));
-			ButtonWidget.Cast(m_wRoot.FindAnyWidget("ButtonCiv")).SetEnabled(true);
+			TextWidget.Cast(GetCachedWidget("SlotsCiv")).SetText(m_iTakenCivSlots.ToString() + "/" + m_iCivSlots);
+			ImageWidget.Cast(GetCachedWidget("CivFactionLockBG")).SetColor(Color.FromRGBA(63, 63, 63, 0));
+			ImageWidget.Cast(GetCachedWidget("CivFactionLock")).SetColor(Color.FromRGBA(255, 255, 255, 0));
+			ButtonWidget.Cast(GetCachedWidget("ButtonCiv")).SetEnabled(true);
 		}
 	}
 	
@@ -1981,7 +2010,7 @@ class COA_SlottingMenu: ChimeraMenuBase
 		else
 			phaseText = "Everyone";
 			
-		TextWidget.Cast(m_wRoot.FindAnyWidget("CurrentSlotPhase")).SetText(phaseText);
+		TextWidget.Cast(GetCachedWidget("CurrentSlotPhase")).SetText(phaseText);
 	}
 	
 	/**
@@ -1993,19 +2022,19 @@ class COA_SlottingMenu: ChimeraMenuBase
 		// Only show admin controls for admins
 		if(SCR_Global.IsAdmin(SCR_PlayerController.GetLocalPlayerId()))
 		{
-			ButtonWidget previewButton = ButtonWidget.Cast(m_wRoot.FindAnyWidget("PreviewButton"));
-			ButtonWidget gameButton = ButtonWidget.Cast(m_wRoot.FindAnyWidget("GameButton"));
-			ButtonWidget aarButton = ButtonWidget.Cast(m_wRoot.FindAnyWidget("AARButton"));
-			ButtonWidget advanceButton = ButtonWidget.Cast(m_wRoot.FindAnyWidget("Advance"));
+			ButtonWidget previewButton = ButtonWidget.Cast(GetCachedWidget("PreviewButton"));
+			ButtonWidget gameButton = ButtonWidget.Cast(GetCachedWidget("GameButton"));
+			ButtonWidget aarButton = ButtonWidget.Cast(GetCachedWidget("AARButton"));
+			ButtonWidget advanceButton = ButtonWidget.Cast(GetCachedWidget("Advance"));
 			
 			// Enable admin buttons
 			gameButton.SetEnabled(true);
 			advanceButton.SetEnabled(true);
 			
 			// Show admin-only UI sections
-			m_wRoot.FindAnyWidget("SlottingPhases").SetOpacity(1);
-			FrameWidget.Cast(m_wRoot.FindAnyWidget("AdvanceFrame")).SetOpacity(1);
-			m_wRoot.FindAnyWidget("TabButtonUnslotted").SetVisible(true);
+			GetCachedWidget("SlottingPhases").SetOpacity(1);
+			FrameWidget.Cast(GetCachedWidget("AdvanceFrame")).SetOpacity(1);
+			GetCachedWidget("TabButtonUnslotted").SetVisible(true);
 		}
 	}
 	

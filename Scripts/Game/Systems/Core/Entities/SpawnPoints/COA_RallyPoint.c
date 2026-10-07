@@ -72,8 +72,9 @@ class COA_RallyPoint: COA_StaticSpawnPoint
 			if (!rallyPoint)
 				continue;
 
+			// Skip other groups' rally points rather than stopping the search at the first one
 			if (rallyPoint.m_group != m_group)
-				return;
+				continue;
 
 			rallyPoint.DestroyRallPoint();
 		}
