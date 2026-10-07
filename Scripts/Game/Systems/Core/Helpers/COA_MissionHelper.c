@@ -21,8 +21,12 @@ class COA_MissionHelper {
 			
 				if (spawnPointData.GetSpawnPointEntity() != RplId.Invalid())
 				{
-					COA_EntityHelper.GetEntityFromRplId(spawnPointData.GetSpawnPointEntity()).GetWorldTransform(spawnPointLocation);
-					registeredPosition[i] = spawnPointLocation[3];
+					IEntity spawnPointEntity = COA_EntityHelper.GetEntityFromRplId(spawnPointData.GetSpawnPointEntity());
+					if (spawnPointEntity)
+					{
+						spawnPointEntity.GetWorldTransform(spawnPointLocation);
+						registeredPosition[i] = spawnPointLocation[3];
+					}
 				};
 			};
 		};
@@ -46,12 +50,11 @@ class COA_MissionHelper {
 			count++;
 		}
 
-		if (count == 1)
-			return pts[0];   // only one point
-
 		if (count == 0)
 			return "0 0 0";   // no data
 
+		// pts is indexed by faction (BLUFOR, OPFOR, INDFOR, CIV), so a single flag can be in any
+		// slot - averaging handles one point correctly (sum / 1) and keeps the same height offset.
 		vector center = sum/count;
 		center[1] = center[1] + 225;
 		
