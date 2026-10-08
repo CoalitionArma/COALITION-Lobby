@@ -2,6 +2,9 @@
 //! Administrative menu for server management
 class COA_AdminMenu : ChimeraMenuBase
 {
+	// Hover/press feedback and entrance animation - see COA_UIPolish
+	protected ref COA_MenuPolish m_UIPolish;
+
 	//-----------------------------------------------------------------------------
 	// UI Components
 	//-----------------------------------------------------------------------------
@@ -109,6 +112,9 @@ class COA_AdminMenu : ChimeraMenuBase
 		
 		// Delay opening of initial menu
 		GetGame().GetCallqueue().Call(DelayedMenuInitialization);
+
+		// Hover feedback on buttons without their own, and a quick staggered fade-in (COA_UIPolish)
+		m_UIPolish = new COA_MenuPolish(GetRootWidget(), true);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -242,6 +248,12 @@ class COA_AdminMenu : ChimeraMenuBase
 	//! Clean up when menu is closed
 	override void OnMenuClose()
 	{
+		if (m_UIPolish)
+		{
+			m_UIPolish.Cleanup();
+			m_UIPolish = null;
+		}
+
 		super.OnMenuClose();
 
 		SCR_UISoundEntity.SoundEvent(SCR_SoundEvent.SOUND_FE_HUD_PAUSE_MENU_CLOSE);
@@ -717,6 +729,9 @@ class COA_AdminMenu : ChimeraMenuBase
 	float m_fUpdateBuffer = 0;
 	override void OnMenuUpdate(float tDelta)
 	{
+		if (m_UIPolish)
+			m_UIPolish.Update(tDelta);
+
 		super.OnMenuUpdate(tDelta);
 
 		if (m_ChatPanel)

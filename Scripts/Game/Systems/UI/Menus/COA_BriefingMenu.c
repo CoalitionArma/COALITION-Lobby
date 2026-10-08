@@ -1,5 +1,8 @@
 class COA_PreviewMenu: ChimeraMenuBase
 {
+	// Hover/press feedback and entrance animation - see COA_UIPolish
+	protected ref COA_MenuPolish m_UIPolish;
+
 	//--- UI Widgets ---
 	protected Widget m_wRoot;                                  // Root widget of the menu
 	protected ImageWidget m_wPreview;                         // Preview phase indicator
@@ -84,6 +87,9 @@ class COA_PreviewMenu: ChimeraMenuBase
 		// Give a widget default focus so controller D-pad/stick navigation has somewhere to start
 		m_bFocusOnDescription = false;
 		SetupDefaultFocus();
+
+		// Hover feedback on buttons without their own, and a quick staggered fade-in (COA_UIPolish)
+		m_UIPolish = new COA_MenuPolish(GetRootWidget(), true);
 	}
 	
 	/**
@@ -306,6 +312,9 @@ class COA_PreviewMenu: ChimeraMenuBase
 	 */
 	override void OnMenuUpdate(float tDelta)
 	{
+		if (m_UIPolish)
+			m_UIPolish.Update(tDelta);
+
 		super.OnMenuUpdate(tDelta);
 
 		// Retry opening the map if the entity was not yet available when the menu opened (race condition on connect)
@@ -542,6 +551,12 @@ class COA_PreviewMenu: ChimeraMenuBase
 	 */
 	override void OnMenuClose()
 	{
+		if (m_UIPolish)
+		{
+			m_UIPolish.Cleanup();
+			m_UIPolish = null;
+		}
+
 		super.OnMenuClose();
 
 		// Reset map opened state so the map is re-opened if the menu is reopened

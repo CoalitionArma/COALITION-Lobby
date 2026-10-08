@@ -753,9 +753,14 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		// Telemetry: 2 ints
 		LogTelemetry("RpcAsk_JoinChannel", COA_BandwidthTelemetryManager.EstimateSize_Int() * 2);
 
-		// A player may join a channel themselves; adding someone else is only allowed for the
-		// channel's creator (accepting a join request, COA_MenuManager.Accept) or staff.
-		if (!IsCallerSelfOrStaff(playerId) && GetChannelCreatorId(channel) != GetCallerPlayerId())
+		// A player may join Deafen/Global, a channel with no creator (e.g. AAR group channels) or
+		// their own channel directly. Player-created channels otherwise go through a join request,
+		// which the channel's creator accepts by adding the requester (COA_MenuManager.Accept).
+		int callerId = GetCallerPlayerId();
+		int creatorId = GetChannelCreatorId(channel);
+		bool selfJoinAllowed = playerId == callerId && (channel <= 1 || creatorId <= 0 || creatorId == callerId);
+		bool creatorAccepting = creatorId > 0 && creatorId == callerId;
+		if (!selfJoinAllowed && !creatorAccepting && !IsCallerStaff())
 			return;
 
 		m_MenuManager.AddPlayerToChannel(playerId, channel, false);

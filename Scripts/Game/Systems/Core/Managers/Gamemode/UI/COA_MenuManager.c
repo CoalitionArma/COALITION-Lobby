@@ -221,6 +221,55 @@ class COA_MenuManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: replace every custom channel at once - e.g. the per-group channels the AAR builds.
+	//! Deafen and Global are always kept first; anyone not listed in a channel falls back to Global.
+	//! One replication update for the whole set, instead of one per AddPlayerToChannel call.
+	//! \param[in] channelNames display names, parallel to channelPlayers
+	//! \param[in] channelPlayers player IDs for each channel
+	void SetAllChannels(notnull array<string> channelNames, notnull array<ref array<int>> channelPlayers)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		m_aVONChannels.Clear();
+		m_aVONChannels.Insert("Deafen" + CHANNEL_SEPARATOR);
+		m_aVONChannels.Insert("Global" + CHANNEL_SEPARATOR);
+
+		int count = channelNames.Count();
+		if (channelPlayers.Count() < count)
+			count = channelPlayers.Count();
+
+		for (int i = 0; i < count; i++)
+		{
+			array<string> players = {};
+			foreach (int playerId : channelPlayers[i])
+				players.Insert(playerId.ToString());
+
+			if (players.IsEmpty())
+				continue;
+
+			m_aVONChannels.Insert(SanitizeChannelName(channelNames[i]) + CHANNEL_SEPARATOR + SCR_StringHelper.Join(PLAYER_SEPARATOR, players));
+		}
+
+		m_iChannelChanges++;
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Strips characters that would break the "Name|id,id" channel format, or the "(PlayerID)"
+	//! creator suffix that player-created channels use for join requests.
+	static string SanitizeChannelName(string name)
+	{
+		string sanitized = name;
+		sanitized.Replace(CHANNEL_SEPARATOR, "/");
+		sanitized.Replace(PLAYER_SEPARATOR, " ");
+		sanitized.Replace("(", "[");
+		sanitized.Replace(")", "]");
+		sanitized.TrimInPlace();
+		return sanitized;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	int GetChannel(int playerId)
 	{
 		int channelId;

@@ -4,6 +4,9 @@
  */
 class COA_RespawnMenu: ChimeraMenuBase
 {
+	// Hover/press feedback and entrance animation - see COA_UIPolish
+	protected ref COA_MenuPolish m_UIPolish;
+
 	// UI components
 	protected Widget m_wRoot;
 	protected SCR_MapEntity m_MapEntity;
@@ -50,6 +53,9 @@ class COA_RespawnMenu: ChimeraMenuBase
 		
 		// Set up chat panel
 		InitializeChatPanel();
+
+		// Hover feedback on buttons without their own, and a quick staggered fade-in (COA_UIPolish)
+		m_UIPolish = new COA_MenuPolish(GetRootWidget(), true);
 	}
 	
 	/**
@@ -179,6 +185,9 @@ class COA_RespawnMenu: ChimeraMenuBase
 	 */
 	override void OnMenuUpdate(float tDelta)
 	{
+		if (m_UIPolish)
+			m_UIPolish.Update(tDelta);
+
 		super.OnMenuUpdate(tDelta);
 
 		if (m_MapEntity)
@@ -192,6 +201,12 @@ class COA_RespawnMenu: ChimeraMenuBase
 	 */
 	override void OnMenuClose()
 	{
+		if (m_UIPolish)
+		{
+			m_UIPolish.Cleanup();
+			m_UIPolish = null;
+		}
+
 		super.OnMenuClose();
 		
 		COA_RespawnManager.GetInstance().GetOnSpawnPointsUpdated().Remove(OnSpawnpointStateChanged);

@@ -23,17 +23,34 @@ modded class SCR_VONController
 			m_PlayerController = SCR_PlayerController.Cast(GetGame().GetPlayerController());
 	}
     
+	// Last seen value of IsAARVoiceActive(), so the spectator cache is rebuilt when the AAR starts
+	protected bool m_bLastAARVoiceActive;
+
+	//------------------------------------------------------------------------------------------------
+	//! During the AAR (once the outro has finished) voice is channel-based for everyone: every player
+	//! is treated like a spectator, so only players in the same COA_MenuManager channel hear each
+	//! other - at full volume and in the same language - and in-world proximity voice is off.
+	bool IsAARVoiceActive()
+	{
+		if (!m_Gamemode)
+			m_Gamemode = COA_Gamemode.GetInstance();
+
+		return m_Gamemode && m_Gamemode.m_GamemodeState == COA_EGamemodeState.AAR && !m_Gamemode.m_bIsInEndCredits;
+	}
+
 	//------------------------------------------------------------------------------------------------
     //! Only update when something actually changes
     void UpdateSpectatorChecksIfNeeded()
     {
         if (!m_CRFMenuManager)
             return;
-            
-        // Check if channels have changed
-        if (m_iLastChannelChanges != m_CRFMenuManager.m_iChannelChanges)
+
+        // Check if channels have changed, or the AAR voice mode switched on/off
+        bool aarVoiceActive = IsAARVoiceActive();
+        if (m_iLastChannelChanges != m_CRFMenuManager.m_iChannelChanges || aarVoiceActive != m_bLastAARVoiceActive)
         {
             m_iLastChannelChanges = m_CRFMenuManager.m_iChannelChanges;
+            m_bLastAARVoiceActive = aarVoiceActive;
             UpdateSpectatorChecks(); // Only update when channels change
         }
     }
@@ -84,6 +101,10 @@ modded class SCR_VONController
 		if (playerId == 0)
 			return false;
 
+		// Everyone talks through channels during the AAR (see IsAARVoiceActive)
+		if (IsAARVoiceActive())
+			return true;
+
 		if (!m_FactionManager || !m_FactionManager.GetPlayerFaction(playerId))
 			return false;
 		
@@ -116,6 +137,10 @@ modded class SCR_VONController
 	//------------------------------------------------------------------------------------------------
 	override bool IsSameLanguage(int localPlayerId, int transmissionPlayerId)
 	{
+		// The mission is over - everyone understands everyone in the AAR
+		if (IsAARVoiceActive())
+			return true;
+
 		Faction localFaction = m_FactionManager.GetPlayerFaction(localPlayerId);
 		Faction transmissionFaction = m_FactionManager.GetPlayerFaction(transmissionPlayerId);
 
@@ -531,7 +556,15 @@ modded class SCR_VONController
 			outRight = 1;
 			return;
 		}
-		
+
+		// No in-world proximity voice during the AAR - only players in your channel are heard
+		if (IsAARVoiceActive())
+		{
+			outLeft = 0;
+			outRight = 0;
+			return;
+		}
+
 		super.ComputeStereoLR(listener, sourcePos, volume_m, playerId, outBehindIntensity, outLeft, outRight, silencedDecibels, rearPanBoost, rearShadow, elevNarrow, bleed, normalizePeak);
 	}
 }

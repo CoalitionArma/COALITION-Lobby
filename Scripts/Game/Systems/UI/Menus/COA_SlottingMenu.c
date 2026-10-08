@@ -1,5 +1,8 @@
 class COA_SlottingMenu: ChimeraMenuBase
 {
+	// Hover/press feedback and entrance animation - see COA_UIPolish
+	protected ref COA_MenuPolish m_UIPolish;
+
 	//---------------------------------------------------------------------
 	// UI Widgets
 	//---------------------------------------------------------------------
@@ -129,6 +132,9 @@ class COA_SlottingMenu: ChimeraMenuBase
 
 		// Give a widget default focus so controller D-pad/stick navigation has somewhere to start
 		SetupDefaultFocus();
+
+		// Hover feedback on buttons without their own, and a quick staggered fade-in (COA_UIPolish)
+		m_UIPolish = new COA_MenuPolish(GetRootWidget(), true);
 	}
 	
 	/**
@@ -658,6 +664,12 @@ class COA_SlottingMenu: ChimeraMenuBase
 	 */
 	override void OnMenuClose()
 	{
+		if (m_UIPolish)
+		{
+			m_UIPolish.Cleanup();
+			m_UIPolish = null;
+		}
+
 		super.OnMenuClose();
 		
 		// Unregister from slot updates to prevent memory leaks
@@ -1634,6 +1646,9 @@ class COA_SlottingMenu: ChimeraMenuBase
 	 */
 	override void OnMenuUpdate(float tDelta)
 	{
+		if (m_UIPolish)
+			m_UIPolish.Update(tDelta);
+
 		super.OnMenuUpdate(tDelta);
 		
 		// Update time display

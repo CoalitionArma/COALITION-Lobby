@@ -73,7 +73,7 @@ FrameWidgetClass {
     OffsetBottom -396.597
    }
    "Is Visible" 0
-   Text "Please wait for server restart for the next mission!"
+   Text "Now transitioning into AAR"
    "Font Size" 30
    "Horizontal Alignment" Center
    "Vertical Alignment" Center

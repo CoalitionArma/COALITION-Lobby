@@ -6,6 +6,10 @@ class COA_Outro: ChimeraMenuBase
 	protected float               m_fStatsFadeElapsed;
 	protected bool                m_bFadingStats;
 
+	// The outro reopens itself when closed (e.g. by a stray menu close) so it can't be skipped.
+	// Set this before closing to hand over to another menu instead, such as the AAR screen.
+	protected bool                m_bAllowClose;
+
 	string SanitizeMissionName(string fullName)
 	{
 	    array<string> parts = {};
@@ -43,7 +47,10 @@ class COA_Outro: ChimeraMenuBase
 	{
 		AudioSystem.SetMasterVolume(AudioSystem.SFX, 100);
 		GetGame().GetInputManager().RemoveActionListener("MenuBack", EActionTrigger.DOWN, Action_Exit);
-		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.COA_Outro);
+		GetGame().GetCallqueue().Remove(SubTitle);
+
+		if (!m_bAllowClose)
+			GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.COA_Outro);
 	}
 	
 	void SubTitle()

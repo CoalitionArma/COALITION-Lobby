@@ -13,6 +13,9 @@
 //! confirmed working in COA_GroupNamingDialog.layout's admin-menu-derived structure.
 class COA_GroupNamingDialog : ChimeraMenuBase
 {
+	// Hover/press feedback and entrance animation - see COA_UIPolish
+	protected ref COA_MenuPolish m_UIPolish;
+
 	protected Widget m_wRoot;
 	protected EditBoxWidget m_wNameBox;
 	protected RplId m_GroupId;
@@ -45,6 +48,9 @@ class COA_GroupNamingDialog : ChimeraMenuBase
 		SCR_ButtonTextComponent cancelButton = SCR_ButtonTextComponent.GetButtonText("Cancel", m_wRoot);
 		if (cancelButton)
 			cancelButton.m_OnClicked.Insert(OnCancel);
+
+		// Hover feedback on buttons without their own, and a quick staggered fade-in (COA_UIPolish)
+		m_UIPolish = new COA_MenuPolish(GetRootWidget(), true);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -65,5 +71,26 @@ class COA_GroupNamingDialog : ChimeraMenuBase
 	protected void OnCancel()
 	{
 		Close();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnMenuUpdate(float tDelta)
+	{
+		super.OnMenuUpdate(tDelta);
+
+		if (m_UIPolish)
+			m_UIPolish.Update(tDelta);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnMenuClose()
+	{
+		super.OnMenuClose();
+
+		if (m_UIPolish)
+		{
+			m_UIPolish.Cleanup();
+			m_UIPolish = null;
+		}
 	}
 };

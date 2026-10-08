@@ -182,6 +182,7 @@ modded enum ChimeraMenuPreset : ScriptMenuPresetEnum
 	COA_CharacterLoading,
 	COA_Outro,
 	COA_GroupNamingDialog,
+	COA_AARMenu,
 }
 
 //------------------------------------------------------------------------------------

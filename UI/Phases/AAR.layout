@@ -29,10 +29,8 @@ FrameWidgetClass {
       HorizontalAlign 3
       VerticalAlign 3
      }
-     Texture "{F6E8F926B986C424}UI/Textures/InventoryIcons/InventoryBackground_2.edds"
+     Color 0.044 0.048 0.062 0.94
      Size 1920 1080
-     Tiling None
-     "Blend Mode" Opaque
     }
     PanelWidgetClass "{631F7C6DE6B5229C}" {
      Name "PlayerBorder"
@@ -41,7 +39,7 @@ FrameWidgetClass {
       VerticalAlign 3
      }
      "Z Order" 1
-     Color 0 0.584 1 1
+     Color 0.591 0.591 0.591 1
      style outline_4px
     }
     ScrollLayoutWidgetClass "{56691148E692435A}" {
@@ -62,21 +60,39 @@ FrameWidgetClass {
     }
    }
   }
-  TextWidgetClass "{631F7C6DE6B5229E}" {
-   Name "PlayerListText"
-   Slot FrameWidgetSlot "{630A25D3C2DA91C1}" {
+  ImageWidgetClass "{6A4A520000000A09}" {
+   Name "PlayerListTextBG"
+   Slot FrameWidgetSlot "{6A4A520000000A0A}" {
     Anchor 1 0 1 1
     PositionX -209.28
     OffsetLeft -209.28
     PositionY 263.52
     OffsetTop 263.52
-    SizeX 99.84
-    OffsetRight 109.44
+    SizeX 207.36
+    OffsetRight 1.92
+    SizeY -1049.76
+    OffsetBottom 786.24
+   }
+   "Z Order" 9
+   Color 0.044 0.048 0.062 0.96
+  }
+  TextWidgetClass "{631F7C6DE6B5229E}" {
+   Name "PlayerListText"
+   Slot FrameWidgetSlot "{630A25D3C2DA91C1}" {
+    Anchor 1 0 1 1
+    PositionX -203.28
+    OffsetLeft -203.28
+    PositionY 263.52
+    OffsetTop 263.52
+    SizeX 201.36
+    OffsetRight 1.92
     SizeY -1049.76
     OffsetBottom 786.24
    }
    "Z Order" 10
-   Text "Players"
+   Text "Voice Channels"
+   "Font Size" 24
+   "Vertical Alignment" Center
   }
   ImageWidgetClass "{631F7C6DE6B5BCE6}" {
    Name "HUDBackground"
@@ -123,7 +139,7 @@ FrameWidgetClass {
       OffsetBottom 14.519
      }
      "Z Order" 1
-     Color 0.195 0.012 0.012 1
+     Color 0.044 0.048 0.062 0.94
      Size 512 512
      Mask "{E12BB5C5BD00269E}UI/Textures/Common/gradientTexture_Dither_right_512.edds"
      "Transition width" 1
@@ -148,6 +164,45 @@ FrameWidgetClass {
      "Font Size" 100
      "Vertical Alignment" Center
     }
+    TextWidgetClass "{6A4A520000000A01}" {
+     Name "ResultText"
+     Slot FrameWidgetSlot "{6A4A520000000A02}" {
+      Anchor 1 0 1 0
+      PositionX -920
+      OffsetLeft -920
+      PositionY 10
+      OffsetTop 10
+      SizeX 900
+      OffsetRight 20
+      SizeY 52
+      OffsetBottom -62
+     }
+     "Z Order" 2
+     Text ""
+     "Font Size" 44
+     "Horizontal Alignment" Right
+     "Vertical Alignment" Center
+    }
+    TextWidgetClass "{6A4A520000000A03}" {
+     Name "LinkText"
+     Slot FrameWidgetSlot "{6A4A520000000A04}" {
+      Anchor 1 0 1 0
+      PositionX -920
+      OffsetLeft -920
+      PositionY 64
+      OffsetTop 64
+      SizeX 900
+      OffsetRight 20
+      SizeY 36
+      OffsetBottom -100
+     }
+     "Z Order" 2
+     Color 0.8 0.8 0.8 1
+     Text ""
+     "Font Size" 24
+     "Horizontal Alignment" Right
+     "Vertical Alignment" Center
+    }
     ImageWidgetClass "{631F7C6DE6B5BCED}" {
      Name "HeaderBG"
      Slot FrameWidgetSlot "{62EF62C8ABA4CFE1}" {
@@ -161,7 +216,7 @@ FrameWidgetClass {
       SizeY 0
       OffsetBottom 0
      }
-     Color 0.008 0.012 0.016 1
+     Color 0.044 0.048 0.062 1
      Size 512 512
      "Transition width" 1
      Progress 0.24
@@ -214,7 +269,7 @@ FrameWidgetClass {
         SizeToContent 1
        }
        Opacity 0.98
-       Color 0 0 0 1
+       Color 0.044 0.048 0.062 1
        Image ""
        Size 40 40
       }
@@ -342,7 +397,7 @@ FrameWidgetClass {
         SizeY 0
         OffsetBottom 0
        }
-       Color 0.091 0.091 0.091 0.129
+       Color 0.044 0.048 0.062 0.94
       }
       OverlayWidgetClass "{631F7C45C75A96BC}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
        Name "DescriptionList"
@@ -385,7 +440,7 @@ FrameWidgetClass {
         SizeY 0
         OffsetBottom 0
        }
-       Color 0.017 0.017 0.017 1
+       Color 0.055 0.09 0.19 1
       }
       TextWidgetClass "{631F7C45C75A96B1}" {
        Name "MissionText"
@@ -552,11 +607,8 @@ FrameWidgetClass {
       SizeY 0
       OffsetBottom 0
      }
-     Color 0.591 0.591 0.591 1
-     Texture "{F6E8F926B986C424}UI/Textures/InventoryIcons/InventoryBackground_2.edds"
+     Color 0.044 0.048 0.062 0.94
      Size 1920 1080
-     Tiling None
-     "Blend Mode" Opaque
      "Transition width" 0.21
     }
     ImageWidgetClass "{631F7C6DE6B52296}" {
@@ -649,7 +701,7 @@ FrameWidgetClass {
           SizeY 0
           OffsetBottom 0
          }
-         Color 0.042 0.042 0.042 1
+         Color 0.044 0.048 0.062 1
         }
         TextWidgetClass "{631F7C6DE6B6C63E}" {
          Name "SlotsBlufor"
@@ -665,6 +717,8 @@ FrameWidgetClass {
           OffsetBottom 0
          }
          Text "128/128"
+         "Font Size" 45
+         "Min Font Size" 12
          "Horizontal Alignment" Center
          "Vertical Alignment" Center
         }
@@ -784,7 +838,7 @@ FrameWidgetClass {
           SizeY 0
           OffsetBottom 0
          }
-         Color 0.042 0.042 0.042 1
+         Color 0.044 0.048 0.062 1
         }
         TextWidgetClass "{631F7C6DE6B6C636}" {
          Name "SlotsOpfor"
@@ -800,6 +854,8 @@ FrameWidgetClass {
           OffsetBottom 0
          }
          Text "128/128"
+         "Font Size" 45
+         "Min Font Size" 12
          "Horizontal Alignment" Center
          "Vertical Alignment" Center
         }
@@ -919,7 +975,7 @@ FrameWidgetClass {
           SizeY 0
           OffsetBottom 0
          }
-         Color 0.042 0.042 0.042 1
+         Color 0.044 0.048 0.062 1
         }
         TextWidgetClass "{631F7C6DE6B64D89}" {
          Name "SlotsIndfor"
@@ -935,6 +991,8 @@ FrameWidgetClass {
           OffsetBottom 0
          }
          Text "128/128"
+         "Font Size" 45
+         "Min Font Size" 12
          "Horizontal Alignment" Center
          "Vertical Alignment" Center
         }
@@ -1054,7 +1112,7 @@ FrameWidgetClass {
           SizeY 0
           OffsetBottom 0
          }
-         Color 0.042 0.042 0.042 1
+         Color 0.044 0.048 0.062 1
         }
         TextWidgetClass "{631F7C6DE6B620C8}" {
          Name "SlotsCiv"
@@ -1070,6 +1128,8 @@ FrameWidgetClass {
           OffsetBottom 0
          }
          Text "128/128"
+         "Font Size" 45
+         "Min Font Size" 12
          "Horizontal Alignment" Center
          "Vertical Alignment" Center
         }
@@ -1487,7 +1547,7 @@ FrameWidgetClass {
       OffsetBottom 98
      }
      Clipping Ancestor
-     Color 0.008 0.012 0.016 1
+     Color 0.044 0.048 0.062 0.96
     }
     TextWidgetClass "{6462508724C243CD}" {
      Name "PlayersText"
@@ -1520,7 +1580,7 @@ FrameWidgetClass {
       SizeY -70.094
       OffsetBottom 35
      }
-     Color 0.008 0.012 0.016 1
+     Color 0.044 0.048 0.062 0.96
     }
     TextWidgetClass "{6462508724C243CA}" {
      Name "TimeText"
@@ -1552,7 +1612,7 @@ FrameWidgetClass {
       SizeY -65.888
       OffsetBottom 0
      }
-     Color 0.008 0.012 0.016 1
+     Color 0.044 0.048 0.062 0.96
     }
     TextWidgetClass "{6462508724C1D3D0}" {
      Name "WeatherText"
@@ -1574,6 +1634,38 @@ FrameWidgetClass {
      Wrap 1
     }
    }
+  }
+  FrameWidgetClass "{6A4A520000000A05}" {
+   Name "StatsHolder"
+   Slot FrameWidgetSlot "{6A4A520000000A06}" {
+    Anchor 0.5 1 0.5 1
+    PositionX -450
+    OffsetLeft -450
+    PositionY -52
+    OffsetTop -52
+    SizeX 900
+    OffsetRight -450
+    SizeY 380
+    OffsetBottom -328
+   }
+   "Z Order" 20
+  }
+  ImageWidgetClass "{6A4A520000000A07}" {
+   Name "FadeOverlay"
+   Slot FrameWidgetSlot "{6A4A520000000A08}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+   }
+   "Is Enabled" 0
+   "Z Order" 100
+   Color 0 0 0 1
   }
  }
 }

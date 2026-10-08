@@ -1,5 +1,8 @@
 class COA_SpectatorMenu: ChimeraMenuBase
 {
+	// Hover/press feedback and entrance animation - see COA_UIPolish
+	protected ref COA_MenuPolish m_UIPolish;
+
 	//=================================================================================================
 	// PROPERTIES
 	//=================================================================================================
@@ -230,6 +233,9 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		SCR_NotificationsComponent notifComp = SCR_NotificationsComponent.GetInstance();
 		if (notifComp)
 			notifComp.GetOnNotification().Insert(OnKillfeedNotification);
+
+		// Hover feedback on buttons without their own (COA_UIPolish)
+		m_UIPolish = new COA_MenuPolish(GetRootWidget(), false);
 	}
 	
 	void DismissSlottingWarning()
@@ -816,6 +822,9 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	float m_fUpdateBuffer = 0;
 	override void OnMenuUpdate(float tDelta)
 	{
+		if (m_UIPolish)
+			m_UIPolish.Update(tDelta);
+
 		super.OnMenuUpdate(tDelta);
 
 		// Update compass
@@ -2430,6 +2439,12 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	 */
 	override void OnMenuClose()
 	{
+		if (m_UIPolish)
+		{
+			m_UIPolish.Cleanup();
+			m_UIPolish = null;
+		}
+
 		// Call parent class cleanup
 		super.OnMenuClose();
 		
