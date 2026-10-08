@@ -112,7 +112,34 @@ class COA_MissionDescriptionUI
 			}
 		}
 
+		InsertSignalDescriptor();
+
 		m_cListBoxComponent.m_OnChanged.Insert(ShowSelectedDescription);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Once slotting is over, adds the auto-generated SIGNAL entry (the player's element, leaders and
+	//! radio nets - see COA_SignalBriefing). Built fresh each time the list is shown, and like CRF's
+	//! Mission Technicals it never touches gamemode.m_aMissionDescriptors.
+	protected void InsertSignalDescriptor()
+	{
+		if (!COA_SignalBriefing.IsAvailable(m_Gamemode))
+			return;
+
+		COA_MissionDescriptor descriptor = new COA_MissionDescriptor();
+		descriptor.m_sTitle = COA_SignalBriefing.TITLE;
+		descriptor.m_sTextData = COA_SignalBriefing.BuildText();
+		descriptor.m_bShowForAnyFaction = true;
+
+		if (descriptor.m_sTextData.IsEmpty())
+			return;
+
+		m_cListBoxComponent.AddItem(
+			descriptor.m_sTitle,
+			null,
+			"{A564FC959554A1B9}UI/Listbox/DescriptionListboxElementNoIcon.layout"
+		);
+		m_aActiveDescriptors.Insert(descriptor);
 	}
 
 	//------------------------------------------------------------------------------------------------

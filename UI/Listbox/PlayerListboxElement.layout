@@ -68,7 +68,8 @@ ButtonWidgetClass {
       FrameWidgetClass "{630A25D7A5616D17}" {
        Name "ButtonLayout"
        Slot OverlayWidgetSlot "{62F200F27385E1FB}" {
-        HorizontalAlign 0
+        HorizontalAlign 3
+        VerticalAlign 3
        }
        {
         TextWidgetClass "{CF0003AB00000001}" {
@@ -130,20 +131,23 @@ ButtonWidgetClass {
         ButtonWidgetClass "{630A25D7A5616D15}" {
          Name "PlayerButton"
          Slot FrameWidgetSlot "{630510543BD8CBB1}" {
-          PositionX 163.508
-          OffsetLeft 163.508
-          PositionY 1.046
-          OffsetTop 1.046
-          SizeX 62.61
-          OffsetRight -226.118
-          SizeY 33.815
-          OffsetBottom -34.861
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
          }
          "Z Order" 10
          Color 1 1 1 0
          components {
           ButtonComponent "{6305105441730952}" {
-           m_ColorButtonDefault 0 0 0 0
+           m_ColorButtonDefault 1 1 1 0
+           m_ColorButtonHovered 1 1 1 0.015
+           m_ColorButtonHoveredFocused 1 1 1 0.03
            m_sSoundClicked ""
            m_sSoundFocused ""
            m_sSoundHovered ""

@@ -1,0 +1,142 @@
+FrameWidgetClass {
+ Name "KilledByRoot"
+ Slot FrameWidgetSlot "{7C0D000000000001}" {
+  Anchor 0 0 1 1
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 0
+  OffsetRight 0
+  SizeY 0
+  OffsetBottom 0
+ }
+ "Ignore Cursor" 1
+ "Z Order" 1000
+ {
+  OverlayWidgetClass "{7C0D000000000002}" {
+   Name "KilledByCard"
+   Slot FrameWidgetSlot "{7C0D000000000003}" {
+    Anchor 0.5 0.68 0.5 0.68
+    PositionX -260
+    OffsetLeft -260
+    PositionY 0
+    OffsetTop 0
+    SizeX 520
+    OffsetRight -260
+    SizeY 120
+    OffsetBottom -120
+    SizeToContent 1
+   }
+   "Ignore Cursor" 1
+   {
+    ImageWidgetClass "{7C0D000000000004}" {
+     Name "Background"
+     Slot OverlayWidgetSlot "{7C0D000000000005}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     "Ignore Cursor" 1
+     Color 0.0075 0.0086 0.0123 0.92
+    }
+    ImageWidgetClass "{7C0D000000000006}" {
+     Name "AccentEdge"
+     Slot OverlayWidgetSlot "{7C0D000000000007}" {
+      HorizontalAlign 3
+      VerticalAlign 0
+     }
+     "Ignore Cursor" 1
+     Color 0.5841 0.0369 0.0369 1
+     Size 1 3
+    }
+    SizeLayoutWidgetClass "{7C0D000000000008}" {
+     Name "Sizer"
+     Slot OverlayWidgetSlot "{7C0D000000000009}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+      Padding 24 16 24 16
+     }
+     "Ignore Cursor" 1
+     AllowWidthOverride 1
+     WidthOverride 472
+     {
+      VerticalLayoutWidgetClass "{7C0D00000000000A}" {
+       Name "Content"
+       Slot AlignableSlot "{7C0D00000000000B}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       "Ignore Cursor" 1
+       {
+        TextWidgetClass "{7C0D00000000000C}" {
+         Name "Heading"
+         Slot LayoutSlot "{7C0D00000000000D}" {
+          HorizontalAlign 3
+          Padding 0 0 0 2
+         }
+         "Ignore Cursor" 1
+         Color 0.3968 0.4564 0.6038 1
+         Text "KILLED BY"
+         "Font Size" 16
+         "Min Font Size" 10
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{7C0D00000000000E}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{7C0D00000000000F}" {
+         Name "KillerName"
+         Slot LayoutSlot "{7C0D000000000010}" {
+          HorizontalAlign 3
+          Padding 0 0 0 4
+         }
+         "Ignore Cursor" 1
+         Color 0.8632 0.8879 0.9301 1
+         Text "Player"
+         "Font Size" 30
+         "Min Font Size" 14
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{7C0D000000000011}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{7C0D000000000012}" {
+         Name "FriendlyFire"
+         Slot LayoutSlot "{7C0D000000000013}" {
+          HorizontalAlign 3
+          Padding 0 0 0 4
+         }
+         "Ignore Cursor" 1
+         "Is Visible" 0
+         Color 0.9823 0.5711 0.0742 1
+         Text "FRIENDLY FIRE"
+         "Font Size" 15
+         "Min Font Size" 10
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{7C0D000000000014}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{7C0D000000000015}" {
+         Name "Details"
+         Slot LayoutSlot "{7C0D000000000016}" {
+          HorizontalAlign 3
+         }
+         "Ignore Cursor" 1
+         Color 0.6038 0.6584 0.7454 1
+         Text "M16A2  ·  142 m  ·  Head"
+         "Font Size" 18
+         "Min Font Size" 10
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{7C0D000000000017}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

@@ -21,7 +21,7 @@ class COA_PlaceRallyPointAction : ScriptComponent
 
         radialMenu.RegisterEntry("Placeables", m_Action);
         radialMenu.GetOnBeforeOpen().Insert(UpdateAvailability);
-        radialMenu.GetOnActionPerformed().Insert(OnPerformAction)
+        radialMenu.GetOnActionPerformed().Insert(OnPerformAction);
     }
 
     //------------------------------------------------------------------------------------------------
@@ -39,9 +39,12 @@ class COA_PlaceRallyPointAction : ScriptComponent
     }
 
     //------------------------------------------------------------------------------------------------
-    protected void OnPerformAction()
+    protected void OnPerformAction(SCR_SelectionMenuEntry entry)
     {
-        
+        // Every radial entry's selection reaches every listener - only react to our own
+        if (entry != m_Action)
+            return;
+
         COA_Gamemode gamemode = COA_Gamemode.GetInstance();
         if (!gamemode || !gamemode.m_bRallyPointsEnabled)
             return;

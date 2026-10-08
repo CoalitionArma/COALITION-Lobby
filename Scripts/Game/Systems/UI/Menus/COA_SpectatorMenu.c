@@ -153,6 +153,8 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	{
 		super.OnMenuOpen();
 
+		COA_NewPlayerHints.Show(COA_NewPlayerHints.SPECTATOR, 6000);
+
 		// Reset the death low-pass audio filter (CharacterLifeState FMOD variable).
 		// SCR_NoiseFilterEffect sets this to DEAD on death and relies on SCR_DeployMenuBase.SGetOnMenuOpen()
 		// to reset it, which never fires when using a custom spectator menu.
@@ -278,6 +280,7 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		inputManager.AddActionListener("COA_SpecNVG", EActionTrigger.DOWN, ToggleNVGs);
 		inputManager.AddActionListener("COA_SpecToggleCamMode", EActionTrigger.DOWN, ToggleCameraMode);
 		inputManager.AddActionListener("COA_SpecKillTeleport", EActionTrigger.DOWN, Action_TeleportToKill);
+		inputManager.AddActionListener("COA_SpecFollowSquad", EActionTrigger.DOWN, Action_FollowSquad);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2562,6 +2565,7 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			inputManager.RemoveActionListener("COA_SpecNVG", EActionTrigger.DOWN, ToggleNVGs);
 			inputManager.RemoveActionListener("COA_SpecToggleCamMode", EActionTrigger.DOWN, ToggleCameraMode);
 			inputManager.RemoveActionListener("COA_SpecKillTeleport", EActionTrigger.DOWN, Action_TeleportToKill);
+		inputManager.RemoveActionListener("COA_SpecFollowSquad", EActionTrigger.DOWN, Action_FollowSquad);
 		}
 		
 		ForceNVGsOff();
@@ -2622,6 +2626,51 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	 * Mirrors the Zeus "R" shortcut for jumping to kill events.
 	 * If currently following a player, detaches first so the free-cam teleport takes effect.
 	 */
+	/**
+	 * Follows a living member of the player's own squad; pressing again cycles to the next one
+	 */
+	void Action_FollowSquad()
+	{
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+		if (!slottingManager)
+			return;
+
+		int localPlayerId = SCR_PlayerController.GetLocalPlayerId();
+		SCR_AIGroup group = slottingManager.GetPlayerSlotGroup(localPlayerId);
+		RplId groupId;
+		if (!group || !COA_ReplicationHelper.GetRplId(group, groupId))
+			return;
+
+		array<IEntity> squadmates = {};
+		foreach (int slotId : slottingManager.GetAllSlotIDsForGroup(groupId))
+		{
+			COA_SlotData slotData = slottingManager.GetSlotData(slotId);
+			if (!slotData || slotData.GetIsDeadSlot())
+				continue;
+
+			int playerId = slotData.GetSlotCurrentPlayerId();
+			if (playerId <= 0 || playerId == localPlayerId)
+				continue;
+
+			IEntity character = COA_EntityHelper.GetEntityFromRplId(slotData.GetSlotCurrentCharacter());
+			if (character && COA_DamageHelper.CheckIfEntityAlive(character) && !COA_EntityHelper.IsSpectator(character))
+				squadmates.Insert(character);
+		}
+
+		if (squadmates.IsEmpty())
+			return;
+
+		// Continue from whoever is being followed now, so repeated presses walk the squad
+		int next = 0;
+		int current = squadmates.Find(m_eSpecEntity);
+		if (current >= 0)
+			next = (current + 1) % squadmates.Count();
+
+		UnregisterFrameEvent();
+		m_eSpecEntity = squadmates[next];
+		RegisterFrameEvent();
+	}
+
 	void Action_TeleportToKill()
 	{
 		if (m_vLastKillPosition == vector.Zero)

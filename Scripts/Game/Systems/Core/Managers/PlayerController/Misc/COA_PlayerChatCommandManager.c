@@ -3,7 +3,12 @@ class COA_PlayerChatCommandManagerClass : ScriptComponentClass {}
 class COA_PlayerChatCommandManager : ScriptComponent
 {	
 	protected COA_PlayerRplToAuthorityManager m_PlayerRplToAuthorityManager;
-	
+
+	// Lines /help prints, in registration order. Admin-only entries are hidden from everyone else.
+	protected ref array<string> m_aHelpUsages = {};
+	protected ref array<string> m_aHelpDescriptions = {};
+	protected ref array<bool> m_aHelpAdminOnly = {};
+
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 MANAGER INITIALIZATION
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -40,8 +45,93 @@ class COA_PlayerChatCommandManager : ScriptComponent
 		
 		ChatCommandInvoker invoker8 = chatPanelManager.GetCommandInvoker("adminmenu");
 		invoker8.Insert(OpenAdminMenu);
+
+		ChatCommandInvoker invokerHelp = chatPanelManager.GetCommandInvoker("help");
+		invokerHelp.Insert(ShowHelp);
+
+		ChatCommandInvoker invokerFreq = chatPanelManager.GetCommandInvoker("freq");
+		invokerFreq.Insert(ShowFrequencies);
+
+		RegisterHelp("/help", "List chat commands");
+		RegisterHelp("/a <message>", "Message the admins (also /admin)");
+		RegisterHelp("/freq", "Show your radios' channels and frequencies");
+		RegisterHelp("/r <player> <message>", "Reply to a player's admin message", true);
+		RegisterHelp("/aar <faction>", "End the mission with a winner", true);
+		RegisterHelp("/adminmenu", "Open the admin menu", true);
 	}
-	
+
+//=============================================================================================================================================================================================================================================================================================================================================================
+//	 HELP METHODS
+//=============================================================================================================================================================================================================================================================================================================================================================
+
+	//------------------------------------------------------------------------------------------------
+	//! Adds a line to /help. Call from AddMsgAction (or an override of it) next to the invoker.
+	//! \param[in] usage - Command as typed, e.g. "/bug <description>"
+	//! \param[in] description - What it does
+	//! \param[in] adminOnly - Only listed for admins and moderators
+	void RegisterHelp(string usage, string description, bool adminOnly = false)
+	{
+		m_aHelpUsages.Insert(usage);
+		m_aHelpDescriptions.Insert(description);
+		m_aHelpAdminOnly.Insert(adminOnly);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Usage: /help
+	void ShowHelp(SCR_ChatPanel panel, string data)
+	{
+		SCR_ChatComponent chatComponent = GetLocalChatComponent();
+		if (!chatComponent)
+			return;
+
+		COA_PermissionManager permissionManager = COA_PermissionManager.GetInstance();
+		bool isStaff = SCR_Global.IsAdmin() || (permissionManager && permissionManager.IsModerator());
+
+		chatComponent.ShowMessage("Chat commands:");
+		foreach (int i, string usage : m_aHelpUsages)
+		{
+			if (m_aHelpAdminOnly[i] && !isStaff)
+				continue;
+
+			chatComponent.ShowMessage(string.Format("  %1 - %2", usage, m_aHelpDescriptions[i]));
+		}
+	}
+
+//=============================================================================================================================================================================================================================================================================================================================================================
+//	 RADIO METHODS
+//=============================================================================================================================================================================================================================================================================================================================================================
+
+	//------------------------------------------------------------------------------------------------
+	//! Lists the radios the local character carries with their channel and frequency.
+	//! Usage: /freq
+	void ShowFrequencies(SCR_ChatPanel panel, string data)
+	{
+		SCR_ChatComponent chatComponent = GetLocalChatComponent();
+		if (!chatComponent)
+			return;
+
+		array<string> radioLines = {};
+		COA_SignalBriefing.GetRadioLines(SCR_PlayerController.GetLocalControlledEntity(), radioLines);
+		if (radioLines.IsEmpty())
+		{
+			chatComponent.ShowMessage("You aren't carrying any radios.");
+			return;
+		}
+
+		foreach (string radioLine : radioLines)
+			chatComponent.ShowMessage(radioLine);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected SCR_ChatComponent GetLocalChatComponent()
+	{
+		PlayerController pc = GetGame().GetPlayerController();
+		if (!pc)
+			return null;
+
+		return SCR_ChatComponent.Cast(pc.FindComponent(SCR_ChatComponent));
+	}
+
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 ADMIN MENU METHODS
 //=============================================================================================================================================================================================================================================================================================================================================================

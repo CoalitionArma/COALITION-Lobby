@@ -444,11 +444,91 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	{
 		Rpc(RpcAsk_DestroyRallypoint, rallyPointId);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Player radial menu: alert the medics on the caller's faction
+	void RequestMedic()
+	{
+		Rpc(RpcAsk_RequestMedic);
+	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 REPLICATION METHODS
 //=============================================================================================================================================================================================================================================================================================================================================================
 	
+	//------------------------------------------------------------------------------------------------
+	// Server: world time (ms) of each player's last medic request, for the cooldown
+	protected static ref map<int, int> s_mLastMedicRequest = new map<int, int>();
+	protected static const int MEDIC_REQUEST_COOLDOWN_MS = 30000;
+
+	//------------------------------------------------------------------------------------------------
+	//! Sends the caller's name, group and position to every living medic and medical officer slotted on their faction,
+	//! and tells the caller how many were reached.
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_RequestMedic()
+	{
+		int playerId = GetCallerPlayerId();
+		LogTelemetry("RpcAsk_RequestMedic", 0);
+
+		COA_PlayerRplToOwnerManager callerOwnerManager = COA_PlayerRplToOwnerManager.GetForPlayer(playerId);
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+		if (!callerOwnerManager || !slottingManager)
+			return;
+
+		int now = GetGame().GetWorld().GetWorldTime();
+		int lastRequest;
+		if (s_mLastMedicRequest.Find(playerId, lastRequest) && now - lastRequest < MEDIC_REQUEST_COOLDOWN_MS)
+		{
+			callerOwnerManager.ReceiveMedicRequestResult(-1);
+			return;
+		}
+
+		IEntity caller = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		Faction callerFaction = slottingManager.GetPlayerSlotFaction(playerId, true);
+		if (!caller || !callerFaction || !COA_DamageHelper.CheckIfEntityAlive(caller))
+			return;
+
+		s_mLastMedicRequest.Set(playerId, now);
+
+		string groupName;
+		SCR_AIGroup callerGroup = slottingManager.GetPlayerSlotGroup(playerId);
+		if (callerGroup)
+			groupName = callerGroup.GetCustomNameWithOriginal();
+
+		string callerName = GetGame().GetPlayerManager().GetPlayerName(playerId);
+		int medicsReached = 0;
+
+		foreach (int slotId, COA_SlotData slotData : slottingManager.GetSlotMap())
+		{
+			if (!slotData || slotData.GetIsDeadSlot())
+				continue;
+
+			// Medical officers use the squad lead slot type, so match their role explicitly
+			if (slotData.GetSlotType() != COA_ESlotType.MEDIC && slotData.GetSlotRole() != COA_EGearRole.MEDICAL_OFFICER)
+				continue;
+
+			int medicId = slotData.GetSlotCurrentPlayerId();
+			if (medicId <= 0 || medicId == playerId)
+				continue;
+
+			if (slottingManager.GetPlayerSlotFaction(medicId, true) != callerFaction)
+				continue;
+
+			IEntity medic = GetGame().GetPlayerManager().GetPlayerControlledEntity(medicId);
+			if (!medic || !COA_DamageHelper.CheckIfEntityAlive(medic))
+				continue;
+
+			COA_PlayerRplToOwnerManager medicOwnerManager = COA_PlayerRplToOwnerManager.GetForPlayer(medicId);
+			if (!medicOwnerManager)
+				continue;
+
+			medicOwnerManager.ReceiveMedicRequest(callerName, groupName, caller.GetOrigin());
+			medicsReached++;
+		}
+
+		callerOwnerManager.ReceiveMedicRequestResult(medicsReached);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	// Default parameter values aren't supported on RPCs - RequestInitilizePlayer (below) always passes

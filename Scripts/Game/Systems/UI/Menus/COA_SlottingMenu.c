@@ -3,6 +3,12 @@ class COA_SlottingMenu: ChimeraMenuBase
 	// Hover/press feedback and entrance animation - see COA_UIPolish
 	protected ref COA_MenuPolish m_UIPolish;
 
+	// Loadout card shown while hovering a slot row - see COA_LoadoutPreviewTooltip
+	protected ref COA_LoadoutPreviewTooltip m_LoadoutPreview;
+
+	// "Quick slot" button: the open slot matching a role this player recently played (COA_PlayerProfile)
+	protected int m_iQuickSlotId = -1;
+
 	//---------------------------------------------------------------------
 	// UI Widgets
 	//---------------------------------------------------------------------
@@ -146,6 +152,10 @@ class COA_SlottingMenu: ChimeraMenuBase
 
 		// Hover feedback on buttons without their own, and a quick staggered fade-in (COA_UIPolish)
 		m_UIPolish = new COA_MenuPolish(GetRootWidget(), true);
+
+		m_LoadoutPreview = new COA_LoadoutPreviewTooltip(GetRootWidget());
+
+		COA_NewPlayerHints.Show(COA_NewPlayerHints.SLOTTING, 1500);
 	}
 	
 	/**
@@ -272,6 +282,14 @@ class COA_SlottingMenu: ChimeraMenuBase
 	 */
 	protected void SetupButtons()
 	{
+		ButtonWidget quickSlotButton = ButtonWidget.Cast(m_wRoot.FindAnyWidget("QuickSlotButton"));
+		if (quickSlotButton)
+		{
+			SCR_ButtonTextComponent quickSlotComp = SCR_ButtonTextComponent.Cast(quickSlotButton.FindHandler(SCR_ButtonTextComponent));
+			if (quickSlotComp)
+				quickSlotComp.m_OnClicked.Insert(TakeQuickSlot);
+		}
+
 		ButtonWidget previewButton = ButtonWidget.Cast(m_wRoot.FindAnyWidget("PreviewButton"));
 		ButtonWidget gameButton = ButtonWidget.Cast(m_wRoot.FindAnyWidget("GameButton"));
 		ButtonWidget aarButton = ButtonWidget.Cast(m_wRoot.FindAnyWidget("AARButton"));
@@ -735,6 +753,8 @@ class COA_SlottingMenu: ChimeraMenuBase
 			m_UIPolish = null;
 		}
 
+		m_LoadoutPreview = null;
+
 		super.OnMenuClose();
 		
 		// Unregister from slot updates to prevent memory leaks
@@ -953,6 +973,9 @@ class COA_SlottingMenu: ChimeraMenuBase
 
 		// Command panel follows on the next update instead of waiting for its timer
 		m_fCommandListTimer = COMMAND_LIST_INTERVAL;
+
+		// Quick slot only offers slots on the faction being viewed
+		UpdateQuickSlot();
 
 		// Update UI visibility for faction selection indicators
 		// This would be so much better if we had ternary operators #bohemiapls
@@ -1781,6 +1804,10 @@ class COA_SlottingMenu: ChimeraMenuBase
 		if (m_UIPolish)
 			m_UIPolish.Update(tDelta);
 
+		// RoleList holds the slot list's rows (see InitializeListComponents)
+		if (m_LoadoutPreview)
+			m_LoadoutPreview.Update(tDelta, GetCachedWidget("RoleList"));
+
 		super.OnMenuUpdate(tDelta);
 		
 		// Update time display
@@ -2149,6 +2176,7 @@ class COA_SlottingMenu: ChimeraMenuBase
 		SetFactionFill("CivFill", m_iTakenCivSlots, m_iCivSlots);
 		UpdateSlotListCount();
 		UpdateYourSlot();
+		UpdateQuickSlot();
 	}
 
 	/**
@@ -2423,34 +2451,9 @@ class COA_SlottingMenu: ChimeraMenuBase
 		bool isAdmin = SCR_Global.IsAdmin(GetGame().GetPlayerController().GetPlayerId());
 		int localPlayerId = SCR_PlayerController.GetLocalPlayerId();
 		
-		// Check slotting phase restrictions
-		bool leaderAndMedicPhase = m_Gamemode.m_SlottingState == 0;
-		COA_ESlotType slotType = slottingManager.GetSlotData(slotId).GetSlotType();
-		
-		bool slotNotLeaderOrMedic = 
-				( slotType != COA_ESlotType.TEAM_LEADER 
-				&& slotType != COA_ESlotType.SQUAD_LEADER 
-				&& slotType != COA_ESlotType.MEDIC);
-		
-		bool specialtyPhase = m_Gamemode.m_SlottingState == 1;
-		
-		bool slotNotSpecialtyOrLM = 
-				(slotType != COA_ESlotType.TEAM_LEADER 
-				&& slotType != COA_ESlotType.SQUAD_LEADER  
-				&& slotType != COA_ESlotType.MEDIC 
-				&& slotType != COA_ESlotType.SPECIALTY 
-				&& slotType != COA_ESlotType.SPECIALTY_ASSISTANT);
-		
 		// Check phase restrictions (if not admin)
-		if (!isAdmin) {
-			// In leader/medic phase, only allow those slots
-			if (leaderAndMedicPhase && slotNotLeaderOrMedic) 
-				return;
-				
-			// In specialty phase, only allow specialty or leader/medic slots
-			if (specialtyPhase && slotNotSpecialtyOrLM)
-				return;
-		}
+		if (!isAdmin && !IsSlotTypeOpenInPhase(slottingManager.GetSlotData(slotId).GetSlotType()))
+			return;
 		
 		// Handle admin selecting a player for a slot
 		if (m_iSelectedplayerId > 0 && isAdmin)
@@ -2463,6 +2466,123 @@ class COA_SlottingMenu: ChimeraMenuBase
 		HandlePlayerSlotSelection(slotId, slottingManager, localPlayerId);
 	}
 	
+	/**
+	 * Whether non-admins may take a slot of this type in the current slotting phase
+	 * (phase 1: leaders and medics, phase 2: + specialties, phase 3: everything)
+	 */
+	protected bool IsSlotTypeOpenInPhase(COA_ESlotType slotType)
+	{
+		bool leaderOrMedic = slotType == COA_ESlotType.TEAM_LEADER
+			|| slotType == COA_ESlotType.SQUAD_LEADER
+			|| slotType == COA_ESlotType.MEDIC;
+
+		bool specialty = slotType == COA_ESlotType.SPECIALTY
+			|| slotType == COA_ESlotType.SPECIALTY_ASSISTANT;
+
+		if (m_Gamemode.m_SlottingState == 0)
+			return leaderOrMedic;
+
+		if (m_Gamemode.m_SlottingState == 1)
+			return leaderOrMedic || specialty;
+
+		return true;
+	}
+
+	/**
+	 * Finds the open slot on the viewed faction matching the most recent role this player played
+	 * that is takeable right now. Lowest slot ID wins so the pick is stable between refreshes.
+	 * @return slot ID, or -1 if none (or the player is already slotted)
+	 */
+	protected int FindQuickSlot()
+	{
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+		if (!slottingManager || !m_fSelectedFaction || !m_Gamemode)
+			return -1;
+
+		int localPlayerId = SCR_PlayerController.GetLocalPlayerId();
+		if (slottingManager.IsPlayerInASlot(localPlayerId))
+			return -1;
+
+		bool isAdmin = SCR_Global.IsAdmin(localPlayerId);
+		FactionManager factionManager = GetGame().GetFactionManager();
+
+		foreach (int recentRole : COA_PlayerProfile.GetRecentRoles())
+		{
+			int bestSlotId = -1;
+			foreach (int slotId, COA_SlotData slotData : slottingManager.GetSlotMap())
+			{
+				// SelectSlot treats ID 0 as "nothing selected"
+				if (slotId <= 0 || !slotData || slotData.GetSlotRole() != recentRole)
+					continue;
+
+				if (slotData.GetSlotCurrentPlayerId() != 0 || slotData.GetIsLockedSlot() || slotData.GetIsDeadSlot())
+					continue;
+
+				if (factionManager.GetFactionByKey(slotData.GetSlotFactionKey()) != m_fSelectedFaction)
+					continue;
+
+				if (!isAdmin && !IsSlotTypeOpenInPhase(slotData.GetSlotType()))
+					continue;
+
+				SCR_AIGroup group = COA_EntityHelper.GetGroupFromRplId(slotData.GetSlotCurrentGroup());
+				if (!group || group.IsPrivate())
+					continue;
+
+				if (bestSlotId < 0 || slotId < bestSlotId)
+					bestSlotId = slotId;
+			}
+
+			if (bestSlotId >= 0)
+				return bestSlotId;
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Shows the quick slot button when the player is unslotted and one of their recent roles is open
+	 */
+	protected void UpdateQuickSlot()
+	{
+		Widget frame = GetCachedWidget("QuickSlotFrame");
+		if (!frame)
+			return;
+
+		m_iQuickSlotId = FindQuickSlot();
+		if (m_iQuickSlotId < 0)
+		{
+			frame.SetVisible(false);
+			return;
+		}
+
+		COA_SlotData slotData = COA_SlottingManager.GetInstance().GetSlotData(m_iQuickSlotId);
+		string text = slotData.GetSlotName();
+		SCR_AIGroup group = COA_EntityHelper.GetGroupFromRplId(slotData.GetSlotCurrentGroup());
+		if (group)
+			text = group.GetCustomNameWithOriginal() + "  ·  " + text;
+
+		TextWidget buttonText = TextWidget.Cast(frame.FindAnyWidget("ButtonText"));
+		if (buttonText)
+			buttonText.SetText(text);
+
+		frame.SetVisible(true);
+	}
+
+	/**
+	 * Quick slot button: takes the slot found by FindQuickSlot (re-checked, it may have been taken)
+	 */
+	protected void TakeQuickSlot()
+	{
+		int slotId = FindQuickSlot();
+		if (slotId < 0)
+		{
+			UpdateQuickSlot();
+			return;
+		}
+
+		HandlePlayerSlotSelection(slotId, COA_SlottingManager.GetInstance(), SCR_PlayerController.GetLocalPlayerId());
+	}
+
 	/**
 	 * Handles an admin selecting a player for a slot
 	 * @param slotId - ID of the selected slot

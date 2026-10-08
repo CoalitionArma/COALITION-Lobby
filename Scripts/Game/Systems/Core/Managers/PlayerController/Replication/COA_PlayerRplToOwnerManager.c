@@ -26,6 +26,26 @@ class COA_PlayerRplToOwnerManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! To a medic: a player on their faction asked for a medic (player radial menu)
+	void ReceiveMedicRequest(string requesterName, string groupName, vector position)
+	{
+		if (IsLocallyOwned())
+			RpcDo_ReceiveMedicRequest(requesterName, groupName, position);
+		else
+			Rpc(RpcDo_ReceiveMedicRequest, requesterName, groupName, position);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! To the requester: how many medics were alerted, or -1 if still on cooldown
+	void ReceiveMedicRequestResult(int medicsReached)
+	{
+		if (IsLocallyOwned())
+			RpcDo_ReceiveMedicRequestResult(medicsReached);
+		else
+			Rpc(RpcDo_ReceiveMedicRequestResult, medicsReached);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Admin/ticket traffic is delivered only to the players allowed to see it (see
 	//! COA_RplBroadcastManager), instead of being broadcast to every client and filtered there.
 	//! Each handler forwards to the existing COA_RplBroadcastManager client-side logic.
@@ -104,6 +124,65 @@ class COA_PlayerRplToOwnerManager : ScriptComponent
 		SCR_NotificationsComponent.GetInstance().SendLocal(SCR_NotificationsComponent.SendLocal(ENotification.FASTTRAVEL_PLAYER_LOCATION_WRONG));
 	}
 	
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_ReceiveMedicRequest(string requesterName, string groupName, vector position)
+	{
+		string where;
+		IEntity medic = SCR_PlayerController.GetLocalControlledEntity();
+		if (medic)
+		{
+			vector offset = position - medic.GetOrigin();
+			int meters = Math.Round(vector.Distance(position, medic.GetOrigin()));
+			where = string.Format("%1 m %2", meters, CompassDirection(offset));
+		}
+
+		string who = requesterName;
+		if (!groupName.IsEmpty())
+			who = string.Format("%1 (%2)", requesterName, groupName);
+
+		string subtitle = who;
+		if (!where.IsEmpty())
+			subtitle = string.Format("%1  ·  %2", who, where);
+
+		SCR_PopUpNotification popup = SCR_PopUpNotification.GetInstance();
+		if (popup)
+			popup.PopupMsg("MEDIC REQUESTED", 8, subtitle);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_ReceiveMedicRequestResult(int medicsReached)
+	{
+		string text;
+		if (medicsReached < 0)
+			text = "Medic already requested - wait a moment";
+		else if (medicsReached == 0)
+			text = "No medics available on your side";
+		else if (medicsReached == 1)
+			text = "Medic request sent to 1 medic";
+		else
+			text = string.Format("Medic request sent to %1 medics", medicsReached);
+
+		SCR_PopUpNotification popup = SCR_PopUpNotification.GetInstance();
+		if (popup)
+			popup.PopupMsg(text, 4);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "N", "NE", ... for a world-space offset (+Z is north)
+	protected static const ref array<string> COMPASS_DIRECTIONS = {"N", "NE", "E", "SE", "S", "SW", "W", "NW"};
+
+	protected static string CompassDirection(vector offset)
+	{
+		float bearing = Math.Atan2(offset[0], offset[2]) * Math.RAD2DEG;
+		if (bearing < 0)
+			bearing += 360;
+
+		int index = Math.Round(bearing / 45);
+		return COMPASS_DIRECTIONS[index % 8];
+	}
+
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
 	protected void RpcDo_TeleportLocalPlayer(vector location)

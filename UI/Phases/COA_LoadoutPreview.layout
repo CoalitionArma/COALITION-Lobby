@@ -1,0 +1,179 @@
+FrameWidgetClass {
+ Name "LoadoutPreviewRoot"
+ Slot FrameWidgetSlot "{7C0A000000000001}" {
+  Anchor 0 0 1 1
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 0
+  OffsetRight 0
+  SizeY 0
+  OffsetBottom 0
+ }
+ "Ignore Cursor" 1
+ "Z Order" 50
+ {
+  OverlayWidgetClass "{7C0A000000000002}" {
+   Name "LoadoutPreviewCard"
+   Slot FrameWidgetSlot "{7C0A000000000003}" {
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 680
+    OffsetRight -680
+    SizeY 340
+    OffsetBottom -340
+    SizeToContent 1
+   }
+   "Ignore Cursor" 1
+   {
+    ImageWidgetClass "{7C0A000000000004}" {
+     Name "Background"
+     Slot OverlayWidgetSlot "{7C0A000000000005}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     "Ignore Cursor" 1
+     Color 0.0075 0.0086 0.0123 0.97
+    }
+    ImageWidgetClass "{7C0A000000000006}" {
+     Name "AccentEdge"
+     Slot OverlayWidgetSlot "{7C0A000000000007}" {
+      HorizontalAlign 0
+      VerticalAlign 3
+     }
+     "Ignore Cursor" 1
+     Color 0.5841 0.0369 0.0369 1
+     Size 3 1
+    }
+    HorizontalLayoutWidgetClass "{7C0A000000000017}" {
+     Name "Columns"
+     Slot OverlayWidgetSlot "{7C0A000000000018}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+      Padding 18 14 18 16
+     }
+     "Ignore Cursor" 1
+     {
+      SizeLayoutWidgetClass "{7C0A000000000019}" {
+       Name "ModelSizer"
+       Slot LayoutSlot "{7C0A00000000001A}" {
+        Padding 0 0 16 0
+       }
+       "Ignore Cursor" 1
+       AllowWidthOverride 1
+       WidthOverride 210
+       AllowHeightOverride 1
+       HeightOverride 310
+       {
+        OverlayWidgetClass "{7C0A00000000001F}" {
+         Name "ModelOverlay"
+         Slot AlignableSlot "{7C0A000000000020}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         "Ignore Cursor" 1
+         {
+          ImageWidgetClass "{7C0A00000000001B}" {
+           Name "ModelBackground"
+           Slot OverlayWidgetSlot "{7C0A00000000001C}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           "Ignore Cursor" 1
+           Color 0.0116 0.0137 0.0212 1
+          }
+          ItemPreviewWidgetClass "{7C0A00000000001D}" {
+           Name "ModelPreview"
+           Slot OverlayWidgetSlot "{7C0A00000000001E}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           "Ignore Cursor" 1
+           "Z Order" 1
+          }
+         }
+        }
+       }
+      }
+      SizeLayoutWidgetClass "{7C0A000000000008}" {
+       Name "Sizer"
+       Slot LayoutSlot "{7C0A000000000009}" {
+       }
+       "Ignore Cursor" 1
+       AllowWidthOverride 1
+       WidthOverride 416
+       {
+        VerticalLayoutWidgetClass "{7C0A00000000000A}" {
+         Name "Content"
+         Slot AlignableSlot "{7C0A00000000000B}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+         }
+         "Ignore Cursor" 1
+         {
+          TextWidgetClass "{7C0A00000000000C}" {
+           Name "RoleName"
+           Slot LayoutSlot "{7C0A00000000000D}" {
+            Padding 0 0 0 2
+           }
+           "Ignore Cursor" 1
+           Color 0.8632 0.8879 0.9301 1
+           Text "Rifleman"
+           "Font Size" 22
+           "Min Font Size" 12
+           FontProperties FontProperties "{7C0A00000000000E}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{7C0A00000000000F}" {
+           Name "SlotContext"
+           Slot LayoutSlot "{7C0A000000000010}" {
+            Padding 0 0 0 10
+           }
+           "Ignore Cursor" 1
+           Color 0.3968 0.4564 0.6038 1
+           Text "Alpha 1-1"
+           "Font Size" 16
+           "Min Font Size" 10
+           FontProperties FontProperties "{7C0A000000000011}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+          ImageWidgetClass "{7C0A000000000012}" {
+           Name "Divider"
+           Slot LayoutSlot "{7C0A000000000013}" {
+            HorizontalAlign 3
+            Padding 0 0 0 10
+           }
+           "Ignore Cursor" 1
+           Color 1 1 1 0.013
+           Size 1 1
+          }
+          RichTextWidgetClass "{7C0A000000000014}" {
+           Name "Summary"
+           Slot LayoutSlot "{7C0A000000000015}" {
+            HorizontalAlign 3
+           }
+           "Ignore Cursor" 1
+           Color 0.8632 0.8879 0.9301 1
+           Text "RIFLE  M16A2"
+           "Font Size" 17
+           "Min Font Size" 10
+           Wrap 1
+           FontProperties FontProperties "{7C0A000000000016}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

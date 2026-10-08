@@ -38,8 +38,14 @@ class COA_PlayerMenuManager : ScriptComponent
 				GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.COA_SlottingMenu);
 				break;
 			}
-			case COA_EGamemodeState.GAME: 
+			case COA_EGamemodeState.GAME:
 			{
+				// Remembered for the slotting menu's quick slot next round
+				COA_PlayerProfile.RecordLocalPlayerRole();
+
+				// After the spawn-in settles
+				COA_NewPlayerHints.Show(COA_NewPlayerHints.MISSION_START, 20000);
+
 				COA_PlayerRplToAuthorityManager.GetInstance().RequestInitilizePlayer(SCR_PlayerController.GetLocalPlayerId());
 				break;
 			}

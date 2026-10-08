@@ -903,9 +903,9 @@ class COA_RplBroadcastManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void BroadcastSpectatorDamageReport(int victimPlayerId, string victimName, int attackerPlayerId, string attackerName, float damageValue, float rangeMeters, string damageType, string hitZone, string bodyRegion, bool fatal, int worldTime)
+	void BroadcastSpectatorDamageReport(int victimPlayerId, string victimName, int attackerPlayerId, string attackerName, float damageValue, float rangeMeters, string damageType, string hitZone, string bodyRegion, bool fatal, int worldTime, string weaponName = "")
 	{
-		string packedData = PackSpectatorDamageReportStrings(victimName, attackerName, damageType, hitZone, bodyRegion);
+		string packedData = PackSpectatorDamageReportStrings(victimName, attackerName, damageType, hitZone, bodyRegion, weaponName);
 
 		#ifdef WORKBENCH
 		RpcDo_BroadcastSpectatorDamageReport(victimPlayerId, attackerPlayerId, damageValue, rangeMeters, fatal, worldTime, packedData);
@@ -926,15 +926,16 @@ class COA_RplBroadcastManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected string PackSpectatorDamageReportStrings(string victimName, string attackerName, string damageType, string hitZone, string bodyRegion)
+	protected string PackSpectatorDamageReportStrings(string victimName, string attackerName, string damageType, string hitZone, string bodyRegion, string weaponName)
 	{
 		victimName.Replace("|", "/");
 		attackerName.Replace("|", "/");
 		damageType.Replace("|", "/");
 		hitZone.Replace("|", "/");
 		bodyRegion.Replace("|", "/");
+		weaponName.Replace("|", "/");
 
-		return string.Format("%1|%2|%3|%4|%5", victimName, attackerName, damageType, hitZone, bodyRegion);
+		return string.Format("%1|%2|%3|%4|%5|%6", victimName, attackerName, damageType, hitZone, bodyRegion, weaponName);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1768,12 +1769,16 @@ class COA_RplBroadcastManager : ScriptComponent
 		string damageType = GetSpectatorDamageReportPart(parts, 2, "Unknown");
 		string hitZone = GetSpectatorDamageReportPart(parts, 3, "Unknown");
 		string bodyRegion = GetSpectatorDamageReportPart(parts, 4, "Unknown");
+		string weaponName = GetSpectatorDamageReportPart(parts, 5, "");
 
-		COA_SpectatorDamageReportStore.InsertEvent(victimPlayerId, victimName, attackerPlayerId, attackerName, damageValue, rangeMeters, damageType, hitZone, bodyRegion, fatal, worldTime);
+		COA_SpectatorDamageReportStore.InsertEvent(victimPlayerId, victimName, attackerPlayerId, attackerName, damageValue, rangeMeters, damageType, hitZone, bodyRegion, fatal, worldTime, weaponName);
 
 		COA_SpectatorMenu spectatorMenu = COA_SpectatorMenu.Cast(GetGame().GetMenuManager().GetTopMenu());
 		if (spectatorMenu)
 			spectatorMenu.RefreshDamageReport();
+
+		if (fatal)
+			COA_KilledByCard.OnFatalEvent(victimPlayerId);
 	}
 
 
@@ -1786,6 +1791,8 @@ class COA_RplBroadcastManager : ScriptComponent
 		COA_SpectatorMenu spectatorMenu = COA_SpectatorMenu.Cast(GetGame().GetMenuManager().GetTopMenu());
 		if (spectatorMenu)
 			spectatorMenu.RefreshDamageReport();
+
+		COA_KilledByCard.OnFatalEvent(victimPlayerId);
 	}
 	
 	//------------------------------------------------------------------------------------------------

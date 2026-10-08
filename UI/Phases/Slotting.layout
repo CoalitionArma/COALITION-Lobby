@@ -890,6 +890,121 @@ FrameWidgetClass {
       }
      }
     }
+    FrameWidgetClass "{7C0B000000000001}" {
+     Name "QuickSlotFrame"
+     Slot FrameWidgetSlot "{7C0B000000000002}" {
+      Anchor 1 0 1 1
+      PositionX -460
+      OffsetLeft -460
+      PositionY 0
+      OffsetTop 0
+      SizeX 460
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+     "Is Visible" 0
+     {
+      TextWidgetClass "{7C0B000000000003}" {
+       Name "QuickSlotLabel"
+       Slot FrameWidgetSlot "{7C0B000000000004}" {
+        Anchor 0 0 0 1
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 90
+        OffsetRight -90
+        SizeY 0
+        OffsetBottom 0
+       }
+       Color 0.3968 0.4564 0.6038 1
+       Text "Quick slot"
+       "Font Size" 18
+       "Min Font Size" 9
+       "Horizontal Alignment" Right
+       "Vertical Alignment" Center
+       FontProperties FontProperties "{7C0B000000000005}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+      ImageWidgetClass "{7C0B000000000006}" {
+       Name "QuickSlotBG"
+       Slot FrameWidgetSlot "{7C0B000000000007}" {
+        Anchor 0 0 1 1
+        PositionX 102
+        OffsetLeft 102
+        PositionY 2
+        OffsetTop 2
+        SizeX -102
+        OffsetRight 0
+        SizeY -4
+        OffsetBottom 2
+       }
+       Color 0.0252 0.0065 0.008 1
+      }
+      PanelWidgetClass "{7C0B000000000008}" {
+       Name "QuickSlotBorder"
+       Slot FrameWidgetSlot "{7C0B000000000009}" {
+        Anchor 0 0 1 1
+        PositionX 102
+        OffsetLeft 102
+        PositionY 2
+        OffsetTop 2
+        SizeX -102
+        OffsetRight 0
+        SizeY -4
+        OffsetBottom 2
+       }
+       "Z Order" 1
+       Color 0.5841 0.0369 0.0369 1
+       style outline_2px
+      }
+      ButtonWidgetClass "{7C0B00000000000A}" {
+       Name "QuickSlotButton"
+       Slot FrameWidgetSlot "{7C0B00000000000B}" {
+        Anchor 0 0 1 1
+        PositionX 102
+        OffsetLeft 102
+        PositionY 2
+        OffsetTop 2
+        SizeX -102
+        OffsetRight 0
+        SizeY -4
+        OffsetBottom 2
+       }
+       "Z Order" 2
+       Color 1 1 1 0
+       components {
+        ButtonComponent "{7C0B00000000000C}" {
+         m_ColorButtonDefault 0.042 0.042 0.042 0
+         m_ColorButtonHovered 1 1 1 0.012
+         m_ColorButtonHoveredFocused 1 1 1 0.025
+        }
+        SCR_ButtonTextComponent "{7C0B00000000000D}" {
+        }
+       }
+       {
+        TextWidgetClass "{7C0B00000000000E}" {
+         Name "ButtonText"
+         Slot ButtonWidgetSlot "{7C0B00000000000F}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.8632 0.8879 0.9301 1
+         Text "Rifleman"
+         "Font Size" 18
+         "Min Font Size" 9
+         "Horizontal Alignment" Center
+         "Vertical Alignment" Center
+         FontProperties FontProperties "{7C0B000000000010}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
    }
   }
   FrameWidgetClass "{6A5C0000000010DC}" {

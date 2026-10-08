@@ -11,9 +11,11 @@ class COA_SpectatorDamageReportEntry
 	string m_sBodyRegion;
 	bool m_bFatal;
 	int m_iWorldTime;
+	string m_sWeaponName; // Only sent for fatal gunshots, empty otherwise
 
-	void COA_SpectatorDamageReportEntry(int victimPlayerId, string victimName, int attackerPlayerId, string attackerName, float damageValue, float rangeMeters, string damageType, string hitZone, string bodyRegion, bool fatal, int worldTime)
+	void COA_SpectatorDamageReportEntry(int victimPlayerId, string victimName, int attackerPlayerId, string attackerName, float damageValue, float rangeMeters, string damageType, string hitZone, string bodyRegion, bool fatal, int worldTime, string weaponName = "")
 	{
+		m_sWeaponName = weaponName;
 		m_iVictimPlayerId = victimPlayerId;
 		m_sVictimName = victimName;
 		m_iAttackerPlayerId = attackerPlayerId;
@@ -33,7 +35,7 @@ class COA_SpectatorDamageReportStore
 	protected const int MAX_DAMAGE_EVENTS = 500;
 	protected static ref array<ref COA_SpectatorDamageReportEntry> s_aEntries = new array<ref COA_SpectatorDamageReportEntry>();
 
-	static void InsertEvent(int victimPlayerId, string victimName, int attackerPlayerId, string attackerName, float damageValue, float rangeMeters, string damageType, string hitZone, string bodyRegion, bool fatal, int worldTime)
+	static void InsertEvent(int victimPlayerId, string victimName, int attackerPlayerId, string attackerName, float damageValue, float rangeMeters, string damageType, string hitZone, string bodyRegion, bool fatal, int worldTime, string weaponName = "")
 	{
 		if (victimPlayerId <= 0)
 			return;
@@ -53,7 +55,7 @@ class COA_SpectatorDamageReportStore
 		if (bodyRegion.IsEmpty())
 			bodyRegion = "Unknown";
 
-		s_aEntries.Insert(new COA_SpectatorDamageReportEntry(victimPlayerId, victimName, attackerPlayerId, attackerName, damageValue, rangeMeters, damageType, hitZone, bodyRegion, fatal, worldTime));
+		s_aEntries.Insert(new COA_SpectatorDamageReportEntry(victimPlayerId, victimName, attackerPlayerId, attackerName, damageValue, rangeMeters, damageType, hitZone, bodyRegion, fatal, worldTime, weaponName));
 
 		while (s_aEntries.Count() > MAX_DAMAGE_EVENTS)
 			s_aEntries.RemoveOrdered(0);
@@ -83,6 +85,19 @@ class COA_SpectatorDamageReportStore
 		}
 
 		return string.Empty;
+	}
+
+	//! Most recent fatal event for a victim, or null
+	static COA_SpectatorDamageReportEntry GetLatestFatalEntry(int playerId)
+	{
+		for (int i = s_aEntries.Count() - 1; i >= 0; i--)
+		{
+			COA_SpectatorDamageReportEntry entry = s_aEntries[i];
+			if (entry.m_iVictimPlayerId == playerId && entry.m_bFatal)
+				return entry;
+		}
+
+		return null;
 	}
 
 	static void MarkLatestVictimEventFatal(int playerId)
@@ -152,7 +167,46 @@ modded class SCR_DamageManagerComponent
 		int worldTime = GetGame().GetWorld().GetWorldTime();
 		float rangeMeters = GetDamageReportRangeMeters(victimEntity, damageContext, attackerPlayerId);
 
-		broadcastManager.BroadcastSpectatorDamageReport(victimPlayerId, victimName, attackerPlayerId, attackerName, damageContext.damageValue, rangeMeters, damageType, hitZoneName, bodyRegion, fatal, worldTime);
+		// The killer's weapon, for the victim's "killed by" card. Only gunshots: for grenades and
+		// explosives the attacker's held weapon isn't what did it.
+		string weaponName;
+		if (fatal && damageContext.damageType == EDamageType.KINETIC)
+			weaponName = GetDamageReportWeaponName(damageContext, attackerPlayerId);
+
+		broadcastManager.BroadcastSpectatorDamageReport(victimPlayerId, victimName, attackerPlayerId, attackerName, damageContext.damageValue, rangeMeters, damageType, hitZoneName, bodyRegion, fatal, worldTime, weaponName);
+	}
+
+	protected string GetDamageReportWeaponName(notnull BaseDamageContext damageContext, int attackerPlayerId)
+	{
+		IEntity attackerEntity;
+		if (damageContext.instigator)
+			attackerEntity = damageContext.instigator.GetInstigatorEntity();
+		if (!attackerEntity && attackerPlayerId > 0)
+			attackerEntity = GetGame().GetPlayerManager().GetPlayerControlledEntity(attackerPlayerId);
+
+		ChimeraCharacter attacker = ChimeraCharacter.Cast(attackerEntity);
+		if (!attacker)
+			return string.Empty;
+
+		// Mounted guns: the gunner's own weapon manager doesn't hold the turret weapon, so name the vehicle.
+		// Passengers firing their own rifles fall through to the normal case.
+		CompartmentAccessComponent compartmentAccess = attacker.GetCompartmentAccessComponent();
+		if (compartmentAccess && TurretCompartmentSlot.Cast(compartmentAccess.GetCompartment()))
+		{
+			IEntity vehicle = compartmentAccess.GetVehicleCompartmentManagerOwner();
+			if (vehicle && vehicle.GetPrefabData())
+				return COA_LoadoutPreviewHelper.GetDisplayName(vehicle.GetPrefabData().GetPrefabName());
+		}
+
+		BaseWeaponManagerComponent weaponManager = attacker.GetWeaponManager();
+		if (!weaponManager || !weaponManager.GetCurrentWeapon())
+			return string.Empty;
+
+		IEntity weapon = weaponManager.GetCurrentWeapon().GetOwner();
+		if (!weapon || !weapon.GetPrefabData())
+			return string.Empty;
+
+		return COA_LoadoutPreviewHelper.GetDisplayName(weapon.GetPrefabData().GetPrefabName());
 	}
 
 	protected void COA_MarkLatestSpectatorDamageReportFatal()
