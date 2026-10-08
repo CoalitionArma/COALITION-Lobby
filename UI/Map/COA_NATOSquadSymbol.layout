@@ -1,0 +1,35 @@
+FrameWidgetClass {
+ Name "NATOSymbolRoot"
+ "Ignore Cursor" 1
+ {
+  ScaleWidgetClass "{7C11000000000004}" {
+   Name "SymbolScale"
+   Slot FrameWidgetSlot "{7C11000000000005}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+   }
+   "Ignore Cursor" 1
+   {
+    OverlayWidgetClass "{7C11000000000001}" {
+     Name "SymbolOverlay"
+     Slot AlignableSlot "{7C11000000000002}" {
+      HorizontalAlign 1
+      VerticalAlign 1
+     }
+     "Ignore Cursor" 1
+     components {
+      SCR_MilitarySymbolUIComponent "{7C11000000000003}" {
+      }
+     }
+    }
+   }
+  }
+ }
+}

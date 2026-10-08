@@ -25,7 +25,7 @@ modded class SCR_PlayerControllerCommandingComponent
 		if (!safestartManager)
 		    return super.AddElementsFromCategoryToMap(category, parentCategory);
 		
-		if (!playerGroup.IsPlayerLeader(playerId) || !safestartManager.GetSafestartStatus())
+		if (!COA_ForwardDeployManager.CanLeadForwardDeploy(playerId, playerGroup) || !safestartManager.GetSafestartStatus())
 		    return super.AddElementsFromCategoryToMap(category, parentCategory);
 		
 		COA_ForwardDeployManager forwardDeployManager = COA_ForwardDeployManager.GetInstance();

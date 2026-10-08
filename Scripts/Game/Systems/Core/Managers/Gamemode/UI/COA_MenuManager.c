@@ -20,6 +20,11 @@ class COA_MenuManager : ScriptComponent
 	private const string PLAYER_SEPARATOR = ",";
 	private const int DEFAULT_CHANNEL_COUNT = 2; // Deafen and Global
 
+	// Side channels ("BLUFOR Side", ...) belong to one faction: only its players may join them, and
+	// they stay listed while empty. Recognised by name - see GetFactionChannelName.
+	protected static const string FACTION_CHANNEL_SUFFIX = " Side";
+	protected static const ref array<string> FACTION_KEYS = {"BLUFOR", "OPFOR", "INDFOR", "CIV"};
+
 	// Fired client-side (via COA_RplBroadcastManager.RpcDo_UpdatePlayerChannelDelta) whenever a
 	// single player moves between channels, so the spectator menu can patch just the affected rows
 	// instead of reparsing/rebuilding the whole VON channel list.
@@ -59,6 +64,10 @@ class COA_MenuManager : ScriptComponent
 		for (int i = m_aVONChannels.Count() - 1; i >= DEFAULT_CHANNEL_COUNT; i--)
 		{
 			array<string> channelSplit = SplitChannel(m_aVONChannels[i]);
+
+			// Side channels stay available to their faction while empty
+			if (!GetFactionChannelOwner(m_aVONChannels[i]).IsEmpty())
+				continue;
 			
 			// If channel has no players, remove it
 			if (channelSplit.Count() == 1)
@@ -226,7 +235,9 @@ class COA_MenuManager : ScriptComponent
 	//! One replication update for the whole set, instead of one per AddPlayerToChannel call.
 	//! \param[in] channelNames display names, parallel to channelPlayers
 	//! \param[in] channelPlayers player IDs for each channel
-	void SetAllChannels(notnull array<string> channelNames, notnull array<ref array<int>> channelPlayers)
+	//! \param[in] sideChannelFactions factions that get an (initially empty) side channel, listed right
+	//! under Global
+	void SetAllChannels(notnull array<string> channelNames, notnull array<ref array<int>> channelPlayers, array<FactionKey> sideChannelFactions = null)
 	{
 		if (!Replication.IsServer())
 			return;
@@ -234,6 +245,12 @@ class COA_MenuManager : ScriptComponent
 		m_aVONChannels.Clear();
 		m_aVONChannels.Insert("Deafen" + CHANNEL_SEPARATOR);
 		m_aVONChannels.Insert("Global" + CHANNEL_SEPARATOR);
+
+		if (sideChannelFactions)
+		{
+			foreach (FactionKey factionKey : sideChannelFactions)
+				m_aVONChannels.Insert(GetFactionChannelName(factionKey) + CHANNEL_SEPARATOR);
+		}
 
 		int count = channelNames.Count();
 		if (channelPlayers.Count() < count)
@@ -253,6 +270,65 @@ class COA_MenuManager : ScriptComponent
 
 		m_iChannelChanges++;
 		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: drop every side channel (when the round leaves the AAR). Their members fall back to Global.
+	void RemoveFactionChannels()
+	{
+		if (!Replication.IsServer())
+			return;
+
+		bool removed = false;
+		for (int i = m_aVONChannels.Count() - 1; i >= DEFAULT_CHANNEL_COUNT; i--)
+		{
+			if (GetFactionChannelOwner(m_aVONChannels[i]).IsEmpty())
+				continue;
+
+			m_aVONChannels.RemoveOrdered(i);
+			removed = true;
+		}
+
+		if (!removed)
+			return;
+
+		m_iChannelChanges++;
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string GetFactionChannelName(FactionKey factionKey)
+	{
+		return factionKey + FACTION_CHANNEL_SUFFIX;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Faction a side channel belongs to, or empty for any other channel
+	//! \param[in] channel A channel's name, or its full "Name|id,id" entry
+	static FactionKey GetFactionChannelOwner(string channel)
+	{
+		string channelName = channel;
+		int separator = channel.IndexOf(CHANNEL_SEPARATOR);
+		if (separator >= 0)
+			channelName = channel.Substring(0, separator);
+
+		foreach (string factionKey : FACTION_KEYS)
+		{
+			if (channelName == GetFactionChannelName(factionKey))
+				return factionKey;
+		}
+
+		return string.Empty;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Faction a channel (by index) is restricted to, or empty if anyone may join it
+	FactionKey GetChannelFaction(int index)
+	{
+		if (index < 0 || index >= m_aVONChannels.Count())
+			return string.Empty;
+
+		return GetFactionChannelOwner(m_aVONChannels[index]);
 	}
 
 	//------------------------------------------------------------------------------------------------

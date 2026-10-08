@@ -843,6 +843,19 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		if (!selfJoinAllowed && !creatorAccepting && !IsCallerStaff())
 			return;
 
+		// Side channels are for their own faction only (staff may listen in)
+		FactionKey channelFaction = m_MenuManager.GetChannelFaction(channel);
+		if (!channelFaction.IsEmpty() && !IsCallerStaff())
+		{
+			COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+			Faction playerFaction;
+			if (slottingManager)
+				playerFaction = slottingManager.GetPlayerSlotFaction(playerId, true);
+
+			if (!playerFaction || playerFaction.GetFactionKey() != channelFaction)
+				return;
+		}
+
 		m_MenuManager.AddPlayerToChannel(playerId, channel, false);
 	}
 
@@ -1584,9 +1597,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		    return;
 		}
 
-		//Only the group leader may forward deploy, and only while SafeStart is active - re-validated
-		//here since the client-side menu option is just a UI convenience, not an authority check.
-		if (!playerGroup.IsPlayerLeader(playerId) || !m_SafestartManager || !m_SafestartManager.GetSafestartStatus())
+		//Only the group's leader (see CanLeadForwardDeploy) may forward deploy, and only while SafeStart
+		//is active - re-validated here since the client-side menu option is just a UI convenience.
+		if (!COA_ForwardDeployManager.CanLeadForwardDeploy(playerId, playerGroup) || !m_SafestartManager || !m_SafestartManager.GetSafestartStatus())
 		{
 		    RejectForwardDeploy();
 		    return;

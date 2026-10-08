@@ -50,7 +50,8 @@ class COA_ForwardDeployManager : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	void AddForwardDeployZone(IEntity entity)
 	{
-		m_aForwardDeployZones.Insert(entity);
+		if (entity && !m_aForwardDeployZones.Contains(entity))
+			m_aForwardDeployZones.Insert(entity);
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -100,6 +101,60 @@ class COA_ForwardDeployManager : ScriptComponent
 		COA_RplBroadcastManager.GetInstance().ForwardDeployUpdate(finalSpawnLocation, playerId);
 	}
 	
+	//------------------------------------------------------------------------------------------------
+	//! Whether a player may forward deploy their group. Decided by slot rather than by the vanilla
+	//! group leader, which isn't reliably the squad leader: the group is joined before characters
+	//! exist at round start, so CRF's promote-the-squad-leader step often can't run. In order:
+	//!  - the group's squad lead slot (also platoon lead / company command; not the medical officer,
+	//!    who shares that slot type)
+	//!  - the group's team leader, when no squad lead slot in the group is filled
+	//!  - the vanilla group leader, for groups without leader slots
+	//! Used by both the map menu option and the server's request check.
+	static bool CanLeadForwardDeploy(int playerId, SCR_AIGroup group)
+	{
+		if (playerId <= 0 || !group)
+			return false;
+
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+		COA_SlotData playerSlot;
+		if (slottingManager)
+			playerSlot = slottingManager.GetPlayerSlotData(playerId);
+
+		if (playerSlot)
+		{
+			if (IsSquadLeadSlot(playerSlot))
+				return true;
+
+			if (playerSlot.GetSlotType() == COA_ESlotType.TEAM_LEADER && !HasFilledSquadLeadSlot(slottingManager, group))
+				return true;
+		}
+
+		return group.IsPlayerLeader(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool IsSquadLeadSlot(COA_SlotData slotData)
+	{
+		return slotData.GetSlotType() == COA_ESlotType.SQUAD_LEADER && slotData.GetSlotRole() != COA_EGearRole.MEDICAL_OFFICER;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool HasFilledSquadLeadSlot(COA_SlottingManager slottingManager, SCR_AIGroup group)
+	{
+		RplId groupId;
+		if (!COA_ReplicationHelper.GetRplId(group, groupId))
+			return false;
+
+		foreach (int slotId : slottingManager.GetAllSlotIDsForGroup(groupId))
+		{
+			COA_SlotData slotData = slottingManager.GetSlotData(slotId);
+			if (slotData && slotData.GetSlotCurrentPlayerId() > 0 && IsSquadLeadSlot(slotData))
+				return true;
+		}
+
+		return false;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Checks if there are any forward deploy zones active for this faction.
 	//! These are deleted and then removed from m_aVisibleForFactions on safestart ending.
