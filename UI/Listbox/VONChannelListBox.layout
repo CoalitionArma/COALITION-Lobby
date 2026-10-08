@@ -2,6 +2,7 @@ ButtonWidgetClass {
  Name "rootFrame"
  Slot AlignableSlot "{62F2056BF4F1EC36}" {
   HorizontalAlign 3
+  Padding 0 8 0 0
  }
  components {
   COA_ListBoxElementComponent "{647E436E1C62AC1E}" {
@@ -15,7 +16,7 @@ ButtonWidgetClass {
     HorizontalAlign 3
    }
    AllowHeightOverride 1
-   HeightOverride 36
+   HeightOverride 38
    {
     OverlayWidgetClass "{647E22C6563F8B14}" {
      Name "Overlay"
@@ -28,7 +29,8 @@ ButtonWidgetClass {
       FrameWidgetClass "{647E22C6563F8B16}" {
        Name "ButtonLayout"
        Slot OverlayWidgetSlot "{62F200F27385E1FB}" {
-        HorizontalAlign 0
+        HorizontalAlign 3
+        VerticalAlign 3
        }
        {
         ImageWidgetClass "{647E43682962529A}" {
@@ -44,7 +46,22 @@ ButtonWidgetClass {
           SizeY 0
           OffsetBottom 0
          }
-         Color 0.042 0.042 0.042 1
+         Color 0.011 0.0137 0.0212 1
+        }
+        ImageWidgetClass "{6A62000000000001}" {
+         Name "ChannelAccent"
+         Slot FrameWidgetSlot "{6A62000000000002}" {
+          Anchor 0 0 0 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 3
+          OffsetRight -3
+          SizeY 0
+          OffsetBottom 0
+         }
+         Color 0.5841 0.0369 0.0369 1
         }
         ButtonWidgetClass "{647E22C6563F8B1B}" {
          Name "SlotButton"
@@ -63,6 +80,8 @@ ButtonWidgetClass {
          components {
           ButtonComponent "{647E5AEB00BB8021}" {
            m_ColorButtonDefault 0 0 0 0
+           m_ColorButtonHovered 0 0 0 0
+           m_ColorButtonHoveredFocused 0 0 0 0
            m_sSoundClicked ""
            m_sSoundFocused ""
            m_sSoundHovered ""
@@ -70,30 +89,34 @@ ButtonWidgetClass {
           SCR_ButtonTextComponent "{647E5AEB2CA3F4D1}" {
            m_sSoundHovered ""
            m_sSoundClicked ""
-           m_BackgroundSelected 0.76 0.392 0.08 0.3
-           m_TextToggled 0.761 0.386 0.078 1
+           m_BackgroundSelected 0 0 0 0
+           m_TextToggled 0.8632 0.8879 0.9301 1
           }
          }
         }
         TextWidgetClass "{647E22C6563F8B18}" {
          Name "PlayerName"
          Slot FrameWidgetSlot "{630A2568FA12B1F6}" {
-          Anchor 0 0 0 0
-          PositionX 2.439
-          OffsetLeft 2.439
-          PositionY 0.004
-          OffsetTop 0.004
-          SizeX 164.212
-          OffsetRight -166.651
-          SizeY 29.996
-          OffsetBottom -30
+          Anchor 0 0 1 1
+          PositionX 14
+          OffsetLeft 14
+          PositionY 0
+          OffsetTop 0
+          SizeX -54
+          OffsetRight 40
+          SizeY 0
+          OffsetBottom 0
          }
          Clipping Ancestor
-         Color 1 1 1 0.85
+         Color 0.8632 0.8879 0.9301 1
          Text "Salami's Channel"
-         "Min Font Size" 5
+         "Font Size" 17
+         "Min Font Size" 10
          "Vertical Alignment" Center
-         Wrap 1
+         Wrap 0
+         FontProperties FontProperties "{6A62000000000003}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
         }
        }
       }
@@ -104,31 +127,32 @@ ButtonWidgetClass {
         VerticalAlign 3
        }
        "Is Visible" 0
-       Color 0.761 0.386 0.08 1
+       Color 0.5841 0.0369 0.0369 1
        style outline_2px
       }
       FrameWidgetClass "{647E22C6563F8B1D}" {
        Name "Disconnected"
        Slot OverlayWidgetSlot "{631F7CF5E5BFCB25}" {
-        HorizontalAlign 0
-        VerticalAlign 3
-        Padding 480 0 0 0
+        HorizontalAlign 2
+        VerticalAlign 1
+        Padding 0 0 12 0
        }
        "Is Visible" 0
        {
         ImageWidgetClass "{647E22C6563F8B1E}" {
          Name "Image0"
          Slot FrameWidgetSlot "{631F7CF5FB1BD72E}" {
-          Anchor 0 0 1 1
-          PositionX 398.996
-          OffsetLeft 50
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
           PositionY 0
           OffsetTop 0
-          SizeX -405
-          OffsetRight 0
-          SizeY 0
-          OffsetBottom 0
+          SizeX 20
+          OffsetRight -20
+          SizeY 20
+          OffsetBottom -20
          }
+         Color 1 1 1 0.75
          Texture "{356FBF661306DFD6}UI/Images/LobbyImages/disconnect_icon.edds"
          Size 800 800
         }
@@ -137,28 +161,33 @@ ButtonWidgetClass {
       FrameWidgetClass "{647E22C6563F8B1F}" {
        Name "Killed"
        Slot OverlayWidgetSlot "{631F7CF5E5BFCB25}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-        Padding 100 0 0 0
+        HorizontalAlign 2
+        VerticalAlign 1
+        Padding 0 0 40 0
        }
        "Is Visible" 0
        {
         TextWidgetClass "{647E22C6563F8B00}" {
          Name "Text0"
          Slot FrameWidgetSlot "{631F7CCE0BFD509F}" {
-          PositionX 442.503
-          OffsetLeft 442.503
-          PositionY 3.88
-          OffsetTop 3.88
-          SizeX 42.473
-          OffsetRight -484.976
-          SizeY 30
-          OffsetBottom -33.88
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 40
+          OffsetRight -40
+          SizeY 24
+          OffsetBottom -24
          }
+         Color 0.5841 0.0369 0.0369 1
          Text "KIA"
-         "Font Size" 32
+         "Font Size" 16
          "Horizontal Alignment" Center
          "Vertical Alignment" Center
+         FontProperties FontProperties "{6A62000000000004}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
         }
        }
       }

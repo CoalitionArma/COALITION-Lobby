@@ -29,7 +29,7 @@ FrameWidgetClass {
       HorizontalAlign 3
       VerticalAlign 3
      }
-     Color 0.044 0.048 0.062 0.94
+     Color 0.0075 0.0086 0.0123 0.97
      Size 1920 1080
     }
     PanelWidgetClass "{631F7C6DE6B5229C}" {
@@ -39,8 +39,8 @@ FrameWidgetClass {
       VerticalAlign 3
      }
      "Z Order" 1
-     Color 0.591 0.591 0.591 1
-     style outline_4px
+     Color 1 1 1 0.013
+     style outline_2px
     }
     ScrollLayoutWidgetClass "{56691148E692435A}" {
      Prefab "{56691148E692435A}"
@@ -74,7 +74,7 @@ FrameWidgetClass {
     OffsetBottom 786.24
    }
    "Z Order" 9
-   Color 0.044 0.048 0.062 0.96
+   Color 0.0033 0.0037 0.0052 0.985
   }
   TextWidgetClass "{631F7C6DE6B5229E}" {
    Name "PlayerListText"
@@ -89,10 +89,14 @@ FrameWidgetClass {
     SizeY -1049.76
     OffsetBottom 786.24
    }
+   Color 0.3968 0.4564 0.6038 1
    "Z Order" 10
-   Text "Voice Channels"
-   "Font Size" 24
+   Text "VOICE CHANNELS"
+   "Font Size" 16
    "Vertical Alignment" Center
+   FontProperties FontProperties "{6A61000000001006}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
   }
   ImageWidgetClass "{631F7C6DE6B5BCE6}" {
    Name "HUDBackground"
@@ -139,7 +143,7 @@ FrameWidgetClass {
       OffsetBottom 14.519
      }
      "Z Order" 1
-     Color 0.044 0.048 0.062 0.94
+     Color 0.0033 0.0037 0.0052 0
      Size 512 512
      Mask "{E12BB5C5BD00269E}UI/Textures/Common/gradientTexture_Dither_right_512.edds"
      "Transition width" 1
@@ -159,10 +163,14 @@ FrameWidgetClass {
       SizeY -49.096
       OffsetBottom 24.632
      }
+     Color 0.8632 0.8879 0.9301 1
      "Z Order" 2
      Text "CRF S&D98 Stupid name this is | By Salami"
      "Font Size" 100
      "Vertical Alignment" Center
+     FontProperties FontProperties "{6A61000000001001}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
     }
     TextWidgetClass "{6A4A520000000A01}" {
      Name "ResultText"
@@ -182,6 +190,9 @@ FrameWidgetClass {
      "Font Size" 44
      "Horizontal Alignment" Right
      "Vertical Alignment" Center
+     FontProperties FontProperties "{6A61000000001002}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
     }
     TextWidgetClass "{6A4A520000000A03}" {
      Name "LinkText"
@@ -197,11 +208,14 @@ FrameWidgetClass {
       OffsetBottom -100
      }
      "Z Order" 2
-     Color 0.8 0.8 0.8 1
+     Color 0.3968 0.4564 0.6038 1
      Text ""
      "Font Size" 24
      "Horizontal Alignment" Right
      "Vertical Alignment" Center
+     FontProperties FontProperties "{6A61000000001003}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
     }
     ImageWidgetClass "{631F7C6DE6B5BCED}" {
      Name "HeaderBG"
@@ -216,11 +230,27 @@ FrameWidgetClass {
       SizeY 0
       OffsetBottom 0
      }
-     Color 0.044 0.048 0.062 1
+     Color 0.0033 0.0037 0.0052 1
      Size 512 512
      "Transition width" 1
      Progress 0.24
      "Mask Mode" "Include Below"
+    }
+    ImageWidgetClass "{6A61000000001004}" {
+     Name "HeaderDivider"
+     Slot FrameWidgetSlot "{6A61000000001005}" {
+      Anchor 0 1 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY -1
+      OffsetTop -1
+      SizeX 0
+      OffsetRight 0
+      SizeY 1
+      OffsetBottom 0
+     }
+     "Z Order" 3
+     Color 1 1 1 0.013
     }
    }
   }
@@ -397,7 +427,7 @@ FrameWidgetClass {
         SizeY 0
         OffsetBottom 0
        }
-       Color 0.044 0.048 0.062 0.94
+       Color 0.0075 0.0086 0.0123 0.97
       }
       OverlayWidgetClass "{631F7C45C75A96BC}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
        Name "DescriptionList"
@@ -440,7 +470,7 @@ FrameWidgetClass {
         SizeY 0
         OffsetBottom 0
        }
-       Color 0.055 0.09 0.19 1
+       Color 0.011 0.0137 0.0212 1
       }
       TextWidgetClass "{631F7C45C75A96B1}" {
        Name "MissionText"
@@ -455,9 +485,14 @@ FrameWidgetClass {
         SizeY 0
         OffsetBottom 0
        }
-       Text "Mission Description"
+       "Font Size" 15
+       Color 0.3968 0.4564 0.6038 1
+       Text "BRIEFING"
        "Horizontal Alignment" Center
        "Vertical Alignment" Center
+       FontProperties FontProperties "{6A6100000000100E}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
       ButtonWidgetClass "{631F7C45C75AD176}" {
        Name "BackButton"
@@ -485,7 +520,10 @@ FrameWidgetClass {
          Name "BackText"
          Slot ButtonWidgetSlot "{62F06D4306D37B6C}" {
          }
-         Text "<- Back"
+         Text "‹  BACK"
+         FontProperties FontProperties "{6A6100000000100F}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
         }
        }
       }
@@ -607,7 +645,7 @@ FrameWidgetClass {
       SizeY 0
       OffsetBottom 0
      }
-     Color 0.044 0.048 0.062 0.94
+     Color 0.0075 0.0086 0.0123 0.97
      Size 1920 1080
      "Transition width" 0.21
     }
@@ -624,7 +662,7 @@ FrameWidgetClass {
       SizeY 0
       OffsetBottom 0
      }
-     Color 0 0.584 1 0.129
+     Color 0.0075 0.0086 0.0123 1
      Size 512 512
      "Transition width" 1
      Progress 0.41
@@ -643,7 +681,12 @@ FrameWidgetClass {
       SizeY 0
       OffsetBottom 0
      }
-     Text "Slots"
+     "Font Size" 15
+     Color 0.3968 0.4564 0.6038 1
+     Text "SLOTS"
+     FontProperties FontProperties "{6A61000000001009}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
     }
     FrameWidgetClass "{631F7C6DE6B52294}" {
      Name "Factions"
@@ -672,7 +715,7 @@ FrameWidgetClass {
         SizeY 0
         OffsetBottom 0
        }
-       Color 0 0.584 1 0.129
+       Color 0.011 0.0137 0.0212 1
       }
       FrameWidgetClass "{631F7C6DE6B6C63C}" {
        Name "BluforButton"
@@ -701,7 +744,7 @@ FrameWidgetClass {
           SizeY 0
           OffsetBottom 0
          }
-         Color 0.044 0.048 0.062 1
+         Color 0.0075 0.0086 0.0123 1
         }
         TextWidgetClass "{631F7C6DE6B6C63E}" {
          Name "SlotsBlufor"
@@ -721,6 +764,9 @@ FrameWidgetClass {
          "Min Font Size" 12
          "Horizontal Alignment" Center
          "Vertical Alignment" Center
+         FontProperties FontProperties "{6A6100000000100A}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
         }
         ImageWidgetClass "{631F7C6DE6B6C639}" {
          Name "FlagBlufor"
@@ -809,7 +855,7 @@ FrameWidgetClass {
         SizeY 0
         OffsetBottom 0
        }
-       Color 0 0.584 1 0.129
+       Color 0.011 0.0137 0.0212 1
       }
       FrameWidgetClass "{631F7C6DE6B6C634}" {
        Name "OpforButton"
@@ -838,7 +884,7 @@ FrameWidgetClass {
           SizeY 0
           OffsetBottom 0
          }
-         Color 0.044 0.048 0.062 1
+         Color 0.0075 0.0086 0.0123 1
         }
         TextWidgetClass "{631F7C6DE6B6C636}" {
          Name "SlotsOpfor"
@@ -858,6 +904,9 @@ FrameWidgetClass {
          "Min Font Size" 12
          "Horizontal Alignment" Center
          "Vertical Alignment" Center
+         FontProperties FontProperties "{6A6100000000100B}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
         }
         ImageWidgetClass "{631F7C6DE6B64D90}" {
          Name "FlagOpfor"
@@ -946,7 +995,7 @@ FrameWidgetClass {
         SizeY 0
         OffsetBottom 0
        }
-       Color 0 0.584 1 0.129
+       Color 0.011 0.0137 0.0212 1
       }
       FrameWidgetClass "{631F7C6DE6B64D8B}" {
        Name "IndforButton"
@@ -975,7 +1024,7 @@ FrameWidgetClass {
           SizeY 0
           OffsetBottom 0
          }
-         Color 0.044 0.048 0.062 1
+         Color 0.0075 0.0086 0.0123 1
         }
         TextWidgetClass "{631F7C6DE6B64D89}" {
          Name "SlotsIndfor"
@@ -995,6 +1044,9 @@ FrameWidgetClass {
          "Min Font Size" 12
          "Horizontal Alignment" Center
          "Vertical Alignment" Center
+         FontProperties FontProperties "{6A6100000000100C}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
         }
         ImageWidgetClass "{631F7C6DE6B64D88}" {
          Name "FlagIndfor"
@@ -1083,7 +1135,7 @@ FrameWidgetClass {
         SizeY 0
         OffsetBottom 0
        }
-       Color 0 0.584 1 0.129
+       Color 0.011 0.0137 0.0212 1
       }
       FrameWidgetClass "{631F7C6DE6B64D83}" {
        Name "CivButton"
@@ -1112,7 +1164,7 @@ FrameWidgetClass {
           SizeY 0
           OffsetBottom 0
          }
-         Color 0.044 0.048 0.062 1
+         Color 0.0075 0.0086 0.0123 1
         }
         TextWidgetClass "{631F7C6DE6B620C8}" {
          Name "SlotsCiv"
@@ -1132,6 +1184,9 @@ FrameWidgetClass {
          "Min Font Size" 12
          "Horizontal Alignment" Center
          "Vertical Alignment" Center
+         FontProperties FontProperties "{6A6100000000100D}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
         }
         ImageWidgetClass "{631F7C6DE6B620CB}" {
          Name "FlagCiv"
@@ -1547,7 +1602,7 @@ FrameWidgetClass {
       OffsetBottom 98
      }
      Clipping Ancestor
-     Color 0.044 0.048 0.062 0.96
+     Color 0.0075 0.0086 0.0123 1
     }
     TextWidgetClass "{6462508724C243CD}" {
      Name "PlayersText"
@@ -1562,10 +1617,14 @@ FrameWidgetClass {
       SizeY -131.238
       OffsetBottom 98
      }
+     Color 0.3968 0.4564 0.6038 1
      Clipping Ancestor
      Text "Players: 84"
      "Horizontal Alignment" Center
      "Vertical Alignment" Center
+     FontProperties FontProperties "{6A61000000001010}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
     }
     ImageWidgetClass "{6462508724C243CB}" {
      Name "TimeBG"
@@ -1580,7 +1639,7 @@ FrameWidgetClass {
       SizeY -70.094
       OffsetBottom 35
      }
-     Color 0.044 0.048 0.062 0.96
+     Color 0.0075 0.0086 0.0123 1
     }
     TextWidgetClass "{6462508724C243CA}" {
      Name "TimeText"
@@ -1595,9 +1654,13 @@ FrameWidgetClass {
       SizeY -65.229
       OffsetBottom 35
      }
+     Color 0.3968 0.4564 0.6038 1
      Text "Time: 19:27"
      "Horizontal Alignment" Center
      "Vertical Alignment" Center
+     FontProperties FontProperties "{6A61000000001011}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
     }
     ImageWidgetClass "{6462508724C1D3D3}" {
      Name "WeatherBG"
@@ -1612,7 +1675,7 @@ FrameWidgetClass {
       SizeY -65.888
       OffsetBottom 0
      }
-     Color 0.044 0.048 0.062 0.96
+     Color 0.0075 0.0086 0.0123 1
     }
     TextWidgetClass "{6462508724C1D3D0}" {
      Name "WeatherText"
@@ -1627,11 +1690,15 @@ FrameWidgetClass {
       SizeY -66.862
       OffsetBottom 0
      }
+     Color 0.3968 0.4564 0.6038 1
      Text "Weather: Rainy"
      "Min Font Size" 4
      "Horizontal Alignment" Center
      "Vertical Alignment" Center
      Wrap 1
+     FontProperties FontProperties "{6A61000000001012}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
     }
    }
   }
@@ -1666,6 +1733,22 @@ FrameWidgetClass {
    "Is Enabled" 0
    "Z Order" 100
    Color 0 0 0 1
+  }
+  ImageWidgetClass "{6A61000000001007}" {
+   Name "PlayerListAccent"
+   Slot FrameWidgetSlot "{6A61000000001008}" {
+    Anchor 1 0 1 0
+    PositionX -209.28
+    OffsetLeft -209.28
+    PositionY 293
+    OffsetTop 293
+    SizeX 211.2
+    OffsetRight -1.92
+    SizeY 2
+    OffsetBottom -295
+   }
+   "Z Order" 11
+   Color 0.5841 0.0369 0.0369 1
   }
  }
 }

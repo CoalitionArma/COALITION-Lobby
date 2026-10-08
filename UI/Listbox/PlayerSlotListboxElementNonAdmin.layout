@@ -1,7 +1,8 @@
 ButtonWidgetClass {
  Name "rootFrame"
- Slot AlignableSlot "{62F2056BF4F1EC36}" {
+ Slot AlignableSlot "{6A5F000000001054}" {
   HorizontalAlign 3
+  VerticalAlign 3
  }
  components {
   COA_ListBoxElementComponent "{62F200F0C4795E5F}" {
@@ -9,247 +10,275 @@ ButtonWidgetClass {
  }
  style blank
  {
-  SizeLayoutWidgetClass "{630A257D04E95402}" {
+  SizeLayoutWidgetClass "{6A5F000000001058}" {
    Name "SizeLayout"
-   Slot ButtonWidgetSlot "{5548E6E7E6AEDDC1}" {
+   Slot ButtonWidgetSlot "{6A5F000000001055}" {
     HorizontalAlign 3
    }
    AllowHeightOverride 1
-   HeightOverride 36
+   HeightOverride 44
    {
-    OverlayWidgetClass "{630A257D04E95400}" {
+    OverlayWidgetClass "{6A5F000000001057}" {
      Name "Overlay"
-     Slot ButtonWidgetSlot "{5548E6E7F213FB11}" {
+     Slot ButtonWidgetSlot "{6A5F000000001056}" {
       HorizontalAlign 3
       VerticalAlign 3
      }
      Clipping False
      {
-      ImageWidgetClass "{6322404669020F6D}" {
+      ImageWidgetClass "{6A5F000000001044}" {
        Name "Image0"
-       Slot OverlayWidgetSlot "{630A2578A5208A35}" {
+       Slot OverlayWidgetSlot "{6A5F000000001043}" {
         HorizontalAlign 3
         VerticalAlign 3
        }
-       Color 0.042 0.042 0.042 0.137
-       Size 512 512
-       "Transition width" 1
-       Progress 0.52
+       Color 0.0075 0.0086 0.0123 0.97
       }
-      FrameWidgetClass "{6322404669020D21}" {
+      FrameWidgetClass "{6A5F000000001046}" {
        Name "ButtonLayout"
-       Slot OverlayWidgetSlot "{62F200F27385E1FB}" {
-        HorizontalAlign 0
+       Slot OverlayWidgetSlot "{6A5F000000001045}" {
+        HorizontalAlign 3
+        VerticalAlign 3
        }
        {
-        ImageWidgetClass "{632444CB4D4DDF93}" {
-         Name "RoleImageOutline"
-         Slot FrameWidgetSlot "{630C43F4485D0899}" {
-          Anchor 0 0 0 0
-          PositionX -6.864
-          OffsetLeft -6.864
-          PositionY -11.5
-          OffsetTop -11.5
-          SizeX 72.429
-          OffsetRight -65.565
-          SizeY 58.017
-          OffsetBottom -46.517
+        ImageWidgetClass "{6A5F000000001033}" {
+         Name "Divider1"
+         Slot FrameWidgetSlot "{6A5F000000001032}" {
+          Anchor 0 0 0 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 3
+          OffsetRight -3
+          SizeY 0
+          OffsetBottom 0
          }
-         "Z Order" -1
-         Texture "{7294DBB54D4BFED6}UI/Images/Ranks/SFC_Rank.edds"
-         Size 40 40
+         Color 1 1 1 1
         }
-        ImageWidgetClass "{632444CB4D4DDF92}" {
-         Name "RoleImage"
-         Slot FrameWidgetSlot "{630C43F4485D0897}" {
-          Anchor 0 0 0 0
-          PositionX -3.864
-          OffsetLeft -3.864
-          PositionY -8.5
-          OffsetTop -8.5
-          SizeX 66.429
-          OffsetRight -62.565
-          SizeY 52.017
-          OffsetBottom -43.517
+        ImageWidgetClass "{6A5F000000001035}" {
+         Name "Divider2"
+         Slot FrameWidgetSlot "{6A5F000000001034}" {
+          Anchor 0 0 0 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 1
+          OffsetRight -1
+          SizeY 0
+          OffsetBottom 0
          }
-         Texture "{7294DBB54D4BFED6}UI/Images/Ranks/SFC_Rank.edds"
-         Size 40 40
+         "Is Visible" 0
+         Color 1 1 1 0
         }
-        TextWidgetClass "{632444CB4D4DDE7F}" {
-         Name "PlayerName"
-         Slot FrameWidgetSlot "{630A2568FA12B1F6}" {
-          Anchor 0 0 0 0
-          PositionX 350
-          OffsetLeft 350
-          PositionY 4.137
-          OffsetTop 4.1
-          SizeX 125.719
-          OffsetRight -475.7
-          SizeY 25.863
-          OffsetBottom -30
+        ImageWidgetClass "{6A5F000000001037}" {
+         Name "RowDivider"
+         Slot FrameWidgetSlot "{6A5F000000001036}" {
+          Anchor 0 1 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY -1
+          OffsetTop -1
+          SizeX 0
+          OffsetRight 0
+          SizeY 1
+          OffsetBottom 0
          }
-         Clipping Ancestor
-         Color 1 1 1 0.85
-         Text "(Empty)"
-         "Min Font Size" 5
-         "Vertical Alignment" Center
-         Wrap 1
-         FontProperties FontProperties "{691EE844B280DCB4}" {
-          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-          OutlineSize 2
-         }
+         Color 1 1 1 0.012
         }
-        ButtonWidgetClass "{632444CB4D4DDED9}" {
+        ButtonWidgetClass "{6A5F000000001039}" {
          Name "SlotButton"
-         Slot FrameWidgetSlot "{630510543BD8CBB1}" {
+         Slot FrameWidgetSlot "{6A5F000000001038}" {
           Anchor 0 0 1 1
           PositionX 0
           OffsetLeft 0
-          PositionY 2
-          OffsetTop 2
+          PositionY 0
+          OffsetTop 0
           SizeX 0
           OffsetRight 0
-          SizeY -6
-          OffsetBottom 4
+          SizeY 0
+          OffsetBottom 0
          }
          Color 1 1 1 0
          components {
           ButtonComponent "{6305105441730952}" {
-           m_ColorButtonDefault 0 0 0 0
+           m_ColorButtonDefault 1 1 1 0
+           m_ColorButtonHovered 1 1 1 0.015
+           m_ColorButtonHoveredFocused 1 1 1 0.03
           }
           SCR_ButtonTextComponent "{630510843AEEE3AD}" {
           }
          }
         }
-        ImageWidgetClass "{632444CB4D4DDD19}" {
-         Name "Divider2"
-         Slot FrameWidgetSlot "{62F200F2FC6280BD}" {
-          Anchor 0.707 0.125 0.713 0.833
-          PositionX 0
-          OffsetLeft 0
-          PositionY 0
-          OffsetTop 0
-          SizeX 0
-          OffsetRight 0
-          SizeY 0
-          OffsetBottom 0
+        ImageWidgetClass "{6A5F00000000103B}" {
+         Name "RoleImageOutline"
+         Slot FrameWidgetSlot "{6A5F00000000103A}" {
+          Anchor 0 0.5 0 0.5
+          PositionX 12
+          OffsetLeft 12
+          PositionY -16
+          OffsetTop -16
+          SizeX 38
+          OffsetRight -50
+          SizeY 32
+          OffsetBottom -16
          }
-         Size 5 128
+         "Z Order" -1
+         Texture "{7294DBB54D4BFED6}UI/Images/Ranks/SFC_Rank.edds"
+         Size 40 40
+        }
+        ImageWidgetClass "{6A5F00000000103D}" {
+         Name "RoleImage"
+         Slot FrameWidgetSlot "{6A5F00000000103C}" {
+          Anchor 0 0.5 0 0.5
+          PositionX 14
+          OffsetLeft 14
+          PositionY -14
+          OffsetTop -14
+          SizeX 34
+          OffsetRight -48
+          SizeY 28
+          OffsetBottom -14
+         }
+         Texture "{7294DBB54D4BFED6}UI/Images/Ranks/SFC_Rank.edds"
+         Size 40 40
         }
         TextWidgetClass "{632444CB4D4DDDF9}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
          Name "RoleName"
-         Slot FrameWidgetSlot "{62F200F2FC62805A}" {
-          Anchor 0.099 0.119 0.69 0.833
-          PositionX 0
-          OffsetLeft 0
+         Slot FrameWidgetSlot "{6A5F00000000103E}" {
+          Anchor 0 0 0.55 1
+          PositionX 60
+          OffsetLeft 60
           PositionY 0
           OffsetTop 0
-          SizeX 0
-          OffsetRight 0
+          SizeX -94
+          OffsetRight 34
           SizeY 0
           OffsetBottom 0
          }
-         Color 1 1 1 0.85
+         Color 0.8632 0.8879 0.9301 1
          Text "Automatic Rifleman Assistant"
-         "Font Size" 24
-         "Min Font Size" 10
+         "Font Size" 20
+         "Min Font Size" 9
+         "Horizontal Alignment" Left
          "Vertical Alignment" Center
-         Wrap 1
-         FontProperties FontProperties "{546AF489DFD25402}" {
-          OutlineSize 2
+         Wrap 0
+         FontProperties FontProperties "{6A5F00000000103F}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+          OutlineSize 0
          }
         }
-        ImageWidgetClass "{632444CB4D4DDC31}" {
-         Name "Divider1"
-         Slot FrameWidgetSlot "{62F200F2FC628062}" {
-          Anchor 0.01 0.119 0.015 0.833
+        TextWidgetClass "{6A5F000000001042}" {
+         Name "PlayerName"
+         Slot FrameWidgetSlot "{6A5F000000001040}" {
+          Anchor 0.62 0 1 1
           PositionX 0
           OffsetLeft 0
           PositionY 0
           OffsetTop 0
-          SizeX 0
-          OffsetRight 0
+          SizeX -52
+          OffsetRight 52
           SizeY 0
           OffsetBottom 0
          }
-         Size 5 128
+         Clipping Ancestor
+         Color 0.8632 0.8879 0.9301 1
+         Text "(Empty)"
+         "Font Size" 19
+         "Min Font Size" 9
+         "Horizontal Alignment" Left
+         "Vertical Alignment" Center
+         Wrap 0
+         FontProperties FontProperties "{6A5F000000001041}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+          OutlineSize 0
+         }
         }
        }
       }
-      PanelWidgetClass "{630A257D04EACDDB}" {
+      PanelWidgetClass "{6A5F000000001048}" {
        Name "Border"
-       Slot OverlayWidgetSlot "{5548E6E7D859FCD2}" {
+       Slot OverlayWidgetSlot "{6A5F000000001047}" {
         HorizontalAlign 3
         VerticalAlign 3
        }
        "Is Visible" 0
-       Color 0.761 0.386 0.08 1
+       Color 0 0 0 1
        style outline_2px
       }
-      FrameWidgetClass "{631F7CF4C55AF57D}" {
+      FrameWidgetClass "{6A5F00000000104C}" {
        Name "Disconnected"
-       Slot OverlayWidgetSlot "{631F7CF5E5BFCB25}" {
-        HorizontalAlign 0
-        VerticalAlign 3
-        Padding 480 0 0 0
+       Slot OverlayWidgetSlot "{6A5F000000001049}" {
+        HorizontalAlign 2
+        VerticalAlign 1
+        Padding 0 0 16 0
        }
        "Is Visible" 0
        {
-        ImageWidgetClass "{631F7CF4C55AF578}" {
+        ImageWidgetClass "{6A5F00000000104B}" {
          Name "Image0"
-         Slot FrameWidgetSlot "{631F7CF5FB1BD72E}" {
-          Anchor 0 0 1 1
-          PositionX 398.996
-          OffsetLeft 50
+         Slot FrameWidgetSlot "{6A5F00000000104A}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
           PositionY 0
           OffsetTop 0
-          SizeX -405
-          OffsetRight 0
-          SizeY 0
-          OffsetBottom 0
+          SizeX 22
+          OffsetRight -22
+          SizeY 22
+          OffsetBottom -22
          }
+         Color 1 1 1 0.75
          Texture "{356FBF661306DFD6}UI/Images/LobbyImages/disconnect_icon.edds"
          Size 800 800
         }
        }
       }
-      FrameWidgetClass "{631F7CCFF3DCE0AB}" {
+      FrameWidgetClass "{6A5F000000001053}" {
        Name "Killed"
-       Slot OverlayWidgetSlot "{631F7CF5E5BFCB25}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-        Padding 100 0 0 0
+       Slot OverlayWidgetSlot "{6A5F00000000104F}" {
+        HorizontalAlign 2
+        VerticalAlign 1
+        Padding 0 0 44 0
        }
        "Is Visible" 0
        {
-        TextWidgetClass "{631F7CCE0BFD50B7}" {
+        TextWidgetClass "{6A5F000000001052}" {
          Name "Text0"
-         Slot FrameWidgetSlot "{631F7CCE0BFD509F}" {
-          PositionX 442.503
-          OffsetLeft 442.503
-          PositionY 3.88
-          OffsetTop 3.88
-          SizeX 42.473
-          OffsetRight -484.976
-          SizeY 30
-          OffsetBottom -33.88
+         Slot FrameWidgetSlot "{6A5F000000001050}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 44
+          OffsetRight -44
+          SizeY 26
+          OffsetBottom -26
          }
+         Color 0.5841 0.0369 0.0369 1
          Text "KIA"
-         "Font Size" 32
+         "Font Size" 18
+         "Min Font Size" 9
          "Horizontal Alignment" Center
          "Vertical Alignment" Center
+         Wrap 0
+         FontProperties FontProperties "{6A5F000000001051}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+          OutlineSize 0
+         }
         }
        }
       }
-      ImageWidgetClass "{691EE2BA4848E7E8}" {
+      ImageWidgetClass "{6A5F00000000104E}" {
        Name "Slotted"
-       Slot OverlayWidgetSlot "{691EE2BA2BBC4A73}" {
+       Slot OverlayWidgetSlot "{6A5F00000000104D}" {
         HorizontalAlign 3
         VerticalAlign 3
        }
        "Is Visible" 0
-       Opacity 0.25
-       Color 0.456 0.456 0.456 0.4813
+       Color 0.5841 0.0369 0.0369 0.12
       }
      }
     }

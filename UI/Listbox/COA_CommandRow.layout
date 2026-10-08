@@ -1,0 +1,73 @@
+SizeLayoutWidgetClass {
+ Name "CommandRow"
+ Slot AlignableSlot "{6A5D000000000001}" {
+  HorizontalAlign 3
+ }
+ AllowHeightOverride 1
+ HeightOverride 40
+ {
+  FrameWidgetClass "{6A5D000000000002}" {
+   Name "CommandRowFrame"
+   Slot AlignableSlot "{6A5D000000000003}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    ImageWidgetClass "{6A5D000000000004}" {
+     Name "CommandRowDivider"
+     Slot FrameWidgetSlot "{6A5D000000000005}" {
+      Anchor 0 1 1 1
+      PositionX 0
+      OffsetLeft 10
+      PositionY -1
+      OffsetTop -1
+      SizeX 0
+      OffsetRight 10
+      SizeY 1
+      OffsetBottom 0
+     }
+     Color 1 1 1 0.009
+    }
+    ImageWidgetClass "{6A5D00000000000C}" {
+     Name "RankIcon"
+     Slot FrameWidgetSlot "{6A5D00000000000D}" {
+      Anchor 0 0.5 0 0.5
+      PositionX 10
+      OffsetLeft 10
+      PositionY -15
+      OffsetTop -15
+      SizeX 38
+      OffsetRight -48
+      SizeY 30
+      OffsetBottom -15
+     }
+     Texture "{7294DBB54D4BFED6}UI/Images/Ranks/SFC_Rank.edds"
+     Size 40 40
+    }
+    TextWidgetClass "{6A5D000000000009}" {
+     Name "NameText"
+     Slot FrameWidgetSlot "{6A5D00000000000A}" {
+      Anchor 0 0 1 1
+      PositionX 58
+      OffsetLeft 58
+      PositionY 0
+      OffsetTop 0
+      SizeX -70
+      OffsetRight 12
+      SizeY 0
+      OffsetBottom 0
+     }
+     Color 0.8632 0.8879 0.9301 1
+     Text "Player"
+     "Font Size" 18
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A5D00000000000B}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+ }
+}

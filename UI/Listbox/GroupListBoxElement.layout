@@ -1,135 +1,155 @@
-HorizontalLayoutWidgetClass {
+SizeLayoutWidgetClass {
  Name "rootFrame"
- Slot AlignableSlot "{62F2056BF4F1EC36}" {
+ Slot AlignableSlot "{6A5F00000000106C}" {
   HorizontalAlign 3
+  Padding 0 12 0 0
  }
  components {
   COA_ListBoxElementComponent "{62F200F0C4795E5F}" {
   }
  }
+ AllowHeightOverride 1
+ HeightOverride 46
  {
-  FrameWidgetClass "{62F200F1C4383179}" {
+  FrameWidgetClass "{6A5F00000000106B}" {
    Name "RolesGroupNameFrame"
-   Slot LayoutSlot "{5D6D1B9A9C46FD9A}" {
-    HorizontalAlign 1
-    VerticalAlign 1
-    Padding 0 15 0 0
+   Slot AlignableSlot "{6A5F00000000106A}" {
+    HorizontalAlign 3
+    VerticalAlign 3
    }
    {
-    ImageWidgetClass "{630A257B0027630C}" {
-     Name "Underline"
-     Slot FrameWidgetSlot "{630A257B0027632B}" {
+    ImageWidgetClass "{6A5F00000000105A}" {
+     Name "GroupBG"
+     Slot FrameWidgetSlot "{6A5F000000001059}" {
+      Anchor 0 0 1 1
       PositionX 0
       OffsetLeft 0
-      PositionY 60
-      OffsetTop 60
-      SizeX 685
-      OffsetRight -685
-      SizeY 6
-      OffsetBottom -66
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+     Color 0.011 0.0137 0.0212 1
+    }
+    ImageWidgetClass "{6A5F00000000105C}" {
+     Name "Underline"
+     Slot FrameWidgetSlot "{6A5F00000000105B}" {
+      Anchor 0 0 0 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 4
+      OffsetRight -4
+      SizeY 0
+      OffsetBottom 0
      }
      Color 0 0.584 1 1
-     Texture "{E12BB5C5BD00269E}UI/Textures/Common/gradientTexture_Dither_right_512.edds"
-     Size 512 512
-     Mask "{E12BB5C5BD00269E}UI/Textures/Common/gradientTexture_Dither_right_512.edds"
-     "Transition width" 1
-     Progress 0.41
-     "Mask Mode" "Include Below"
     }
-    SizeLayoutWidgetClass "{630A25611F8F8635}" {
+    SizeLayoutWidgetClass "{6A5F000000001060}" {
      Name "SymbolWidget"
-     Slot FrameWidgetSlot "{630A25611F8F8419}" {
-      PositionX 155
-      OffsetLeft 155
-      PositionY 0.008
-      OffsetTop 0
-      SizeX 85.591
-      OffsetRight -240.6
-      SizeY 68.293
-      OffsetBottom -68.3
+     Slot FrameWidgetSlot "{6A5F00000000105D}" {
+      Anchor 0 0.5 0 0.5
+      PositionX 46
+      OffsetLeft 46
+      PositionY -14
+      OffsetTop -14
+      SizeX 40
+      OffsetRight -86
+      SizeY 28
+      OffsetBottom -14
      }
      AllowWidthOverride 1
-     WidthOverride 56
+     WidthOverride 40
      AllowHeightOverride 1
-     HeightOverride 56
+     HeightOverride 28
      {
-      ImageWidgetClass "{654E4E74662EF9C5}" {
+      ImageWidgetClass "{6A5F00000000105F}" {
        Name "SymbolImage"
-       Slot AlignableSlot "{654E4E74662EF63A}" {
+       Slot AlignableSlot "{6A5F00000000105E}" {
         HorizontalAlign 3
         VerticalAlign 3
-        Padding 3.25 8.5 3.25 15
        }
       }
      }
     }
-    ButtonWidgetClass "{62F200F1C438317A}" {
-     Name "LockButton"
-     Slot FrameWidgetSlot "{5F0F444E4EDB94DB}" {
-      PositionX 0.899
-      OffsetLeft 0.899
-      PositionY 13.365
-      OffsetTop 13.365
-      SizeX 30
-      OffsetRight -30.899
-      SizeY 30
-      OffsetBottom -43.365
+    TextWidgetClass "{6A5F000000001063}" {
+     Name "RolesGroupName"
+     Slot FrameWidgetSlot "{6A5F000000001061}" {
+      Anchor 0 0 1 1
+      PositionX 98
+      OffsetLeft 98
+      PositionY 0
+      OffsetTop 0
+      SizeX -114
+      OffsetRight 16
+      SizeY 0
+      OffsetBottom 0
      }
-     Color 0 1 0.019 0
+     Color 0.8632 0.8879 0.9301 1
+     Text "Alpha 1-1"
+     "Font Size" 22
+     "Min Font Size" 9
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     Wrap 0
+     FontProperties FontProperties "{6A5F000000001062}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+      OutlineSize 0
+     }
+    }
+    ImageWidgetClass "{6A5F000000001065}" {
+     Name "LockImage"
+     Slot FrameWidgetSlot "{6A5F000000001064}" {
+      Anchor 0 0.5 0 0.5
+      PositionX 16
+      OffsetLeft 16
+      PositionY -10
+      OffsetTop -10
+      SizeX 20
+      OffsetRight -36
+      SizeY 20
+      OffsetBottom -10
+     }
+     Color 1 1 1 0.75
+     Texture "{D17288006833490F}UI/Textures/Icons/icons_wrapperUI-32.imageset"
+     Image "server-unlocked"
+     Size 32 32
+    }
+    ButtonWidgetClass "{6A5F000000001069}" {
+     Name "LockButton"
+     Slot FrameWidgetSlot "{6A5F000000001066}" {
+      Anchor 0 0.5 0 0.5
+      PositionX 10
+      OffsetLeft 10
+      PositionY -16
+      OffsetTop -16
+      SizeX 32
+      OffsetRight -42
+      SizeY 32
+      OffsetBottom -16
+     }
+     Color 1 1 1 0
+     "no focus" 1
      components {
       ButtonComponent "{630510977F3D1728}" {
-       m_ColorButtonDefault 0 0 0 0
+       m_ColorButtonDefault 1 1 1 0
+       m_ColorButtonHovered 1 1 1 0.015
+       m_ColorButtonHoveredFocused 1 1 1 0.03
        m_ColorChildDefault 1 1 1 0
       }
       SCR_ButtonTextComponent "{630510977B26FDD9}" {
        m_BackgroundDefault 1 1 1 0
       }
      }
-     "no focus" 1
      {
-      FrameWidgetClass "{62F200F1C4383164}" {
+      FrameWidgetClass "{6A5F000000001068}" {
        Name "LockButtonFrame"
-       Slot ButtonWidgetSlot "{5EA8C93CB4241314}" {
+       Slot ButtonWidgetSlot "{6A5F000000001067}" {
        }
       }
-     }
-    }
-    ImageWidgetClass "{62F200F1C4383166}" {
-     Name "LockImage"
-     Slot FrameWidgetSlot "{5EA8C93CB43A445D}" {
-      Anchor 0 0 0 0
-      PositionX 0.899
-      OffsetLeft 0.899
-      PositionY 13.365
-      OffsetTop 13.365
-      SizeX 30
-      OffsetRight -30.899
-      SizeY 30
-      OffsetBottom -43.365
-     }
-     Texture "{D17288006833490F}UI/Textures/Icons/icons_wrapperUI-32.imageset"
-     Image "server-unlocked"
-     Size 32 32
-    }
-    TextWidgetClass "{62F200F1C4383167}" {
-     Name "RolesGroupName"
-     Slot FrameWidgetSlot "{5D6D1B9AA160592D}" {
-      PositionX 32.736
-      OffsetLeft 32.736
-      PositionY 12.532
-      OffsetTop 12.532
-      SizeX 121.56
-      OffsetRight -154.296
-      SizeY 32
-      OffsetBottom -44.532
-     }
-     Text "Alpha 1-1"
-     "Font Size" 32
-     "Min Font Size" 2
-     FontProperties FontProperties "{5E7CF04D9FE8FF4E}" {
-      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-      Bold 0
-      OutlineSize 2
      }
     }
    }

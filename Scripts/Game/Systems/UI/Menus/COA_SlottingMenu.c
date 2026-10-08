@@ -59,7 +59,18 @@ class COA_SlottingMenu: ChimeraMenuBase
 	protected int m_iSelectedplayerId = 0;      // Currently selected player ID
 	protected string m_sPlayerListSignature;    // Player list state last rendered by UpdatePlayerLists()
 	protected int m_LocalSlottingState;         // Local copy of slotting state
-	
+
+	//---------------------------------------------------------------------
+	// Layout (UI/Phases/Slotting.layout)
+	//---------------------------------------------------------------------
+	protected static const float COLUMN_BOTTOM_MARGIN = 20;	// gap under the three columns
+	protected static const float ADMIN_STRIP_HEIGHT = 76;	// AdminStrip height, added to that gap for admins
+	protected bool m_bAdminStripLaidOut;
+	protected string m_sYourSlotText;             // last text shown in the "Your slot" chip
+	protected string m_sCommandListSignature;     // last leader list shown in the Command panel
+	protected float m_fCommandListTimer;
+	protected static const float COMMAND_LIST_INTERVAL = 0.5;
+	protected static const ResourceName COMMAND_ROW_LAYOUT = "{6A5D3C0A7E21B4F2}UI/Listbox/COA_CommandRow.layout";
 	//---------------------------------------------------------------------
 	// Faction Resources
 	//---------------------------------------------------------------------
@@ -229,7 +240,7 @@ class COA_SlottingMenu: ChimeraMenuBase
 	protected void SetupWeatherInfo()
 	{
 		string currentStateName = ChimeraWorld.CastFrom(GetGame().GetWorld()).GetTimeAndWeatherManager().GetCurrentWeatherState().GetStateName();
-		TextWidget.Cast(m_wRoot.FindAnyWidget("WeatherText")).SetText("Weather: " + currentStateName);
+		TextWidget.Cast(m_wRoot.FindAnyWidget("WeatherText")).SetText(currentStateName);
 	}
 	
 	/**
@@ -247,11 +258,13 @@ class COA_SlottingMenu: ChimeraMenuBase
 		int gameState = COA_Gamemode.Cast(GetGame().GetGameMode()).m_GamemodeState; 
 		switch(gameState)
 		{
-			case 0: {m_wPreview.SetColor(Color.FromRGBA(122, 0, 0, 255)); break;}
-			case 1: {m_wSlotting.SetColor(Color.FromRGBA(122, 0, 0, 255)); break;}
-			case 2: {m_wGame.SetColor(Color.FromRGBA(122, 0, 0, 255)); break;}
-			case 3: {m_wAAR.SetColor(Color.FromRGBA(122, 0, 0, 255)); break;}
+			case 0: {m_wPreview.SetColor(COA_PhaseUI.ACCENT); break;}
+			case 1: {m_wSlotting.SetColor(COA_PhaseUI.ACCENT); break;}
+			case 2: {m_wGame.SetColor(COA_PhaseUI.ACCENT); break;}
+			case 3: {m_wAAR.SetColor(COA_PhaseUI.ACCENT); break;}
 		}
+
+		COA_PhaseUI.StyleStepper(m_wRoot, gameState);
 	}
 	
 	/**
@@ -274,7 +287,8 @@ class COA_SlottingMenu: ChimeraMenuBase
 		m_wRoot.FindAnyWidget("TabButtonUnslotted").SetVisible(isAdmin);
 		m_wRoot.FindAnyWidget("SlottingPhases").SetOpacity(0);
 		FrameWidget.Cast(m_wRoot.FindAnyWidget("AdvanceFrame")).SetOpacity(0);
-		
+		SetAdminStripVisible(false);
+
 		// If in game state, enable game button
 		if(m_Gamemode.m_GamemodeState == COA_EGamemodeState.GAME)
 			gameButton.SetEnabled(true);
@@ -288,6 +302,39 @@ class COA_SlottingMenu: ChimeraMenuBase
 		SCR_ButtonTextComponent.Cast(ButtonWidget.Cast(m_wRoot.FindAnyWidget("TabButtonUnslotted")).FindHandler(SCR_ButtonTextComponent)).m_OnClicked.Insert(ShowUnslottedTab);
 	}
 	
+	/**
+	 * Shows or hides the admin strip along the bottom edge (slot ratio, next slot phase, start
+	 * mission) and lifts the three columns above it while it is shown
+	 */
+	protected void SetAdminStripVisible(bool visible)
+	{
+		Widget strip = m_wRoot.FindAnyWidget("AdminStrip");
+		if (!strip)
+			return;
+
+		if (m_bAdminStripLaidOut && strip.IsVisible() == visible)
+			return;
+
+		m_bAdminStripLaidOut = true;
+		strip.SetVisible(visible);
+
+		float bottom = COLUMN_BOTTOM_MARGIN;
+		if (visible)
+			bottom += ADMIN_STRIP_HEIGHT;
+
+		array<string> columns = {"LeftFaction", "Center", "PlayerPanel"};
+		foreach (string column : columns)
+		{
+			Widget columnWidget = m_wRoot.FindAnyWidget(column);
+			if (!columnWidget)
+				continue;
+
+			float left, top, right, oldBottom;
+			FrameSlot.GetOffsets(columnWidget, left, top, right, oldBottom);
+			FrameSlot.SetOffsets(columnWidget, left, top, right, bottom);
+		}
+	}
+
 	/**
 	 * Initializes list components
 	 */
@@ -305,10 +352,10 @@ class COA_SlottingMenu: ChimeraMenuBase
 	protected void InitializeFactionDisplay()
 	{
 		// Set up each faction if valid
-		SetupFactionUIDisplay("BLUFOR", m_rBluforIcon, "BluforFrame", "FlagBlufor", "BluforBGSelect", Color.FromRGBA(34, 196, 244, 33));
-		SetupFactionUIDisplay("OPFOR", m_rOpforIcon, "OpforFrame", "FlagOpfor", "OpforBGSelect", Color.FromRGBA(238, 49, 47, 33));
-		SetupFactionUIDisplay("INDFOR", m_rIndforIcon, "IndforFrame", "FlagIndfor", "IndforBGSelect", Color.FromRGBA(0, 177, 79, 33));
-		SetupFactionUIDisplay("CIV", m_rCivIcon, "CivFrame", "FlagCiv", "CivBGSelect", Color.FromRGBA(168, 110, 207, 33));
+		SetupFactionUIDisplay("BLUFOR", m_rBluforIcon, "BluforFrame", "FlagBlufor", "BluforBGSelect", Color.FromSRGBA(28, 31, 40, 255));
+		SetupFactionUIDisplay("OPFOR", m_rOpforIcon, "OpforFrame", "FlagOpfor", "OpforBGSelect", Color.FromSRGBA(28, 31, 40, 255));
+		SetupFactionUIDisplay("INDFOR", m_rIndforIcon, "IndforFrame", "FlagIndfor", "IndforBGSelect", Color.FromSRGBA(28, 31, 40, 255));
+		SetupFactionUIDisplay("CIV", m_rCivIcon, "CivFrame", "FlagCiv", "CivBGSelect", Color.FromSRGBA(28, 31, 40, 255));
 	}
 	
 	/**
@@ -345,6 +392,19 @@ class COA_SlottingMenu: ChimeraMenuBase
 		m_wRoot.FindAnyWidget(frameWidget).SetVisible(true);
 		ImageWidget.Cast(m_wRoot.FindAnyWidget(flagWidget)).LoadImageTexture(0, iconResource);
 		m_wRoot.FindAnyWidget(bgSelectWidget).SetColor(bgColor);
+
+		// Faction card: the faction's own name under the key, and the fill bar in its colour
+		// (card widgets are named after the frame: "BluforFrame" -> "BluforSub", "BluforFill")
+		string cardPrefix = frameWidget.Substring(0, frameWidget.Length() - 5);
+		Faction faction = GetGame().GetFactionManager().GetFactionByKey(factionKey);
+
+		TextWidget subText = TextWidget.Cast(m_wRoot.FindAnyWidget(cardPrefix + "Sub"));
+		if (subText && faction)
+			subText.SetText(faction.GetFactionName());
+
+		Widget fill = m_wRoot.FindAnyWidget(cardPrefix + "Fill");
+		if (fill && faction)
+			fill.SetColor(faction.GetFactionColor());
 	}
 	
 	/**
@@ -397,10 +457,10 @@ class COA_SlottingMenu: ChimeraMenuBase
 	{
 		switch(factionKey)
 		{
-			case "BLU": return Color.FromRGBA(0, 20, 255, 255);
-			case "OPF": return Color.FromRGBA(188, 0, 0, 255);
-			case "IND": return Color.FromRGBA(0, 145, 43, 255);
-			case "CIV": return Color.FromRGBA(137, 0, 188, 255);
+			case "BLU": return Color.FromSRGBA(46, 94, 191, 255);
+			case "OPF": return Color.FromSRGBA(166, 44, 44, 255);
+			case "IND": return Color.FromSRGBA(36, 128, 72, 255);
+			case "CIV": return Color.FromSRGBA(117, 62, 158, 255);
 		}
 		
 		return Color.White;
@@ -421,6 +481,11 @@ class COA_SlottingMenu: ChimeraMenuBase
 		TextWidget.Cast(m_wRoot.FindAnyWidget("RatioBox2Text")).SetVisible(false);
 		ImageWidget.Cast(m_wRoot.FindAnyWidget("FinalImage")).SetVisible(false);
 		TextWidget.Cast(m_wRoot.FindAnyWidget("Final")).SetVisible(false);
+
+		// ...and the admin strip's ratio group with its labels
+		Widget ratioGroup = m_wRoot.FindAnyWidget("RatioCalc");
+		if (ratioGroup)
+			ratioGroup.SetVisible(false);
 	}
 	
 	/**
@@ -762,8 +827,7 @@ class COA_SlottingMenu: ChimeraMenuBase
 		m_bShowingUnslotted = false;
 		m_wRoot.FindAnyWidget("PlayerList").SetVisible(true);
 		m_wRoot.FindAnyWidget("UnslotPlayerList").SetVisible(false);
-		ButtonWidget.Cast(m_wRoot.FindAnyWidget("TabButtonPlayers")).SetColor(Color.FromRGBA(37, 37, 37, 255));
-		ButtonWidget.Cast(m_wRoot.FindAnyWidget("TabButtonUnslotted")).SetColor(Color.FromRGBA(11, 11, 11, 255));
+		SetPlayerPanelTab(true);
 	}
 	
 	/**
@@ -774,8 +838,40 @@ class COA_SlottingMenu: ChimeraMenuBase
 		m_bShowingUnslotted = true;
 		m_wRoot.FindAnyWidget("PlayerList").SetVisible(false);
 		m_wRoot.FindAnyWidget("UnslotPlayerList").SetVisible(true);
-		ButtonWidget.Cast(m_wRoot.FindAnyWidget("TabButtonPlayers")).SetColor(Color.FromRGBA(11, 11, 11, 255));
-		ButtonWidget.Cast(m_wRoot.FindAnyWidget("TabButtonUnslotted")).SetColor(Color.FromRGBA(37, 37, 37, 255));
+		SetPlayerPanelTab(false);
+	}
+
+	/**
+	 * Marks the active player panel tab: a raised background and an accent underline
+	 */
+	protected void SetPlayerPanelTab(bool playersActive)
+	{
+		Color active = Color.FromSRGBA(28, 31, 40, 255);
+		Color inactive = Color.FromSRGBA(21, 23, 29, 255);
+
+		Widget playersTab = m_wRoot.FindAnyWidget("TabButtonPlayers");
+		Widget unslottedTab = m_wRoot.FindAnyWidget("TabButtonUnslotted");
+		if (playersTab && unslottedTab)
+		{
+			if (playersActive)
+			{
+				playersTab.SetColor(active);
+				unslottedTab.SetColor(inactive);
+			}
+			else
+			{
+				playersTab.SetColor(inactive);
+				unslottedTab.SetColor(active);
+			}
+		}
+
+		Widget playersIndicator = m_wRoot.FindAnyWidget("TabPlayersIndicator");
+		if (playersIndicator)
+			playersIndicator.SetVisible(playersActive);
+
+		Widget unslottedIndicator = m_wRoot.FindAnyWidget("TabUnslottedIndicator");
+		if (unslottedIndicator)
+			unslottedIndicator.SetVisible(!playersActive);
 	}
 
 	/**
@@ -855,6 +951,9 @@ class COA_SlottingMenu: ChimeraMenuBase
 		// Set selected faction
 		m_fSelectedFaction = GetGame().GetFactionManager().GetFactionByKey(factionKey);
 
+		// Command panel follows on the next update instead of waiting for its timer
+		m_fCommandListTimer = COMMAND_LIST_INTERVAL;
+
 		// Update UI visibility for faction selection indicators
 		// This would be so much better if we had ternary operators #bohemiapls
 		if (bluforVisible)
@@ -877,8 +976,41 @@ class COA_SlottingMenu: ChimeraMenuBase
 		else
 			m_wRoot.FindAnyWidget("CivBGSelect").SetOpacity(0);
 
+		// Accent edge on the selected faction card
+		SetSelectEdge("BluforSelectEdge", bluforVisible);
+		SetSelectEdge("OpforSelectEdge", opforVisible);
+		SetSelectEdge("IndforSelectEdge", indforVisible);
+		SetSelectEdge("CivSelectEdge", civVisible);
+
+		// Slot list header: faction key and name, with a bar in the faction colour
+		if (m_fSelectedFaction)
+		{
+			TextWidget title = TextWidget.Cast(m_wRoot.FindAnyWidget("SlotListTitle"));
+			if (title)
+				title.SetText(factionKey + "  ·  " + m_fSelectedFaction.GetFactionName());
+
+			Widget accent = m_wRoot.FindAnyWidget("SlotListAccent");
+			if (accent)
+				accent.SetColor(m_fSelectedFaction.GetFactionColor());
+		}
+
 		// Update slot list for selected faction
 		UpdateSlots();
+	}
+
+	/**
+	 * Shows or hides one faction card's selected-state edge
+	 */
+	protected void SetSelectEdge(string widgetName, bool selected)
+	{
+		Widget edge = m_wRoot.FindAnyWidget(widgetName);
+		if (!edge)
+			return;
+
+		if (selected)
+			edge.SetOpacity(1);
+		else
+			edge.SetOpacity(0);
 	}
 	
 	/**
@@ -1663,7 +1795,7 @@ class COA_SlottingMenu: ChimeraMenuBase
 		
 		// Update player count text
 		int playerCount = GetGame().GetPlayerManager().GetPlayerCount();
-		TextWidget.Cast(GetCachedWidget("PlayersText")).SetText("Players: " + playerCount);
+		TextWidget.Cast(GetCachedWidget("PlayersText")).SetText(playerCount.ToString() + " players");
 		
 		// Update faction ratio calculation
 		UpdateRatioCalculation(playerCount);
@@ -1671,6 +1803,14 @@ class COA_SlottingMenu: ChimeraMenuBase
 		// Update faction slot counts
 		UpdateFactionSlotCounts();
 		
+		// Command panel: leaders of the selected faction (checked twice a second)
+		m_fCommandListTimer += tDelta;
+		if (m_fCommandListTimer >= COMMAND_LIST_INTERVAL)
+		{
+			m_fCommandListTimer = 0;
+			RefreshCommandList();
+		}
+
 		// Update slotting phase display
 		UpdateSlottingPhaseDisplay();
 		
@@ -1744,7 +1884,7 @@ class COA_SlottingMenu: ChimeraMenuBase
 		else
 			hourString = hours.ToString();
 		
-		TextWidget.Cast(GetCachedWidget("TimeText")).SetText("Time: " + hourString + ":" + minuteString);
+		TextWidget.Cast(GetCachedWidget("TimeText")).SetText(hourString + ":" + minuteString);
 	}
 	
 	/**
@@ -2001,6 +2141,188 @@ class COA_SlottingMenu: ChimeraMenuBase
 			ImageWidget.Cast(GetCachedWidget("CivFactionLock")).SetColor(Color.FromRGBA(255, 255, 255, 0));
 			ButtonWidget.Cast(GetCachedWidget("ButtonCiv")).SetEnabled(true);
 		}
+
+		// Faction card fill bars and the slot list's "x / y slotted"
+		SetFactionFill("BluforFill", m_iTakenBluforSlots, m_iBluforSlots);
+		SetFactionFill("OpforFill", m_iTakenOpforSlots, m_iOpforSlots);
+		SetFactionFill("IndforFill", m_iTakenIndforSlots, m_iIndforSlots);
+		SetFactionFill("CivFill", m_iTakenCivSlots, m_iCivSlots);
+		UpdateSlotListCount();
+		UpdateYourSlot();
+	}
+
+	/**
+	 * Sizes a faction card's fill bar to taken / total
+	 */
+	protected void SetFactionFill(string widgetName, int taken, int total)
+	{
+		Widget fill = GetCachedWidget(widgetName);
+		if (!fill)
+			return;
+
+		float ratio;
+		if (total > 0)
+		{
+			ratio = taken;
+			ratio = Math.Clamp(ratio / total, 0, 1);
+		}
+
+		FrameSlot.SetAnchorMax(fill, ratio, 1);
+	}
+
+	/**
+	 * "18 / 24 slotted" for the faction shown in the slot list
+	 */
+	protected void UpdateSlotListCount()
+	{
+		TextWidget countText = TextWidget.Cast(GetCachedWidget("SlotListCount"));
+		if (!countText || !m_fSelectedFaction)
+			return;
+
+		int taken, total;
+		switch (m_fSelectedFaction.GetFactionKey())
+		{
+			case "BLUFOR": { taken = m_iTakenBluforSlots; total = m_iBluforSlots; break; }
+			case "OPFOR": { taken = m_iTakenOpforSlots; total = m_iOpforSlots; break; }
+			case "INDFOR": { taken = m_iTakenIndforSlots; total = m_iIndforSlots; break; }
+			case "CIV": { taken = m_iTakenCivSlots; total = m_iCivSlots; break; }
+		}
+
+		countText.SetText(taken.ToString() + " / " + total.ToString() + " slotted");
+	}
+
+	/**
+	 * Command panel (left column, "CommandRows"): each slotted squad leader of the selected faction -
+	 * rank icon and name - in the same order as the slot list. Rebuilt only when that changes.
+	 */
+	protected void RefreshCommandList()
+	{
+		VerticalLayoutWidget rows = VerticalLayoutWidget.Cast(GetCachedWidget("CommandRows"));
+		if (!rows || !m_fSelectedFaction)
+			return;
+
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+		if (!slottingManager)
+			return;
+
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		bool isAdmin = SCR_Global.IsAdmin(SCR_PlayerController.GetLocalPlayerId());
+
+		array<ResourceName> icons = {};
+		array<string> names = {};
+		string signature = m_fSelectedFaction.GetFactionKey();
+
+		foreach (SCR_AIGroup group : GetPlayableGroupsForSelectedFaction())
+		{
+			if (!group || (group.IsPrivate() && !isAdmin))
+				continue;
+
+			RplId groupId;
+			if (!COA_ReplicationHelper.GetRplId(group, groupId))
+				continue;
+
+			foreach (int slotId : slottingManager.GetAllSlotIDsForGroup(groupId))
+			{
+				COA_SlotData slotData = slottingManager.GetSlotData(slotId);
+				if (!slotData)
+					continue;
+
+				if (GetGame().GetFactionManager().GetFactionByKey(slotData.GetSlotFactionKey()) != m_fSelectedFaction)
+					continue;
+
+				// Squad leaders only, and only once someone has taken the slot
+				if (slotData.GetSlotType() != COA_ESlotType.SQUAD_LEADER)
+					continue;
+
+				int playerId = slotData.GetSlotCurrentPlayerId();
+				if (playerId <= 0)
+					continue;
+
+				string playerName = playerManager.GetPlayerName(playerId);
+				icons.Insert(slotData.GetSlotIconResource());
+				names.Insert(playerName);
+				signature += "|" + slotId.ToString() + ":" + playerName;
+			}
+		}
+
+		if (signature == m_sCommandListSignature)
+			return;
+
+		m_sCommandListSignature = signature;
+
+		while (rows.GetChildren())
+		{
+			rows.GetChildren().RemoveFromHierarchy();
+		}
+
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		foreach (int i, string playerName : names)
+		{
+			Widget row = workspace.CreateWidgets(COMMAND_ROW_LAYOUT, rows);
+			if (!row)
+				continue;
+
+			TextWidget nameText = TextWidget.Cast(row.FindAnyWidget("NameText"));
+			if (nameText)
+				nameText.SetText(playerName);
+
+			ImageWidget rankIcon = ImageWidget.Cast(row.FindAnyWidget("RankIcon"));
+			if (!rankIcon)
+				continue;
+
+			// Same as the slot list's role image (COA_ListboxElementComponent.SetRoleImage)
+			ResourceName icon = icons[i];
+			if (icon.IsEmpty())
+				rankIcon.SetVisible(false);
+			else if (icon.EndsWith("imageset"))
+				rankIcon.LoadImageFromSet(0, icon, "roleimage");
+			else
+				rankIcon.LoadImageTexture(0, icon);
+		}
+	}
+
+	/**
+	 * "Your slot" chip in the phase status row: the local player's group and role, hidden while
+	 * they have no slot
+	 */
+	protected void UpdateYourSlot()
+	{
+		Widget chip = GetCachedWidget("YourSlotFrame");
+		if (!chip)
+			return;
+
+		string slotText;
+		int localPlayerId = SCR_PlayerController.GetLocalPlayerId();
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+		COA_SlotData slotData;
+		if (slottingManager)
+			slotData = slottingManager.GetPlayerSlotData(localPlayerId);
+
+		if (slotData)
+		{
+			slotText = slotData.GetSlotName();
+			SCR_AIGroup group = slottingManager.GetPlayerSlotGroup(localPlayerId);
+			if (group)
+				slotText = group.GetCustomNameWithOriginal() + "  ·  " + slotText;
+		}
+
+		if (slotText == m_sYourSlotText)
+			return;
+
+		m_sYourSlotText = slotText;
+		chip.SetVisible(!slotText.IsEmpty());
+
+		TextWidget chipText = TextWidget.Cast(GetCachedWidget("YourSlotText"));
+		if (chipText)
+			chipText.SetText(slotText);
+
+		Widget dot = GetCachedWidget("YourSlotDot");
+		Faction slotFaction;
+		if (slottingManager)
+			slotFaction = slottingManager.GetPlayerSlotFaction(localPlayerId, true);
+
+		if (dot && slotFaction)
+			dot.SetColor(slotFaction.GetFactionColor());
 	}
 	
 	/**
@@ -2019,13 +2341,18 @@ class COA_SlottingMenu: ChimeraMenuBase
 		// Update phase text based on current slotting state
 		string phaseText;
 		if(m_Gamemode.m_SlottingState == 0)
-			phaseText = "Leaders and Medics";
+			phaseText = "PHASE 1 OF 3  ·  LEADERS & MEDICS ONLY";
 		else if(m_Gamemode.m_SlottingState == 1)
-			phaseText = "Specialties";
+			phaseText = "PHASE 2 OF 3  ·  SPECIALTIES";
 		else
-			phaseText = "Everyone";
-			
+			phaseText = "PHASE 3 OF 3  ·  OPEN TO EVERYONE";
+
 		TextWidget.Cast(GetCachedWidget("CurrentSlotPhase")).SetText(phaseText);
+
+		// "Other roles unlock..." only means something before the last phase
+		Widget hint = GetCachedWidget("SlotPhaseHint");
+		if (hint)
+			hint.SetVisible(m_Gamemode.m_SlottingState < 2);
 	}
 	
 	/**
@@ -2050,6 +2377,7 @@ class COA_SlottingMenu: ChimeraMenuBase
 			GetCachedWidget("SlottingPhases").SetOpacity(1);
 			FrameWidget.Cast(GetCachedWidget("AdvanceFrame")).SetOpacity(1);
 			GetCachedWidget("TabButtonUnslotted").SetVisible(true);
+			SetAdminStripVisible(true);
 		}
 	}
 	

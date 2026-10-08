@@ -25,6 +25,13 @@ class COA_PreviewMenu: ChimeraMenuBase
 	protected bool m_bFocusOnDescription = false;             // Tracks which panel controller focus should jump to next
 	protected string m_sPlayerListSignature;                  // Last player list state, so the list is only rebuilt when it changes
 
+	// Players drawer (UI/Phases/Briefing.layout "Players"): PositionX with only the 44px tab on
+	// screen, and fully out
+	protected static const float PLAYERS_DRAWER_CLOSED_X = -44;
+	protected static const float PLAYERS_DRAWER_OPEN_X = -444;
+	protected ref COA_HoverDrawer m_PlayersDrawer;
+	protected int m_iPlayersDrawerCount;
+
 	//--- MENU LIFECYCLE METHODS ---
 	
 	/**
@@ -70,6 +77,10 @@ class COA_PreviewMenu: ChimeraMenuBase
 		
 		// Initialize phase indicators
 		SetupPhaseIndicators();
+
+		// Players drawer on the right edge
+		m_iPlayersDrawerCount = -1;
+		SetupPlayersDrawer();
 		
 		// Setup player and description lists
 		SetupListComponents();
@@ -173,7 +184,7 @@ class COA_PreviewMenu: ChimeraMenuBase
 	protected void UpdateWeatherText()
 	{
 		string currentStateName = ChimeraWorld.CastFrom(GetGame().GetWorld()).GetTimeAndWeatherManager().GetCurrentWeatherState().GetStateName();
-		TextWidget.Cast(m_wRoot.FindAnyWidget("WeatherText")).SetText("Weather: " + currentStateName);
+		TextWidget.Cast(m_wRoot.FindAnyWidget("WeatherText")).SetText(currentStateName);
 	}
 	
 	/**
@@ -195,11 +206,62 @@ class COA_PreviewMenu: ChimeraMenuBase
 		int gameState = m_Gamemode.m_GamemodeState;
 		switch(gameState)
 		{
-			case 0: {m_wPreview.SetColor(Color.FromRGBA(122, 0, 0, 255)); break;}
-			case 1: {m_wSlotting.SetColor(Color.FromRGBA(122, 0, 0, 255)); break;}
-			case 2: {m_wGame.SetColor(Color.FromRGBA(122, 0, 0, 255)); break;}
-			case 3: {m_wAAR.SetColor(Color.FromRGBA(122, 0, 0, 255)); break;}
+			case 0: {m_wPreview.SetColor(COA_PhaseUI.ACCENT); break;}
+			case 1: {m_wSlotting.SetColor(COA_PhaseUI.ACCENT); break;}
+			case 2: {m_wGame.SetColor(COA_PhaseUI.ACCENT); break;}
+			case 3: {m_wAAR.SetColor(COA_PhaseUI.ACCENT); break;}
 		}
+
+		COA_PhaseUI.StyleStepper(m_wRoot, gameState);
+	}
+
+	/**
+	 * Players drawer on the right edge: tucked away with only its tab showing, slides out on hover
+	 */
+	protected void SetupPlayersDrawer()
+	{
+		Widget drawer = m_wRoot.FindAnyWidget("Players");
+		if (!drawer)
+			return;
+
+		m_PlayersDrawer = new COA_HoverDrawer(drawer, PLAYERS_DRAWER_CLOSED_X, PLAYERS_DRAWER_OPEN_X);
+		m_PlayersDrawer.m_OnOpenChanged.Insert(OnPlayersDrawerChanged);
+		OnPlayersDrawerChanged(false);
+	}
+
+	/**
+	 * Flips the drawer tab's arrow
+	 */
+	protected void OnPlayersDrawerChanged(bool open)
+	{
+		TextWidget arrow = TextWidget.Cast(m_wRoot.FindAnyWidget("PlayersTabArrow"));
+		if (!arrow)
+			return;
+
+		if (open)
+			arrow.SetText("›");
+		else
+			arrow.SetText("‹");
+	}
+
+	/**
+	 * Player count on the drawer tab and in its header
+	 */
+	protected void UpdatePlayersDrawerCount()
+	{
+		int playerCount = GetGame().GetPlayerManager().GetPlayerCount();
+		if (playerCount == m_iPlayersDrawerCount)
+			return;
+
+		m_iPlayersDrawerCount = playerCount;
+
+		TextWidget tabLabel = TextWidget.Cast(m_wRoot.FindAnyWidget("PlayersTabLabel"));
+		if (tabLabel)
+			tabLabel.SetText(playerCount.ToString());
+
+		TextWidget headerCount = TextWidget.Cast(m_wRoot.FindAnyWidget("PlayersCount"));
+		if (headerCount)
+			headerCount.SetText(playerCount.ToString());
 	}
 	
 	/**
@@ -342,7 +404,13 @@ class COA_PreviewMenu: ChimeraMenuBase
 
 		// Check for admin privileges
 		CheckAdminPrivileges();
-		
+
+		// Players drawer slide and its count
+		if (m_PlayersDrawer)
+			m_PlayersDrawer.Update(tDelta);
+
+		UpdatePlayersDrawerCount();
+
 		// Update chat panel
 		if (m_ChatPanel)
 			m_ChatPanel.OnUpdateChat(tDelta);
@@ -372,7 +440,7 @@ class COA_PreviewMenu: ChimeraMenuBase
 		else
 			hourString = hours.ToString();
 		
-		TextWidget.Cast(m_wRoot.FindAnyWidget("TimeText")).SetText("Time: " + hourString + ":" + minuteString);
+		TextWidget.Cast(m_wRoot.FindAnyWidget("TimeText")).SetText(hourString + ":" + minuteString);
 	}
 	
 	/**

@@ -2,17 +2,55 @@ ButtonWidgetClass {
  Name "rootFrame"
  Slot AlignableSlot "{62F2056BF4F1EC36}" {
   HorizontalAlign 3
+  Padding 0 0 0 4
  }
  components {
   COA_ListBoxElementComponent "{62F200F0C4795E5F}" {
+   m_aEffects {
+    SCR_ButtonEffectColor "{6A5E000000000001}" {
+     m_eEvents 6159
+     m_sWidgetName "RowBG"
+     m_fAnimationTime 0.12
+     m_cDefault 0.0075 0.0086 0.0123 0.97
+     m_cHovered 0.011 0.0137 0.0212 1
+     m_cActivated 0.011 0.0137 0.0212 1
+     m_cActivatedHovered 0.0144 0.0168 0.0262 1
+     m_cFocusGained 0.011 0.0137 0.0212 1
+     m_cFocusLost 0.0075 0.0086 0.0123 0.97
+    }
+    SCR_ButtonEffectColor "{6A5E000000000002}" {
+     m_eEvents 6159
+     m_sWidgetName "RowAccent"
+     m_fAnimationTime 0.12
+     m_cDefault 0.5841 0.0369 0.0369 0
+     m_cHovered 0.5841 0.0369 0.0369 1
+     m_cActivated 0.5841 0.0369 0.0369 1
+     m_cActivatedHovered 0.5841 0.0369 0.0369 1
+     m_cFocusGained 0.5841 0.0369 0.0369 1
+     m_cFocusLost 0.5841 0.0369 0.0369 0
+    }
+    SCR_ButtonEffectColor "{6A5E000000000003}" {
+     m_eEvents 6159
+     m_sWidgetName "RowChevron"
+     m_fAnimationTime 0.12
+     m_cDefault 0.3968 0.4564 0.6038 1
+     m_cHovered 0.8632 0.8879 0.9301 1
+     m_cActivated 0.8632 0.8879 0.9301 1
+     m_cActivatedHovered 0.8632 0.8879 0.9301 1
+     m_cFocusGained 0.8632 0.8879 0.9301 1
+     m_cFocusLost 0.3968 0.4564 0.6038 1
+    }
+   }
   }
   ButtonComponent "{6321493DA94189C6}" {
    m_ColorButtonDefault 0 0 0 0
+   m_ColorButtonHovered 0 0 0 0
+   m_ColorButtonHoveredFocused 0 0 0 0
   }
   SCR_ButtonTextComponent "{6321493DB86CCCCD}" {
-   m_BackgroundSelected 0.76 0.392 0.08 0.3
+   m_BackgroundSelected 0 0 0 0
    m_sText ""
-   m_TextToggled 0.761 0.386 0.078 1
+   m_TextToggled 0.8632 0.8879 0.9301 1
   }
  }
  style blank
@@ -23,38 +61,66 @@ ButtonWidgetClass {
     HorizontalAlign 3
    }
    AllowHeightOverride 1
-   HeightOverride 36
+   HeightOverride 46
    MinDesiredWidth 107.7
    {
     OverlayWidgetClass "{631F6C83D256243C}" {
      Name "Overlay"
      Slot ButtonWidgetSlot "{5548E6E7F213FB11}" {
       HorizontalAlign 3
+      VerticalAlign 3
      }
      Clipping False
      {
       ImageWidgetClass "{631F6C83D256243D}" {
-       Name "Image0"
+       Name "RowBG"
        Slot OverlayWidgetSlot "{630A2578A5208A35}" {
         HorizontalAlign 3
+        VerticalAlign 3
        }
-       Color 0.042 0.042 0.042 1
-       Texture "{12B6C6BD1A72A47F}UI/Textures/Common/gradientTexture_Dither_up_512.edds"
-       Size 40 512
-       Mask "{099C73E0F66A5F28}UI/Textures/Common/gradientTexture_Dither_down_512.edds"
-       "Transition width" 1
-       Progress 0.52
+       Color 0.0075 0.0086 0.0123 0.97
+      }
+      ImageWidgetClass "{6A5E000000000011}" {
+       Name "RowAccent"
+       Slot OverlayWidgetSlot "{6A5E000000000012}" {
+        HorizontalAlign 0
+        VerticalAlign 3
+       }
+       Color 0.5841 0.0369 0.0369 0
+       Size 3 46
       }
       TextWidgetClass "{631F6C83D2562420}" {
        Name "Text"
        Slot OverlayWidgetSlot "{631F7C6D08A309EB}" {
-        HorizontalAlign 0
-        Padding 6 0 0 0
+        HorizontalAlign 3
+        VerticalAlign 1
+        Padding 18 0 40 0
        }
+       Color 0.8632 0.8879 0.9301 1
        Text "Blufor Brief"
-       "Min Font Size" 5
+       "Font Size" 19
+       "Min Font Size" 11
        "Vertical Alignment" Center
        Wrap 1
+       FontProperties FontProperties "{6A5E000000000013}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{6A5E000000000014}" {
+       Name "RowChevron"
+       Slot OverlayWidgetSlot "{6A5E000000000015}" {
+        HorizontalAlign 2
+        VerticalAlign 1
+        Padding 0 0 16 0
+       }
+       Color 0.3968 0.4564 0.6038 1
+       Text "›"
+       "Font Size" 26
+       "Min Font Size" 14
+       "Vertical Alignment" Center
+       FontProperties FontProperties "{6A5E000000000016}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
       PanelWidgetClass "{631F6C83D256243E}" {
        Name "Border"

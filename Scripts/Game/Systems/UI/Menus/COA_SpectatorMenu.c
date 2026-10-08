@@ -19,6 +19,18 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	protected FrameWidget m_wFrameSlots;                     // Frame for displaying slots
 	protected FrameWidget m_wFrameChannels;                  // Frame for displaying VON channels
 	protected FrameWidget m_wFrameGameInfo;                  // Frame for displaying Game Info
+
+	// Pop-out panels (COA_HoverDrawer): PositionX with only the tab on screen, and fully out
+	protected static const float SLOTS_DRAWER_CLOSED_X = -200;
+	protected static const float SLOTS_DRAWER_OPEN_X = 0;
+	protected static const float CHANNELS_DRAWER_CLOSED_X = -20;
+	protected static const float CHANNELS_DRAWER_OPEN_X = -220;
+	protected static const float GAMEINFO_DRAWER_CLOSED_X = -150;
+	protected static const float GAMEINFO_DRAWER_OPEN_X = 0;
+	protected static const float DRAWER_TAB_FADE_SPEED = 6; // tab hint fades in about 1/6 s
+	protected ref COA_HoverDrawer m_SlotsDrawer;
+	protected ref COA_HoverDrawer m_ChannelsDrawer;
+	protected ref COA_HoverDrawer m_GameInfoDrawer;
 	protected FrameWidget m_wSlotWarning;                  	 // Frame for displaying the button to open slotting
 	protected COA_ListboxComponent m_wPlayerSlots;           // Listbox component for player slots
 	protected COA_ListboxComponent m_wVONChannels;           // Listbox component for VON channels
@@ -118,6 +130,7 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	protected Widget m_wDamageReportPanel;
 	protected ImageWidget m_wDamageReportBodyOutline;
 	protected TextWidget m_wDamageReportSubject;
+	protected TextWidget m_wDamageReportSummary;
 	protected TextWidget m_wDamageReportFatalRegion;
 	protected RichTextWidget m_wDamageReportLog;
 	protected ImageWidget m_wDamageRegionHead;
@@ -234,8 +247,10 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		if (notifComp)
 			notifComp.GetOnNotification().Insert(OnKillfeedNotification);
 
-		// Hover feedback on buttons without their own (COA_UIPolish)
-		m_UIPolish = new COA_MenuPolish(GetRootWidget(), false);
+		// Hover feedback on buttons without their own (COA_UIPolish). Not on the in-world player icons:
+		// their buttons are invisible hit areas, where a hover highlight shows as a grey box.
+		array<string> noHoverContainers = {"IconsFrame"};
+		m_UIPolish = new COA_MenuPolish(GetRootWidget(), false, noHoverContainers);
 	}
 	
 	void DismissSlottingWarning()
@@ -273,6 +288,7 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			return;
 
 		m_wDamageReportSubject = TextWidget.Cast(m_wRoot.FindAnyWidget("DamageReportSubject"));
+		m_wDamageReportSummary = TextWidget.Cast(m_wRoot.FindAnyWidget("DamageReportSummary"));
 		m_wDamageReportFatalRegion = TextWidget.Cast(m_wRoot.FindAnyWidget("DamageReportFatalRegion"));
 		m_wDamageReportLog = RichTextWidget.Cast(m_wRoot.FindAnyWidget("DamageReportLog"));
 		m_wDamageReportBodyOutline = ImageWidget.Cast(m_wRoot.FindAnyWidget("DamageReportBodyOutline"));
@@ -347,7 +363,8 @@ class COA_SpectatorMenu: ChimeraMenuBase
 
 		string fatalRegion = COA_SpectatorDamageReportStore.GetFatalBodyRegion(playerId);
 		SetDamageReportFatalRegion(fatalRegion);
-		SetDamageRegionColors(fatalRegion);
+		SetDamageRegionColors(fatalRegion, playerId);
+		UpdateDamageReportSummary(playerId);
 
 		if (!m_wDamageReportLog)
 			return;
@@ -358,34 +375,38 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			return;
 		}
 
+		// One readable line per hit, colour-coded: TAKEN (red) / DEALT (green), damage in bold,
+		// then where, how and who; KILL flagged at the end
 		string reportText;
-		int startIndex = Math.Max(0, m_aDamageReportEntries.Count() - 18);
+		int startIndex = Math.Max(0, m_aDamageReportEntries.Count() - 14);
 		for (int i = startIndex; i < m_aDamageReportEntries.Count(); i++)
 		{
 			COA_SpectatorDamageReportEntry entry = m_aDamageReportEntries[i];
-			string sourceLabel;
-			string otherName;
+			bool taken = entry.m_iVictimPlayerId == playerId;
 
-			if (entry.m_iVictimPlayerId == playerId)
+			string direction = "<color rgba='108,200,128,255'><b>DEALT</b></color>";
+			string otherName = "to <b>" + entry.m_sVictimName + "</b>";
+			if (taken)
 			{
-				sourceLabel = "from";
-				otherName = entry.m_sAttackerName;
-			}
-			else
-			{
-				sourceLabel = "to";
-				otherName = entry.m_sVictimName;
+				direction = "<color rgba='240,96,96,255'><b>TAKEN</b></color>";
+				otherName = "from <b>" + entry.m_sAttackerName + "</b>";
 			}
 
-			string fatalText;
-			if (entry.m_bFatal)
-				fatalText = " KILL";
-
-			string rangeText = "?m";
+			string rangeText = "?";
 			if (entry.m_fRangeMeters >= 0)
-				rangeText = string.Format("%1m", Math.Round(entry.m_fRangeMeters));
+				rangeText = Math.Round(entry.m_fRangeMeters).ToString();
 
-			string line = string.Format("[%1] %2 (%3) | %4 dmg | %5 %6 | %7 | %8%9", FormatDamageReportTime(entry.m_iWorldTime), entry.m_sDamageType, rangeText, Math.Round(entry.m_fDamageValue), sourceLabel, otherName, entry.m_sBodyRegion, entry.m_sHitZone, fatalText);
+			string where = entry.m_sBodyRegion;
+			if (!entry.m_sHitZone.IsEmpty() && entry.m_sHitZone != entry.m_sBodyRegion)
+				where = where + " (" + entry.m_sHitZone + ")";
+
+			string line = string.Format("<color rgba='140,150,171,255'>%1</color>   %2   <b>%3</b> dmg   %4   <color rgba='169,180,204,255'>%5 · %6m</color>   %7",
+				FormatDamageReportTime(entry.m_iWorldTime), direction, Math.Round(entry.m_fDamageValue), where,
+				entry.m_sDamageType, rangeText, otherName);
+
+			if (entry.m_bFatal)
+				line = line + "   <color rgba='240,96,96,255'><b>KILL</b></color>";
+
 			if (reportText.IsEmpty())
 				reportText = line;
 			else
@@ -393,6 +414,32 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		}
 
 		m_wDamageReportLog.SetText(reportText);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "3 hits taken · 120 dmg · 2 kills" for the header
+	protected void UpdateDamageReportSummary(int playerId)
+	{
+		if (!m_wDamageReportSummary)
+			return;
+
+		int hitsTaken, kills;
+		float damageTaken;
+		foreach (COA_SpectatorDamageReportEntry entry : m_aDamageReportEntries)
+		{
+			if (entry.m_iVictimPlayerId == playerId)
+			{
+				hitsTaken++;
+				damageTaken += entry.m_fDamageValue;
+			}
+			else if (entry.m_bFatal)
+			{
+				kills++;
+			}
+		}
+
+		string summary = string.Format("%1 hits taken  ·  %2 dmg  ·  %3 kills", hitsTaken, Math.Round(damageTaken), kills);
+		m_wDamageReportSummary.SetText(summary);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -451,9 +498,17 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			return;
 
 		if (fatalRegion.IsEmpty())
-			m_wDamageReportFatalRegion.SetText("Fatal Location: No fatal damage recorded");
+		{
+			m_wDamageReportFatalRegion.SetText("No fatal damage recorded");
+			m_wDamageReportFatalRegion.SetColor(Color.FromSRGBA(169, 180, 204, 255));
+		}
 		else
-			m_wDamageReportFatalRegion.SetText("Fatal Location: " + fatalRegion);
+		{
+			string regionLabel = fatalRegion;
+			regionLabel.ToUpper(); // in place - returns the length, not the string
+			m_wDamageReportFatalRegion.SetText("FATAL  ·  " + regionLabel);
+			m_wDamageReportFatalRegion.SetColor(Color.FromSRGBA(240, 96, 96, 255));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -469,42 +524,71 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void SetDamageRegionColors(string fatalRegion)
+	//! Hit map: every body region the player took damage in is shaded amber, stronger the more damage
+	//! it took (relative to the worst-hit region); the fatal region is drawn red on top.
+	protected void SetDamageRegionColors(string fatalRegion, int playerId)
 	{
 		ResetDamageRegionColors();
+
+		// Damage per region overlay: head, torso, left arm, right arm, left leg, right leg
+		array<float> damage = {0, 0, 0, 0, 0, 0};
+		foreach (COA_SpectatorDamageReportEntry entry : m_aDamageReportEntries)
+		{
+			if (entry.m_iVictimPlayerId != playerId)
+				continue;
+
+			AddRegionDamage(damage, entry.m_sBodyRegion, entry.m_fDamageValue);
+		}
+
+		float maxDamage;
+		foreach (float regionDamage : damage)
+		{
+			maxDamage = Math.Max(maxDamage, regionDamage);
+		}
+
+		array<ImageWidget> overlays = {m_wDamageRegionHead, m_wDamageRegionTorso, m_wDamageRegionLeftArm,
+			m_wDamageRegionRightArm, m_wDamageRegionLeftLeg, m_wDamageRegionRightLeg};
+
+		if (maxDamage > 0)
+		{
+			foreach (int i, ImageWidget overlay : overlays)
+			{
+				if (damage[i] <= 0)
+					continue;
+
+				// 30% for a graze up to 80% for the worst-hit region
+				int alpha = Math.Round(255 * (0.3 + 0.5 * damage[i] / maxDamage));
+				SetDamageRegionColor(overlay, Color.FromSRGBA(232, 150, 48, alpha));
+			}
+		}
 
 		if (fatalRegion.IsEmpty())
 			return;
 
-		Color activeColor = Color.FromRGBA(205, 24, 24, 145);
-		switch (fatalRegion)
+		array<float> fatal = {0, 0, 0, 0, 0, 0};
+		AddRegionDamage(fatal, fatalRegion, 1);
+		foreach (int i, ImageWidget overlay : overlays)
 		{
-			case "Head":
-				SetDamageRegionColor(m_wDamageRegionHead, activeColor);
-				break;
-			case "Torso":
-				SetDamageRegionColor(m_wDamageRegionTorso, activeColor);
-				break;
-			case "Left Arm":
-				SetDamageRegionColor(m_wDamageRegionLeftArm, activeColor);
-				break;
-			case "Right Arm":
-				SetDamageRegionColor(m_wDamageRegionRightArm, activeColor);
-				break;
-			case "Left Leg":
-				SetDamageRegionColor(m_wDamageRegionLeftLeg, activeColor);
-				break;
-			case "Right Leg":
-				SetDamageRegionColor(m_wDamageRegionRightLeg, activeColor);
-				break;
-			case "Arm":
-				SetDamageRegionColor(m_wDamageRegionLeftArm, activeColor);
-				SetDamageRegionColor(m_wDamageRegionRightArm, activeColor);
-				break;
-			case "Leg":
-				SetDamageRegionColor(m_wDamageRegionLeftLeg, activeColor);
-				SetDamageRegionColor(m_wDamageRegionRightLeg, activeColor);
-				break;
+			if (fatal[i] > 0)
+				SetDamageRegionColor(overlay, Color.FromSRGBA(220, 40, 40, 220));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Body region names from COA_SpectatorDamageReportStore -> overlay index (see SetDamageRegionColors);
+	//! "Arm"/"Leg" without a side mark both overlays
+	protected void AddRegionDamage(notnull array<float> damage, string region, float value)
+	{
+		switch (region)
+		{
+			case "Head": { damage[0] = damage[0] + value; break; }
+			case "Torso": { damage[1] = damage[1] + value; break; }
+			case "Left Arm": { damage[2] = damage[2] + value; break; }
+			case "Right Arm": { damage[3] = damage[3] + value; break; }
+			case "Left Leg": { damage[4] = damage[4] + value; break; }
+			case "Right Leg": { damage[5] = damage[5] + value; break; }
+			case "Arm": { damage[2] = damage[2] + value; damage[3] = damage[3] + value; break; }
+			case "Leg": { damage[4] = damage[4] + value; damage[5] = damage[5] + value; break; }
 		}
 	}
 
@@ -690,7 +774,8 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		m_wSlotSelector = m_wRoot.FindAnyWidget("SlotSelector");
 		m_wFrameChannels = FrameWidget.Cast(m_wRoot.FindAnyWidget("VONSlots"));
 		m_wFrameGameInfo = FrameWidget.Cast(m_wRoot.FindAnyWidget("GameInfo"));
-		
+		SetupPopOutDrawers();
+
 		// Register faction button click handlers
 		SCR_ButtonTextComponent.Cast(ButtonWidget.Cast(m_wBluforButton).FindHandler(SCR_ButtonTextComponent)).m_OnClicked.Insert(SelectFactionBlufor);
 		SCR_ButtonTextComponent.Cast(ButtonWidget.Cast(m_wOpforButton).FindHandler(SCR_ButtonTextComponent)).m_OnClicked.Insert(SelectFactionOpfor);
@@ -1376,96 +1461,91 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		return widget;
 	}
 
+	/**
+	 * Slots (left), game info (far left) and VON channels (right) pop out while the cursor is over
+	 * them - eased slide with hover hysteresis, shared with the briefing and AAR drawers
+	 */
+	protected void SetupPopOutDrawers()
+	{
+		if (m_wFrameSlots)
+		{
+			m_SlotsDrawer = new COA_HoverDrawer(m_wFrameSlots, SLOTS_DRAWER_CLOSED_X, SLOTS_DRAWER_OPEN_X);
+			m_SlotsDrawer.m_OnOpenChanged.Insert(OnSlotsDrawerChanged);
+		}
+
+		if (m_wFrameChannels)
+		{
+			m_ChannelsDrawer = new COA_HoverDrawer(m_wFrameChannels, CHANNELS_DRAWER_CLOSED_X, CHANNELS_DRAWER_OPEN_X);
+			m_ChannelsDrawer.m_OnOpenChanged.Insert(OnChannelsDrawerChanged);
+		}
+
+		if (m_wFrameGameInfo)
+		{
+			m_GameInfoDrawer = new COA_HoverDrawer(m_wFrameGameInfo, GAMEINFO_DRAWER_CLOSED_X, GAMEINFO_DRAWER_OPEN_X);
+			m_GameInfoDrawer.m_OnOpenChanged.Insert(OnGameInfoDrawerChanged);
+		}
+
+		// Tabs start shown; their fades are driven by opacity from here on
+		array<string> tabWidgets = {"SliderBGL", "ArrowL", "SliderBGR", "ArrowR", "SliderBGLL", "ArrowLL"};
+		foreach (string tabWidget : tabWidgets)
+		{
+			Widget tab = m_wRoot.FindAnyWidget(tabWidget);
+			if (!tab)
+				continue;
+
+			tab.SetVisible(true);
+			tab.SetOpacity(1);
+		}
+	}
+
 	protected void UpdateUIPanelVisibility(float tDelta)
 	{
-		// Get cursor position
-		int x, y;
-		WidgetManager.GetMousePos(x, y);
-		y = GetGame().GetWorkspace().DPIUnscale(y);
-		
-		// Get screen size
-		float sX, sY;
-		m_wRoot.GetScreenSize(sX, sY);
-		
-		// Update slots panel visibility
-		float leftSlotX = FrameSlot.GetPosX(m_wFrameSlots);
-		float leftSlotY = FrameSlot.GetPosY(m_wFrameSlots);
-		
-		if (x <= leftSlotX + 220 && y >= leftSlotY && y <= leftSlotY + 450)
+		if (m_SlotsDrawer)
+			m_SlotsDrawer.Update(tDelta);
+
+		if (m_ChannelsDrawer)
+			m_ChannelsDrawer.Update(tDelta);
+
+		if (m_GameInfoDrawer)
+			m_GameInfoDrawer.Update(tDelta);
+	}
+
+	protected void OnSlotsDrawerChanged(bool open)
+	{
+		FadeDrawerTab("SliderBGL", "ArrowL", open);
+	}
+
+	protected void OnChannelsDrawerChanged(bool open)
+	{
+		FadeDrawerTab("SliderBGR", "ArrowR", open);
+	}
+
+	protected void OnGameInfoDrawerChanged(bool open)
+	{
+		FadeDrawerTab("SliderBGLL", "ArrowLL", open);
+	}
+
+	/**
+	 * Fade a pop-out's edge tab out while it is open and back in when it closes
+	 */
+	protected void FadeDrawerTab(string sliderName, string arrowName, bool open)
+	{
+		float target = 1;
+		if (open)
+			target = 0;
+
+		array<string> names = {sliderName, arrowName};
+		foreach (string widgetName : names)
 		{
-			// Expand slots panel when cursor is over it
-			leftSlotX += tDelta * 2400.0;
-			if (leftSlotX > 0)
-				leftSlotX = 0;
-			
-			FrameSlot.SetPosX(m_wFrameSlots, leftSlotX);
-			GetCachedWidget("SliderBGL").SetVisible(false);
-			GetCachedWidget("ArrowL").SetVisible(false);
-		}
-		else
-		{
-			// Collapse slots panel when cursor moves away
-			leftSlotX -= tDelta * 2400.0;
-			if (leftSlotX < -200)
-				leftSlotX = -200;
-			
-			FrameSlot.SetPosX(m_wFrameSlots, leftSlotX);
-			GetCachedWidget("SliderBGL").SetVisible(true);
-			GetCachedWidget("ArrowL").SetVisible(true);
-		}
-		
-		// Update VON channels panel visibility
-		float leftVONX = FrameSlot.GetPosX(m_wFrameChannels);
-		float leftVONY = FrameSlot.GetPosY(m_wFrameChannels);
-		
-		if (x >= leftVONX -20 + sX && y >= leftVONY && y <= leftVONY + 450)
-		{
-			// Expand VON panel when cursor is over it
-			leftVONX -= tDelta * 2400.0;
-			if (leftVONX < -220)
-				leftVONX = -220;
-			
-			FrameSlot.SetPosX(m_wFrameChannels, leftVONX);
-			GetCachedWidget("SliderBGR").SetVisible(false);
-			GetCachedWidget("ArrowR").SetVisible(false);
-		}
-		else
-		{
-			// Collapse VON panel when cursor moves away
-			leftVONX += tDelta * 2400.0;
-			if (leftVONX > -20)
-				leftVONX = -20;
-			
-			FrameSlot.SetPosX(m_wFrameChannels, leftVONX);
-			GetCachedWidget("SliderBGR").SetVisible(true);
-			GetCachedWidget("ArrowR").SetVisible(true);
-		}
-		
-		// Update VON channels panel visibility
-		float leftGameInfoX = FrameSlot.GetPosX(m_wFrameGameInfo);
-		float leftGameInfoY = FrameSlot.GetPosY(m_wFrameGameInfo);
-		
-		if (x <= leftGameInfoX + 170 && y >= leftGameInfoY && y <= leftGameInfoY + 200)
-		{
-			// Expand slots panel when cursor is over it
-			leftGameInfoX += tDelta * 2400.0;
-			if (leftGameInfoX > 0)
-				leftGameInfoX = 0;
-			
-			FrameSlot.SetPosX(m_wFrameGameInfo, leftGameInfoX);
-			GetCachedWidget("SliderBGLL").SetVisible(false);
-			GetCachedWidget("ArrowLL").SetVisible(false);
-		}
-		else
-		{
-			// Collapse slots panel when cursor moves away
-			leftGameInfoX -= tDelta * 2400.0;
-			if (leftGameInfoX < -150)
-				leftGameInfoX = -150;
-			
-			FrameSlot.SetPosX(m_wFrameGameInfo, leftGameInfoX);
-			GetCachedWidget("SliderBGLL").SetVisible(true);
-			GetCachedWidget("ArrowLL").SetVisible(true);
+			Widget tab = GetCachedWidget(widgetName);
+			if (!tab)
+				continue;
+
+			WidgetAnimationOpacity fade = AnimateWidget.Opacity(tab, target, DRAWER_TAB_FADE_SPEED);
+			if (fade)
+				fade.SetCurve(EAnimationCurve.EASE_OUT_CUBIC);
+			else
+				tab.SetOpacity(target);
 		}
 	}
 	

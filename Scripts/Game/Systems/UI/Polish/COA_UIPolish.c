@@ -19,15 +19,20 @@ class COA_UIPolish
 	//! Give every button under root that has no feedback of its own a COA_UIHoverEffect. Safe to call
 	//! repeatedly - buttons that already have one (or their own) are skipped - so menus that build
 	//! their lists after opening can simply call it again.
-	static void AttachHoverEffects(Widget root)
+	//! \param[in] excludedNames widgets with these names are skipped along with everything inside them
+	//! (e.g. in-world icons whose buttons are invisible hit areas, where a highlight would show as a box)
+	static void AttachHoverEffects(Widget root, array<string> excludedNames = null)
 	{
 		if (!root)
+			return;
+
+		if (excludedNames && excludedNames.Contains(root.GetName()))
 			return;
 
 		Widget child = root.GetChildren();
 		while (child)
 		{
-			AttachHoverEffects(child);
+			AttachHoverEffects(child, excludedNames);
 			child = child.GetSibling();
 		}
 
@@ -112,15 +117,18 @@ class COA_MenuPolish
 
 	protected Widget m_wRoot;
 	protected ref array<Widget> m_aAnimatedWidgets = {};
+	protected ref array<string> m_aExcludedNames;
 	protected float m_fRescanTimer;
 
 	//------------------------------------------------------------------------------------------------
 	//! \param[in] root the menu's root widget
 	//! \param[in] playEntrance fade the top-level panels in - off for menus that reopen constantly
-	void COA_MenuPolish(Widget root, bool playEntrance)
+	//! \param[in] excludedNames containers whose buttons never get a hover effect (see AttachHoverEffects)
+	void COA_MenuPolish(Widget root, bool playEntrance, array<string> excludedNames = null)
 	{
 		m_wRoot = root;
-		COA_UIPolish.AttachHoverEffects(root);
+		m_aExcludedNames = excludedNames;
+		COA_UIPolish.AttachHoverEffects(root, m_aExcludedNames);
 
 		// First rescan shortly after opening, for menus that build their content a frame later
 		// (e.g. COA_AdminMenu's DelayedMenuInitialization); then once a second
@@ -145,7 +153,7 @@ class COA_MenuPolish
 			return;
 
 		m_fRescanTimer = 0;
-		COA_UIPolish.AttachHoverEffects(m_wRoot);
+		COA_UIPolish.AttachHoverEffects(m_wRoot, m_aExcludedNames);
 	}
 
 	//------------------------------------------------------------------------------------------------

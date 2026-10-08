@@ -26,9 +26,10 @@ class COA_UIHoverEffect : ScriptedWidgetEventHandler
 	// Progress per second - a transition takes about an eighth of a second
 	protected static const float ANIMATION_SPEED = 8;
 
-	// LIGHTEN amounts, added to each colour channel
-	protected static const float HOVER_LIGHTEN = 0.07;
-	protected static const float PRESS_LIGHTEN = 0.12;
+	// LIGHTEN amounts, added to each colour channel. Widget colours are linear (see Color.FromSRGBA),
+	// so small amounts are already very visible on dark fills: +0.02 takes #15171D to about #2A2C31.
+	protected static const float HOVER_LIGHTEN = 0.02;
+	protected static const float PRESS_LIGHTEN = 0.035;
 
 	// Below this alpha a fill is treated as transparent (see ResolveTarget)
 	protected static const float MIN_FILL_ALPHA = 0.2;
@@ -199,10 +200,11 @@ class COA_UIHoverEffect : ScriptedWidgetEventHandler
 	{
 		if (m_eStyle == COA_EHoverStyle.OVERLAY)
 		{
+			// White overlays blend in linear space - these read like ~10% / 16% in a browser
 			if (pressed)
-				return new Color(1, 1, 1, 0.16);
+				return new Color(1, 1, 1, 0.035);
 
-			return new Color(1, 1, 1, 0.1);
+			return new Color(1, 1, 1, 0.02);
 		}
 
 		float amount = HOVER_LIGHTEN;

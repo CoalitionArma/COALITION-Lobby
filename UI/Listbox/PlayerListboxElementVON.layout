@@ -15,13 +15,13 @@ ButtonWidgetClass {
     HorizontalAlign 3
    }
    AllowHeightOverride 1
-   HeightOverride 36
+   HeightOverride 32
    {
     OverlayWidgetClass "{647E4362EEC8DF06}" {
      Name "Overlay"
      Slot ButtonWidgetSlot "{5548E6E7F213FB11}" {
-      HorizontalAlign 0
-      Padding 10 0 0 0
+      HorizontalAlign 3
+      VerticalAlign 3
      }
      Clipping False
      {
@@ -29,14 +29,9 @@ ButtonWidgetClass {
        Name "Image0"
        Slot OverlayWidgetSlot "{630A2578A5208A35}" {
         HorizontalAlign 3
+        VerticalAlign 3
        }
-       "Is Visible" 0
-       Color 0.042 0.042 0.042 1
-       Texture "{12B6C6BD1A72A47F}UI/Textures/Common/gradientTexture_Dither_up_512.edds"
-       Size 40 512
-       Mask "{099C73E0F66A5F28}UI/Textures/Common/gradientTexture_Dither_down_512.edds"
-       "Transition width" 1
-       Progress 0.52
+       Color 0.0075 0.0086 0.0123 0.97
       }
       PanelWidgetClass "{647E4362EEC8DF08}" {
        Name "Border"
@@ -45,31 +40,54 @@ ButtonWidgetClass {
         VerticalAlign 3
        }
        "Is Visible" 0
-       Color 0.761 0.386 0.08 1
+       Color 0.5841 0.0369 0.0369 1
        style outline_2px
       }
       FrameWidgetClass "{647E4362EEC8DF09}" {
        Name "ButtonLayout"
        Slot OverlayWidgetSlot "{62F200F27385E1FB}" {
-        HorizontalAlign 0
+        HorizontalAlign 3
+        VerticalAlign 3
        }
        {
+        ImageWidgetClass "{6A62000000000011}" {
+         Name "MemberGuide"
+         Slot FrameWidgetSlot "{6A62000000000012}" {
+          Anchor 0 0 0 1
+          PositionX 12
+          OffsetLeft 12
+          PositionY 0
+          OffsetTop 0
+          SizeX 1
+          OffsetRight -13
+          SizeY 0
+          OffsetBottom 0
+         }
+         Color 1 1 1 0.03
+        }
         TextWidgetClass "{647E4362EEC8DF0E}" {
          Name "Text"
          Slot FrameWidgetSlot "{630A2568FA12B1F6}" {
-          PositionX 0.619
-          OffsetLeft 0.619
+          Anchor 0 0 1 1
+          PositionX 26
+          OffsetLeft 26
           PositionY 0
           OffsetTop 0
-          SizeX 171.819
-          OffsetRight -172.438
-          SizeY 35.557
-          OffsetBottom -35.557
+          SizeX -38
+          OffsetRight 12
+          SizeY 0
+          OffsetBottom 0
          }
-         Text "Blufor Brief"
-         "Min Font Size" 5
+         Clipping Ancestor
+         Color 0.8632 0.8879 0.9301 1
+         Text "Player Name"
+         "Font Size" 16
+         "Min Font Size" 10
          "Vertical Alignment" Center
-         Wrap 1
+         Wrap 0
+         FontProperties FontProperties "{6A62000000000013}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
         }
        }
       }
