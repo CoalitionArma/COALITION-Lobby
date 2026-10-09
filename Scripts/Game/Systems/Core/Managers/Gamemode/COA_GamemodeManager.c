@@ -127,6 +127,10 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 				// and the player controls the character - both of which are true again now that gear
 				// is back to running after handover.
 				AssignPlayerToGroup(playerId);
+
+				// Back in the body they had before dropping: tell them and the admin log
+				if (alreadyCreated && m_Gamemode.ConsumeReconnect(playerId))
+					NotifyReconnect(playerId);
 			}
 			else
 				//Sends the player the respawn screen if they reconnect while dead
@@ -152,6 +156,23 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 	//! InitilizePlayer wholesale.
 	protected void OnPlayerInitialized(int playerId, IEntity playerCharacter, RplComponent playerRplComp, bool isSpectator)
 	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A reconnecting player was handed their previous body (see COA_Gamemode.ConsumeReconnect)
+	protected void NotifyReconnect(int playerId)
+	{
+		string slotName;
+		COA_SlotData slotData = m_SlottingManager.GetPlayerSlotData(playerId);
+		if (slotData)
+			slotName = slotData.GetSlotName();
+
+		SCR_AIGroup group = m_SlottingManager.GetPlayerSlotGroup(playerId);
+		if (group)
+			slotName = group.GetCustomNameWithOriginal() + " " + slotName;
+
+		m_RplBroadcastManager.SendHint("Reconnected - you are back in your slot as " + slotName + ".", playerId);
+		m_RplBroadcastManager.LogAdminAction(string.Format("%1 reconnected into %2", GetGame().GetPlayerManager().GetPlayerName(playerId), slotName), playerId, false, COA_EAdminLogLevel.Low);
 	}
 
 	//------------------------------------------------------------------------------------------------

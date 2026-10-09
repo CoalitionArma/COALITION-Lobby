@@ -50,6 +50,9 @@ class COA_Gamemode : SCR_BaseGameMode
 
 	[Attribute("0", UIWidgets.Hidden, desc: "0 = Team-Based (faction ticket pool), 1 = Slot-Based (per-role/group respawn counts configured on each COA_SlottingGroup)", category: "Gamemode Settings - Respawn")]
 	COA_ERespawnMode m_eRespawnMode;
+
+	[Attribute("0", UIWidgets.Auto, desc: "Minutes a disconnected player's body is kept for them to reconnect into. When it runs out the body is removed and the slot is marked dead, so a late return goes to spectator. 0 = keep the body until the player returns or the slot is cleared.", category: "Gamemode Settings - Respawn")]
+	int m_iDisconnectedBodyTimeoutMinutes;
 	
 	[Attribute("45", UIWidgets.Hidden)]
 	int m_iTimeLimitMinutes;
@@ -233,6 +236,10 @@ class COA_Gamemode : SCR_BaseGameMode
 
 	// Caches each connected player's identity GUID, captured once at OnPlayerAuditSuccess
 	protected ref map<int, string> m_mPlayerGuidById = new map<int, string>();
+
+	// Players whose slot was just restored from m_mReconnectSlotByGuid, until InitilizePlayer has
+	// handed their body back (see ConsumeReconnect)
+	protected ref array<int> m_aReconnectingPlayers = {};
 	
 	//Store a list of all custom lobby characters active in the world to be used by game systems (spectator, zeus, etc)
 	//------------------------------------------------------------------------------------
@@ -432,6 +439,8 @@ class COA_Gamemode : SCR_BaseGameMode
 			{
 				m_mReconnectSlotByGuid.Remove(reconnectGuid);
 				m_SlottingManager.ForceUpdateSlotPlayerID(savedSlotId, iPlayerID);
+				if (!m_aReconnectingPlayers.Contains(iPlayerID))
+					m_aReconnectingPlayers.Insert(iPlayerID);
 			}
 		}
 		
@@ -467,7 +476,12 @@ class COA_Gamemode : SCR_BaseGameMode
 				RplComponent disconnectingRpl = RplComponent.Cast(disconnectingEntity.FindComponent(RplComponent));
 				if (disconnectingRpl)
 					disconnectingRpl.GiveExt(RplIdentity.Local(), false);
+
+				// A driver/pilot who drops leaves a vehicle under power with passengers in it
+				StopDisconnectedVehicle(disconnectingEntity);
 			}
+
+			m_aReconnectingPlayers.RemoveItem(playerId);
 		}
 
 		m_OnPlayerDisconnected.Invoke(playerId, cause, timeout);
@@ -484,7 +498,13 @@ class COA_Gamemode : SCR_BaseGameMode
 			{
 				int disconnectSlotId = m_SlottingManager.GetPlayerSlotID(playerId);
 				if (disconnectSlotId >= 0)
+				{
 					m_mReconnectSlotByGuid.Set(disconnectGuid, disconnectSlotId);
+
+					// Optionally stop holding the body forever - see m_iDisconnectedBodyTimeoutMinutes
+					if (m_iDisconnectedBodyTimeoutMinutes > 0)
+						GetGame().GetCallqueue().CallLater(ExpireDisconnectedBody, m_iDisconnectedBodyTimeoutMinutes * 60000, false, disconnectGuid, disconnectSlotId);
+				}
 			}
 			m_mPlayerGuidById.Remove(playerId);
 		}
@@ -509,7 +529,82 @@ class COA_Gamemode : SCR_BaseGameMode
 		
 		StopMovement(player);
 	}
-	
+
+	//------------------------------------------------------------------------------------------------
+	//! True once per reconnect: the player's slot was restored from the GUID map on this join.
+	//! Consumed by COA_GamemodeManager.InitilizePlayer when it hands the old body back.
+	bool ConsumeReconnect(int playerId)
+	{
+		if (!m_aReconnectingPlayers.Contains(playerId))
+			return false;
+
+		m_aReconnectingPlayers.RemoveItem(playerId);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! If the disconnecting player is driving or flying, bring the vehicle to a stop as gracefully
+	//! as possible (same handling as SCR_BaseGameMode.OnPlayerDisconnected, which this class does
+	//! not call because it keeps the body for reconnection)
+	protected void StopDisconnectedVehicle(IEntity character)
+	{
+		CompartmentAccessComponent compartmentAccess = CompartmentAccessComponent.Cast(character.FindComponent(CompartmentAccessComponent));
+		if (!compartmentAccess)
+			return;
+
+		PilotCompartmentSlot pilotCompartment = PilotCompartmentSlot.Cast(compartmentAccess.GetCompartment());
+		if (!pilotCompartment)
+			return;
+
+		IEntity vehicle = pilotCompartment.GetVehicle();
+		if (!vehicle)
+			return;
+
+		CarControllerComponent carController = CarControllerComponent.Cast(vehicle.FindComponent(CarControllerComponent));
+		if (carController)
+		{
+			carController.Shutdown();
+			carController.StopEngine(false);
+			carController.SetPersistentHandBrake(true);
+			return;
+		}
+
+		HelicopterControllerComponent heliController = HelicopterControllerComponent.Cast(vehicle.FindComponent(HelicopterControllerComponent));
+		if (heliController)
+		{
+			heliController.LockPilotControls(false);
+			heliController.SetPersistentWheelBrake(true);
+			heliController.SetAutohoverEnabled(true);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! m_iDisconnectedBodyTimeoutMinutes ran out for a disconnected player who has not returned:
+	//! remove their body and mark the slot dead, so a later return goes to spectator like any
+	//! other death in a one-life mission.
+	protected void ExpireDisconnectedBody(string guid, int slotId)
+	{
+		if (!IsMaster() || !m_SlottingManager)
+			return;
+
+		// Returned (entry consumed) or the slot was given to someone else meanwhile
+		int pendingSlotId;
+		if (!m_mReconnectSlotByGuid.Find(guid, pendingSlotId) || pendingSlotId != slotId)
+			return;
+
+		COA_SlotData slotData = m_SlottingManager.GetSlotData(slotId);
+		if (!slotData)
+			return;
+
+		string slotName = slotData.GetSlotName();
+		m_SlottingManager.CleanupCharacterFromSlot(slotData);
+		m_SlottingManager.UpdateSlotDeathState(slotId, true);
+		m_mReconnectSlotByGuid.Remove(guid);
+
+		if (m_RplBroadcastManager)
+			m_RplBroadcastManager.LogAdminAction(string.Format("Disconnected %1 removed after %2 min without reconnecting", slotName, m_iDisconnectedBodyTimeoutMinutes), -1, false, COA_EAdminLogLevel.Low);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Sets player movement to 0 on disconnect
 	void StopMovement(IEntity player)
@@ -592,6 +687,24 @@ class COA_Gamemode : SCR_BaseGameMode
 		
 		if (COA_GearscriptCharacter.Cast(entity))
 			m_GarbageManager.m_aDeadBodies.Insert(entity);
+
+		// A slotted body killed while its player is disconnected never reaches OnPlayerKilled (no
+		// player controls it), so record the death here. Without this the slot stays "alive" and
+		// the returning player would be handed a fresh body - a free life in a one-life mission.
+		if (m_SlottingManager && GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(entity) <= 0)
+		{
+			int slotID = m_SlottingManager.GetCharacterSlotID(entity);
+			if (slotID != -1 && !m_SlottingManager.GetSlotData(slotID).GetIsDeadSlot())
+			{
+				m_SlottingManager.UpdateSlotDeathState(slotID, true);
+
+				string killerName;
+				int killerPlayerId = instigator.GetInstigatorPlayerID();
+				if (killerPlayerId > 0)
+					killerName = GetGame().GetPlayerManager().GetPlayerName(killerPlayerId);
+				m_SlottingManager.UpdateSlotKillerName(slotID, killerName);
+			}
+		}
 	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
