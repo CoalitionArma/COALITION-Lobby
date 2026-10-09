@@ -73,6 +73,7 @@ class COA_SlottingManager : ScriptComponent
 		{
 			slotData.SetSlotRole(role);
 			m_RplBroadcastManager.UpdateSlotRoleDelta(slotId, role);
+			COA_TacticalCamera.RefreshAccess(slotData.GetSlotCurrentPlayerId());
 		};
 	}
 	
@@ -105,6 +106,11 @@ class COA_SlottingManager : ScriptComponent
 			
 			slotData.SetSlotCurrentPlayerId(playerId);
 			m_RplBroadcastManager.UpdateSlotPlayerIdDelta(slotId, playerId);
+
+			// Tactical camera access follows the slot: update whoever took it and whoever left it
+			COA_TacticalCamera.RefreshAccess(playerId);
+			if (currentOccupant > 0 && currentOccupant != playerId)
+				COA_TacticalCamera.RefreshAccess(currentOccupant);
 		};
 	}
 	
@@ -154,6 +160,7 @@ class COA_SlottingManager : ScriptComponent
 		{
 			slotData.SetIsDeadSlot(input);
 			m_RplBroadcastManager.UpdateSlotDeathDelta(slotId, input);
+			COA_TacticalCamera.RefreshAccess(slotData.GetSlotCurrentPlayerId());
 		};
 	}
 

@@ -156,6 +156,8 @@ class COA_GamemodeManager : SCR_BaseGameModeComponent
 	//! InitilizePlayer wholesale.
 	protected void OnPlayerInitialized(int playerId, IEntity playerCharacter, RplComponent playerRplComp, bool isSpectator)
 	{
+		// Slot (and so role) may have changed since the editor modes were last built
+		COA_TacticalCamera.RefreshAccess(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------

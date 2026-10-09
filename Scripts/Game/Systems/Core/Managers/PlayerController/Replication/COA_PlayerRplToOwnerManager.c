@@ -277,4 +277,21 @@ class COA_PlayerRplToOwnerManager : ScriptComponent
 
 		return COA_PlayerRplToOwnerManager.Cast(pc.FindComponent(COA_PlayerRplToOwnerManager));
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tactical camera: an order from a leader for this player's squad (see COA_TacticalOrderClient)
+	void ReceiveTacticalOrder(COA_ETacticalOrder order, vector position, string issuerName)
+	{
+		if (IsLocallyOwned())
+			RpcDo_ReceiveTacticalOrder(order, position, issuerName);
+		else
+			Rpc(RpcDo_ReceiveTacticalOrder, order, position, issuerName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_ReceiveTacticalOrder(COA_ETacticalOrder order, vector position, string issuerName)
+	{
+		COA_TacticalOrderClient.Receive(order, position, issuerName);
+	}
 };

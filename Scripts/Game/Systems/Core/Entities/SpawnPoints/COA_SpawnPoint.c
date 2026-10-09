@@ -97,7 +97,8 @@ class COA_SpawnPoint: Vehicle
 
 		foreach (COA_PlayerCharacter character : characters)
 		{
-			if (COA_EntityHelper.IsSpectator(character))
+			// The list holds plain references, so a character deleted this frame shows up as null
+			if (!character || character.IsDeleted() || COA_EntityHelper.IsSpectator(character))
 				continue;
 
 			// Skip the dead so corpses do not keep a flag locked down.

@@ -1,0 +1,135 @@
+SCR_EditorModeEntity : "{E56F54E533ACE527}Prefabs/Editor/Modes/EditorModeBase.et" {
+ ID "6A6612AB7E3CA010"
+ components {
+  SCR_CameraEditorComponent "{6A6612AB7E3CA011}" {
+   m_CameraPrefab "{6A6612AB7E3CA002}Prefabs/!Systems/Editor/Camera/COA_ManualCameraTactical.et"
+  }
+  SCR_ContextActionsEditorComponent "{6A6612AB7E3CA012}" {
+   m_ActionsLists {
+    SCR_EditorActionList "{6A6612AB7E3CA013}" {
+     m_Actions {
+      COA_TacticalOrderAction "{6A6612AB7E3CA030}" {
+       m_Info SCR_UIInfo "{6A6612AB7E3CA031}" {
+        Name "Order: Move"
+        Description "Move the selected squad to this position"
+        Icon "{81176D1734725AAB}UI/Textures/Editor/EditableEntities/Waypoints/EditableEntity_Waypoint_Move_Relaxed.edds"
+       }
+       m_iOrder 1
+       m_eOrder MOVE
+      }
+      COA_TacticalOrderAction "{6A6612AB7E3CA032}" {
+       m_Info SCR_UIInfo "{6A6612AB7E3CA033}" {
+        Name "Order: Attack"
+        Description "Attack and clear this position"
+        Icon "{428583D4284BC412}UI/Textures/Editor/EditableEntities/Waypoints/EditableEntity_Waypoint_SearchAndDestroy.edds"
+       }
+       m_iOrder 2
+       m_eOrder ATTACK
+      }
+      COA_TacticalOrderAction "{6A6612AB7E3CA034}" {
+       m_Info SCR_UIInfo "{6A6612AB7E3CA035}" {
+        Name "Order: Defend"
+        Description "Set up a defence at this position"
+        Icon "{1B3B38AAA1577734}UI/Textures/Editor/EditableEntities/Waypoints/EditableEntity_Waypoint_Defend.edds"
+       }
+       m_iOrder 3
+       m_eOrder DEFEND
+      }
+      COA_TacticalOrderAction "{6A6612AB7E3CA036}" {
+       m_Info SCR_UIInfo "{6A6612AB7E3CA037}" {
+        Name "Order: Hold"
+        Description "Hold at this position and wait for further orders"
+        Icon "{564794579B2DB679}UI/Textures/Editor/Attributes/Attribute_Locked.edds"
+       }
+       m_iOrder 4
+       m_eOrder HOLD
+      }
+      COA_TacticalOrderAction "{6A6612AB7E3CA038}" {
+       m_Info SCR_UIInfo "{6A6612AB7E3CA039}" {
+        Name "Order: Regroup"
+        Description "Regroup at this position"
+        Icon "{F0E0F66182733D39}UI/Textures/Editor/ContextMenu/ContextAction_Teleport_Player.edds"
+       }
+       m_iOrder 5
+       m_eOrder REGROUP
+      }
+      COA_TacticalOrderAction "{6A6612AB7E3CA03A}" {
+       m_Info SCR_UIInfo "{6A6612AB7E3CA03B}" {
+        Name "Cancel Order"
+        Description "Clear the squad's current order"
+        Icon "{A4D40440E48CC7CC}UI/Textures/Editor/ContextMenu/ContextAction_BanPlayer.edds"
+       }
+       m_iOrder 9
+       m_eOrder CANCEL
+      }
+     }
+    }
+   }
+  }
+  SCR_EntitiesManagerEditorComponent "{6A6612AB7E3CA014}" {
+   m_aFilters {
+    SCR_UnlockedEditableEntityFilter "{6A6612AB7E3CA040}" {
+     m_State UNLOCKED
+     m_bAutoAdd ALWAYS
+    }
+    SCR_VisibleEditableEntityFilter "{6A6612AB7E3CA041}" {
+     m_State VISIBLE
+     m_PredecessorState UNLOCKED
+     m_bAutoAdd ALWAYS
+    }
+    SCR_FriendlyEditableEntityFilter "{6A6612AB7E3CA042}" {
+     m_State ACTIVE
+     m_PredecessorState VISIBLE
+     m_bAutoAdd ALWAYS
+    }
+    SCR_RenderedEditableEntityFilter "{6A6612AB7E3CA043}" {
+     m_State RENDERED
+     m_PredecessorState ACTIVE
+     m_bAutoAdd ALWAYS
+    }
+    SCR_PlayerEditableEntityFilter "{6A6612AB7E3CA044}" {
+     m_State PLAYER
+     m_PredecessorState ACTIVE
+     m_bAutoAdd ALWAYS
+    }
+    SCR_SelectedEditableEntityFilter "{6A6612AB7E3CA045}" {
+     m_State SELECTED
+     m_PredecessorState ACTIVE
+     m_bSkipIgnored 1
+    }
+    SCR_FocusedEditableEntityFilter "{6A6612AB7E3CA046}" {
+     m_State FOCUSED
+     m_PredecessorState ACTIVE
+     m_bSkipIgnored 1
+    }
+    SCR_HoverEditableEntityFilter "{6A6612AB7E3CA047}" {
+     m_State HOVER
+     m_PredecessorState ACTIVE
+     m_RequiredState FOCUSED
+    }
+   }
+  }
+  SCR_MenuLayoutEditorComponent "{6A6612AB7E3CA015}" {
+   m_EditableEntityUI SCR_EditableEntityUIConfig "{6A6612AB7E3CA016}" : "{F1A20B9ECFF3AB6A}Configs/Editor/EditableEntityUI/EditableEntityUI.conf" {
+   }
+   m_AlwaysShownLayout "{6A6612AB7E3CA004}UI/layouts/Editor/COA_TacticalAlwaysShown.layout"
+   m_HideableLayout "{6A6612AB7E3CA006}UI/layouts/Editor/Modes/COA_ModeTactical.layout"
+  }
+  COA_TacticalHintEditorComponent "{6A6612AB7E3CA01A}" {
+  }
+  SCR_MenuOverlaysEditorComponent "{6A6612AB7E3CA017}" : "{D5E3E98F53F8EA8D}Prefabs/Editor/EditorComponents/MenuOverlaysDefault.ct" {
+  }
+  SCR_StatesEditorComponent "{6A6612AB7E3CA018}" {
+   m_DefaultState SELECTING
+  }
+ }
+ coords 0 0 0
+ m_ModeType STRATEGY
+ m_iOrder 10
+ m_bIsLimited 1
+ m_UIInfo SCR_UIInfo "{6A6612AB7E3CA019}" {
+  Name "Tactical Camera"
+  Description "Overhead view of friendly units near you. Right-click a squad to give it orders."
+  Icon "{AC7E384FF9D8016A}Common/Textures/placeholder_BCR.edds"
+ }
+}

@@ -15,11 +15,38 @@ modded class EditorMenuUI
 		m_wCrossWidget = GetRootWidget().FindAnyWidget("ListeningCross");
 		m_ButtonComponent.m_OnClicked.Insert(ToggleListen);
 		
-		if (SCR_EditorManagerEntity.GetInstance().GetCurrentMode() != EEditorMode.EDIT)
-			GetRootWidget().FindAnyWidget("DeadBodyCleanupFrame").SetVisible(false);
+		UpdateStaffTools();
+		SCR_EditorManagerEntity editorManager = SCR_EditorManagerEntity.GetInstance();
+		if (editorManager)
+			editorManager.GetOnModeChange().Insert(OnEditorModeChangedStaffTools);
 		
 		m_CleanUpBodiesButton = SCR_ButtonComponent.Cast(GetRootWidget().FindAnyWidget("DeadBodyCleanupButton").FindHandler(SCR_ButtonComponent));
 		m_CleanUpBodiesButton.m_OnClicked.Insert(ConfirmAction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Staff-only controls: dead body cleanup (Game Master mode only) and listening to spectators.
+	//! Hidden for limited editors such as the Tactical Camera (see COA_TacticalCamera), and
+	//! re-evaluated whenever the mode changes so switching Game Master <-> Tactical Camera updates them.
+	protected void UpdateStaffTools()
+	{
+		SCR_EditorManagerEntity editorManager = SCR_EditorManagerEntity.GetInstance();
+		bool staff = editorManager && !editorManager.IsLimited();
+		bool gameMaster = staff && editorManager.GetCurrentMode() == EEditorMode.EDIT;
+
+		Widget cleanupFrame = GetRootWidget().FindAnyWidget("DeadBodyCleanupFrame");
+		if (cleanupFrame)
+			cleanupFrame.SetVisible(gameMaster);
+
+		Widget listeningFrame = GetRootWidget().FindAnyWidget("ListeningFrame");
+		if (listeningFrame)
+			listeningFrame.SetVisible(staff);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnEditorModeChangedStaffTools(SCR_EditorModeEntity currentModeEntity, SCR_EditorModeEntity prevModeEntity)
+	{
+		UpdateStaffTools();
 	}
 	
 	void CleanUpBodies()
@@ -64,6 +91,10 @@ modded class EditorMenuUI
 		// Always remove the click handler to prevent double-registration on re-open
 		if (m_ButtonComponent)
 			m_ButtonComponent.m_OnClicked.Remove(ToggleListen);
+
+		SCR_EditorManagerEntity editorManager = SCR_EditorManagerEntity.GetInstance();
+		if (editorManager)
+			editorManager.GetOnModeChange().Remove(OnEditorModeChangedStaffTools);
 		
 		if (!COA_Gamemode.GetInstance())
 			return;

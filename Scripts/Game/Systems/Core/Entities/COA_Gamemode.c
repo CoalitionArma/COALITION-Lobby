@@ -51,6 +51,18 @@ class COA_Gamemode : SCR_BaseGameMode
 	[Attribute("0", UIWidgets.Hidden, desc: "0 = Team-Based (faction ticket pool), 1 = Slot-Based (per-role/group respawn counts configured on each COA_SlottingGroup)", category: "Gamemode Settings - Respawn")]
 	COA_ERespawnMode m_eRespawnMode;
 
+	[Attribute("true", UIWidgets.CheckBox, desc: "Give platoon leaders and commanders the Tactical Camera: a distance-limited overhead camera that shows friendly units and lets them give squads orders. Untick to turn it off for this mission.", category: "Gamemode Settings - Tactical Camera")]
+	bool m_bTacticalCameraEnabled;
+
+	[Attribute("400", UIWidgets.Slider, desc: "How far (metres) the tactical camera can move from the leader's own body", params: "50 2000 10", category: "Gamemode Settings - Tactical Camera")]
+	float m_fTacticalCameraRange;
+
+	[Attribute("120", UIWidgets.Slider, desc: "How high (metres above ground) the tactical camera can climb", params: "20 500 5", category: "Gamemode Settings - Tactical Camera")]
+	float m_fTacticalCameraMaxHeight;
+
+	[Attribute("", UIWidgets.SearchComboBox, desc: "Slot roles that get the tactical camera. Leave empty for Company Commander and Platoon Leader.", enums: ParamEnumArray.FromEnum(COA_EGearRole), category: "Gamemode Settings - Tactical Camera")]
+	ref array<COA_EGearRole> m_aTacticalCameraRoles;
+
 	[Attribute("0", UIWidgets.Auto, desc: "Minutes a disconnected player's body is kept for them to reconnect into. When it runs out the body is removed and the slot is marked dead, so a late return goes to spectator. 0 = keep the body until the player returns or the slot is cleared.", category: "Gamemode Settings - Respawn")]
 	int m_iDisconnectedBodyTimeoutMinutes;
 	
@@ -968,8 +980,17 @@ class COA_Gamemode : SCR_BaseGameMode
 //=============================================================================================================================================================================================================================================================================================================================================================
 	
 	//------------------------------------------------------------------------------------
+	//! The list keeps plain (non-owning) references, so a character that was deleted without
+	//! RemoveActiveCharacter being called is left behind as null. Drop those before handing the
+	//! list out so callers can iterate it without null checks.
 	array<COA_PlayerCharacter> GetActiveCharacters()
 	{
+		for (int i = m_aActiveCharacters.Count() - 1; i >= 0; i--)
+		{
+			if (!m_aActiveCharacters[i] || m_aActiveCharacters[i].IsDeleted())
+				m_aActiveCharacters.Remove(i);
+		}
+
 		return m_aActiveCharacters;
 	}
 	

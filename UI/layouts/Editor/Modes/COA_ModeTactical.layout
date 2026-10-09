@@ -1,0 +1,253 @@
+FrameWidgetClass {
+ Name "ModeTactical"
+ components {
+  SCR_BaseModeEditorUIComponent "{6A6612AB7E3CB101}" {
+  }
+ }
+ {
+  FrameWidgetClass "{6A6612AB7E3CB102}" : "{7A376F90E18453C4}UI/layouts/HUD/Notifications/Notifications_Log.layout" {
+   Name "NotificationsLog0"
+   Slot FrameWidgetSlot "{6A6612AB7E3CB103}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX -1920
+    OffsetRight 0
+    SizeY -680
+    OffsetBottom 0
+   }
+   components {
+    SCR_NotificationsLogComponent "{6A6612AB7E3CB104}" {
+    }
+   }
+  }
+  FrameWidgetClass "{6A6612AB7E3CB201}" {
+   Name "Header"
+   Slot FrameWidgetSlot "{6A6612AB7E3CB202}" {
+    Anchor 0.5 0 0.5 0
+    PositionX -260
+    OffsetLeft -260
+    PositionY 12
+    OffsetTop 12
+    SizeX 520
+    OffsetRight -260
+    SizeY 52
+    OffsetBottom -64
+   }
+   "Z Order" 20
+   {
+    ImageWidgetClass "{6A6612AB7E3CB203}" {
+     Name "HeaderBG"
+     Slot FrameWidgetSlot "{6A6612AB7E3CB204}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+     Color 0.0033 0.0037 0.0052 0.92
+    }
+    ImageWidgetClass "{6A6612AB7E3CB205}" {
+     Name "HeaderAccent"
+     Slot FrameWidgetSlot "{6A6612AB7E3CB206}" {
+      Anchor 0 0 0 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 3
+      OffsetRight -3
+      SizeY 0
+      OffsetBottom 0
+     }
+     Color 0.5841 0.0369 0.0369 1
+    }
+    TextWidgetClass "{6A6612AB7E3CB207}" {
+     Name "HeaderTitle"
+     Slot FrameWidgetSlot "{6A6612AB7E3CB208}" {
+      Anchor 0 0 0 0
+      PositionX 14
+      OffsetLeft 14
+      PositionY 7
+      OffsetTop 7
+      SizeX 380
+      OffsetRight -394
+      SizeY 20
+      OffsetBottom -27
+     }
+     Color 0.8632 0.8879 0.9301 1
+     Text "TACTICAL CAMERA"
+     "Font Size" 17
+     "Min Font Size" 11
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6612AB7E3CB209}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{6A6612AB7E3CB20A}" {
+     Name "HeaderHint"
+     Slot FrameWidgetSlot "{6A6612AB7E3CB20B}" {
+      Anchor 0 0 0 0
+      PositionX 14
+      OffsetLeft 14
+      PositionY 28
+      OffsetTop 28
+      SizeX 380
+      OffsetRight -394
+      SizeY 18
+      OffsetBottom -46
+     }
+     Color 0.3968 0.4564 0.6038 1
+     Text "Friendly units only  -  right-click a squad to give it orders"
+     "Font Size" 13
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6612AB7E3CB20C}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    ButtonWidgetClass "{6A6612AB7E3CB20D}" {
+     Name "ExitButton"
+     Slot FrameWidgetSlot "{6A6612AB7E3CB20E}" {
+      Anchor 1 0 1 1
+      PositionX -108
+      OffsetLeft -108
+      PositionY 8
+      OffsetTop 8
+      SizeX 96
+      OffsetRight -12
+      SizeY 0
+      OffsetBottom -8
+     }
+     Color 1 1 1 0
+     components {
+      COA_TacticalExitButton "{6A6612AB7E3CB20F}" {
+      }
+      SCR_ModularButtonComponent "{6A6612AB7E3CB210}" {
+       m_aEffects {
+        SCR_ButtonEffectColor "{6A6612AB7E3CB218}" {
+         m_eEvents 6159
+         m_sWidgetName "ExitBG"
+         m_fAnimationTime 0.12
+         m_cDefault 0.011 0.0137 0.0212 1
+         m_cHovered 0.5841 0.0369 0.0369 1
+         m_cActivated 0.5841 0.0369 0.0369 1
+         m_cActivatedHovered 0.5841 0.0369 0.0369 1
+         m_cFocusGained 0.5841 0.0369 0.0369 1
+         m_cFocusLost 0.011 0.0137 0.0212 1
+        }
+       }
+      }
+     }
+     {
+      OverlayWidgetClass "{6A6612AB7E3CB211}" {
+       Name "ExitOverlay"
+       Slot ButtonWidgetSlot "{6A6612AB7E3CB212}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{6A6612AB7E3CB213}" {
+         Name "ExitBG"
+         Slot OverlayWidgetSlot "{6A6612AB7E3CB214}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.011 0.0137 0.0212 1
+        }
+        TextWidgetClass "{6A6612AB7E3CB215}" {
+         Name "ExitText"
+         Slot OverlayWidgetSlot "{6A6612AB7E3CB216}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.8632 0.8879 0.9301 1
+         Text "EXIT"
+         "Font Size" 15
+         "Min Font Size" 11
+         "Horizontal Alignment" Center
+         "Vertical Alignment" Center
+         FontProperties FontProperties "{6A6612AB7E3CB217}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+  FrameWidgetClass "{6A6612AB7E3CB105}" {
+   Name "ContextMenu"
+   Slot FrameWidgetSlot "{6A6612AB7E3CB106}" {
+    Anchor 0 0 0 0
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 250
+    OffsetRight -250
+    SizeY 240
+    OffsetBottom -240
+   }
+   "Z Order" 50
+   components {
+    SCR_ContextMenuActionsEditorUIComponent "{6A6612AB7E3CB107}" {
+     m_ButtonPath "{6A6612AB7E3CA005}UI/layouts/Editor/COA_TacticalContextButton.layout"
+     m_VLayoutWidgetName "VLayout"
+     m_sBottomBarName "BottomBar"
+     m_ButtonPrefabSizeX 250
+     m_ButtonPrefabSizeY 34
+    }
+   }
+   {
+    VerticalLayoutWidgetClass "{6A6612AB7E3CB108}" {
+     Name "MenuColumn"
+     Slot FrameWidgetSlot "{6A6612AB7E3CB109}" {
+      Anchor 0 0 1 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+     {
+      ImageWidgetClass "{6A6612AB7E3CB10A}" {
+       Name "MenuAccent"
+       Slot VerticalLayoutSlot "{6A6612AB7E3CB10B}" {
+        HorizontalAlign 3
+       }
+       Size 250 3
+       Color 0.5841 0.0369 0.0369 1
+      }
+      VerticalLayoutWidgetClass "{6A6612AB7E3CB10C}" {
+       Name "VLayout"
+       Slot VerticalLayoutSlot "{6A6612AB7E3CB10D}" {
+        HorizontalAlign 3
+       }
+      }
+      ImageWidgetClass "{6A6612AB7E3CB10E}" {
+       Name "BottomBar"
+       Slot VerticalLayoutSlot "{6A6612AB7E3CB10F}" {
+        HorizontalAlign 3
+       }
+       Size 250 2
+       Color 1 1 1 0.013
+      }
+     }
+    }
+   }
+  }
+ }
+}

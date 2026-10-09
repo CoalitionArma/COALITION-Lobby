@@ -447,6 +447,50 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Player radial menu: alert the medics on the caller's faction
+	//------------------------------------------------------------------------------------------------
+	//! Tactical camera: give a friendly squad an order at a position (COA_TacticalOrderAction)
+	void RequestTacticalOrder(RplId groupId, COA_ETacticalOrder order, vector position)
+	{
+		Rpc(RpcAsk_RequestTacticalOrder, groupId, order, position);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_RequestTacticalOrder(RplId groupId, COA_ETacticalOrder order, vector position)
+	{
+		LogTelemetry("RpcAsk_RequestTacticalOrder", COA_BandwidthTelemetryManager.EstimateSize_RplId() + COA_BandwidthTelemetryManager.EstimateSize_Int() + COA_BandwidthTelemetryManager.EstimateSize_Vector());
+
+		int callerId = GetCallerPlayerId();
+		if (!COA_TacticalCamera.PlayerQualifies(callerId) || !m_SlottingManager)
+			return;
+
+		SCR_AIGroup group = SCR_AIGroup.Cast(Replication.FindItem(groupId));
+		if (!group)
+			return;
+
+		// Own side only
+		Faction callerFaction = m_SlottingManager.GetPlayerSlotFaction(callerId, true);
+		Faction groupFaction = group.GetFaction();
+		if (!callerFaction || !groupFaction || !callerFaction.IsFactionFriendly(groupFaction))
+			return;
+
+		string issuerName = GetGame().GetPlayerManager().GetPlayerName(callerId);
+		int delivered;
+		foreach (int memberId : group.GetPlayerIDs())
+		{
+			COA_PlayerRplToOwnerManager ownerManager = COA_PlayerRplToOwnerManager.GetForPlayer(memberId);
+			if (!ownerManager)
+				continue;
+
+			ownerManager.ReceiveTacticalOrder(order, position, issuerName);
+			delivered++;
+		}
+
+		if (delivered > 0 && m_RplBroadcastManager)
+			m_RplBroadcastManager.SendHint(string.Format("%1 order sent to %2 (%3 players).", COA_TacticalCamera.GetOrderName(order), group.GetCustomNameWithOriginal(), delivered), callerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void RequestMedic()
 	{
 		Rpc(RpcAsk_RequestMedic);

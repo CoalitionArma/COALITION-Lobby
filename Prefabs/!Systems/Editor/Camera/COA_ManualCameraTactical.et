@@ -1,0 +1,8 @@
+SCR_ManualCamera : "{89ABC7C0A6B85312}Prefabs/Editor/Camera/ManualCameraEdit.et" {
+ ID "6A6612AB7E3CA020"
+ m_aComponents {
+  COA_TacticalLimitManualCameraComponent "{6A6612AB7E3CA021}" {
+   m_iPriority 1
+  }
+ }
+}

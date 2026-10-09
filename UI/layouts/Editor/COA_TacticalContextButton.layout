@@ -1,0 +1,119 @@
+ButtonWidgetClass {
+ Name "ContextButton"
+ Slot AlignableSlot "{6A6612AB7E3CB001}" {
+  HorizontalAlign 3
+ }
+ Color 0.0075 0.0086 0.0123 1
+ components {
+  SCR_ButtonTextComponent "{6A6612AB7E3CB002}" {
+   m_sTextWidgetName "Text"
+   m_BackgroundDefault 0.0075 0.0086 0.0123 1
+   m_BackgroundHovered 0.011 0.0137 0.0212 1
+   m_BackgroundSelected 0.5841 0.0369 0.0369 1
+   m_BackgroundSelectedHovered 0.5841 0.0369 0.0369 1
+   m_BackgroundClicked 0.5841 0.0369 0.0369 1
+  }
+  ButtonActionComponent "{6A6612AB7E3CB003}" {
+  }
+  SCR_ContextMenuButtonEditorUIComponent "{6A6612AB7E3CB004}" {
+   m_sButtonName "ContextButton"
+   m_sButtonIconName "Icon"
+   m_sShortcutTextName "Shortcut"
+  }
+ }
+ {
+  SizeLayoutWidgetClass "{6A6612AB7E3CB005}" {
+   Name "ButtonSize"
+   Slot ButtonWidgetSlot "{6A6612AB7E3CB006}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   AllowWidthOverride 1
+   WidthOverride 250
+   AllowHeightOverride 1
+   HeightOverride 34
+   {
+    OverlayWidgetClass "{6A6612AB7E3CB007}" {
+     Name "ButtonOverlay"
+     Slot AlignableSlot "{6A6612AB7E3CB008}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      HorizontalLayoutWidgetClass "{6A6612AB7E3CB009}" {
+       Name "ButtonRow"
+       Slot OverlayWidgetSlot "{6A6612AB7E3CB00A}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+        Padding 10 0 10 0
+       }
+       {
+        SizeLayoutWidgetClass "{6A6612AB7E3CB00B}" {
+         Name "IconSize"
+         Slot HorizontalLayoutSlot "{6A6612AB7E3CB00C}" {
+          VerticalAlign 1
+          Padding 0 0 8 0
+         }
+         AllowWidthOverride 1
+         WidthOverride 22
+         AllowHeightOverride 1
+         HeightOverride 22
+         {
+          ImageWidgetClass "{6A6612AB7E3CB00D}" {
+           Name "Icon"
+           Slot AlignableSlot "{6A6612AB7E3CB00E}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.8632 0.8879 0.9301 1
+          }
+         }
+        }
+        TextWidgetClass "{6A6612AB7E3CB00F}" {
+         Name "Text"
+         Slot HorizontalLayoutSlot "{6A6612AB7E3CB010}" {
+          FillWeight 1
+          HorizontalAlign 3
+          VerticalAlign 1
+         }
+         Color 0.8632 0.8879 0.9301 1
+         Text "Action"
+         "Font Size" 16
+         "Min Font Size" 11
+         "Horizontal Alignment" Left
+         "Vertical Alignment" Center
+         FontProperties FontProperties "{6A6612AB7E3CB011}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        RichTextWidgetClass "{6A6612AB7E3CB012}" {
+         Name "Shortcut"
+         Slot HorizontalLayoutSlot "{6A6612AB7E3CB013}" {
+          VerticalAlign 1
+         }
+         Color 0.3968 0.4564 0.6038 1
+         Text ""
+         "Font Size" 13
+         "Min Font Size" 10
+         "Horizontal Alignment" Right
+         "Vertical Alignment" Center
+         FontProperties FontProperties "{6A6612AB7E3CB014}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+       }
+      }
+      ImageWidgetClass "{6A6612AB7E3CB015}" {
+       Name "Stripe"
+       Slot OverlayWidgetSlot "{6A6612AB7E3CB016}" {
+        HorizontalAlign 3
+        VerticalAlign 2
+       }
+       Color 1 1 1 0.013
+      }
+     }
+    }
+   }
+  }
+ }
+}

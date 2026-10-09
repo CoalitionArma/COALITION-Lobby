@@ -4,6 +4,10 @@ modded class SCR_EditorManagerEntity
 	// yet when the editor closes - see the GAME-state branch of OpenUI below.
 	protected ref COA_EditorExitSpectatorWaiter m_EditorExitSpectatorWaiter;
 
+	// Role modes as the engine last handed them to SetEditorModes (before the tactical mode was
+	// added), so COA_RefreshTacticalMode can re-run the same decision after a slot change.
+	protected EEditorMode m_COA_RoleModes;
+
 	//----------------------------------------------------------------
 	// True when the local player is allowed unlimited editor access
 	// (spectators, moderators and admins). Used both to decide the
@@ -67,6 +71,52 @@ modded class SCR_EditorManagerEntity
 	void SetIsLimited(bool input)
 	{
 		m_bIsLimited = input;
+	}
+
+	//----------------------------------------------------------------
+	// Tactical Camera (see COA_TacticalCamera): STRATEGY mode uses the
+	// Lobby's own limited mode prefab, and is added to every player
+	// whose slot role qualifies whenever their role modes are rebuilt
+	// (connect, role change, COA_TacticalCamera.RefreshAccess).
+	//----------------------------------------------------------------
+	override SCR_EditorModeEntity CreateEditorMode(EEditorMode mode, bool isInit, ResourceName prefab = "")
+	{
+		bool tactical = mode == EEditorMode.STRATEGY && prefab.IsEmpty() && COA_Gamemode.GetInstance();
+		if (tactical)
+			prefab = COA_TacticalCamera.MODE_PREFAB;
+
+		SCR_EditorModeEntity modeEntity = super.CreateEditorMode(mode, isInit, prefab);
+		if (tactical)
+			Print(string.Format("[Coalition Lobby] Tactical camera: created mode entity for player %1 from %2 -> %3", GetPlayerID(), prefab, modeEntity), LogLevel.NORMAL);
+
+		return modeEntity;
+	}
+
+	//----------------------------------------------------------------
+	override void SetEditorModes(EEditorModeAccess access, EEditorMode modes, bool isInit = false)
+	{
+		if (access == EEditorModeAccess.ROLE)
+		{
+			m_COA_RoleModes = modes;
+
+			if (COA_Gamemode.GetInstance() && COA_TacticalCamera.PlayerQualifies(GetPlayerID()))
+				modes |= EEditorMode.STRATEGY;
+
+			Print(string.Format("[Coalition Lobby] Tactical camera: role modes for player %1 -> %2 (qualifies: %3)", GetPlayerID(), modes, COA_TacticalCamera.PlayerQualifies(GetPlayerID())), LogLevel.NORMAL);
+		}
+
+		super.SetEditorModes(access, modes, isInit);
+	}
+
+	//----------------------------------------------------------------
+	// Server: re-apply the role modes so the tactical mode is added
+	// or removed to match the player's current slot. Unlike
+	// RecreateEditorModes this keeps whatever flags (Workbench,
+	// admin) the engine used when it last built them.
+	//----------------------------------------------------------------
+	void COA_RefreshTacticalMode()
+	{
+		SetEditorModes(EEditorModeAccess.ROLE, m_COA_RoleModes, false);
 	}
 
 	//----------------------------------------------------------------
