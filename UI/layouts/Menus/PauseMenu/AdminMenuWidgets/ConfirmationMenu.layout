@@ -21,9 +21,28 @@ FrameWidgetClass {
    "Min Font Size" 10
    "Horizontal Alignment" Center
    "Vertical Alignment" Center
-   FontProperties FontProperties "{629B0EA7D0E4BF47}" {
-   }
    Offset 0 0
+   Color 0.8632 0.8879 0.9301 1
+   FontProperties FontProperties "{6A6A0D00000002E0}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{6A6A0D00000002E8}" {
+   Name "ExcuteButtonBG"
+   Slot FrameWidgetSlot "{6A6A0D00000002E7}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 104
+    OffsetLeft 104
+    PositionY 68
+    OffsetTop 68
+    SizeX 80
+    OffsetRight -184
+    SizeY 40
+    OffsetBottom -108
+   }
+   "Z Order" 1
+   Color 0.5841 0.0369 0.0369 1
+   style rounded_4px
   }
   ButtonWidgetClass "{65CCC219B0AC674F}" {
    Name "ExcuteButton"
@@ -39,7 +58,7 @@ FrameWidgetClass {
     OffsetBottom -108
    }
    "Z Order" 1
-   Color 0.855 0.031 0.028 1
+   Color 1 1 1 0
    components {
     SCR_ButtonTextComponent "{62993E178E05DA3C}" {
      m_bCanBeToggled 1
@@ -51,11 +70,32 @@ FrameWidgetClass {
      Name "ActionButtonText"
      Slot ButtonWidgetSlot "{62992E44F11398F5}" {
      }
-     Text "EXCUTE"
+     Text "EXECUTE"
      "Font Size" 15
      "Min Font Size" 15
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{6A6A0D00000002E1}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
     }
    }
+  }
+  SmartPanelWidgetClass "{6A6A0D00000002EA}" {
+   Name "CancelButtonBG"
+   Slot FrameWidgetSlot "{6A6A0D00000002E9}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 16
+    OffsetLeft 16
+    PositionY 68
+    OffsetTop 68
+    SizeX 80
+    OffsetRight -96
+    SizeY 40
+    OffsetBottom -108
+   }
+   "Z Order" 1
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
   }
   ButtonWidgetClass "{65CCC219F720E0C6}" {
    Name "CancelButton"
@@ -71,7 +111,7 @@ FrameWidgetClass {
     OffsetBottom -108
    }
    "Z Order" 1
-   Color 0.013 0.0152 0.0176 1
+   Color 1 1 1 0
    components {
     SCR_ButtonTextComponent "{62993E178E05DA3C}" {
      m_bCanBeToggled 1
@@ -83,9 +123,13 @@ FrameWidgetClass {
      Name "ActionButtonText"
      Slot ButtonWidgetSlot "{62992E44F11398F5}" {
      }
-     Text "Cancel"
+     Text "CANCEL"
      "Font Size" 15
      "Min Font Size" 15
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{6A6A0D00000002E2}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
     }
    }
   }
@@ -103,6 +147,37 @@ FrameWidgetClass {
     OffsetBottom -540
    }
    {
+    ImageWidgetClass "{6A6A0D00000002E4}" {
+     Name "Dim"
+     Slot FrameWidgetSlot "{6A6A0D00000002E3}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+     Color 0.0033 0.0037 0.0052 0.6
+    }
+    SmartPanelWidgetClass "{6A6A0D00000002EC}" {
+     Name "BackgroundGrey2BG"
+     Slot FrameWidgetSlot "{6A6A0D00000002EB}" {
+      Anchor 0.5 0.5 0.5 0.5
+      PositionX -224
+      OffsetLeft -224
+      PositionY -124
+      OffsetTop -124
+      SizeX 424
+      OffsetRight -200
+      SizeY 240
+      OffsetBottom -116
+     }
+     Color 0.0075 0.0086 0.0123 1
+     style rounded_12px
+    }
     ImageWidgetClass "{65CCC226D85030CA}" {
      Name "BackgroundGrey2"
      Slot FrameWidgetSlot "{62993E1190D14ACD}" {
@@ -116,9 +191,24 @@ FrameWidgetClass {
       SizeY 240
       OffsetBottom -116
      }
-     Color 0.013 0.0152 0.0176 1
+     Color 1 1 1 0
      "Inherit Color" 1
      Size 3840 2160
+    }
+    ImageWidgetClass "{6A6A0D00000002E6}" {
+     Name "DialogAccent"
+     Slot FrameWidgetSlot "{6A6A0D00000002E5}" {
+      Anchor 0.5 0.5 0.5 0.5
+      PositionX -208
+      OffsetLeft -208
+      PositionY -110
+      OffsetTop -110
+      SizeX 28
+      OffsetRight 180
+      SizeY 3
+      OffsetBottom 107
+     }
+     Color 0.5841 0.0369 0.0369 1
     }
    }
   }

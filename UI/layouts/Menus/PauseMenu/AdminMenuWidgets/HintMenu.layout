@@ -1,6 +1,29 @@
 FrameWidgetClass {
- Name "templateFrame"
+ Name "rootFrame"
  {
+  TextWidgetClass "{6A6E110000000269}" {
+   Name "PageHint"
+   Slot FrameWidgetSlot "{6A6E110000000268}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -744
+    OffsetLeft -744
+    PositionY -434
+    OffsetTop -434
+    SizeX 1097
+    OffsetRight -353
+    SizeY 20
+    OffsetBottom 414
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "Show an on-screen hint to one player, a faction or everyone."
+   "Font Size" 14
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{6A6E11000000026A}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
   FrameWidgetClass "{65534CACFD64038F}" {
    Name "MenuSlot1"
    Slot FrameWidgetSlot "{6548E8DD235B0C39}" {
@@ -30,37 +53,112 @@ FrameWidgetClass {
    }
    "Is Enabled" 0
   }
+  SmartPanelWidgetClass "{6A6E11000000022E}" {
+   Name "PlayerListBox0Card"
+   Slot FrameWidgetSlot "{6A6E11000000022D}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -744
+    OffsetLeft -744
+    PositionY -400
+    OffsetTop -400
+    SizeX 355
+    OffsetRight 389
+    SizeY 872
+    OffsetBottom -472
+   }
+   Color 0.0075 0.0086 0.0123 1
+   style rounded_6px
+  }
+  ImageWidgetClass "{6A6E110000000230}" {
+   Name "PlayerListBox0CardPill"
+   Slot FrameWidgetSlot "{6A6E11000000022F}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -744
+    OffsetLeft -744
+    PositionY -385
+    OffsetTop -385
+    SizeX 3
+    OffsetRight 741
+    SizeY 14
+    OffsetBottom 371
+   }
+   Color 0.5841 0.0369 0.0369 1
+  }
+  TextWidgetClass "{6A6E110000000232}" {
+   Name "PlayerListBox0CardTitle"
+   Slot FrameWidgetSlot "{6A6E110000000231}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY -388
+    OffsetTop -388
+    SizeX 323
+    OffsetRight 405
+    SizeY 20
+    OffsetBottom 368
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "PLAYERS"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{6A6E110000000233}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{6A6E110000000237}" {
+   Name "SearchBox0BG"
+   Slot FrameWidgetSlot "{6A6E110000000236}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY -356
+    OffsetTop -356
+    SizeX 323
+    OffsetRight 405
+    SizeY 40
+    OffsetBottom 316
+   }
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
   EditBoxWidgetClass "{65534CACD957577A}" {
    Name "SearchBox0"
-   Slot FrameWidgetSlot "{650AE2D863BE6C59}" {
+   Slot FrameWidgetSlot "{6A6E110000000234}" {
     Anchor 0.5 0.5 0.5 0.5
-    PositionX -792
-    OffsetLeft -792
-    PositionY -436
-    OffsetTop -436
-    SizeX 252.078
-    OffsetRight 539.922
-    SizeY 41.277
-    OffsetBottom 394.723
+    PositionX -716
+    OffsetLeft -716
+    PositionY -356
+    OffsetTop -356
+    SizeX 267
+    OffsetRight 449
+    SizeY 40
+    OffsetBottom 316
    }
-   "Font Size" 20
+   "Font Size" 17
    "Use placeholder text" 1
-   "Placeholder text" "Search for player..."
+   "Placeholder text" "Search players..."
+   Color 0.8632 0.8879 0.9301 1
+   FontProperties FontProperties "{6A6E110000000235}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
   }
   ButtonWidgetClass "{65534CACD95756C0}" {
    Name "SearchButton0"
-   Slot FrameWidgetSlot "{62992E477A603216}" {
+   Slot FrameWidgetSlot "{6A6E110000000238}" {
     Anchor 0.5 0.5 0.5 0.5
-    PositionX -536
-    OffsetLeft -536
-    PositionY -436
-    OffsetTop -436
-    SizeX 38.891
-    OffsetRight 497.109
-    SizeY 41.419
-    OffsetBottom 394.581
+    PositionX -449
+    OffsetLeft -449
+    PositionY -354
+    OffsetTop -354
+    SizeX 40
+    OffsetRight 409
+    SizeY 36
+    OffsetBottom 318
    }
-   Color 0.013 0.0152 0.0176 1
+   Color 1 1 1 0
+   "Z Order" 2
    components {
     SCR_ButtonTextComponent "{62993E178E05DA3C}" {
      m_bCanBeToggled 1
@@ -73,256 +171,42 @@ FrameWidgetClass {
      Slot ButtonWidgetSlot "{62992E44F11398F5}" {
      }
      Texture "{A2738F1A7C0902C1}UI/Textures/Workshop/SearchIcon.edds"
-     Size 25 25
+     Size 18 18
+     Color 0.3968 0.4564 0.6038 1
     }
    }
   }
-  OverlayWidgetClass "{65534CACD957A8E3}" {
-   Name "PlayerList0"
-   Slot FrameWidgetSlot "{629B0EC8DE26D29A}" {
+  SmartPanelWidgetClass "{6A6E11000000023D}" {
+   Name "OpenTicketFilterBG"
+   Slot FrameWidgetSlot "{6A6E11000000023C}" {
     Anchor 0.5 0.5 0.5 0.5
-    PositionX -792
-    OffsetLeft -792
-    PositionY -356
-    OffsetTop -356
-    SizeX 293.405
-    OffsetRight 498.595
-    SizeY 825.01
-    OffsetBottom -469.01
+    PositionX -728
+    OffsetLeft -728
+    PositionY -304
+    OffsetTop -304
+    SizeX 20
+    OffsetRight 708
+    SizeY 20
+    OffsetBottom 284
    }
-   {
-    OverlayWidgetClass "{65534CACD9581A14}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
-     Name "PlayerListBox0"
-     Slot OverlayWidgetSlot "{629B0EBE315316CB}" {
-      HorizontalAlign 3
-      VerticalAlign 3
-      Padding 0 20 0 0
-     }
-     {
-      ScrollLayoutWidgetClass "{56691148E692435A}" {
-       Prefab "{56691148E692435A}"
-       {
-        VerticalLayoutWidgetClass "{56691148E013D981}" {
-         Prefab "{56691148E013D981}"
-        }
-       }
-      }
-      ImageWidgetClass "{5DB6D18100D38307}" {
-       Prefab "{5DB6D18100D38307}"
-       "Is Visible" 0
-      }
-     }
-    }
-    TextWidgetClass "{65534CACD9581A12}" {
-     Name "PlayerListTitle"
-     Slot OverlayWidgetSlot "{629B0EC922D5408A}" {
-      VerticalAlign 0
-      Padding -9 0 0 0
-     }
-     Clipping False
-     Text "Players"
-     "Font Size" 20
-     "Min Font Size" 10
-     "Horizontal Alignment" Center
-     "Vertical Alignment" Center
-     FontProperties FontProperties "{629B0EA7D0E4BF47}" {
-     }
-     Offset 0 0
-    }
-   }
-  }
-  OverlayWidgetClass "{65534CACD9581AE9}" {
-   Name "FactionList0"
-   Slot FrameWidgetSlot "{629B0EC8DE26D29A}" {
-    Anchor 0.5 0.5 0.5 0.5
-    PositionX -448
-    OffsetLeft -448
-    PositionY -380
-    OffsetTop -380
-    SizeX 293.405
-    OffsetRight 154.595
-    SizeY 849.01
-    OffsetBottom -469.01
-   }
-   {
-    OverlayWidgetClass "{65534CACD95837C4}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
-     Name "FactionListBox0"
-     Slot OverlayWidgetSlot "{629B0EBE315316CB}" {
-      HorizontalAlign 3
-      VerticalAlign 3
-      Padding 0 20 0 0
-     }
-     {
-      ScrollLayoutWidgetClass "{56691148E692435A}" {
-       Prefab "{56691148E692435A}"
-       {
-        VerticalLayoutWidgetClass "{56691148E013D981}" {
-         Prefab "{56691148E013D981}"
-        }
-       }
-      }
-      ImageWidgetClass "{5DB6D18100D38307}" {
-       Prefab "{5DB6D18100D38307}"
-       "Is Visible" 0
-      }
-     }
-    }
-    TextWidgetClass "{65534CACD95837C5}" {
-     Name "FactionListTitle"
-     Slot OverlayWidgetSlot "{629B0EC922D5408A}" {
-      VerticalAlign 0
-      Padding -9 0 0 0
-     }
-     Clipping False
-     Text "Factions"
-     "Font Size" 20
-     "Min Font Size" 10
-     "Horizontal Alignment" Center
-     "Vertical Alignment" Center
-     FontProperties FontProperties "{629B0EA7D0E4BF47}" {
-     }
-     Offset 0 0
-    }
-   }
-  }
-  ButtonWidgetClass "{65534CACD958379D}" {
-   Name "MenuButton0"
-   Slot FrameWidgetSlot "{62992E477A603216}" {
-    Anchor 0.5 0.5 0.5 0.5
-    PositionX 168
-    OffsetLeft 168
-    PositionY -116
-    OffsetTop -116
-    SizeX 112
-    OffsetRight -280
-    SizeY 29.999
-    OffsetBottom 86.001
-   }
-   Color 0.013 0.0152 0.0176 1
-   components {
-    SCR_ButtonTextComponent "{62993E178E05DA3C}" {
-     m_bCanBeToggled 1
-     m_sTextWidgetName ""
-    }
-   }
-   {
-    TextWidgetClass "{65534CACD958B475}" {
-     Name "ActionButtonText"
-     Slot ButtonWidgetSlot "{62992E44F11398F5}" {
-     }
-     Text "Send to All"
-     "Font Size" 15
-     "Min Font Size" 15
-    }
-   }
-  }
-  ButtonWidgetClass "{65534CACD958B7AA}" {
-   Name "MenuButton1"
-   Slot FrameWidgetSlot "{62992E477A603216}" {
-    Anchor 0.5 0.5 0.5 0.5
-    PositionX 168
-    OffsetLeft 168
-    PositionY -76
-    OffsetTop -76
-    SizeX 112
-    OffsetRight -280
-    SizeY 29.999
-    OffsetBottom 46.001
-   }
-   Color 0.013 0.0152 0.0176 1
-   components {
-    SCR_ButtonTextComponent "{62993E178E05DA3C}" {
-     m_bCanBeToggled 1
-     m_sTextWidgetName ""
-    }
-   }
-   {
-    TextWidgetClass "{65534CACD958E675}" {
-     Name "ActionButtonText"
-     Slot ButtonWidgetSlot "{62992E44F11398F5}" {
-     }
-     Text "Send to Faction"
-     "Font Size" 15
-     "Min Font Size" 15
-    }
-   }
-  }
-  ButtonWidgetClass "{65534CAD301EA55E}" {
-   Name "MenuButton2"
-   Slot FrameWidgetSlot "{62992E477A603216}" {
-    Anchor 0.5 0.5 0.5 0.5
-    PositionX 168
-    OffsetLeft 168
-    PositionY -36
-    OffsetTop -36
-    SizeX 112
-    OffsetRight -280
-    SizeY 29.999
-    OffsetBottom 6.001
-   }
-   Color 0.013 0.0152 0.0176 1
-   components {
-    SCR_ButtonTextComponent "{62993E178E05DA3C}" {
-     m_bCanBeToggled 1
-     m_sTextWidgetName ""
-    }
-   }
-   {
-    TextWidgetClass "{65534CAD301EA559}" {
-     Name "ActionButtonText"
-     Slot ButtonWidgetSlot "{62992E44F11398F5}" {
-     }
-     Text "Send to Player"
-     "Font Size" 15
-     "Min Font Size" 15
-    }
-   }
-  }
-  WindowWidgetClass "{65534CAEB645009D}" {
-   Name "HintBoxBackground0"
-   Slot FrameWidgetSlot "{62A27DD4085F87AF}" {
-    Anchor 0.5 0.5 0.5 0.5
-    PositionX -120
-    OffsetLeft -120
-    PositionY -388
-    OffsetTop -388
-    SizeX 400
-    OffsetRight -280
-    SizeY 264
-    OffsetBottom 124
-   }
-   Color 0.456 0.456 0.456 1
-  }
-  MultilineEditBoxWidgetClass "{65534CAEB6450155}" {
-   Name "HintBox0"
-   Slot FrameWidgetSlot "{62A13CE4379A61C0}" {
-    Anchor 0.5 0.5 0.5 0.5
-    PositionX -112
-    OffsetLeft -112
-    PositionY -380
-    OffsetTop -380
-    SizeX 384
-    OffsetRight -272
-    SizeY 248
-    OffsetBottom 132
-   }
-   Text ""
-   "Min Font Size" 12
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
   }
   ButtonWidgetClass "{6A174D0253FA8FC4}" {
    Name "OpenTicketFilterButton"
-   Slot FrameWidgetSlot "{62992E477A603216}" {
+   Slot FrameWidgetSlot "{6A6E110000000239}" {
     Anchor 0.5 0.5 0.5 0.5
-    PositionX -792
-    OffsetLeft -792
-    PositionY -388
-    OffsetTop -388
-    SizeX 24
-    OffsetRight 768
-    SizeY 24
-    OffsetBottom 364
+    PositionX -728
+    OffsetLeft -728
+    PositionY -304
+    OffsetTop -304
+    SizeX 20
+    OffsetRight 708
+    SizeY 20
+    OffsetBottom 284
    }
-   Color 0.013 0.0152 0.0176 1
+   Color 1 1 1 0
+   "Z Order" 2
    components {
     SCR_ButtonTextComponent "{62993E178E05DA3C}" {
      m_bCanBeToggled 1
@@ -337,25 +221,480 @@ FrameWidgetClass {
      Slot ButtonWidgetSlot "{62992E44F11398F5}" {
      }
      Texture "{7DEEE956159B85D2}UI/Images/LobbyImages/check.edds"
-     Size 25 25
+     Size 14 14
+     Color 0.8632 0.8879 0.9301 1
     }
    }
   }
   TextWidgetClass "{6A174D0253FA8C0D}" {
    Name "OpenTicketFilterText"
-   Slot FrameWidgetSlot "{6A1525E0342C15E4}" {
+   Slot FrameWidgetSlot "{6A6E11000000023A}" {
     Anchor 0.5 0.5 0.5 0.5
-    PositionX -760
-    OffsetLeft -760
+    PositionX -698
+    OffsetLeft -698
+    PositionY -306
+    OffsetTop -306
+    SizeX 293
+    OffsetRight 405
+    SizeY 24
+    OffsetBottom 282
+   }
+   Text "Only players with an open ticket"
+   "Min Font Size" 20
+   Color 0.3968 0.4564 0.6038 1
+   "Font Size" 14
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{6A6E11000000023B}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{6A6E110000000240}" {
+   Name "PlayerListBox0BG"
+   Slot FrameWidgetSlot "{6A6E11000000023F}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY -270
+    OffsetTop -270
+    SizeX 323
+    OffsetRight 405
+    SizeY 726
+    OffsetBottom -456
+   }
+   Color 0.0033 0.0037 0.0052 1
+   style rounded_6px
+  }
+  TextWidgetClass "{6A6E110000000242}" {
+   Name "PlayerListBox0Empty"
+   Slot FrameWidgetSlot "{6A6E110000000241}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY -258
+    OffsetTop -258
+    SizeX 323
+    OffsetRight 405
+    SizeY 20
+    OffsetBottom 238
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "No players found"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{6A6E110000000243}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  OverlayWidgetClass "{65534CACD9581A14}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
+   Name "PlayerListBox0"
+   Slot FrameWidgetSlot "{6A6E11000000023E}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -724
+    OffsetLeft -724
+    PositionY -266
+    OffsetTop -266
+    SizeX 315
+    OffsetRight 409
+    SizeY 718
+    OffsetBottom -452
+   }
+   components {
+    SCR_ListBoxComponent "{566C9415BAA54E1B}" {
+     m_sElementLayout "{6A6A0D0000000001}UI/Listbox/COA_AdminListRow.layout"
+    }
+   }
+   {
+    ScrollLayoutWidgetClass "{56691148E692435A}" {
+     Prefab "{56691148E692435A}"
+     {
+      VerticalLayoutWidgetClass "{56691148E013D981}" {
+       Prefab "{56691148E013D981}"
+      }
+     }
+    }
+    ImageWidgetClass "{5DB6D18100D38307}" {
+     Prefab "{5DB6D18100D38307}"
+     "Is Visible" 0
+    }
+   }
+  }
+  SmartPanelWidgetClass "{6A6E110000000245}" {
+   Name "FactionCard"
+   Slot FrameWidgetSlot "{6A6E110000000244}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -373
+    OffsetLeft -373
+    PositionY -400
+    OffsetTop -400
+    SizeX 355
+    OffsetRight 18
+    SizeY 872
+    OffsetBottom -472
+   }
+   Color 0.0075 0.0086 0.0123 1
+   style rounded_6px
+  }
+  ImageWidgetClass "{6A6E110000000247}" {
+   Name "FactionCardPill"
+   Slot FrameWidgetSlot "{6A6E110000000246}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -373
+    OffsetLeft -373
+    PositionY -385
+    OffsetTop -385
+    SizeX 3
+    OffsetRight 370
+    SizeY 14
+    OffsetBottom 371
+   }
+   Color 0.5841 0.0369 0.0369 1
+  }
+  TextWidgetClass "{6A6E110000000249}" {
+   Name "FactionCardTitle"
+   Slot FrameWidgetSlot "{6A6E110000000248}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -357
+    OffsetLeft -357
     PositionY -388
     OffsetTop -388
-    SizeX 104
-    OffsetRight 656
-    SizeY 24
-    OffsetBottom 364
+    SizeX 323
+    OffsetRight 34
+    SizeY 20
+    OffsetBottom 368
    }
-   Text "Open Tickets"
-   "Min Font Size" 20
+   Color 0.3968 0.4564 0.6038 1
+   Text "FACTIONS"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{6A6E11000000024A}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{6A6E11000000024D}" {
+   Name "FactionListBox0BG"
+   Slot FrameWidgetSlot "{6A6E11000000024C}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -357
+    OffsetLeft -357
+    PositionY -356
+    OffsetTop -356
+    SizeX 323
+    OffsetRight 34
+    SizeY 812
+    OffsetBottom -456
+   }
+   Color 0.0033 0.0037 0.0052 1
+   style rounded_6px
+  }
+  TextWidgetClass "{6A6E11000000024F}" {
+   Name "FactionListBox0Empty"
+   Slot FrameWidgetSlot "{6A6E11000000024E}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -357
+    OffsetLeft -357
+    PositionY -344
+    OffsetTop -344
+    SizeX 323
+    OffsetRight 34
+    SizeY 20
+    OffsetBottom 324
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "No factions"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{6A6E110000000250}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  OverlayWidgetClass "{65534CACD95837C4}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
+   Name "FactionListBox0"
+   Slot FrameWidgetSlot "{6A6E11000000024B}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -353
+    OffsetLeft -353
+    PositionY -352
+    OffsetTop -352
+    SizeX 315
+    OffsetRight 38
+    SizeY 804
+    OffsetBottom -452
+   }
+   components {
+    SCR_ListBoxComponent "{566C9415BAA54E1B}" {
+     m_sElementLayout "{6A6A0D0000000001}UI/Listbox/COA_AdminListRow.layout"
+    }
+   }
+   {
+    ScrollLayoutWidgetClass "{56691148E692435A}" {
+     Prefab "{56691148E692435A}"
+     {
+      VerticalLayoutWidgetClass "{56691148E013D981}" {
+       Prefab "{56691148E013D981}"
+      }
+     }
+    }
+    ImageWidgetClass "{5DB6D18100D38307}" {
+     Prefab "{5DB6D18100D38307}"
+     "Is Visible" 0
+    }
+   }
+  }
+  SmartPanelWidgetClass "{6A6E110000000252}" {
+   Name "MessageCard"
+   Slot FrameWidgetSlot "{6A6E110000000251}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -2
+    OffsetLeft -2
+    PositionY -400
+    OffsetTop -400
+    SizeX 355
+    OffsetRight -353
+    SizeY 872
+    OffsetBottom -472
+   }
+   Color 0.0075 0.0086 0.0123 1
+   style rounded_6px
+  }
+  ImageWidgetClass "{6A6E110000000254}" {
+   Name "MessageCardPill"
+   Slot FrameWidgetSlot "{6A6E110000000253}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -2
+    OffsetLeft -2
+    PositionY -385
+    OffsetTop -385
+    SizeX 3
+    OffsetRight -1
+    SizeY 14
+    OffsetBottom 371
+   }
+   Color 0.5841 0.0369 0.0369 1
+  }
+  TextWidgetClass "{6A6E110000000256}" {
+   Name "MessageCardTitle"
+   Slot FrameWidgetSlot "{6A6E110000000255}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY -388
+    OffsetTop -388
+    SizeX 323
+    OffsetRight -337
+    SizeY 20
+    OffsetBottom 368
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "MESSAGE"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{6A6E110000000257}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{6A6E11000000025B}" {
+   Name "HintBox0BG"
+   Slot FrameWidgetSlot "{6A6E11000000025A}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY -356
+    OffsetTop -356
+    SizeX 323
+    OffsetRight -337
+    SizeY 668
+    OffsetBottom -312
+   }
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  MultilineEditBoxWidgetClass "{65534CAEB6450155}" {
+   Name "HintBox0"
+   Slot FrameWidgetSlot "{6A6E110000000258}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 26
+    OffsetLeft 26
+    PositionY -346
+    OffsetTop -346
+    SizeX 299
+    OffsetRight -325
+    SizeY 648
+    OffsetBottom -302
+   }
+   Text ""
+   "Min Font Size" 12
+   Color 0.8632 0.8879 0.9301 1
+   "Font Size" 16
+   FontProperties FontProperties "{6A6E110000000259}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{6A6E11000000025F}" {
+   Name "MenuButton2BG"
+   Slot FrameWidgetSlot "{6A6E11000000025E}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 328
+    OffsetTop 328
+    SizeX 323
+    OffsetRight -337
+    SizeY 36
+    OffsetBottom -364
+   }
+   "Z Order" 1
+   Color 0.5841 0.0369 0.0369 1
+   style rounded_4px
+  }
+  ButtonWidgetClass "{65534CAD301EA55E}" {
+   Name "MenuButton2"
+   Slot FrameWidgetSlot "{6A6E11000000025C}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 328
+    OffsetTop 328
+    SizeX 323
+    OffsetRight -337
+    SizeY 36
+    OffsetBottom -364
+   }
+   Color 1 1 1 0
+   "Z Order" 2
+   components {
+    SCR_ButtonTextComponent "{62993E178E05DA3C}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{65534CAD301EA559}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{62992E44F11398F5}" {
+     }
+     Text "Send to player"
+     "Font Size" 15
+     "Min Font Size" 11
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{6A6E11000000025D}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+  SmartPanelWidgetClass "{6A6E110000000263}" {
+   Name "MenuButton1BG"
+   Slot FrameWidgetSlot "{6A6E110000000262}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 374
+    OffsetTop 374
+    SizeX 323
+    OffsetRight -337
+    SizeY 36
+    OffsetBottom -410
+   }
+   "Z Order" 1
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  ButtonWidgetClass "{65534CACD958B7AA}" {
+   Name "MenuButton1"
+   Slot FrameWidgetSlot "{6A6E110000000260}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 374
+    OffsetTop 374
+    SizeX 323
+    OffsetRight -337
+    SizeY 36
+    OffsetBottom -410
+   }
+   Color 1 1 1 0
+   "Z Order" 2
+   components {
+    SCR_ButtonTextComponent "{62993E178E05DA3C}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{65534CACD958E675}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{62992E44F11398F5}" {
+     }
+     Text "Send to faction"
+     "Font Size" 15
+     "Min Font Size" 11
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{6A6E110000000261}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+  SmartPanelWidgetClass "{6A6E110000000267}" {
+   Name "MenuButton0BG"
+   Slot FrameWidgetSlot "{6A6E110000000266}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 420
+    OffsetTop 420
+    SizeX 323
+    OffsetRight -337
+    SizeY 36
+    OffsetBottom -456
+   }
+   "Z Order" 1
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  ButtonWidgetClass "{65534CACD958379D}" {
+   Name "MenuButton0"
+   Slot FrameWidgetSlot "{6A6E110000000264}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 420
+    OffsetTop 420
+    SizeX 323
+    OffsetRight -337
+    SizeY 36
+    OffsetBottom -456
+   }
+   Color 1 1 1 0
+   "Z Order" 2
+   components {
+    SCR_ButtonTextComponent "{62993E178E05DA3C}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{65534CACD958B475}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{62992E44F11398F5}" {
+     }
+     Text "Send to everyone"
+     "Font Size" 15
+     "Min Font Size" 11
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{6A6E110000000265}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
   }
  }
 }

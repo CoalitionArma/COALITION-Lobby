@@ -123,9 +123,9 @@ FrameWidgetClass {
       PositionY 8
       OffsetTop 8
       SizeX 96
-      OffsetRight -12
-      SizeY 0
-      OffsetBottom -8
+      OffsetRight 12
+      SizeY -16
+      OffsetBottom 8
      }
      Color 1 1 1 0
      components {

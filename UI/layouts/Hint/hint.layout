@@ -5,75 +5,177 @@ FrameWidgetClass {
   }
  }
  {
-  SizeLayoutWidgetClass "{624D2AAF695A42A1}" {
-   Name "SizeLayout0"
-   Slot FrameWidgetSlot "{624D2AAF695A429F}" {
-    Anchor 0.866 0.089 0.866 0.089
-    PositionX -151.36
-    OffsetLeft -151.36
-    PositionY -0.501
-    OffsetTop -0.501
-    SizeX 299.649
-    OffsetRight -148.289
-    SizeY 131.976
-    OffsetBottom -131.475
+  OverlayWidgetClass "{6A7919000000011C}" {
+   Name "HintCard"
+   Slot FrameWidgetSlot "{6A79190000000117}" {
+    Anchor 1 0.3 1 0.3
+    PositionX -380
+    OffsetLeft -380
+    PositionY 0
+    OffsetTop 0
+    SizeX 360
+    OffsetRight 20
+    SizeY 120
+    OffsetBottom -120
+    SizeToContent 1
    }
    "Z Order" 99
    {
-    TextWidgetClass "{624D2AAEAEE0C295}" {
-     Name "hintText"
-     Slot AlignableSlot "{624D2AAF68244230}" {
+    SmartPanelWidgetClass "{6A79190000000119}" {
+     Name "HintCardBG"
+     Slot OverlayWidgetSlot "{6A79190000000118}" {
+      HorizontalAlign 3
+      VerticalAlign 3
      }
-     "Z Order" 99
-     Text ""
-     "Font Size" 20
-     "Min Font Size" 20
-     "Horizontal Alignment" Center
-     "Vertical Alignment" Center
-     Wrap 1
-     FontProperties FontProperties "{624D2AAE88801B62}" {
-      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-      OutlineSize 2
+     Color 0.0033 0.0037 0.0052 0.94
+     style rounded_12px
+    }
+    SmartPanelWidgetClass "{6A7919000000011B}" {
+     Name "HintCardOutline"
+     Slot OverlayWidgetSlot "{6A7919000000011A}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 1 1 1 0.06
+     style outline_rounded_12px
+    }
+    SizeLayoutWidgetClass "{6A79190000000116}" {
+     Name "HintWidth"
+     Slot OverlayWidgetSlot "{6A79190000000115}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+      Padding 16 12 16 12
+     }
+     AllowWidthOverride 1
+     WidthOverride 328
+     {
+      VerticalLayoutWidgetClass "{6A79190000000114}" {
+       Name "HintRows"
+       Slot AlignableSlot "{6A79190000000110}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        HorizontalLayoutWidgetClass "{6A79190000000107}" {
+         Name "HintHeader"
+         Slot LayoutSlot "{6A79190000000101}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          SizeMode Auto
+         }
+         {
+          ImageWidgetClass "{6A79190000000103}" {
+           Name "HintDot"
+           Slot LayoutSlot "{6A79190000000102}" {
+            HorizontalAlign 0
+            VerticalAlign 1
+            SizeMode Auto
+           }
+           Color 0.5841 0.0369 0.0369 1
+           Texture "{8479B3B5347DF5CF}UI/Imagesets/MilitarySymbol/ID_D.imageset"
+           Image "Friend_SeaSurface_Bcg"
+           Size 8 8
+          }
+          TextWidgetClass "{6A79190000000105}" {
+           Name "HintTitle"
+           Slot LayoutSlot "{6A79190000000104}" {
+            HorizontalAlign 0
+            VerticalAlign 1
+            Padding 8 0 0 0
+            SizeMode Fill
+            FillWeight 1
+           }
+           Color 0.3968 0.4564 0.6038 1
+           Text "HINT"
+           "Font Size" 11
+           "Min Font Size" 11
+           "Horizontal Alignment" Left
+           "Vertical Alignment" Center
+           FontProperties FontProperties "{6A79190000000106}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+         }
+        }
+        TextWidgetClass "{6A79190000000112}" {
+         Name "hintText"
+         Slot LayoutSlot "{6A79190000000111}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 0 5 0 0
+          SizeMode Auto
+         }
+         Color 0.8632 0.8879 0.9301 1
+         Text ""
+         "Font Size" 15
+         "Min Font Size" 15
+         "Horizontal Alignment" Left
+         "Vertical Alignment" Center
+         Wrap 1
+         FontProperties FontProperties "{6A79190000000113}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+        SizeLayoutWidgetClass "{6A7919000000010F}" {
+         Name "HintProgressRow"
+         Slot LayoutSlot "{6A79190000000108}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 0 11 0 0
+          SizeMode Auto
+         }
+         AllowHeightOverride 1
+         HeightOverride 2
+         {
+          FrameWidgetClass "{6A7919000000010E}" {
+           Name "HintProgressFrame"
+           Slot AlignableSlot "{6A79190000000109}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           {
+            SmartPanelWidgetClass "{6A7919000000010B}" {
+             Name "HintProgressTrack"
+             Slot FrameWidgetSlot "{6A7919000000010A}" {
+              Anchor 0 0 1 1
+              PositionX 0
+              OffsetLeft 0
+              PositionY 0
+              OffsetTop 0
+              SizeX 0
+              OffsetRight 0
+              SizeY 0
+              OffsetBottom 0
+             }
+             Color 0.011 0.0137 0.0212 1
+             style rounded_2px
+            }
+            SmartPanelWidgetClass "{6A7919000000010D}" {
+             Name "HintProgressFill"
+             Slot FrameWidgetSlot "{6A7919000000010C}" {
+              Anchor 0 0 0 1
+              PositionX 0
+              OffsetLeft 0
+              PositionY 0
+              OffsetTop 0
+              SizeX 328
+              OffsetRight -328
+              SizeY 0
+              OffsetBottom 0
+             }
+             "Z Order" 1
+             Color 0.5841 0.0369 0.0369 1
+             style rounded_2px
+            }
+           }
+          }
+         }
+        }
+       }
+      }
      }
     }
    }
-  }
-  ImageWidgetClass "{624D2AA9D74A7885}" {
-   Name "hintBG"
-   Slot FrameWidgetSlot "{624D2AA9D74A78F9}" {
-    Anchor 0.867 0.087 0.867 0.089
-    PositionX -152.97
-    OffsetLeft -152.97
-    PositionY 1.638
-    OffsetTop 1.638
-    SizeX 299.64
-    OffsetRight -146.67
-    SizeY 130.452
-    OffsetBottom -132.09
-   }
-   "Z Order" 97
-   Opacity 0.58
-   Color 0.1274 0.1274 0.1274 1
-   Size 900 300
-   Mask "{12B6C6BD1A72A47F}UI/Textures/Common/gradientTexture_Dither_up_512.edds"
-   "Transition width" 1
-   Progress 0.59
-  }
-  PanelWidgetClass "{694975ACA429BAD9}" {
-   Name "hintBGOutline"
-   Slot FrameWidgetSlot "{624D2AA9D74A78F9}" {
-    Anchor 0.867 0.087 0.867 0.089
-    PositionX -152.97
-    OffsetLeft -152.97
-    PositionY 1.638
-    OffsetTop 1.638
-    SizeX 299.64
-    OffsetRight -146.67
-    SizeY 130.452
-    OffsetBottom -132.09
-   }
-   "Z Order" 98
-   Color 0.0369 0.0369 0.0369 1
   }
  }
 }

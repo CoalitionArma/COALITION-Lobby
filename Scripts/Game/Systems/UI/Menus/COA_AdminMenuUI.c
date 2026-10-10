@@ -336,20 +336,50 @@ class COA_AdminMenu : ChimeraMenuBase
 	//! \param[in]  activeButton The button widget of the active menu button
 	protected void UpdateMenuButtonColors(SCR_ButtonTextComponent activeButton)
 	{
-		// Default color for inactive buttons
-		Color inactiveColor = Color.FromSRGBA(23, 26, 28, 255);
-		
-		// Set all texts to inactive color
-		m_ticketMenuButton.GetRootWidget().SetColor(inactiveColor);
-		m_respawnMenuButton.GetRootWidget().SetColor(inactiveColor);
-		m_resetGearMenuButton.GetRootWidget().SetColor(inactiveColor);
-		m_teleportMenuButton.GetRootWidget().SetColor(inactiveColor);
-		m_hintMenuButton.GetRootWidget().SetColor(inactiveColor);
-		m_healMenuButton.GetRootWidget().SetColor(inactiveColor);
-		m_GamemodeMenuButton.GetRootWidget().SetColor(inactiveColor);
-		
-		// Set active button text to white
-		activeButton.GetRootWidget().SetColor(Color.FromSRGBA(18, 20, 22, 255));
+		array<SCR_ButtonTextComponent> navButtons = {m_ticketMenuButton, m_respawnMenuButton, m_teleportMenuButton, m_healMenuButton, m_resetGearMenuButton, m_hintMenuButton, m_GamemodeMenuButton};
+		foreach (SCR_ButtonTextComponent navButton : navButtons)
+		{
+			if (navButton)
+				SetNavButtonActive(navButton.GetRootWidget(), navButton == activeButton);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Nav rail item look: active = raised fill, accent bar, bright icon and label
+	protected void SetNavButtonActive(Widget button, bool active)
+	{
+		if (!button)
+			return;
+
+		Widget navBG = button.FindAnyWidget("NavBG");
+		if (navBG)
+		{
+			if (active)
+				navBG.SetColor(Color.FromSRGBA(28, 31, 40, 255));
+			else
+				navBG.SetColor(Color.FromSRGBA(28, 31, 40, 0));
+		}
+
+		Widget accent = button.FindAnyWidget("NavAccent");
+		if (accent)
+		{
+			if (active)
+				accent.SetColor(Color.FromSRGBA(201, 54, 54, 255));
+			else
+				accent.SetColor(Color.FromSRGBA(201, 54, 54, 0));
+		}
+
+		Color foreground = Color.FromSRGBA(169, 180, 204, 255);
+		if (active)
+			foreground = Color.FromSRGBA(239, 242, 247, 255);
+
+		Widget icon = button.FindAnyWidget("NavIcon");
+		if (icon)
+			icon.SetColor(foreground);
+
+		Widget label = button.FindAnyWidget("NavLabel");
+		if (label)
+			label.SetColor(foreground);
 	}
 	
 	//------------------------------------------------------------------------------------------------ 	
@@ -770,7 +800,8 @@ class COA_AdminMenu : ChimeraMenuBase
 	void InitializeGearMenu()
 	{
 		// Load menu content widget
-        m_wMenuContent = GetGame().GetWorkspace().CreateWidgets("{5C7EC9AAE498F6B6}UI/layouts/Menus/PauseMenu/AdminMenuWidgets/GearMenu.layout");
+		m_wMenuContent = GetGame().GetWorkspace().CreateWidgets("{5C7EC9AAE498F6B6}UI/layouts/Menus/PauseMenu/AdminMenuWidgets/GearMenu.layout");
+		COA_UIPolish.AttachHoverEffects(m_wMenuContent); // hover feedback - sub-menus are separate workspace roots
 		if (!m_wMenuContent)
 			return;
 		
@@ -1206,6 +1237,7 @@ class COA_AdminMenu : ChimeraMenuBase
 	{
 		// Load menu content widget
 		m_wMenuContent = GetGame().GetWorkspace().CreateWidgets("{FD7582ED92D34192}UI/layouts/Menus/PauseMenu/AdminMenuWidgets/TicketMenu.layout");
+		COA_UIPolish.AttachHoverEffects(m_wMenuContent); // hover feedback - sub-menus are separate workspace roots
 		if (!m_wMenuContent)
 			return;
 		
@@ -1446,19 +1478,19 @@ class COA_AdminMenu : ChimeraMenuBase
 		// Format and add the messages to the list
 		foreach (int i, ref COA_AdminActionLog action : reversed)
 		{
-			Color textColor = Color.White;
+			Color textColor = Color.FromSRGBA(239, 242, 247, 255);
 
 			if (action.level == COA_EAdminLogLevel.High)
 				if (!filterLogHigh.IsToggled())
 					continue;
 				else
-					textColor = Color.Red;
+					textColor = Color.FromSRGBA(232, 96, 96, 255);
 
 			if (action.level == COA_EAdminLogLevel.Medium)
 				if (!filterLogMedium.IsToggled())
 					continue;
 				else
-					textColor = Color.Orange;
+					textColor = Color.FromSRGBA(232, 170, 72, 255);
 
 			if (action.level == COA_EAdminLogLevel.Low && !filterLogLow.IsToggled())
 				continue;
@@ -1478,6 +1510,7 @@ class COA_AdminMenu : ChimeraMenuBase
 	{
 		// Load menu content widget
 		m_wMenuContent = GetGame().GetWorkspace().CreateWidgets("{0F4AF70DE5AA8A96}UI/layouts/Menus/PauseMenu/AdminMenuWidgets/RespawnMenu.layout");
+		COA_UIPolish.AttachHoverEffects(m_wMenuContent); // hover feedback - sub-menus are separate workspace roots
 		if (!m_wMenuContent)
 			return;
 		
@@ -1650,6 +1683,7 @@ class COA_AdminMenu : ChimeraMenuBase
 	{
 		// Load menu content widget
 		m_wMenuContent = GetGame().GetWorkspace().CreateWidgets("{681BEBC7B2B45D4E}UI/layouts/Menus/PauseMenu/AdminMenuWidgets/TeleportMenu.layout");
+		COA_UIPolish.AttachHoverEffects(m_wMenuContent); // hover feedback - sub-menus are separate workspace roots
 		if (!m_wMenuContent)
 			return;
 		
@@ -1839,6 +1873,7 @@ class COA_AdminMenu : ChimeraMenuBase
 	{
 		// Load menu content widget
 		m_wMenuContent = GetGame().GetWorkspace().CreateWidgets("{10F6DA929AEE2069}UI/layouts/Menus/PauseMenu/AdminMenuWidgets/HintMenu.layout");
+		COA_UIPolish.AttachHoverEffects(m_wMenuContent); // hover feedback - sub-menus are separate workspace roots
 		if (!m_wMenuContent)
 			return;
 		
@@ -1964,6 +1999,7 @@ class COA_AdminMenu : ChimeraMenuBase
 	{
 		// Load menu content widget
 		m_wMenuContent = GetGame().GetWorkspace().CreateWidgets("{CCFF9CCE4508B294}UI/layouts/Menus/PauseMenu/AdminMenuWidgets/HealMenu.layout");
+		COA_UIPolish.AttachHoverEffects(m_wMenuContent); // hover feedback - sub-menus are separate workspace roots
 		if (!m_wMenuContent)
 			return;
 		
@@ -2054,6 +2090,7 @@ class COA_AdminMenu : ChimeraMenuBase
 	{
 		// Load menu content widget
 		m_wMenuContent = GetGame().GetWorkspace().CreateWidgets("{36D941F5D1C10513}UI/layouts/Menus/PauseMenu/AdminMenuWidgets/GameModeMenu.layout");
+		COA_UIPolish.AttachHoverEffects(m_wMenuContent); // hover feedback - sub-menus are separate workspace roots
 		if (!m_wMenuContent)
 			return;
 		
@@ -2273,6 +2310,7 @@ class COA_AdminMenu : ChimeraMenuBase
 		
 		// Load menu content widget
 		m_wConfirmationMenu = GetGame().GetWorkspace().CreateWidgets("{905BF1B70A9A44AC}UI/layouts/Menus/PauseMenu/AdminMenuWidgets/ConfirmationMenu.layout");
+		COA_UIPolish.AttachHoverEffects(m_wConfirmationMenu); // hover feedback - sub-menus are separate workspace roots
 		if (!m_wMenuContent)
 			return;
 
@@ -2370,12 +2408,12 @@ class COA_AdminMenu : ChimeraMenuBase
 		if (respawnWave)
 		{
 			respawnWaveButtonText.SetText("Respawn Wave Enabled");
-			respawnWaveButtonText.SetColorInt(Color.GREEN);
+			respawnWaveButtonText.SetColor(Color.FromSRGBA(92, 196, 128, 255));
 		}
 		else
 		{
 			respawnWaveButtonText.SetText("Respawn Wave Disabled");
-			respawnWaveButtonText.SetColorInt(Color.RED);
+			respawnWaveButtonText.SetColor(Color.FromSRGBA(232, 96, 96, 255));
 		}
 		
 		bool m_bRespawnEnabled = COA_RespawnManager.GetInstance().m_bCurrentRespawnEnabled;
@@ -2384,12 +2422,12 @@ class COA_AdminMenu : ChimeraMenuBase
 		if (m_bRespawnEnabled)
 		{
 			respawnEnabledText.SetText("Respawns Enabled");
-			respawnEnabledText.SetColorInt(Color.GREEN);
+			respawnEnabledText.SetColor(Color.FromSRGBA(92, 196, 128, 255));
 		}
 		else
 		{
 			respawnEnabledText.SetText("Respawns Disabled");
-			respawnEnabledText.SetColorInt(Color.RED);
+			respawnEnabledText.SetColor(Color.FromSRGBA(232, 96, 96, 255));
 		}
 	}
 	

@@ -1,0 +1,220 @@
+FrameWidgetClass {
+ Name "SpecMapPin"
+ Slot FrameWidgetSlot "{6A75150000000118}" {
+  Anchor 0 0 0 0
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 1
+  OffsetRight -1
+  SizeY 1
+  OffsetBottom -1
+ }
+ Clipping False
+ {
+  ImageWidgetClass "{6A75150000000105}" {
+   Name "Arrow"
+   Slot FrameWidgetSlot "{6A75150000000104}" {
+    Anchor 0 0 0 0
+    PositionX -18
+    OffsetLeft -18
+    PositionY -18
+    OffsetTop -18
+    SizeX 36
+    OffsetRight -18
+    SizeY 36
+    OffsetBottom -18
+   }
+   Color 0.0033 0.0037 0.0052 0.92
+   Texture "{789DC92AF28E0AB1}UI/Imagesets/Characters/CharacterWrapperUI.imageset"
+   Image "Arrow"
+   Size 48 48
+  }
+  ImageWidgetClass "{6A75150000000107}" {
+   Name "Ring"
+   Slot FrameWidgetSlot "{6A75150000000106}" {
+    Anchor 0 0 0 0
+    PositionX -12
+    OffsetLeft -12
+    PositionY -12
+    OffsetTop -12
+    SizeX 24
+    OffsetRight -12
+    SizeY 24
+    OffsetBottom -12
+   }
+   "Z Order" 1
+   Color 0.0033 0.0037 0.0052 0.92
+   Texture "{8479B3B5347DF5CF}UI/Imagesets/MilitarySymbol/ID_D.imageset"
+   Image "Friend_SeaSurface_Bcg"
+   Size 32 32
+  }
+  ImageWidgetClass "{6A75150000000109}" {
+   Name "Fill"
+   Slot FrameWidgetSlot "{6A75150000000108}" {
+    Anchor 0 0 0 0
+    PositionX -10
+    OffsetLeft -10
+    PositionY -10
+    OffsetTop -10
+    SizeX 20
+    OffsetRight -10
+    SizeY 20
+    OffsetBottom -10
+   }
+   "Z Order" 2
+   Color 1 1 1 1
+   Texture "{8479B3B5347DF5CF}UI/Imagesets/MilitarySymbol/ID_D.imageset"
+   Image "Friend_SeaSurface_Bcg"
+   Size 32 32
+  }
+  ImageWidgetClass "{6A7515000000010B}" {
+   Name "Icon"
+   Slot FrameWidgetSlot "{6A7515000000010A}" {
+    Anchor 0 0 0 0
+    PositionX -7
+    OffsetLeft -7
+    PositionY -7
+    OffsetTop -7
+    SizeX 14
+    OffsetRight -7
+    SizeY 14
+    OffsetBottom -7
+   }
+   "Z Order" 3
+   Color 0.8632 0.8879 0.9301 1
+   Texture "{789DC92AF28E0AB1}UI/Imagesets/Characters/CharacterWrapperUI.imageset"
+   Image "Rifleman"
+   Size 32 32
+  }
+  ImageWidgetClass "{6A7515000000010D}" {
+   Name "BadgeBG"
+   Slot FrameWidgetSlot "{6A7515000000010C}" {
+    Anchor 0 0 0 0
+    PositionX 4
+    OffsetLeft 4
+    PositionY -14
+    OffsetTop -14
+    SizeX 14
+    OffsetRight -18
+    SizeY 14
+    OffsetBottom 0
+   }
+   "Z Order" 4
+   "Is Visible" 0
+   Color 0.0033 0.0037 0.0052 0.95
+   Texture "{8479B3B5347DF5CF}UI/Imagesets/MilitarySymbol/ID_D.imageset"
+   Image "Friend_SeaSurface_Bcg"
+   Size 32 32
+  }
+  TextWidgetClass "{6A7515000000010F}" {
+   Name "BadgeText"
+   Slot FrameWidgetSlot "{6A7515000000010E}" {
+    Anchor 0 0 0 0
+    PositionX 4
+    OffsetLeft 4
+    PositionY -14
+    OffsetTop -14
+    SizeX 14
+    OffsetRight -18
+    SizeY 14
+    OffsetBottom 0
+   }
+   "Z Order" 5
+   "Is Visible" 0
+   Color 0.8632 0.8879 0.9301 1
+   Text ""
+   "Font Size" 10
+   "Min Font Size" 10
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{6A75150000000110}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  ImageWidgetClass "{6A75150000000112}" {
+   Name "StateIcon"
+   Slot FrameWidgetSlot "{6A75150000000111}" {
+    Anchor 0 0 0 0
+    PositionX 5
+    OffsetLeft 5
+    PositionY -13
+    OffsetTop -13
+    SizeX 12
+    OffsetRight -17
+    SizeY 12
+    OffsetBottom 1
+   }
+   "Z Order" 5
+   "Is Visible" 0
+   Color 0.8070 0.4020 0.0648 1
+   Texture "{F3A9B47F55BE8D2B}UI/Images/SpecImages/Spec_Atlas_x64.imageset"
+   Image "Wounded"
+   Size 32 32
+  }
+  FrameWidgetClass "{6A75150000000114}" {
+   Name "Label"
+   Slot FrameWidgetSlot "{6A75150000000113}" {
+    Anchor 0 0 0 0
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 100
+    OffsetRight -100
+    SizeY 24
+    OffsetBottom -24
+    SizeToContent 1
+   }
+   "Z Order" 6
+   {
+    TextWidgetClass "{6A75150000000102}" {
+     Name "LabelText"
+     Slot FrameWidgetSlot "{6A75150000000101}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 100
+      OffsetRight -100
+      SizeY 24
+      OffsetBottom -24
+      SizeToContent 1
+     }
+     Color 0.8632 0.8879 0.9301 1
+     Text ""
+     "Font Size" 13
+     "Min Font Size" 13
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A75150000000103}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+      OutlineSize 2
+     }
+    }
+   }
+  }
+  ButtonWidgetClass "{6A75150000000117}" {
+   Name "HitArea"
+   Slot FrameWidgetSlot "{6A75150000000115}" {
+    Anchor 0 0 0 0
+    PositionX -12
+    OffsetLeft -12
+    PositionY -12
+    OffsetTop -12
+    SizeX 24
+    OffsetRight -12
+    SizeY 24
+    OffsetBottom -12
+   }
+   "Z Order" 10
+   Color 1 1 1 0
+   components {
+    COA_SpecMapPin "{6A75150000000116}" {
+    }
+   }
+  }
+ }
+}

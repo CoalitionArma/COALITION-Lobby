@@ -1,0 +1,108 @@
+ButtonWidgetClass {
+ Name "rootFrame"
+ Slot AlignableSlot "{6A6A0D0000000010}" {
+  HorizontalAlign 3
+  Padding 0 0 0 2
+ }
+ components {
+  SCR_ListBoxElementComponent "{6A6A0D0000000011}" {
+   m_aEffects {
+    SCR_ButtonEffectColor "{6A6A0D0000000012}" {
+     m_eEvents 6159
+     m_sWidgetName "RowBG"
+     m_fAnimationTime 0.12
+     m_cDefault 0.0075 0.0086 0.0123 1
+     m_cHovered 0.011 0.0137 0.0212 1
+     m_cActivated 0.011 0.0137 0.0212 1
+     m_cActivatedHovered 0.0144 0.0168 0.0262 1
+     m_cFocusGained 0.011 0.0137 0.0212 1
+     m_cFocusLost 0.0075 0.0086 0.0123 1
+    }
+    SCR_ButtonEffectColor "{6A6A0D0000000013}" {
+     m_eEvents 6159
+     m_sWidgetName "RowAccent"
+     m_fAnimationTime 0.12
+     m_cDefault 0.5841 0.0369 0.0369 0
+     m_cHovered 0.5841 0.0369 0.0369 0.45
+     m_cActivated 0.5841 0.0369 0.0369 1
+     m_cActivatedHovered 0.5841 0.0369 0.0369 1
+     m_cFocusGained 0.5841 0.0369 0.0369 0.45
+     m_cFocusLost 0.5841 0.0369 0.0369 0
+    }
+    SCR_ButtonEffectSound "{6A6A0D0000000014}" : "{F66E5F9DD84911A8}Configs/WLib/ModularButtonEffects/ModularButtonEffect_Sound_Hovered.conf" {
+     m_eEvents EVENT_MOUSE_ENTER
+     m_sSound "SOUND_FE_BUTTON_HOVER"
+    }
+   }
+   m_bCanBeToggled 1
+   m_bToggledOnlyThroughApi 1
+  }
+ }
+ style blank
+ {
+  SizeLayoutWidgetClass "{6A6A0D0000000015}" {
+   Name "SizeLayout"
+   Slot ButtonWidgetSlot "{6A6A0D0000000016}" {
+    HorizontalAlign 3
+   }
+   AllowHeightOverride 1
+   HeightOverride 34
+   {
+    OverlayWidgetClass "{6A6A0D0000000017}" {
+     Name "Overlay"
+     Slot AlignableSlot "{6A6A0D0000000018}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Clipping False
+     {
+      SmartPanelWidgetClass "{6A6A0D0000000019}" {
+       Name "RowBG"
+       Slot OverlayWidgetSlot "{6A6A0D000000001A}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0075 0.0086 0.0123 1
+       style rounded_4px
+      }
+      ImageWidgetClass "{6A6A0D000000001B}" {
+       Name "RowAccent"
+       Slot OverlayWidgetSlot "{6A6A0D000000001C}" {
+        HorizontalAlign 0
+        VerticalAlign 1
+       }
+       Color 0.5841 0.0369 0.0369 0
+       Size 3 16
+      }
+      TextWidgetClass "{6A6A0D000000001D}" {
+       Name "Text"
+       Slot OverlayWidgetSlot "{6A6A0D000000001E}" {
+        HorizontalAlign 3
+        VerticalAlign 1
+        Padding 14 0 10 0
+       }
+       Color 0.8632 0.8879 0.9301 1
+       Text "Entry"
+       "Font Size" 16
+       "Min Font Size" 11
+       "Vertical Alignment" Center
+       FontProperties FontProperties "{6A6A0D000000001F}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      SmartPanelWidgetClass "{6A6A0D0000000020}" {
+       Name "Border"
+       Slot OverlayWidgetSlot "{6A6A0D0000000021}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       "Is Visible" 0
+       Color 0.5841 0.0369 0.0369 1
+       style outline_rounded_4px
+      }
+     }
+    }
+   }
+  }
+ }
+}

@@ -27,14 +27,9 @@ modded class SCR_NotificationSenderComponent
 	//----------------------------------------------------------------
 	override void OnControllableDestroyed(notnull SCR_InstigatorContextData instigatorContextData)
 	{
-		// Suppress killfeed only when admin is alive/playing without zeus open
-		SCR_EditorManagerEntity editorManager = SCR_EditorManagerEntity.GetInstance();
-		if (editorManager && !editorManager.IsLimited() && !editorManager.IsOpened())
-		{
-			PlayerController pc = GetGame().GetPlayerController();
-			if (pc && pc.GetControlledEntity())
-				return;
-		}
+		// Suppress killfeed only when an admin is alive and playing (see COA_AdminKillfeed)
+		if (COA_AdminKillfeed.ShouldSuppressForLocalPlayer())
+			return;
 		
 		super.OnControllableDestroyed(instigatorContextData);
 	}
@@ -45,16 +40,11 @@ modded class SCR_NotificationSenderComponent
 	//----------------------------------------------------------------
 	void SetKillFeedTypeDeadLocal()
 	{
-		// Suppress killfeed only when admin is alive/playing without zeus open
-		SCR_EditorManagerEntity editorManager = SCR_EditorManagerEntity.GetInstance();
-		if (editorManager && !editorManager.IsLimited() && !editorManager.IsOpened())
+		// Suppress killfeed only when an admin is alive and playing (see COA_AdminKillfeed)
+		if (COA_AdminKillfeed.ShouldSuppressForLocalPlayer())
 		{
-			PlayerController pc = GetGame().GetPlayerController();
-			if (pc && pc.GetControlledEntity())
-			{
-				m_iKillFeedType = EKillFeedType.DISABLED;
-				return;
-			}
+			m_iKillFeedType = EKillFeedType.DISABLED;
+			return;
 		}
 		
 		// Spectating, zeus open, or normal player - show full killfeed

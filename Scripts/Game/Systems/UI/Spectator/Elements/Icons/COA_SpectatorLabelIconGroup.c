@@ -1,6 +1,7 @@
 /**
- * UI component that displays a floating NATO group icon above the group leader's position
- * in spectator mode. Shows the group's NATO symbol shape and name label.
+ * Floating squad marker above the group leader in spectator: the faction NATO symbol with the squad
+ * name above ("alive/total" is added while the marker is hovered).
+ * Layout: UI/Spectator/SpectatorLabelIconGroup.layout
  */
 class COA_SpectatorLabelIconGroup : COA_SpectatorLabelIcon
 {
@@ -14,7 +15,13 @@ class COA_SpectatorLabelIconGroup : COA_SpectatorLabelIcon
 	// UI widgets
 	protected ImageWidget m_wGroupNATOIcon;
 	protected ImageWidget m_wGroupNATOBackground;
-	
+
+	// Strength (alive / slotted members), refreshed once a second, shown only while hovered
+	protected int m_iAlive;
+	protected int m_iTotal;
+	protected float m_fNextLabelRefresh;
+	protected bool m_bHovered;
+
 	// Cached raw centroid (before height offset)
 	protected vector m_vRawCentroid;
 	
@@ -42,10 +49,14 @@ class COA_SpectatorLabelIconGroup : COA_SpectatorLabelIcon
 	// Icon sizing — group icons are larger than individual character icons so they are
 	// easily visible from a distance but don't overwhelm individual unit icons.
 	// scaledIconSize drives the HEIGHT; width is derived from the NATO 3:2 aspect ratio.
-	protected static const float GROUP_MAX_ICON_SIZE = 52.0;
-	protected static const float GROUP_MIN_ICON_SIZE = 24.0;
-	protected static const float GROUP_ICON_ASPECT_RATIO = 2.0;
-	
+	protected static const float GROUP_MAX_ICON_SIZE = 60.0;
+	protected static const float GROUP_MIN_ICON_SIZE = 42.0;
+	// Every faction's group flag imageset (BLUFOR, OPFOR, INDFOR, Civilian) uses 32x20 cells, with the
+	// frame shape drawn inside that cell - a different ratio squashes or stretches it (1.5 made the
+	// hostile diamond look slim)
+	protected static const float GROUP_ICON_ASPECT_RATIO = 1.6;
+	protected static const float GROUP_LABEL_GAP = 3.0;		// between the squad name and the symbol
+
 	//------------------------------------------------------------------------------------------------
 	// Widget initialization
 	//------------------------------------------------------------------------------------------------
@@ -54,7 +65,7 @@ class COA_SpectatorLabelIconGroup : COA_SpectatorLabelIcon
 		// Find group-specific widget references
 		m_wGroupNATOIcon = ImageWidget.Cast(w.FindAnyWidget("GroupNATOIcon"));
 		m_wGroupNATOBackground = ImageWidget.Cast(w.FindAnyWidget("GroupNATOBackground"));
-		
+
 		super.HandlerAttached(w);
 	}
 	
@@ -82,6 +93,13 @@ class COA_SpectatorLabelIconGroup : COA_SpectatorLabelIcon
 		SetGroupName();
 	}
 	
+	//------------------------------------------------------------------------------------------------
+	//! True while the cursor is on this (visible) squad marker - drives the member list card
+	bool IsHoveredNow()
+	{
+		return m_bHovered && m_wRoot && m_wRoot.IsEnabled() && m_wRoot.GetOpacity() > 0;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	// Get the group reference
 	//------------------------------------------------------------------------------------------------
@@ -111,7 +129,8 @@ class COA_SpectatorLabelIconGroup : COA_SpectatorLabelIcon
 		// GetOutlineFactionColor() = outline/highlight color
 		if (m_wGroupNATOIcon)
 			m_wGroupNATOIcon.SetColor(faction.GetFactionColor());
-		
+
+
 		// Hide the separate background box — the NATO imageset images already contain the
 		// correct background shape (rectangle, circle, etc.) baked into each image
 		if (m_wGroupNATOBackground)
@@ -133,8 +152,10 @@ class COA_SpectatorLabelIconGroup : COA_SpectatorLabelIcon
 		ResourceName imageSet = faction.GetGroupFlagImageSet();
 		string imageName = m_Group.GetGroupFlag();
 		
-		if (imageSet != "" && imageName != "")
-			m_wGroupNATOIcon.LoadImageFromSet(0, imageSet, imageName);
+		if (imageSet == "" || imageName == "")
+			return;
+
+		m_wGroupNATOIcon.LoadImageFromSet(0, imageSet, imageName);
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -148,9 +169,60 @@ class COA_SpectatorLabelIconGroup : COA_SpectatorLabelIcon
 		string groupName = m_Group.GetCustomName();
 		if (groupName.IsEmpty())
 			groupName = m_Group.GetCustomNameWithOriginal();
-		
+
+		if (m_bHovered && m_iTotal > 0)
+			groupName += string.Format("  <color rgba='170,180,204,255'>%1/%2</color>", m_iAlive, m_iTotal);
+
 		m_wSpectatorLabelText.SetText(groupName);
-		m_wSpectatorLabelText.SetExactFontSize(20);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while the cursor is over any part of this marker (plate, symbol, pointer or name)
+	protected bool IsHovered()
+	{
+		Widget underCursor = WidgetManager.GetWidgetUnderCursor();
+		while (underCursor)
+		{
+			if (underCursor == m_wRoot)
+				return true;
+
+			underCursor = underCursor.GetParent();
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Alive / slotted members of this group, from the slot map (players are not in GetAgents())
+	//------------------------------------------------------------------------------------------------
+	protected void RefreshStrength()
+	{
+		m_iAlive = 0;
+		m_iTotal = 0;
+
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+		if (!slottingManager || !m_Group)
+			return;
+
+		RplComponent groupRpl = RplComponent.Cast(m_Group.FindComponent(RplComponent));
+		map<int, ref COA_SlotData> slotMap = slottingManager.GetSlotMap();
+		if (!groupRpl || !slotMap)
+			return;
+
+		RplId groupId = groupRpl.Id();
+		foreach (int slotId, COA_SlotData slotData : slotMap)
+		{
+			if (!slotData || slotData.GetSlotCurrentGroup() != groupId)
+				continue;
+
+			SCR_ChimeraCharacter character = COA_EntityHelper.GetCharacterFromRplId(slotData.GetSlotCurrentCharacter());
+			if (!character)
+				continue;
+
+			m_iTotal++;
+			if (COA_DamageHelper.CheckIfEntityAlive(character))
+				m_iAlive++;
+		}
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -218,7 +290,6 @@ class COA_SpectatorLabelIconGroup : COA_SpectatorLabelIcon
 		
 		// Get leader position
 		vector leaderPosition = leaderEntity.GetOrigin();
-		Print(string.Format("[COA_SpectatorLabelIconGroup] Group %1 leader at %2", m_Group.GetCustomName(), leaderPosition.ToString()), LogLevel.VERBOSE);
 		
 		// Calculate distance from camera to the leader position (before height offset)
 		vector cameraPosition = GetGame().GetCameraManager().CurrentCamera().GetOrigin();
@@ -513,75 +584,68 @@ class COA_SpectatorLabelIconGroup : COA_SpectatorLabelIcon
 	override void UpdateLabel()
 	{
 		super.UpdateLabel();
+
+		// Name and strength change rarely; once a second is plenty
+		float now = GetGame().GetWorld().GetWorldTime();
+		if (now < m_fNextLabelRefresh)
+			return;
+
+		m_fNextLabelRefresh = now + 1000;
+		RefreshStrength();
 		SetGroupName();
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	// Override label visibility — group names should appear when far away (opposite of characters).
-	// The label fades in as the camera moves away from the icon and fades out when very close,
-	// since individual character icons already provide readable info at short range.
-	// Label is fully visible beyond GROUP_LABEL_FADE_START (60 m) and hidden below GROUP_LABEL_FADE_END (30 m).
+	// The flag and name share one rounded card, so there is no separate label to fade: Update()
+	// already fades the whole icon out when the camera gets close to the group
 	//------------------------------------------------------------------------------------------------
 	override protected void UpdateLabelVisibility()
 	{
-		// Fully hidden when camera is very close (individual icons take over)
-		if (m_fDistanceToIcon <= GROUP_LABEL_FADE_END)
-		{
-			m_wSpectatorLabel.SetOpacity(0.0);
-			return;
-		}
-		
-		// Fade in between GROUP_LABEL_FADE_END and GROUP_LABEL_FADE_START
-		float opacity = (m_fDistanceToIcon - GROUP_LABEL_FADE_END) / (GROUP_LABEL_FADE_START - GROUP_LABEL_FADE_END);
-		
-		// Clamp to [0, 1]
-		if (opacity > 1.0)
-			opacity = 1.0;
-		
-		m_wSpectatorLabel.SetOpacity(opacity);
+		m_wSpectatorLabel.SetOpacity(1.0);
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	// Override icon appearance to also size the NATO overlay widget
+	// Symbol centred on the projected point (growing as the camera closes in), name above (strength
+	// added while hovered)
 	//------------------------------------------------------------------------------------------------
 	override protected void UpdateIconAppearance(vector screenPosition)
 	{
-		// Calculate distance scale factor (1.0 when close, 0.0 when far)
-		float distanceScale = 1.0 - ((m_fDistanceToIcon - m_fMinIconDistance) / (m_fMaxIconDistance - m_fMinIconDistance));
-		
-		// Clamp scale to maximum of 1.0
-		if (distanceScale > 1.0)
-			distanceScale = 1.0;
-		
-		// Calculate icon size based on distance
-		float scaledIconHeight = m_fMinIconSize + (m_fMaxIconSize - m_fMinIconSize) * distanceScale;
-		float scaledIconWidth = scaledIconHeight * GROUP_ICON_ASPECT_RATIO;
-		
-		// Get label dimensions
+		float t = 1.0 - (m_fDistanceToIcon - m_fMinIconDistance) / (m_fMaxIconDistance - m_fMinIconDistance);
+		t = Math.Clamp(t, 0.0, 1.0);
+		float iconH = m_fMinIconSize + (m_fMaxIconSize - m_fMinIconSize) * t;
+		float iconW = iconH * GROUP_ICON_ASPECT_RATIO;
+
+		PlaceCentered(m_wGroupNATOIcon, 0, iconW, iconH);
+
+		// Strength (alive / total) only shows while the marker is hovered
+		bool hovered = IsHovered();
+		if (hovered != m_bHovered)
+		{
+			m_bHovered = hovered;
+			SetGroupName();
+		}
+
 		float labelSizeX, labelSizeY;
 		m_wSpectatorLabel.GetScreenSize(labelSizeX, labelSizeY);
-		float labelSizeXD = GetGame().GetWorkspace().DPIUnscale(labelSizeX);
-		
-		// Position and size the NATO overlay icon, preserving its natural 3:2 aspect ratio
-		Widget natoOverlay = m_wRoot.FindAnyWidget("GroupNATOOverlay");
-		if (natoOverlay)
-		{
-			FrameSlot.SetSize(natoOverlay, scaledIconWidth, scaledIconHeight);
-			FrameSlot.SetPos(natoOverlay, -scaledIconWidth / 2, -scaledIconHeight / 2);
-			
-			// Also resize the image widget itself — its hardcoded Size in the layout
-			// won't stretch automatically to fill the overlay container
-			if (m_wGroupNATOIcon)
-				m_wGroupNATOIcon.SetSize(scaledIconWidth, scaledIconHeight);
-		}
-		
-		// Position the label above the icon
-		FrameSlot.SetPos(m_wSpectatorLabel, -labelSizeXD / 2, -scaledIconHeight);
-		
-		// Position the root widget at the screen position
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		float labelW = workspace.DPIUnscale(labelSizeX);
+		float labelH = workspace.DPIUnscale(labelSizeY);
+		FrameSlot.SetPos(m_wSpectatorLabel, -labelW * 0.5, -iconH * 0.5 - GROUP_LABEL_GAP - labelH);
+
 		FrameSlot.SetPos(m_wRoot, screenPosition[0], screenPosition[1]);
-		
-		// Set z-order based on distance (closer objects appear on top), but behind character icons
+
+		// Closer objects on top, but behind character icons
 		m_wRoot.SetZOrder(screenPosition[2] * -10000 - 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sizes a widget and centres it horizontally on the icon, vertically on centreY
+	protected static void PlaceCentered(Widget w, float centreY, float width, float height)
+	{
+		if (!w)
+			return;
+
+		FrameSlot.SetSize(w, width, height);
+		FrameSlot.SetPos(w, -width * 0.5, centreY - height * 0.5);
 	}
 }

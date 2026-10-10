@@ -1,385 +1,667 @@
 FrameWidgetClass {
  Name "rootFrame"
  {
-  VerticalLayoutWidgetClass "{64E256DF1AA8A299}" {
-   Name "FactionVerticalLayout"
-   Slot FrameWidgetSlot "{64E256DF1AA8A2D9}" {
-    Anchor 0 0.5 0 0.5
-    PositionX 1.92
-    OffsetLeft 1.92
-    PositionY 179.28
-    OffsetTop 179.28
-    SizeX 138.24
-    OffsetRight -140.16
-    SizeY 170.64
-    OffsetBottom -349.92
-   }
-   {
-    OverlayWidgetClass "{64E23B88485A98FB}" {
-     Name "BluforFrame"
-     Slot LayoutSlot "{64E256DABA2E8FCA}" {
-      Padding 0 1.85 0 0
-      SizeMode Auto
-     }
-     "Is Visible" 0
-     {
-      TextWidgetClass "{605D76D640C3A66A}" {
-       Name "Blufor"
-       Slot OverlayWidgetSlot "{64E256DABA2E8C11}" {
-        HorizontalAlign 1
-        VerticalAlign 1
-        Padding 0 0 78 0
-       }
-       Color 0.753 0.753 0.753 0.608
-       Text "Blufor :"
-       "Font Size" 18
-       "Min Font Size" 18
-      }
-      TextWidgetClass "{605D76D11DE47E82}" {
-       Name "BluforReady"
-       Slot OverlayWidgetSlot "{64E256DABA2E8C7B}" {
-        HorizontalAlign 3
-        Padding 55 0 2.5 0
-       }
-       Color 0.753 0.753 0.753 0.608
-       Text "N/A"
-       "Font Size" 18
-       "Min Font Size" 18
-       "Horizontal Alignment" Center
-      }
-      ImageWidgetClass "{64E256DFE4C4F4AB}" {
-       Name "FactionsIndividualBackground"
-       Slot OverlayWidgetSlot "{64E256DABA2E8C5A}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-        Padding 0.5 0.5 0.5 0.5
-       }
-       "Z Order" -1
-       Color 0.013 0.013 0.013 0.608
-       "Shadow Offset" 0.5 0.5
-      }
-      PanelWidgetClass "{64E256D58A4D0234}" {
-       Name "FactionsIndividualPanel"
-       Slot OverlayWidgetSlot "{64E256D58A4D05ED}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0 0 0 0.706
-      }
-     }
-    }
-    OverlayWidgetClass "{64E23B887A4D01E2}" {
-     Name "OpforFrame"
-     Slot LayoutSlot "{64E256DABA2E8CB2}" {
-      Padding 0 1.85 0 0
-     }
-     "Is Visible" 0
-     {
-      TextWidgetClass "{605D76D18F3226E8}" {
-       Name "Opfor"
-       Slot OverlayWidgetSlot "{64E256DABA2E8CA6}" {
-        HorizontalAlign 1
-        Padding 0 0 75 0
-       }
-       Color 0.753 0.753 0.753 0.608
-       Text "Opfor :"
-       "Font Size" 18
-       "Min Font Size" 18
-       "Horizontal Alignment" Center
-      }
-      TextWidgetClass "{605D76D11DE47EA5}" {
-       Name "OpforReady"
-       Slot OverlayWidgetSlot "{64E256DABA2E8C92}" {
-        HorizontalAlign 3
-        Padding 55 0 2.5 0
-       }
-       Color 0.753 0.753 0.753 0.608
-       Text "N/A"
-       "Font Size" 18
-       "Min Font Size" 18
-       "Horizontal Alignment" Center
-      }
-      ImageWidgetClass "{64E256D7DC82C806}" {
-       Name "FactionsIndividualBackground"
-       Slot OverlayWidgetSlot "{64E256DABA2E8C5A}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-        Padding 0.5 0.5 0.5 0.5
-       }
-       "Z Order" -1
-       Color 0.013 0.013 0.013 0.608
-       "Shadow Offset" 0.5 0.5
-      }
-      PanelWidgetClass "{64E256D5897AC82C}" {
-       Name "FactionsIndividualPanel"
-       Slot OverlayWidgetSlot "{64E256D5897ACBC0}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-        Padding 0 0 0 0
-       }
-       Color 0 0 0 0.706
-      }
-     }
-    }
-    OverlayWidgetClass "{64E23B8867863AEF}" {
-     Name "IndforFrame"
-     Slot LayoutSlot "{64E256DABA2E8CF4}" {
-      Padding 0 1.85 0 0
-     }
-     "Is Visible" 0
-     {
-      TextWidgetClass "{605D76D189C8C7E5}" {
-       Name "Indfor"
-       Slot OverlayWidgetSlot "{64E256DABA2E8CFB}" {
-        HorizontalAlign 1
-        Padding 0 0 78 0
-       }
-       Color 0.753 0.753 0.753 0.608
-       Text "Indfor :"
-       "Font Size" 18
-       "Min Font Size" 18
-      }
-      TextWidgetClass "{605D76D11DE47E6A}" {
-       Name "IndforReady"
-       Slot OverlayWidgetSlot "{64E256DABA2E8CEB}" {
-        HorizontalAlign 3
-        Padding 55 0 2.5 0
-       }
-       Color 0.753 0.753 0.753 0.608
-       Text "N/A"
-       "Font Size" 18
-       "Min Font Size" 18
-       "Horizontal Alignment" Center
-      }
-      ImageWidgetClass "{64E256DFFBC466E9}" {
-       Name "FactionsIndividualBackground"
-       Slot OverlayWidgetSlot "{64E256DABA2E8CDC}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-        Padding 0.5 0.5 0.5 0.5
-       }
-       "Z Order" -1
-       Color 0.013 0.013 0.013 0.608
-       "Shadow Offset" 0.5 0.5
-      }
-      PanelWidgetClass "{64E256D5889194E1}" {
-       Name "FactionsIndividualPanel"
-       Slot OverlayWidgetSlot "{64E256D588919497}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-        Padding 0 0 0 0
-       }
-       Color 0 0 0 0.706
-      }
-     }
-    }
-    OverlayWidgetClass "{64E23B886E785BCA}" {
-     Name "CivFrame"
-     Slot LayoutSlot "{64E256DABA2E8CC0}" {
-      Padding 0 1.85 0 0
-      FillWeight 12.3
-     }
-     "Is Visible" 0
-     {
-      TextWidgetClass "{64E23B8DF29E66DE}" {
-       Name "Civ"
-       Slot OverlayWidgetSlot "{64E256DABA2E8D32}" {
-        HorizontalAlign 1
-        Padding 20 0 78 0
-       }
-       Color 0.753 0.753 0.753 0.608
-       Text "Civ :"
-       "Font Size" 18
-       "Min Font Size" 18
-      }
-      TextWidgetClass "{64E23B8DF29E6707}" {
-       Name "CivReady"
-       Slot OverlayWidgetSlot "{64E256DABA2E8D23}" {
-        HorizontalAlign 3
-        Padding 55 0 2.5 0
-       }
-       Color 0.753 0.753 0.753 0.608
-       Text "N/A"
-       "Font Size" 18
-       "Min Font Size" 18
-       "Horizontal Alignment" Center
-      }
-      ImageWidgetClass "{64E256DFFA65652B}" {
-       Name "FactionsIndividualBackground"
-       Slot OverlayWidgetSlot "{64E256DABA2E8D15}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-        Padding 0.5 0.5 0.5 0.5
-       }
-       "Z Order" -1
-       Color 0.013 0.013 0.013 0.608
-       "Shadow Offset" 0.5 0.5
-      }
-      PanelWidgetClass "{64E256D42372787C}" {
-       Name "FactionsIndividualPanel"
-       Slot OverlayWidgetSlot "{64E256D39E54C712}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-        Padding 0 0 0 0
-       }
-       Color 0 0 0 0.706
-      }
-     }
-    }
-   }
-  }
-  TextWidgetClass "{6058112C73B2D6CA}" {
-   Name "TimerDescription"
-   Slot FrameWidgetSlot "{6058112C73B2D710}" {
-    Anchor 0 0.5 0 0.5
-    PositionX 13.44
-    OffsetLeft 13.44
-    PositionY 128.52
-    OffsetTop 128.52
-    SizeX 115.2
-    OffsetRight -128.64
-    SizeY 18.36
-    OffsetBottom -146.88
-   }
-   Opacity 0
-   Text "Safe Start Enabled"
-   "Font Size" 14
-   "Min Font Size" 14
-   "Vertical Alignment" Center
-   FontProperties FontProperties "{6058112EE814CCD6}" {
-    OutlineSize 2
-    ShadowSize 8
-    ShadowOffset 0.5 0.5
-   }
-  }
-  ImageWidgetClass "{6058112AEF7BFB9D}" {
-   Name "TimerImage"
-   Slot FrameWidgetSlot "{6058112AEF7BFBF7}" {
-    Anchor 0 0.5 0 0.5
-    PositionX 26.88
-    OffsetLeft 26.88
-    PositionY 150.12
-    OffsetTop 150.12
-    SizeX 19.2
-    OffsetRight -46.08
-    SizeY 20.52
-    OffsetBottom -170.64
+  OverlayWidgetClass "{6A7717000000016B}" {
+   Name "SafeStartCard"
+   Slot FrameWidgetSlot "{6A77170000000166}" {
+    Anchor 0 0 0 0
+    PositionX 20
+    OffsetLeft 20
+    PositionY 20
+    OffsetTop 20
+    SizeX 260
+    OffsetRight -280
+    SizeY 200
+    OffsetBottom -220
     SizeToContent 1
    }
-   Opacity 0
-   Texture "{0B2A63596D36430B}UI/Images/LobbyImages/Timer.edds"
-   Size 20 20
-   "Shadow Offset" 0.5 0.5
-  }
-  TextWidgetClass "{6058112AD17BEB9F}" {
-   Name "TimerText"
-   Slot FrameWidgetSlot "{6058112AD17BEBE4}" {
-    Anchor 0 0.5 0 0.5
-    PositionX 49.92
-    OffsetLeft 49.92
-    PositionY 146.88
-    OffsetTop 146.88
-    SizeX 67.2
-    OffsetRight -117.12
-    SizeY 25.92
-    OffsetBottom -172.8
+   {
+    SmartPanelWidgetClass "{6A77170000000168}" {
+     Name "CardBG"
+     Slot OverlayWidgetSlot "{6A77170000000167}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.0033 0.0037 0.0052 0.9
+     style rounded_12px
+    }
+    SmartPanelWidgetClass "{6A7717000000016A}" {
+     Name "CardOutline"
+     Slot OverlayWidgetSlot "{6A77170000000169}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 1 1 1 0.05
+     style outline_rounded_12px
+    }
+    SizeLayoutWidgetClass "{6A77170000000165}" {
+     Name "CardWidth"
+     Slot OverlayWidgetSlot "{6A77170000000164}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+      Padding 14 11 14 12
+     }
+     AllowWidthOverride 1
+     WidthOverride 232
+     {
+      VerticalLayoutWidgetClass "{6A77170000000163}" {
+       Name "CardRows"
+       Slot AlignableSlot "{6A77170000000162}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        HorizontalLayoutWidgetClass "{6A7717000000010D}" {
+         Name "HeaderRow"
+         Slot LayoutSlot "{6A77170000000101}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          SizeMode Auto
+         }
+         {
+          ImageWidgetClass "{6A77170000000103}" {
+           Name "SafeDot"
+           Slot LayoutSlot "{6A77170000000102}" {
+            HorizontalAlign 0
+            VerticalAlign 1
+            SizeMode Auto
+           }
+           Color 0.8070 0.4020 0.0648 1
+           Texture "{F3A9B47F55BE8D2B}UI/Images/SpecImages/Spec_Atlas_x64.imageset"
+           Image "Circle"
+           Size 8 8
+          }
+          TextWidgetClass "{6A77170000000105}" {
+           Name "SafeTitle"
+           Slot LayoutSlot "{6A77170000000104}" {
+            HorizontalAlign 0
+            VerticalAlign 1
+            Padding 8 0 0 0
+            SizeMode Fill
+            FillWeight 1
+           }
+           Color 0.3968 0.4564 0.6038 1
+           Text "SAFE START"
+           "Font Size" 12
+           "Min Font Size" 12
+           "Horizontal Alignment" Left
+           "Vertical Alignment" Center
+           FontProperties FontProperties "{6A77170000000106}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{6A77170000000108}" {
+           Name "TimerCaption"
+           Slot LayoutSlot "{6A77170000000107}" {
+            HorizontalAlign 2
+            VerticalAlign 1
+            Padding 0 0 6 0
+            SizeMode Auto
+           }
+           Color 0.3968 0.4564 0.6038 1
+           Text "ELAPSED"
+           "Font Size" 10
+           "Min Font Size" 10
+           "Horizontal Alignment" Left
+           "Vertical Alignment" Center
+           FontProperties FontProperties "{6A77170000000109}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{6A7717000000010B}" {
+           Name "TimerText"
+           Slot LayoutSlot "{6A7717000000010A}" {
+            HorizontalAlign 2
+            VerticalAlign 1
+            SizeMode Auto
+           }
+           Color 0.8632 0.8879 0.9301 1
+           Text "00:00"
+           "Font Size" 20
+           "Min Font Size" 14
+           "Horizontal Alignment" Left
+           "Vertical Alignment" Center
+           FontProperties FontProperties "{6A7717000000010C}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+         }
+        }
+        TextWidgetClass "{6A77170000000117}" {
+         Name "TimerDescription"
+         Slot LayoutSlot "{6A77170000000116}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 0 1 0 0
+          SizeMode Auto
+         }
+         Color 0.3968 0.4564 0.6038 1
+         Text ""
+         "Font Size" 12
+         "Min Font Size" 9
+         "Horizontal Alignment" Left
+         "Vertical Alignment" Center
+         FontProperties FontProperties "{6A77170000000118}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+        SizeLayoutWidgetClass "{6A77170000000115}" {
+         Name "ProgressRow"
+         Slot LayoutSlot "{6A7717000000010E}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 0 7 0 0
+          SizeMode Auto
+         }
+         AllowHeightOverride 1
+         HeightOverride 3
+         {
+          FrameWidgetClass "{6A77170000000114}" {
+           Name "ProgressFrame"
+           Slot AlignableSlot "{6A7717000000010F}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           {
+            SmartPanelWidgetClass "{6A77170000000111}" {
+             Name "ProgressTrack"
+             Slot FrameWidgetSlot "{6A77170000000110}" {
+              Anchor 0 0 1 1
+              PositionX 0
+              OffsetLeft 0
+              PositionY 0
+              OffsetTop 0
+              SizeX 0
+              OffsetRight 0
+              SizeY 0
+              OffsetBottom 0
+             }
+             Color 0.011 0.0137 0.0212 1
+             style rounded_2px
+            }
+            SmartPanelWidgetClass "{6A77170000000113}" {
+             Name "ProgressFill"
+             Slot FrameWidgetSlot "{6A77170000000112}" {
+              Anchor 0 0 0 1
+              PositionX 0
+              OffsetLeft 0
+              PositionY 0
+              OffsetTop 0
+              SizeX 232
+              OffsetRight -232
+              SizeY 0
+              OffsetBottom 0
+             }
+             "Z Order" 1
+             Color 0.5841 0.0369 0.0369 1
+             style rounded_2px
+            }
+           }
+          }
+         }
+        }
+        ImageWidgetClass "{6A7717000000011A}" {
+         Name "FactionsDivider"
+         Slot LayoutSlot "{6A77170000000119}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 0 9 0 5
+          SizeMode Auto
+         }
+         Color 1 1 1 0.013
+         Size 1 1
+        }
+        HorizontalLayoutWidgetClass "{6A7717000000012B}" {
+         Name "BluforFrame"
+         Slot LayoutSlot "{6A77170000000122}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 0 2 0 2
+          SizeMode Auto
+         }
+         {
+          ImageWidgetClass "{6A77170000000124}" {
+           Name "BluforTick"
+           Slot LayoutSlot "{6A77170000000123}" {
+            HorizontalAlign 0
+            VerticalAlign 1
+            SizeMode Auto
+           }
+           Color 1 1 1 1
+           Size 3 12
+          }
+          TextWidgetClass "{6A77170000000126}" {
+           Name "BluforName"
+           Slot LayoutSlot "{6A77170000000125}" {
+            HorizontalAlign 0
+            VerticalAlign 1
+            Padding 8 0 0 0
+            SizeMode Fill
+            FillWeight 1
+           }
+           Color 0.8632 0.8879 0.9301 1
+           Text "BLUFOR"
+           "Font Size" 13
+           "Min Font Size" 13
+           "Horizontal Alignment" Left
+           "Vertical Alignment" Center
+           FontProperties FontProperties "{6A77170000000127}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{6A77170000000129}" {
+           Name "BluforReadyBy"
+           Slot LayoutSlot "{6A77170000000128}" {
+            HorizontalAlign 2
+            VerticalAlign 1
+            Padding 0 0 8 0
+            SizeMode Auto
+           }
+           Color 0.3968 0.4564 0.6038 1
+           Text ""
+           "Font Size" 11
+           "Min Font Size" 8
+           "Horizontal Alignment" Left
+           "Vertical Alignment" Center
+           FontProperties FontProperties "{6A7717000000012A}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+          OverlayWidgetClass "{6A77170000000121}" {
+           Name "BluforPill"
+           Slot LayoutSlot "{6A7717000000011B}" {
+            HorizontalAlign 2
+            VerticalAlign 1
+            SizeMode Auto
+           }
+           {
+            SmartPanelWidgetClass "{6A7717000000011D}" {
+             Name "BluforPillBG"
+             Slot OverlayWidgetSlot "{6A7717000000011C}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 1 1 1 0.1
+             style rounded_4px
+            }
+            TextWidgetClass "{6A7717000000011F}" {
+             Name "BluforReady"
+             Slot OverlayWidgetSlot "{6A7717000000011E}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+              Padding 6 1 6 2
+             }
+             Color 0.8632 0.8879 0.9301 1
+             Text "NOT READY"
+             "Font Size" 10
+             "Min Font Size" 10
+             "Horizontal Alignment" Center
+             "Vertical Alignment" Center
+             FontProperties FontProperties "{6A77170000000120}" {
+              Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+             }
+            }
+           }
+          }
+         }
+        }
+        HorizontalLayoutWidgetClass "{6A7717000000013C}" {
+         Name "OpforFrame"
+         Slot LayoutSlot "{6A77170000000133}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 0 2 0 2
+          SizeMode Auto
+         }
+         {
+          ImageWidgetClass "{6A77170000000135}" {
+           Name "OpforTick"
+           Slot LayoutSlot "{6A77170000000134}" {
+            HorizontalAlign 0
+            VerticalAlign 1
+            SizeMode Auto
+           }
+           Color 1 1 1 1
+           Size 3 12
+          }
+          TextWidgetClass "{6A77170000000137}" {
+           Name "OpforName"
+           Slot LayoutSlot "{6A77170000000136}" {
+            HorizontalAlign 0
+            VerticalAlign 1
+            Padding 8 0 0 0
+            SizeMode Fill
+            FillWeight 1
+           }
+           Color 0.8632 0.8879 0.9301 1
+           Text "OPFOR"
+           "Font Size" 13
+           "Min Font Size" 13
+           "Horizontal Alignment" Left
+           "Vertical Alignment" Center
+           FontProperties FontProperties "{6A77170000000138}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{6A7717000000013A}" {
+           Name "OpforReadyBy"
+           Slot LayoutSlot "{6A77170000000139}" {
+            HorizontalAlign 2
+            VerticalAlign 1
+            Padding 0 0 8 0
+            SizeMode Auto
+           }
+           Color 0.3968 0.4564 0.6038 1
+           Text ""
+           "Font Size" 11
+           "Min Font Size" 8
+           "Horizontal Alignment" Left
+           "Vertical Alignment" Center
+           FontProperties FontProperties "{6A7717000000013B}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+          OverlayWidgetClass "{6A77170000000132}" {
+           Name "OpforPill"
+           Slot LayoutSlot "{6A7717000000012C}" {
+            HorizontalAlign 2
+            VerticalAlign 1
+            SizeMode Auto
+           }
+           {
+            SmartPanelWidgetClass "{6A7717000000012E}" {
+             Name "OpforPillBG"
+             Slot OverlayWidgetSlot "{6A7717000000012D}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 1 1 1 0.1
+             style rounded_4px
+            }
+            TextWidgetClass "{6A77170000000130}" {
+             Name "OpforReady"
+             Slot OverlayWidgetSlot "{6A7717000000012F}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+              Padding 6 1 6 2
+             }
+             Color 0.8632 0.8879 0.9301 1
+             Text "NOT READY"
+             "Font Size" 10
+             "Min Font Size" 10
+             "Horizontal Alignment" Center
+             "Vertical Alignment" Center
+             FontProperties FontProperties "{6A77170000000131}" {
+              Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+             }
+            }
+           }
+          }
+         }
+        }
+        HorizontalLayoutWidgetClass "{6A7717000000014D}" {
+         Name "IndforFrame"
+         Slot LayoutSlot "{6A77170000000144}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 0 2 0 2
+          SizeMode Auto
+         }
+         {
+          ImageWidgetClass "{6A77170000000146}" {
+           Name "IndforTick"
+           Slot LayoutSlot "{6A77170000000145}" {
+            HorizontalAlign 0
+            VerticalAlign 1
+            SizeMode Auto
+           }
+           Color 1 1 1 1
+           Size 3 12
+          }
+          TextWidgetClass "{6A77170000000148}" {
+           Name "IndforName"
+           Slot LayoutSlot "{6A77170000000147}" {
+            HorizontalAlign 0
+            VerticalAlign 1
+            Padding 8 0 0 0
+            SizeMode Fill
+            FillWeight 1
+           }
+           Color 0.8632 0.8879 0.9301 1
+           Text "INDFOR"
+           "Font Size" 13
+           "Min Font Size" 13
+           "Horizontal Alignment" Left
+           "Vertical Alignment" Center
+           FontProperties FontProperties "{6A77170000000149}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{6A7717000000014B}" {
+           Name "IndforReadyBy"
+           Slot LayoutSlot "{6A7717000000014A}" {
+            HorizontalAlign 2
+            VerticalAlign 1
+            Padding 0 0 8 0
+            SizeMode Auto
+           }
+           Color 0.3968 0.4564 0.6038 1
+           Text ""
+           "Font Size" 11
+           "Min Font Size" 8
+           "Horizontal Alignment" Left
+           "Vertical Alignment" Center
+           FontProperties FontProperties "{6A7717000000014C}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+          OverlayWidgetClass "{6A77170000000143}" {
+           Name "IndforPill"
+           Slot LayoutSlot "{6A7717000000013D}" {
+            HorizontalAlign 2
+            VerticalAlign 1
+            SizeMode Auto
+           }
+           {
+            SmartPanelWidgetClass "{6A7717000000013F}" {
+             Name "IndforPillBG"
+             Slot OverlayWidgetSlot "{6A7717000000013E}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 1 1 1 0.1
+             style rounded_4px
+            }
+            TextWidgetClass "{6A77170000000141}" {
+             Name "IndforReady"
+             Slot OverlayWidgetSlot "{6A77170000000140}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+              Padding 6 1 6 2
+             }
+             Color 0.8632 0.8879 0.9301 1
+             Text "NOT READY"
+             "Font Size" 10
+             "Min Font Size" 10
+             "Horizontal Alignment" Center
+             "Vertical Alignment" Center
+             FontProperties FontProperties "{6A77170000000142}" {
+              Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+             }
+            }
+           }
+          }
+         }
+        }
+        HorizontalLayoutWidgetClass "{6A7717000000015E}" {
+         Name "CivFrame"
+         Slot LayoutSlot "{6A77170000000155}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 0 2 0 2
+          SizeMode Auto
+         }
+         {
+          ImageWidgetClass "{6A77170000000157}" {
+           Name "CivTick"
+           Slot LayoutSlot "{6A77170000000156}" {
+            HorizontalAlign 0
+            VerticalAlign 1
+            SizeMode Auto
+           }
+           Color 1 1 1 1
+           Size 3 12
+          }
+          TextWidgetClass "{6A77170000000159}" {
+           Name "CivName"
+           Slot LayoutSlot "{6A77170000000158}" {
+            HorizontalAlign 0
+            VerticalAlign 1
+            Padding 8 0 0 0
+            SizeMode Fill
+            FillWeight 1
+           }
+           Color 0.8632 0.8879 0.9301 1
+           Text "CIVILIAN"
+           "Font Size" 13
+           "Min Font Size" 13
+           "Horizontal Alignment" Left
+           "Vertical Alignment" Center
+           FontProperties FontProperties "{6A7717000000015A}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{6A7717000000015C}" {
+           Name "CivReadyBy"
+           Slot LayoutSlot "{6A7717000000015B}" {
+            HorizontalAlign 2
+            VerticalAlign 1
+            Padding 0 0 8 0
+            SizeMode Auto
+           }
+           Color 0.3968 0.4564 0.6038 1
+           Text ""
+           "Font Size" 11
+           "Min Font Size" 8
+           "Horizontal Alignment" Left
+           "Vertical Alignment" Center
+           FontProperties FontProperties "{6A7717000000015D}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+          OverlayWidgetClass "{6A77170000000154}" {
+           Name "CivPill"
+           Slot LayoutSlot "{6A7717000000014E}" {
+            HorizontalAlign 2
+            VerticalAlign 1
+            SizeMode Auto
+           }
+           {
+            SmartPanelWidgetClass "{6A77170000000150}" {
+             Name "CivPillBG"
+             Slot OverlayWidgetSlot "{6A7717000000014F}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 1 1 1 0.1
+             style rounded_4px
+            }
+            TextWidgetClass "{6A77170000000152}" {
+             Name "CivReady"
+             Slot OverlayWidgetSlot "{6A77170000000151}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+              Padding 6 1 6 2
+             }
+             Color 0.8632 0.8879 0.9301 1
+             Text "NOT READY"
+             "Font Size" 10
+             "Min Font Size" 10
+             "Horizontal Alignment" Center
+             "Vertical Alignment" Center
+             FontProperties FontProperties "{6A77170000000153}" {
+              Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+             }
+            }
+           }
+          }
+         }
+        }
+        RichTextWidgetClass "{6A77170000000160}" {
+         Name "ReadyHint"
+         Slot LayoutSlot "{6A7717000000015F}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 0 7 0 0
+          SizeMode Auto
+         }
+         Color 0.3968 0.4564 0.6038 1
+         Text ""
+         "Font Size" 11
+         "Min Font Size" 9
+         "Horizontal Alignment" Left
+         "Vertical Alignment" Center
+         FontProperties FontProperties "{6A77170000000161}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
    }
-   Opacity 0
-   Text "00:00:00"
-   "Font Size" 16
-   "Min Font Size" 16
-   "Horizontal Alignment" Center
-   "Vertical Alignment" Center
-   FontProperties FontProperties "{6058112E1E81905B}" {
-    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-    ForceFont 1
-    OutlineSize 2
-    ShadowSize 8
-    ShadowOffset 0.5 0.5
-   }
   }
-  TextWidgetClass "{60581123F1E9E3DD}" {
+  TextWidgetClass "{6A7717000000016D}" {
    Name "MissionStart"
-   Slot FrameWidgetSlot "{6058112C73B2D710}" {
-    Anchor 0.467 0.486 0.538 0.499
-    PositionX 0
-    OffsetLeft 0
-    PositionY 318.55
-    OffsetTop 318.55
-    SizeX 0
-    OffsetRight 0
-    SizeY 0
-    OffsetBottom -318.55
+   Slot FrameWidgetSlot "{6A7717000000016C}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -300
+    OffsetLeft -300
+    PositionY -190
+    OffsetTop -190
+    SizeX 600
+    OffsetRight -300
+    SizeY 22
+    OffsetBottom 168
    }
-   Opacity 0
-   Text "Safe Start Ended"
-   "Font Size" 16
-   "Min Font Size" 16
+   Color 0.3968 0.4564 0.6038 1
+   Text "SAFE START ENDED"
+   "Font Size" 15
+   "Min Font Size" 15
    "Horizontal Alignment" Center
    "Vertical Alignment" Center
-   FontProperties FontProperties "{6058112EE814CCD6}" {
+   FontProperties FontProperties "{6A7717000000016E}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
     ShadowSize 8
     ShadowOffset 0.5 0.5
    }
+   Opacity 0
   }
-  TextWidgetClass "{60581123E93719AD}" {
+  TextWidgetClass "{6A77170000000170}" {
    Name "MissionStart2"
-   Slot FrameWidgetSlot "{6058112C73B2D710}" {
-    Anchor 0.467 0.5 0.538 0.514
-    PositionX 0
-    OffsetLeft 0
-    PositionY 318.55
-    OffsetTop 318.55
-    SizeX 0
-    OffsetRight 0
-    SizeY 0
-    OffsetBottom -318.55
+   Slot FrameWidgetSlot "{6A7717000000016F}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -300
+    OffsetLeft -300
+    PositionY -166
+    OffsetTop -166
+    SizeX 600
+    OffsetRight -300
+    SizeY 48
+    OffsetBottom 118
    }
-   Opacity 0
-   Color 0.502 0 0 1
-   Text "Start Mission!"
-   "Font Size" 16
-   "Min Font Size" 16
+   Color 0.8632 0.8879 0.9301 1
+   Text "WEAPONS LIVE"
+   "Font Size" 40
+   "Min Font Size" 40
    "Horizontal Alignment" Center
    "Vertical Alignment" Center
-   FontProperties FontProperties "{6058112EE814CCD6}" {
+   FontProperties FontProperties "{6A77170000000171}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
     ShadowSize 8
     ShadowOffset 0.5 0.5
    }
-  }
-  ImageWidgetClass "{605D76D78F83ACA6}" {
-   Name "FactionsBackground"
-   Slot FrameWidgetSlot "{605D76D78F83AC87}" {
-    Anchor 0 0.5 0 0.5
-    PositionX 1.92
-    OffsetLeft 1.92
-    PositionY 123.12
-    OffsetTop 123.12
-    SizeX 138.24
-    OffsetRight -140.16
-    SizeY 56.16
-    OffsetBottom -179.28
-   }
-   "Z Order" -1
    Opacity 0
-   Color 0.013 0.013 0.013 0.608
-   "Shadow Offset" 0.5 0.5
-  }
-  PanelWidgetClass "{64E256D2A6417441}" {
-   Name "FactionsPanel"
-   Slot FrameWidgetSlot "{64E256D2A6411B58}" {
-    Anchor 0 0.5 0 0.5
-    PositionX 1.92
-    OffsetLeft 1.92
-    PositionY 123.12
-    OffsetTop 123.12
-    SizeX 138.24
-    OffsetRight -140.16
-    SizeY 56.16
-    OffsetBottom -179.28
-   }
-   Opacity 0
-   Color 0 0 0 0.706
   }
  }
 }

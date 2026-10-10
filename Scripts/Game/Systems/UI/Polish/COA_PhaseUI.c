@@ -64,6 +64,9 @@ class COA_HoverDrawer
 	protected static const float SLIDE_SPEED = 12;
 
 	protected Widget m_wDrawer;
+	protected Widget m_wClosedHitArea;	// optional: while closed, only this widget opens the drawer
+	protected bool m_bVertical;			// slide on Y (PositionY) instead of X
+	protected float m_fLayoutX;			// PositionX from the layout, restored when switching to vertical
 	protected float m_fClosedX;
 	protected float m_fOpenX;
 	protected bool m_bOpen;
@@ -81,7 +84,57 @@ class COA_HoverDrawer
 		m_fOpenX = openX;
 
 		if (m_wDrawer)
+		{
+			m_fLayoutX = FrameSlot.GetPosX(m_wDrawer);
 			FrameSlot.SetPosX(m_wDrawer, closedX);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Slide vertically: closed/open values are then PositionY (e.g. a bar tucked below the screen)
+	void SetVertical(bool vertical)
+	{
+		m_bVertical = vertical;
+		if (!m_wDrawer)
+			return;
+
+		if (vertical)
+		{
+			// The constructor parked it horizontally; put X back where the layout had it
+			FrameSlot.SetPosX(m_wDrawer, m_fLayoutX);
+			FrameSlot.SetPosY(m_wDrawer, m_fClosedX);
+		}
+		else
+		{
+			FrameSlot.SetPosX(m_wDrawer, m_fClosedX);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected float GetPos()
+	{
+		if (m_bVertical)
+			return FrameSlot.GetPosY(m_wDrawer);
+
+		return FrameSlot.GetPosX(m_wDrawer);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SetPos(float value)
+	{
+		if (m_bVertical)
+			FrameSlot.SetPosY(m_wDrawer, value);
+		else
+			FrameSlot.SetPosX(m_wDrawer, value);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! While closed, open only when the cursor is over this widget (typically the tab) instead of
+	//! anywhere along the drawer's on-screen edge - for tall drawers that would otherwise catch the
+	//! cursor over other UI near the screen edge. Once open, the whole drawer keeps it open.
+	void SetClosedHitArea(Widget hitArea)
+	{
+		m_wClosedHitArea = hitArea;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -96,7 +149,7 @@ class COA_HoverDrawer
 		if (!m_wDrawer || !m_wDrawer.IsVisible())
 			return;
 
-		float currentX = FrameSlot.GetPosX(m_wDrawer);
+		float currentX = GetPos();
 		bool open = IsHovered(m_fOpenX - currentX);
 		if (open != m_bOpen)
 		{
@@ -115,7 +168,7 @@ class COA_HoverDrawer
 		if (Math.AbsFloat(targetX - nextX) < 0.5)
 			nextX = targetX;
 
-		FrameSlot.SetPosX(m_wDrawer, nextX);
+		SetPos(nextX);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -127,6 +180,13 @@ class COA_HoverDrawer
 		WidgetManager.GetMousePos(mouseX, mouseY);
 
 		float left, top, width, height;
+		if (!m_bOpen && m_wClosedHitArea && m_wClosedHitArea.IsVisible())
+		{
+			m_wClosedHitArea.GetScreenPos(left, top);
+			m_wClosedHitArea.GetScreenSize(width, height);
+			return mouseX >= left && mouseX <= left + width && mouseY >= top && mouseY <= top + height;
+		}
+
 		m_wDrawer.GetScreenPos(left, top);
 		m_wDrawer.GetScreenSize(width, height);
 		float right = left + width;
@@ -134,9 +194,17 @@ class COA_HoverDrawer
 
 		if (m_bOpen)
 		{
-			float shiftX = GetGame().GetWorkspace().DPIScale(toOpenX);
-			left += shiftX;
-			right += shiftX;
+			float shift = GetGame().GetWorkspace().DPIScale(toOpenX);
+			if (m_bVertical)
+			{
+				top += shift;
+				bottom += shift;
+			}
+			else
+			{
+				left += shift;
+				right += shift;
+			}
 		}
 		else
 		{
@@ -146,8 +214,16 @@ class COA_HoverDrawer
 				float screenX, screenY, screenWidth, screenHeight;
 				parent.GetScreenPos(screenX, screenY);
 				parent.GetScreenSize(screenWidth, screenHeight);
-				left = Math.Max(left, screenX);
-				right = Math.Min(right, screenX + screenWidth);
+				if (m_bVertical)
+				{
+					top = Math.Max(top, screenY);
+					bottom = Math.Min(bottom, screenY + screenHeight);
+				}
+				else
+				{
+					left = Math.Max(left, screenX);
+					right = Math.Min(right, screenX + screenWidth);
+				}
 			}
 		}
 

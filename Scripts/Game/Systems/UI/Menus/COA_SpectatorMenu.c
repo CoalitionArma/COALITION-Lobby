@@ -31,6 +31,11 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	protected ref COA_HoverDrawer m_SlotsDrawer;
 	protected ref COA_HoverDrawer m_ChannelsDrawer;
 	protected ref COA_HoverDrawer m_GameInfoDrawer;
+
+	// Controls hint bar: tucked below the screen with only its "CONTROLS" tab showing, slides up on hover
+	protected static const float HINT_DRAWER_CLOSED_Y = -22;	// only the 22 px tab on screen
+	protected static const float HINT_DRAWER_OPEN_Y = -64;	// tab + bar + 12 px margin
+	protected ref COA_HoverDrawer m_HintDrawer;
 	protected FrameWidget m_wSlotWarning;                  	 // Frame for displaying the button to open slotting
 	protected COA_ListboxComponent m_wPlayerSlots;           // Listbox component for player slots
 	protected COA_ListboxComponent m_wVONChannels;           // Listbox component for VON channels
@@ -54,6 +59,8 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	protected ref array<int> m_aGroupIconIds = {};           // Array of group IDs with icons
 	protected ref array<Widget> m_aGroupIconWidgets = {};    // Array of group icon UI widgets
 	protected ref array<ref COA_SpectatorLabelIconGroup> m_aGroupIcons = {}; // Array of group icon handlers
+	protected ref COA_SpecHoverCard m_HoverCard;          // card for the hovered player / squad / vehicle marker
+	protected ref COA_SpecWorldMarkers m_WorldMarkers;    // in-world vehicle and kill markers
 
 	// Faction flag caching for UpdateFactionUI()
 	protected ref map<string, ResourceName> m_mFactionIconCache = new map<string, ResourceName>();
@@ -122,9 +129,17 @@ class COA_SpectatorMenu: ChimeraMenuBase
 
 	// Camera mode button row (helmet / eye / orbit) - see InitCameraModeButtons
 	protected Widget m_wCameraModeButtons;
-	protected ImageWidget m_wHelmetCamBG;
-	protected ImageWidget m_wEyeCamBG;
-	protected ImageWidget m_wOrbitCamBG;
+	protected Widget m_wHelmetCamBG;
+	protected Widget m_wEyeCamBG;
+	protected Widget m_wOrbitCamBG;
+
+	// Kill feed (top right): last kills, newest at the bottom; clicking a row jumps the camera there
+	protected static const ResourceName KILL_FEED_ROW_LAYOUT = "{6A71140000000001}UI/layouts/Menus/Spectator/Elements/COA_SpecKillFeedRow.layout";
+	protected static const int KILL_FEED_MAX = 5;
+	protected static const float KILL_FEED_LIFETIME = 120;	// seconds a row stays
+	protected VerticalLayoutWidget m_wKillFeedList;
+	protected ref array<ref COA_SpecKillFeedEntry> m_aKillFeed = {};
+	protected float m_fKillFeedRefresh;
 
 	// Damage report overlay
 	protected Widget m_wDamageReportPanel;
@@ -214,6 +229,8 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		Widget entityInfoDisplay = m_wRoot.FindAnyWidget("EntityInfoDisplay");
 		m_EntityInfoDisplay = COA_EntityInfoDisplay.Cast(entityInfoDisplay.FindHandler(COA_EntityInfoDisplay));
 		InitCameraModeButtons();
+		SetupKeyHints();
+		m_wKillFeedList = VerticalLayoutWidget.Cast(m_wRoot.FindAnyWidget("KillFeedList"));
 		InitDamageReportWidgets();
 		
 		// Initialize VON (Voice Over Network)
@@ -281,6 +298,9 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		inputManager.AddActionListener("COA_SpecToggleCamMode", EActionTrigger.DOWN, ToggleCameraMode);
 		inputManager.AddActionListener("COA_SpecKillTeleport", EActionTrigger.DOWN, Action_TeleportToKill);
 		inputManager.AddActionListener("COA_SpecFollowSquad", EActionTrigger.DOWN, Action_FollowSquad);
+		inputManager.AddActionListener("COA_SpecNextPlayer", EActionTrigger.DOWN, Action_NextPlayer);
+		inputManager.AddActionListener("COA_SpecPrevPlayer", EActionTrigger.DOWN, Action_PrevPlayer);
+		inputManager.AddActionListener("COA_SpecToggleNames", EActionTrigger.DOWN, Action_ToggleNames);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -662,9 +682,9 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		if (!m_wCameraModeButtons)
 			return;
 
-		m_wHelmetCamBG = ImageWidget.Cast(m_wRoot.FindAnyWidget("HelmetCamBG"));
-		m_wEyeCamBG = ImageWidget.Cast(m_wRoot.FindAnyWidget("EyeCamBG"));
-		m_wOrbitCamBG = ImageWidget.Cast(m_wRoot.FindAnyWidget("OrbitCamBG"));
+		m_wHelmetCamBG = m_wRoot.FindAnyWidget("HelmetCamBG");
+		m_wEyeCamBG = m_wRoot.FindAnyWidget("EyeCamBG");
+		m_wOrbitCamBG = m_wRoot.FindAnyWidget("OrbitCamBG");
 
 		SCR_ButtonTextComponent.Cast(ButtonWidget.Cast(m_wRoot.FindAnyWidget("HelmetCamSelectButton")).FindHandler(SCR_ButtonTextComponent)).m_OnClicked.Insert(SelectCameraModeHelmet);
 		SCR_ButtonTextComponent.Cast(ButtonWidget.Cast(m_wRoot.FindAnyWidget("EyeCamSelectButton")).FindHandler(SCR_ButtonTextComponent)).m_OnClicked.Insert(SelectCameraModeEye);
@@ -708,17 +728,26 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		if (player.m_pFactionComponent && player.m_pFactionComponent.GetAffiliatedFaction())
 			active = player.m_pFactionComponent.GetAffiliatedFaction().GetFactionColor();
 
-		Color inactive = Color.FromRGBA(37, 37, 37, 153);
+		// Segmented control: the active segment is filled with the faction colour, the others clear
+		Color inactive = Color.FromSRGBA(28, 31, 40, 0);
+		Color activeText = Color.FromSRGBA(239, 242, 247, 255);
+		Color inactiveText = Color.FromSRGBA(169, 180, 204, 255);
 
-		m_wHelmetCamBG.SetColor(inactive);
-		m_wEyeCamBG.SetColor(inactive);
-		m_wOrbitCamBG.SetColor(inactive);
-
-		switch (m_iCamCycle)
+		array<Widget> backgrounds = {m_wHelmetCamBG, m_wEyeCamBG, m_wOrbitCamBG};
+		array<string> labels = {"HelmetCamText", "EyeCamText", "OrbitCamText"};
+		foreach (int i, Widget background : backgrounds)
 		{
-			case 0: m_wHelmetCamBG.SetColor(active); break;
-			case 1: m_wEyeCamBG.SetColor(active); break;
-			case 2: m_wOrbitCamBG.SetColor(active); break;
+			bool isActive = i == m_iCamCycle;
+			if (isActive)
+				background.SetColor(active);
+			else
+				background.SetColor(inactive);
+
+			Widget label = m_wRoot.FindAnyWidget(labels[i]);
+			if (label && isActive)
+				label.SetColor(activeText);
+			else if (label)
+				label.SetColor(inactiveText);
 		}
 	}
 
@@ -918,8 +947,9 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		// Update compass
 		UpdateCompass();
 		
-		// Ensure map context is active when map is open
-		if (m_MapEntity)
+		// Ensure map context is active when map is open. Only then: while the map is closed its tool
+		// hotkeys (N pencil, K compass, O watch...) must not fire - the drawing tool crashes on them
+		if (m_MapEntity && m_MapEntity.IsOpen())
 			GetGame().GetInputManager().ActivateContext("MapContext");
 		
 		// Update VON channels if needed and handle radio frequency updates
@@ -931,6 +961,14 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		
 		// Handle spectator camera
 		UpdateSpectatorCamera(tDelta);
+
+		// Kill feed ages / expiry (once a second)
+		m_fKillFeedRefresh += tDelta;
+		if (m_fKillFeedRefresh >= 1)
+		{
+			UpdateKillFeed(m_fKillFeedRefresh);
+			m_fKillFeedRefresh = 0;
+		}
 
 		// When CVON is disabled, keep the spectator entity parked far away from the playing area so
 		// neither its direct speech nor the proximity playback of its radio speech reaches alive players.
@@ -1084,6 +1122,53 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		}
 	}
 	
+	/**
+	 * Switch the followed entity. The camera's on-rails link is only set up when nothing is
+	 * attached yet, so it has to be released before attaching to someone else - otherwise the
+	 * camera keeps following the previous player (the slots list bug: only the first pick worked
+	 * until the camera was moved by hand). null just stops following.
+	 */
+	protected void FollowEntity(IEntity entity)
+	{
+		UnregisterFrameEvent();
+		m_eSpecEntity = entity;
+		if (m_eSpecEntity)
+		{
+			RegisterFrameEvent();
+
+			// RegisterFrameEvent only knows orbit vs first person; re-apply the chosen mode so
+			// helmet / eye / orbit carries over to the new player (also refreshes the selector)
+			SetCameraMode(m_iCamCycle);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Entity the camera is following, null in free camera (the spectator map highlights it)
+	IEntity GetSpecEntity()
+	{
+		return m_eSpecEntity;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Spectator map pin clicked: close the map and follow that player
+	void FollowFromMap(IEntity entity)
+	{
+		if (!entity)
+			return;
+
+		CloseMap();
+		FollowEntity(entity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Spectator map pin of a body clicked: close the map and fly the free camera there
+	void MoveCameraFromMap(vector position)
+	{
+		CloseMap();
+		FollowEntity(null);
+		MoveCamera(position);
+	}
+
 	/**
 	 * Registers the frame event for smooth spectator camera tracking
 	 */
@@ -1511,6 +1596,9 @@ class COA_SpectatorMenu: ChimeraMenuBase
 
 		if (m_GameInfoDrawer)
 			m_GameInfoDrawer.Update(tDelta);
+
+		if (m_HintDrawer)
+			m_HintDrawer.Update(tDelta);
 	}
 
 	protected void OnSlotsDrawerChanged(bool open)
@@ -2481,10 +2569,13 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		RplComponent rplComponent = RplComponent.Cast(Replication.FindItem(slotData.GetSlotCurrentCharacter()));
 		if (rplComponent)
 		{
-			m_eSpecEntity = rplComponent.GetEntity();
+			FollowEntity(rplComponent.GetEntity());
 		}
 		else
 		{
+			// Not streamed in here: drop the current follow so the server's camera move isn't
+			// overridden by the camera staying on rails to the previous player
+			FollowEntity(null);
 			int playerId = SCR_PlayerController.GetLocalPlayerId();
 			COA_PlayerRplToAuthorityManager.GetInstance().MoveSpecCamToSlot(selectedComponent.m_iSlotId, playerId);
 		}
@@ -2566,6 +2657,10 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			inputManager.RemoveActionListener("COA_SpecToggleCamMode", EActionTrigger.DOWN, ToggleCameraMode);
 			inputManager.RemoveActionListener("COA_SpecKillTeleport", EActionTrigger.DOWN, Action_TeleportToKill);
 		inputManager.RemoveActionListener("COA_SpecFollowSquad", EActionTrigger.DOWN, Action_FollowSquad);
+		inputManager.RemoveActionListener("COA_SpecNextPlayer", EActionTrigger.DOWN, Action_NextPlayer);
+		inputManager.RemoveActionListener("COA_SpecPrevPlayer", EActionTrigger.DOWN, Action_PrevPlayer);
+		inputManager.RemoveActionListener("COA_SpecToggleNames", EActionTrigger.DOWN, Action_ToggleNames);
+		m_aKillFeed.Clear();
 		}
 		
 		ForceNVGsOff();
@@ -2619,6 +2714,317 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		data.GetPosition(pos);
 		if (pos != vector.Zero)
 			m_vLastKillPosition = pos;
+
+		AddKillFeedEntry(data, pos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Kill feed
+	//------------------------------------------------------------------------------------------------
+
+	//------------------------------------------------------------------------------------------------
+	protected void AddKillFeedEntry(SCR_NotificationData data, vector position)
+	{
+		if (!m_wKillFeedList)
+			m_wKillFeedList = VerticalLayoutWidget.Cast(m_wRoot.FindAnyWidget("KillFeedList"));
+		if (!m_wKillFeedList)
+			return;
+
+		string killText;
+		string pillFactionKey;
+		int param1, param2;
+		data.GetParams(param1, param2);
+		int id = data.GetID();
+		if (id == ENotification.PLAYER_KILLED_PLAYER)
+		{
+			killText = string.Format("%1  <color rgba='120,128,148,255'>›</color>  %2", ColoredPlayerName(param1), ColoredPlayerName(param2));
+			pillFactionKey = GetPlayerFactionKey(param2);
+		}
+		else if (id == ENotification.PLAYER_DIED)
+		{
+			killText = string.Format("%1  <color rgba='120,128,148,255'>died</color>", ColoredPlayerName(param1));
+			pillFactionKey = GetPlayerFactionKey(param1);
+		}
+		else
+		{
+			killText = data.GetText();
+		}
+
+		if (killText.IsEmpty())
+			return;
+
+		Widget row = GetGame().GetWorkspace().CreateWidgets(KILL_FEED_ROW_LAYOUT, m_wKillFeedList);
+		if (!row)
+			return;
+
+		RichTextWidget textWidget = RichTextWidget.Cast(row.FindAnyWidget("KillText"));
+		if (textWidget)
+			textWidget.SetText(killText);
+
+		Widget pill = row.FindAnyWidget("KillPill");
+		if (pill)
+			pill.SetColor(GetFactionAccent(pillFactionKey));
+
+		SCR_ButtonComponent button = SCR_ButtonComponent.Cast(row.FindHandler(SCR_ButtonComponent));
+		if (button && position != vector.Zero)
+			button.m_OnClicked.Insert(OnKillFeedRowClicked);
+
+		// Fading marker on the spectator map and in the world, in the victim's faction colour
+		COA_SpectatorMapOverlay.RecordKill(position, GetFactionAccent(pillFactionKey));
+		if (m_WorldMarkers)
+			m_WorldMarkers.AddKill(position, GetFactionAccent(pillFactionKey));
+
+		COA_SpecKillFeedEntry entry = new COA_SpecKillFeedEntry();
+		entry.m_wRow = row;
+		entry.m_vPosition = position;
+		m_aKillFeed.Insert(entry);
+
+		while (m_aKillFeed.Count() > KILL_FEED_MAX)
+			RemoveKillFeedEntry(0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RemoveKillFeedEntry(int index)
+	{
+		if (!m_aKillFeed.IsIndexValid(index))
+			return;
+
+		if (m_aKillFeed[index].m_wRow)
+			m_aKillFeed[index].m_wRow.RemoveFromHierarchy();
+
+		m_aKillFeed.RemoveOrdered(index);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void UpdateKillFeed(float elapsed)
+	{
+		for (int i = m_aKillFeed.Count() - 1; i >= 0; i--)
+		{
+			COA_SpecKillFeedEntry entry = m_aKillFeed[i];
+			entry.m_fAge += elapsed;
+			if (entry.m_fAge > KILL_FEED_LIFETIME || !entry.m_wRow)
+			{
+				RemoveKillFeedEntry(i);
+				continue;
+			}
+
+			TextWidget age = TextWidget.Cast(entry.m_wRow.FindAnyWidget("KillAge"));
+			if (!age)
+				continue;
+
+			int seconds = entry.m_fAge;
+			if (seconds < 5)
+				age.SetText("now");
+			else if (seconds < 60)
+				age.SetText(string.Format("%1s", seconds));
+			else
+				age.SetText(string.Format("%1m", seconds / 60));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Jump the free camera to where that kill happened
+	protected void OnKillFeedRowClicked(SCR_ButtonBaseComponent button)
+	{
+		if (!button)
+			return;
+
+		foreach (COA_SpecKillFeedEntry entry : m_aKillFeed)
+		{
+			if (entry.m_wRow != button.GetRootWidget())
+				continue;
+
+			if (m_eSpecEntity)
+			{
+				m_eSpecEntity = null;
+				UnregisterFrameEvent();
+			}
+
+			MoveCamera(entry.m_vPosition);
+			return;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string GetPlayerFactionKey(int playerId)
+	{
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+		if (!slottingManager || playerId <= 0)
+			return "";
+
+		Faction faction = slottingManager.GetPlayerSlotFaction(playerId, true);
+		if (!faction)
+			return "";
+
+		return faction.GetFactionKey();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected Color GetFactionAccent(string factionKey)
+	{
+		switch (factionKey)
+		{
+			case "BLUFOR": return Color.FromSRGBA(64, 150, 255, 255);
+			case "OPFOR": return Color.FromSRGBA(232, 80, 80, 255);
+			case "INDFOR": return Color.FromSRGBA(92, 196, 128, 255);
+			case "CIV": return Color.FromSRGBA(176, 120, 220, 255);
+		}
+
+		return Color.FromSRGBA(169, 180, 204, 255);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Player name in their faction's colour, for rich text
+	protected string ColoredPlayerName(int playerId)
+	{
+		string name = GetGame().GetPlayerManager().GetPlayerName(playerId);
+		if (name.IsEmpty())
+			name = "Unknown";
+
+		string rgba = "239,242,247,255";
+		switch (GetPlayerFactionKey(playerId))
+		{
+			case "BLUFOR": rgba = "64,150,255,255"; break;
+			case "OPFOR": rgba = "232,80,80,255"; break;
+			case "INDFOR": rgba = "92,196,128,255"; break;
+			case "CIV": rgba = "176,120,220,255"; break;
+		}
+
+		return string.Format("<color rgba='%1'><b>%2</b></color>", rgba, name);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Key hints
+	//------------------------------------------------------------------------------------------------
+
+	//------------------------------------------------------------------------------------------------
+	//! Bottom bar listing the spectator shortcuts with the player's own key glyphs
+	protected void SetupKeyHints()
+	{
+		RichTextWidget hints = RichTextWidget.Cast(m_wRoot.FindAnyWidget("KeyHintText"));
+		if (!hints)
+			return;
+
+		string separator = "      ";
+		string text = "<action name='COA_SpecPrevPlayer'/><action name='COA_SpecNextPlayer'/> Switch player";
+		text += separator + "<action name='COA_SpecFollowSquad'/> Follow squad";
+		text += separator + "<action name='COA_SpecToggleCamMode'/> Camera";
+		text += separator + "<action name='COA_SpecKillTeleport'/> Last kill";
+		text += separator + "<action name='COA_ShowDamageReport'/> Damage report";
+		text += separator + "<action name='COA_SpecNVG'/> NVG";
+		text += separator + "<action name='COA_SpecToggleNames'/> Names";
+		text += separator + "<action name='GadgetMap'/> Map";
+		text += separator + "<action name='EditorToggleUI'/> Hide UI";
+		hints.SetText(text);
+
+		Widget bar = m_wRoot.FindAnyWidget("KeyHintBar");
+		if (bar && !m_HintDrawer)
+		{
+			m_HintDrawer = new COA_HoverDrawer(bar, HINT_DRAWER_CLOSED_Y, HINT_DRAWER_OPEN_Y);
+			m_HintDrawer.SetVertical(true);
+			m_HintDrawer.SetClosedHitArea(bar.FindAnyWidget("KeyHintTab"));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Target switching
+	//------------------------------------------------------------------------------------------------
+
+	//------------------------------------------------------------------------------------------------
+	void Action_NextPlayer()
+	{
+		CyclePlayer(1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Action_PrevPlayer()
+	{
+		CyclePlayer(-1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Cycle player names above heads: when close -> always shown -> hidden
+	void Action_ToggleNames()
+	{
+		COA_ESpecNameMode mode = COA_SpectatorLabelIconCharacter.CycleNameMode();
+
+		if (!m_PopUpNotification)
+			return;
+
+		if (mode == COA_ESpecNameMode.ALWAYS)
+			m_PopUpNotification.PopupMsg("Player names: always shown", 2);
+		else if (mode == COA_ESpecNameMode.HIDDEN)
+			m_PopUpNotification.PopupMsg("Player names: hidden", 2);
+		else
+			m_PopUpNotification.PopupMsg("Player names: when close", 2);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Follow the next / previous living slotted player in slot order, respecting the mission's
+	//! "hide other spectator factions" setting
+	protected void CyclePlayer(int direction)
+	{
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+		if (!slottingManager)
+			return;
+
+		Faction localFaction;
+		if (m_Gamemode && m_Gamemode.m_bHideOtherSpectatorFactions)
+			localFaction = slottingManager.GetPlayerSlotFaction(SCR_PlayerController.GetLocalPlayerId());
+
+		array<int> playerIds = {};
+		GetGame().GetPlayerManager().GetPlayers(playerIds);
+
+		array<IEntity> targets = {};
+		array<int> order = {};
+		foreach (int playerId : playerIds)
+		{
+			COA_SlotData slotData = slottingManager.GetPlayerSlotData(playerId);
+			if (!slotData || slotData.GetIsDeadSlot())
+				continue;
+
+			if (localFaction && slotData.GetSlotFactionKey() != localFaction.GetFactionKey())
+				continue;
+
+			IEntity character = COA_EntityHelper.GetEntityFromRplId(slotData.GetSlotCurrentCharacter());
+			if (!character || !COA_DamageHelper.CheckIfEntityAlive(character) || COA_EntityHelper.IsSpectator(character))
+				continue;
+
+			// Insert sorted by slot id so the cycle follows the ORBAT
+			int slotId = slottingManager.GetPlayerSlotID(playerId);
+			int at = order.Count();
+			for (int i = 0; i < order.Count(); i++)
+			{
+				if (slotId < order[i])
+				{
+					at = i;
+					break;
+				}
+			}
+
+			order.InsertAt(slotId, at);
+			targets.InsertAt(character, at);
+		}
+
+		if (targets.IsEmpty())
+			return;
+
+		int count = targets.Count();
+		int current = targets.Find(m_eSpecEntity);
+		int next;
+		if (current < 0)
+		{
+			if (direction > 0)
+				next = 0;
+			else
+				next = count - 1;
+		}
+		else
+		{
+			next = (current + direction + count) % count;
+		}
+
+		FollowEntity(targets[next]);
 	}
 
 	/**
@@ -2666,9 +3072,7 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		if (current >= 0)
 			next = (current + 1) % squadmates.Count();
 
-		UnregisterFrameEvent();
-		m_eSpecEntity = squadmates[next];
-		RegisterFrameEvent();
+		FollowEntity(squadmates[next]);
 	}
 
 	void Action_TeleportToKill()
@@ -3022,26 +3426,81 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	{
 		if (!m_aSpectatorIcons)
 			return;
-			
+
+		COA_SpectatorLabelIconCharacter hoveredCharacter;
+		COA_SpectatorLabelIconGroup hoveredGroup;
+
 		// Update each spectator icon
 		foreach (COA_SpectatorLabelIconCharacter spectatorIcon : m_aSpectatorIcons)
 		{
-			if (spectatorIcon)
-			{
-				spectatorIcon.Update();
-			}
+			if (!spectatorIcon)
+				continue;
+
+			spectatorIcon.Update();
+			if (spectatorIcon.IsHoveredNow())
+				hoveredCharacter = spectatorIcon;
 		}
-		
+
 		// Update each group icon
 		if (m_aGroupIcons)
 		{
 			foreach (COA_SpectatorLabelIconGroup groupIcon : m_aGroupIcons)
 			{
-				if (groupIcon)
-				{
-					groupIcon.Update();
-				}
+				if (!groupIcon)
+					continue;
+
+				groupIcon.Update();
+				if (groupIcon.IsHoveredNow())
+					hoveredGroup = groupIcon;
 			}
+		}
+
+		UpdateWorldMarkers(hoveredCharacter, hoveredGroup);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Vehicle / kill markers, then the hover card for whichever marker is under the cursor
+	//! (player first, then vehicle, then squad)
+	protected void UpdateWorldMarkers(COA_SpectatorLabelIconCharacter hoveredCharacter, COA_SpectatorLabelIconGroup hoveredGroup)
+	{
+		Widget iconsFrame = GetCachedWidget("IconsFrame");
+		if (!iconsFrame)
+			return;
+
+		if (!m_WorldMarkers)
+			m_WorldMarkers = new COA_SpecWorldMarkers(iconsFrame);
+		if (!m_HoverCard)
+			m_HoverCard = new COA_SpecHoverCard(iconsFrame);
+
+		bool hideOtherFactions = m_Gamemode && m_Gamemode.m_bHideOtherSpectatorFactions;
+		Faction localFaction;
+		if (hideOtherFactions)
+			localFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(SCR_PlayerController.GetLocalPlayerId());
+
+		array<COA_PlayerCharacter> characters;
+		if (m_Gamemode)
+			characters = m_Gamemode.GetActiveCharacters();
+		m_WorldMarkers.Update(characters, hideOtherFactions, localFaction);
+
+		COA_SpecWorldVehicle hoveredVehicle = m_WorldMarkers.GetHoveredVehicle();
+		if (hoveredCharacter && hoveredCharacter.GetRootWidget())
+		{
+			SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(hoveredCharacter.m_eEntity);
+			Widget root = hoveredCharacter.GetRootWidget();
+			m_HoverCard.ShowCharacter(character, FrameSlot.GetPosX(root), FrameSlot.GetPosY(root));
+		}
+		else if (hoveredVehicle)
+		{
+			m_HoverCard.ShowVehicle(hoveredVehicle.m_Vehicle, hoveredVehicle.m_aCrew, hoveredVehicle.m_fScreenX, hoveredVehicle.m_fScreenY);
+		}
+		else if (hoveredGroup && hoveredGroup.GetRootWidget())
+		{
+			Widget groupRoot = hoveredGroup.GetRootWidget();
+			m_HoverCard.ShowSquad(hoveredGroup.GetGroup(), FrameSlot.GetPosX(groupRoot), FrameSlot.GetPosY(groupRoot));
+		}
+		else
+		{
+			m_HoverCard.Hide();
 		}
 	}
 	
@@ -3290,4 +3749,14 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			m_wTimer.SetColorInt(ARGB(255, 215, 215, 215));
 		}
 	}
+}
+
+
+//------------------------------------------------------------------------------------------------
+//! One row of the spectator kill feed
+class COA_SpecKillFeedEntry
+{
+	Widget m_wRow;
+	vector m_vPosition;
+	float m_fAge;
 }

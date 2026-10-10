@@ -1,0 +1,222 @@
+FrameWidgetClass {
+ Name "SpecMapTooltip"
+ Slot FrameWidgetSlot "{6A75150000000187}" {
+  Anchor 0 0 0 0
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 1
+  OffsetRight -1
+  SizeY 1
+  OffsetBottom -1
+ }
+ Clipping False
+ "Z Order" 200
+ {
+  FrameWidgetClass "{6A75150000000186}" {
+   Name "Card"
+   Slot FrameWidgetSlot "{6A7515000000017D}" {
+    Anchor 0 0 0 0
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 100
+    OffsetRight -100
+    SizeY 24
+    OffsetBottom -24
+    SizeToContent 1
+   }
+   {
+    OverlayWidgetClass "{6A75150000000185}" {
+     Name "CardOverlay"
+     Slot FrameWidgetSlot "{6A7515000000017E}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 100
+      OffsetRight -100
+      SizeY 24
+      OffsetBottom -24
+      SizeToContent 1
+     }
+     {
+      SmartPanelWidgetClass "{6A75150000000180}" {
+       Name "CardBG"
+       Slot OverlayWidgetSlot "{6A7515000000017F}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0033 0.0037 0.0052 0.95
+       style rounded_6px
+      }
+      SmartPanelWidgetClass "{6A75150000000182}" {
+       Name "CardOutline"
+       Slot OverlayWidgetSlot "{6A75150000000181}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 1 1 1 0.05
+       style outline_rounded_6px
+      }
+      ImageWidgetClass "{6A75150000000184}" {
+       Name "Accent"
+       Slot OverlayWidgetSlot "{6A75150000000183}" {
+        HorizontalAlign 0
+        VerticalAlign 3
+        Padding 0 10 0 10
+       }
+       Color 1 1 1 1
+       Size 3 10
+      }
+      SizeLayoutWidgetClass "{6A7515000000017C}" {
+       Name "TooltipWidth"
+       Slot OverlayWidgetSlot "{6A7515000000017B}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+        Padding 16 10 14 12
+       }
+       AllowWidthOverride 1
+       WidthOverride 240
+       {
+        VerticalLayoutWidgetClass "{6A7515000000017A}" {
+         Name "Rows"
+         Slot AlignableSlot "{6A7515000000016D}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         {
+          TextWidgetClass "{6A7515000000016F}" {
+           Name "Title"
+           Slot LayoutSlot "{6A7515000000016E}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+           }
+           Color 0.8632 0.8879 0.9301 1
+           Text ""
+           "Font Size" 16
+           "Min Font Size" 16
+           "Horizontal Alignment" Left
+           "Vertical Alignment" Center
+           FontProperties FontProperties "{6A75150000000170}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{6A75150000000172}" {
+           Name "Sub"
+           Slot LayoutSlot "{6A75150000000171}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+            Padding 0 1 0 0
+           }
+           Color 0.3968 0.4564 0.6038 1
+           Text ""
+           "Font Size" 13
+           "Min Font Size" 13
+           "Horizontal Alignment" Left
+           "Vertical Alignment" Center
+           FontProperties FontProperties "{6A75150000000173}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+          SizeLayoutWidgetClass "{6A7515000000016C}" {
+           Name "HealthRow"
+           Slot LayoutSlot "{6A75150000000165}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+            Padding 0 8 0 2
+           }
+           AllowHeightOverride 1
+           HeightOverride 6
+           {
+            FrameWidgetClass "{6A7515000000016B}" {
+             Name "HealthFrame"
+             Slot AlignableSlot "{6A75150000000166}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             {
+              SmartPanelWidgetClass "{6A75150000000168}" {
+               Name "HealthTrack"
+               Slot FrameWidgetSlot "{6A75150000000167}" {
+                Anchor 0 0 1 1
+                PositionX 0
+                OffsetLeft 0
+                PositionY 0
+                OffsetTop 0
+                SizeX 0
+                OffsetRight 0
+                SizeY 0
+                OffsetBottom 0
+               }
+               Color 0.011 0.0137 0.0212 1
+               style rounded_2px
+              }
+              SmartPanelWidgetClass "{6A7515000000016A}" {
+               Name "HealthFill"
+               Slot FrameWidgetSlot "{6A75150000000169}" {
+                Anchor 0 0 0 0
+                PositionX 0
+                OffsetLeft 0
+                PositionY 0
+                OffsetTop 0
+                SizeX 240
+                OffsetRight -240
+                SizeY 6
+                OffsetBottom -6
+               }
+               "Z Order" 1
+               Color 0.1022 0.5520 0.2159 1
+               style rounded_2px
+              }
+             }
+            }
+           }
+          }
+          TextWidgetClass "{6A75150000000175}" {
+           Name "State"
+           Slot LayoutSlot "{6A75150000000174}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+            Padding 0 4 0 0
+           }
+           Color 0.3968 0.4564 0.6038 1
+           Text ""
+           "Font Size" 12
+           "Min Font Size" 12
+           "Horizontal Alignment" Left
+           "Vertical Alignment" Center
+           FontProperties FontProperties "{6A75150000000176}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+          RichTextWidgetClass "{6A75150000000178}" {
+           Name "Body"
+           Slot LayoutSlot "{6A75150000000177}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+            Padding 0 8 0 0
+           }
+           Color 0.8632 0.8879 0.9301 1
+           Text ""
+           "Font Size" 13
+           "Min Font Size" 13
+           "Horizontal Alignment" Left
+           "Vertical Alignment" Center
+           FontProperties FontProperties "{6A75150000000179}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

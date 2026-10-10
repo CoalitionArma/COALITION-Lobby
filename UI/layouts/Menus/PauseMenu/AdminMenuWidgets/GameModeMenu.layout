@@ -1,6 +1,29 @@
 FrameWidgetClass {
- Name "templateFrame"
+ Name "rootFrame"
  {
+  TextWidgetClass "{6A6E1100000003A9}" {
+   Name "PageHint"
+   Slot FrameWidgetSlot "{6A6E1100000003A8}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -744
+    OffsetLeft -744
+    PositionY -434
+    OffsetTop -434
+    SizeX 1097
+    OffsetRight -353
+    SizeY 20
+    OffsetBottom 414
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "Live mission controls: timer, tickets, respawns, gear sets and ending the mission."
+   "Font Size" 14
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{6A6E1100000003AA}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
   FrameWidgetClass "{659CDD56628B68FC}" {
    Name "MenuSlot1"
    Slot FrameWidgetSlot "{6548E8DD235B0C39}" {
@@ -18,86 +41,154 @@ FrameWidgetClass {
    "Is Enabled" 0
    "Ignore Cursor" 0
   }
-  ButtonWidgetClass "{659CDD553C208456}" {
-   Name "MenuButton0"
-   Slot FrameWidgetSlot "{62992E477A603216}" {
+  FrameWidgetClass "{6A6E1100000002B7}" {
+   Name "GameTimer"
+   Slot FrameWidgetSlot "{6A6E1100000002B6}" {
     Anchor 0.5 0.5 0.5 0.5
-    PositionX -784
-    OffsetLeft -784
-    PositionY -436
-    OffsetTop -436
-    SizeX 80
-    OffsetRight 704
-    SizeY 40
-    OffsetBottom 396
-   }
-   Color 0.013 0.0152 0.0176 1
-   components {
-    SCR_ButtonTextComponent "{62993E178E05DA3C}" {
-     m_bCanBeToggled 1
-     m_sTextWidgetName ""
-    }
+    PositionX -744
+    OffsetLeft -744
+    PositionY -400
+    OffsetTop -400
+    SizeX 520
+    OffsetRight 224
+    SizeY 136
+    OffsetBottom 264
    }
    {
-    TextWidgetClass "{659CDD553C208457}" {
-     Name "ActionButtonText"
-     Slot ButtonWidgetSlot "{62992E44F11398F5}" {
-     }
-     Text "AAR"
-     "Font Size" 15
-     "Min Font Size" 15
-    }
-   }
-  }
-  FrameWidgetClass "{65AD258304B6C63F}" {
-   Name "GearSets"
-   Slot FrameWidgetSlot "{659CDD578CE45868}" {
-    Anchor 0.5 0.5 0.5 0.5
-    PositionX -416
-    OffsetLeft -416
-    PositionY -436
-    OffsetTop -436
-    SizeX 728
-    OffsetRight -312
-    SizeY 720
-    OffsetBottom -284
-   }
-   {
-    TextWidgetClass "{65AD258304B6C63D}" {
-     Name "CurrentGameTimeTitle0"
-     Slot FrameWidgetSlot "{659CDD570CAD5675}" {
+    SmartPanelWidgetClass "{6A6E11000000029B}" {
+     Name "TimerCard"
+     Slot FrameWidgetSlot "{6A6E11000000029A}" {
+      Anchor 0 0 0 0
       PositionX 0
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 80
-      OffsetRight -80
-      SizeY 32
+      SizeX 520
+      OffsetRight -520
+      SizeY 136
+      OffsetBottom -136
+     }
+     Color 0.0075 0.0086 0.0123 1
+     style rounded_6px
+    }
+    ImageWidgetClass "{6A6E11000000029D}" {
+     Name "TimerCardPill"
+     Slot FrameWidgetSlot "{6A6E11000000029C}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 15
+      OffsetTop 15
+      SizeX 3
+      OffsetRight -3
+      SizeY 14
+      OffsetBottom -29
+     }
+     Color 0.5841 0.0369 0.0369 1
+    }
+    TextWidgetClass "{6A6E11000000029F}" {
+     Name "TimerCardTitle"
+     Slot FrameWidgetSlot "{6A6E11000000029E}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 12
+      OffsetTop 12
+      SizeX 488
+      OffsetRight -504
+      SizeY 20
       OffsetBottom -32
      }
-     Clipping False
-     Text "Gear Sets"
-     "Font Size" 20
+     Color 0.3968 0.4564 0.6038 1
+     Text "MISSION TIMER"
+     "Font Size" 13
      "Min Font Size" 10
-     "Horizontal Alignment" Center
+     "Horizontal Alignment" Left
      "Vertical Alignment" Center
-     FontProperties FontProperties "{629B0EA7D0E4BF47}" {
+     FontProperties FontProperties "{6A6E1100000002A0}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
-     Offset 0 0
     }
-    ButtonWidgetClass "{65AD258304B658A8}" {
-     Name "ApplyGearSets"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 288
-      OffsetLeft 288
-      PositionY 664
-      OffsetTop 664
-      SizeX 144
-      OffsetRight -432
-      SizeY 29.999
-      OffsetBottom -693.999
+    TextWidgetClass "{6A6E1100000002A2}" {
+     Name "TimerCardHint"
+     Slot FrameWidgetSlot "{6A6E1100000002A1}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 12
+      OffsetTop 12
+      SizeX 488
+      OffsetRight -504
+      SizeY 20
+      OffsetBottom -32
      }
-     Color 0.013 0.0152 0.0176 1
+     Color 0.3968 0.4564 0.6038 1
+     Text "Time left"
+     "Font Size" 12
+     "Min Font Size" 10
+     "Horizontal Alignment" Right
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E1100000002A3}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    TextWidgetClass "{659CDD577D3AC183}" {
+     Name "CurrentGameTime0"
+     Slot FrameWidgetSlot "{6A6E1100000002A4}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 40
+      OffsetTop 40
+      SizeX 220
+      OffsetRight -236
+      SizeY 40
+      OffsetBottom -80
+     }
+     Clipping False
+     Text "00:00:00"
+     "Font Size" 34
+     "Min Font Size" 20
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     Offset 0 0
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{6A6E1100000002A5}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{6A6E1100000002A9}" {
+     Name "-10BG"
+     Slot FrameWidgetSlot "{6A6E1100000002A8}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 86
+      OffsetTop 86
+      SizeX 116
+      OffsetRight -132
+      SizeY 34
+      OffsetBottom -120
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{659CDD56E383919F}" {
+     Name "-10"
+     Slot FrameWidgetSlot "{6A6E1100000002A6}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 86
+      OffsetTop 86
+      SizeX 116
+      OffsetRight -132
+      SizeY 34
+      OffsetBottom -120
+     }
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -105,310 +196,503 @@ FrameWidgetClass {
       }
      }
      {
-      TextWidgetClass "{65AD258304B67ECB}" {
+      TextWidgetClass "{659CDD56E383919C}" {
        Name "ActionButtonText"
        Slot ButtonWidgetSlot "{62992E44F11398F5}" {
        }
-       Text "Apply Gear Sets"
+       Text "−10 min"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E1100000002A7}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
-    OverlayWidgetClass "{65AD25822D4EE720}" {
-     Name "FactionList0"
-     Slot FrameWidgetSlot "{629B0EC8DE26D29A}" {
-      Anchor 0.5 0.5 0.5 0.5
-      PositionX -356
-      OffsetLeft -356
-      PositionY -312
-      OffsetTop -312
-      SizeX 168
-      OffsetRight 188
-      SizeY 600
-      OffsetBottom -288
+    SmartPanelWidgetClass "{6A6E1100000002AD}" {
+     Name "-5BG"
+     Slot FrameWidgetSlot "{6A6E1100000002AC}" {
+      Anchor 0 0 0 0
+      PositionX 140
+      OffsetLeft 140
+      PositionY 86
+      OffsetTop 86
+      SizeX 116
+      OffsetRight -256
+      SizeY 34
+      OffsetBottom -120
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{659CDD56E38391DB}" {
+     Name "-5"
+     Slot FrameWidgetSlot "{6A6E1100000002AA}" {
+      Anchor 0 0 0 0
+      PositionX 140
+      OffsetLeft 140
+      PositionY 86
+      OffsetTop 86
+      SizeX 116
+      OffsetRight -256
+      SizeY 34
+      OffsetBottom -120
+     }
+     Color 1 1 1 0
+     "Z Order" 2
+     components {
+      SCR_ButtonTextComponent "{62993E178E05DA3C}" {
+       m_bCanBeToggled 1
+       m_sTextWidgetName ""
+      }
      }
      {
-      OverlayWidgetClass "{65AD25822D4EE726}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
-       Name "BLUFORListBox"
-       Slot OverlayWidgetSlot "{629B0EBE315316CB}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-        Padding 0 20 0 0
+      TextWidgetClass "{659CDD56E383F780}" {
+       Name "ActionButtonText"
+       Slot ButtonWidgetSlot "{62992E44F11398F5}" {
        }
-       {
-        ScrollLayoutWidgetClass "{56691148E692435A}" {
-         Prefab "{56691148E692435A}"
-         {
-          VerticalLayoutWidgetClass "{56691148E013D981}" {
-           Prefab "{56691148E013D981}"
-          }
-         }
-        }
-        ImageWidgetClass "{5DB6D18100D38307}" {
-         Prefab "{5DB6D18100D38307}"
-         "Is Visible" 0
-        }
+       Text "−5 min"
+       "Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E1100000002AB}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
        }
-      }
-      TextWidgetClass "{65AD25822D4EE727}" {
-       Name "BLUFORListTitle"
-       Slot OverlayWidgetSlot "{629B0EC922D5408A}" {
-        VerticalAlign 0
-        Padding -9 0 0 0
-       }
-       Clipping False
-       Color 0 0.584 1 1
-       Text "BLUFOR"
-       "Font Size" 20
-       "Min Font Size" 10
-       "Horizontal Alignment" Center
-       "Vertical Alignment" Center
-       FontProperties FontProperties "{629B0EA7D0E4BF47}" {
-       }
-       Offset 0 0
       }
      }
     }
-    OverlayWidgetClass "{65AD25820B2A5D55}" {
-     Name "FactionList1"
-     Slot FrameWidgetSlot "{629B0EC8DE26D29A}" {
-      Anchor 0.5 0.5 0.5 0.5
-      PositionX -180
-      OffsetLeft -180
-      PositionY -312
-      OffsetTop -312
-      SizeX 168
-      OffsetRight 12
-      SizeY 600
-      OffsetBottom -288
+    SmartPanelWidgetClass "{6A6E1100000002B1}" {
+     Name "5BG"
+     Slot FrameWidgetSlot "{6A6E1100000002B0}" {
+      Anchor 0 0 0 0
+      PositionX 264
+      OffsetLeft 264
+      PositionY 86
+      OffsetTop 86
+      SizeX 116
+      OffsetRight -380
+      SizeY 34
+      OffsetBottom -120
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{659CDD56B54C913B}" {
+     Name "5"
+     Slot FrameWidgetSlot "{6A6E1100000002AE}" {
+      Anchor 0 0 0 0
+      PositionX 264
+      OffsetLeft 264
+      PositionY 86
+      OffsetTop 86
+      SizeX 116
+      OffsetRight -380
+      SizeY 34
+      OffsetBottom -120
+     }
+     Color 1 1 1 0
+     "Z Order" 2
+     components {
+      SCR_ButtonTextComponent "{62993E178E05DA3C}" {
+       m_bCanBeToggled 1
+       m_sTextWidgetName ""
+      }
      }
      {
-      OverlayWidgetClass "{65AD25820B2A5D6A}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
-       Name "OPFORListBox"
-       Slot OverlayWidgetSlot "{629B0EBE315316CB}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-        Padding 0 20 0 0
+      TextWidgetClass "{659CDD56B54C7A53}" {
+       Name "ActionButtonText"
+       Slot ButtonWidgetSlot "{62992E44F11398F5}" {
        }
-       {
-        ScrollLayoutWidgetClass "{56691148E692435A}" {
-         Prefab "{56691148E692435A}"
-         {
-          VerticalLayoutWidgetClass "{56691148E013D981}" {
-           Prefab "{56691148E013D981}"
-          }
-         }
-        }
-        ImageWidgetClass "{5DB6D18100D38307}" {
-         Prefab "{5DB6D18100D38307}"
-         "Is Visible" 0
-        }
+       Text "+5 min"
+       "Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E1100000002AF}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
        }
-      }
-      TextWidgetClass "{65AD25820B2A5D6B}" {
-       Name "OPFORListTitle"
-       Slot OverlayWidgetSlot "{629B0EC922D5408A}" {
-        VerticalAlign 0
-        Padding -9 0 0 0
-       }
-       Clipping False
-       Color 0.855 0.031 0.028 1
-       Text "OPFOR"
-       "Font Size" 20
-       "Min Font Size" 10
-       "Horizontal Alignment" Center
-       "Vertical Alignment" Center
-       FontProperties FontProperties "{629B0EA7D0E4BF47}" {
-       }
-       Offset 0 0
       }
      }
     }
-    OverlayWidgetClass "{65AD258205AF14EB}" {
-     Name "FactionList2"
-     Slot FrameWidgetSlot "{629B0EC8DE26D29A}" {
-      Anchor 0.5 0.5 0.5 0.5
-      PositionX -4
-      OffsetLeft -4
-      PositionY -312
-      OffsetTop -312
-      SizeX 168
-      OffsetRight -164
-      SizeY 600
-      OffsetBottom -288
+    SmartPanelWidgetClass "{6A6E1100000002B5}" {
+     Name "10BG"
+     Slot FrameWidgetSlot "{6A6E1100000002B4}" {
+      Anchor 0 0 0 0
+      PositionX 388
+      OffsetLeft 388
+      PositionY 86
+      OffsetTop 86
+      SizeX 116
+      OffsetRight -504
+      SizeY 34
+      OffsetBottom -120
      }
-     {
-      OverlayWidgetClass "{65AD258205AF14E8}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
-       Name "INDFORListBox"
-       Slot OverlayWidgetSlot "{629B0EBE315316CB}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-        Padding 0 20 0 0
-       }
-       {
-        ScrollLayoutWidgetClass "{56691148E692435A}" {
-         Prefab "{56691148E692435A}"
-         {
-          VerticalLayoutWidgetClass "{56691148E013D981}" {
-           Prefab "{56691148E013D981}"
-          }
-         }
-        }
-        ImageWidgetClass "{5DB6D18100D38307}" {
-         Prefab "{5DB6D18100D38307}"
-         "Is Visible" 0
-        }
-       }
-      }
-      TextWidgetClass "{65AD258205AF14E9}" {
-       Name "INDFORListTitle"
-       Slot OverlayWidgetSlot "{629B0EC922D5408A}" {
-        VerticalAlign 0
-        Padding -9 0 0 0
-       }
-       Clipping False
-       Color 0 0.44 0.078 1
-       Text "INDFOR"
-       "Font Size" 20
-       "Min Font Size" 10
-       "Horizontal Alignment" Center
-       "Vertical Alignment" Center
-       FontProperties FontProperties "{629B0EA7D0E4BF47}" {
-       }
-       Offset 0 0
-      }
-     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
     }
-    OverlayWidgetClass "{65AD258270A86109}" {
-     Name "FactionList3"
-     Slot FrameWidgetSlot "{629B0EC8DE26D29A}" {
-      Anchor 0.5 0.5 0.5 0.5
-      PositionX 172
-      OffsetLeft 172
-      PositionY -312
-      OffsetTop -312
-      SizeX 168
-      OffsetRight -340
-      SizeY 600
-      OffsetBottom -288
+    ButtonWidgetClass "{659CDD56EC254EC3}" {
+     Name "10"
+     Slot FrameWidgetSlot "{6A6E1100000002B2}" {
+      Anchor 0 0 0 0
+      PositionX 388
+      OffsetLeft 388
+      PositionY 86
+      OffsetTop 86
+      SizeX 116
+      OffsetRight -504
+      SizeY 34
+      OffsetBottom -120
+     }
+     Color 1 1 1 0
+     "Z Order" 2
+     components {
+      SCR_ButtonTextComponent "{62993E178E05DA3C}" {
+       m_bCanBeToggled 1
+       m_sTextWidgetName ""
+      }
      }
      {
-      OverlayWidgetClass "{65AD258270A8610E}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
-       Name "CIVListBox"
-       Slot OverlayWidgetSlot "{629B0EBE315316CB}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-        Padding 0 20 0 0
+      TextWidgetClass "{659CDD56EC254EC0}" {
+       Name "ActionButtonText"
+       Slot ButtonWidgetSlot "{62992E44F11398F5}" {
        }
-       {
-        ScrollLayoutWidgetClass "{56691148E692435A}" {
-         Prefab "{56691148E692435A}"
-         {
-          VerticalLayoutWidgetClass "{56691148E013D981}" {
-           Prefab "{56691148E013D981}"
-          }
-         }
-        }
-        ImageWidgetClass "{5DB6D18100D38307}" {
-         Prefab "{5DB6D18100D38307}"
-         "Is Visible" 0
-        }
+       Text "+10 min"
+       "Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E1100000002B3}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
        }
-      }
-      TextWidgetClass "{65AD258270A8610C}" {
-       Name "CIVListTitle"
-       Slot OverlayWidgetSlot "{629B0EC922D5408A}" {
-        VerticalAlign 0
-        Padding -9 0 0 0
-       }
-       Clipping False
-       Color 0.392 0.156 0.624 1
-       Text "CIV"
-       "Font Size" 20
-       "Min Font Size" 10
-       "Horizontal Alignment" Center
-       "Vertical Alignment" Center
-       FontProperties FontProperties "{629B0EA7D0E4BF47}" {
-       }
-       Offset 0 0
       }
      }
     }
    }
   }
-  FrameWidgetClass "{659CDD543D8D3DBA}" {
+  FrameWidgetClass "{6A6E11000000033C}" {
    Name "Tickets"
-   Slot FrameWidgetSlot "{659CDD578CE45868}" {
+   Slot FrameWidgetSlot "{6A6E11000000033B}" {
     Anchor 0.5 0.5 0.5 0.5
-    PositionX -792
-    OffsetLeft -792
-    PositionY -268
-    OffsetTop -268
-    SizeX 361.827
-    OffsetRight 430.173
-    SizeY 200
-    OffsetBottom 68
+    PositionX -744
+    OffsetLeft -744
+    PositionY -248
+    OffsetTop -248
+    SizeX 520
+    OffsetRight 224
+    SizeY 222
+    OffsetBottom 26
    }
    {
-    TextWidgetClass "{659CDD543D8D3DB7}" {
-     Name "TicketsTitle"
-     Slot FrameWidgetSlot "{659CDD570CAD5675}" {
+    SmartPanelWidgetClass "{6A6E1100000002B9}" {
+     Name "TicketsCard"
+     Slot FrameWidgetSlot "{6A6E1100000002B8}" {
+      Anchor 0 0 0 0
       PositionX 0
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 80
-      OffsetRight -80
-      SizeY 32
+      SizeX 520
+      OffsetRight -520
+      SizeY 222
+      OffsetBottom -222
+     }
+     Color 0.0075 0.0086 0.0123 1
+     style rounded_6px
+    }
+    ImageWidgetClass "{6A6E1100000002BB}" {
+     Name "TicketsCardPill"
+     Slot FrameWidgetSlot "{6A6E1100000002BA}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 15
+      OffsetTop 15
+      SizeX 3
+      OffsetRight -3
+      SizeY 14
+      OffsetBottom -29
+     }
+     Color 0.5841 0.0369 0.0369 1
+    }
+    TextWidgetClass "{6A6E1100000002BD}" {
+     Name "TicketsCardTitle"
+     Slot FrameWidgetSlot "{6A6E1100000002BC}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 12
+      OffsetTop 12
+      SizeX 488
+      OffsetRight -504
+      SizeY 20
       OffsetBottom -32
      }
-     Clipping False
-     Text "Tickets"
-     "Font Size" 20
+     Color 0.3968 0.4564 0.6038 1
+     Text "TICKETS"
+     "Font Size" 13
      "Min Font Size" 10
-     "Horizontal Alignment" Center
+     "Horizontal Alignment" Left
      "Vertical Alignment" Center
-     FontProperties FontProperties "{629B0EA7D0E4BF47}" {
+     FontProperties FontProperties "{6A6E1100000002BE}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
-     Offset 0 0
+    }
+    ImageWidgetClass "{6A6E1100000002C0}" {
+     Name "BLUFORTicketPill"
+     Slot FrameWidgetSlot "{6A6E1100000002BF}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 53
+      OffsetTop 53
+      SizeX 3
+      OffsetRight -19
+      SizeY 16
+      OffsetBottom -69
+     }
+     Color 0 0.584 1 1
+    }
+    TextWidgetClass "{6A6E1100000002C2}" {
+     Name "BLUFORTicketLabel"
+     Slot FrameWidgetSlot "{6A6E1100000002C1}" {
+      Anchor 0 0 0 0
+      PositionX 28
+      OffsetLeft 28
+      PositionY 44
+      OffsetTop 44
+      SizeX 80
+      OffsetRight -108
+      SizeY 34
+      OffsetBottom -78
+     }
+     Color 0.8632 0.8879 0.9301 1
+     Text "BLUFOR"
+     "Font Size" 14
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E1100000002C3}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{6A6E1100000002C7}" {
+     Name "BLUFOR_Subtract_10BG"
+     Slot FrameWidgetSlot "{6A6E1100000002C6}" {
+      Anchor 0 0 0 0
+      PositionX 116
+      OffsetLeft 116
+      PositionY 44
+      OffsetTop 44
+      SizeX 44
+      OffsetRight -160
+      SizeY 34
+      OffsetBottom -78
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{65B1588E31887089}" {
+     Name "BLUFOR_Subtract_10"
+     Slot FrameWidgetSlot "{6A6E1100000002C4}" {
+      Anchor 0 0 0 0
+      PositionX 116
+      OffsetLeft 116
+      PositionY 44
+      OffsetTop 44
+      SizeX 44
+      OffsetRight -160
+      SizeY 34
+      OffsetBottom -78
+     }
+     Color 1 1 1 0
+     "Z Order" 2
+     components {
+      SCR_ButtonTextComponent "{62993E178E05DA3C}" {
+       m_bCanBeToggled 1
+       m_sTextWidgetName ""
+      }
+     }
+     {
+      TextWidgetClass "{65B1588E31887086}" {
+       Name "ActionButtonText"
+       Slot ButtonWidgetSlot "{62992E44F11398F5}" {
+       }
+       Text "−10"
+       "Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E1100000002C5}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+     }
+    }
+    SmartPanelWidgetClass "{6A6E1100000002CB}" {
+     Name "BLUFOR_Subtract_5BG"
+     Slot FrameWidgetSlot "{6A6E1100000002CA}" {
+      Anchor 0 0 0 0
+      PositionX 166
+      OffsetLeft 166
+      PositionY 44
+      OffsetTop 44
+      SizeX 44
+      OffsetRight -210
+      SizeY 34
+      OffsetBottom -78
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{65B1588E31887147}" {
+     Name "BLUFOR_Subtract_5"
+     Slot FrameWidgetSlot "{6A6E1100000002C8}" {
+      Anchor 0 0 0 0
+      PositionX 166
+      OffsetLeft 166
+      PositionY 44
+      OffsetTop 44
+      SizeX 44
+      OffsetRight -210
+      SizeY 34
+      OffsetBottom -78
+     }
+     Color 1 1 1 0
+     "Z Order" 2
+     components {
+      SCR_ButtonTextComponent "{62993E178E05DA3C}" {
+       m_bCanBeToggled 1
+       m_sTextWidgetName ""
+      }
+     }
+     {
+      TextWidgetClass "{65B1588E31887144}" {
+       Name "ActionButtonText"
+       Slot ButtonWidgetSlot "{62992E44F11398F5}" {
+       }
+       Text "−5"
+       "Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E1100000002C9}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+     }
+    }
+    SmartPanelWidgetClass "{6A6E1100000002CF}" {
+     Name "BLUFOR_Subtract_1BG"
+     Slot FrameWidgetSlot "{6A6E1100000002CE}" {
+      Anchor 0 0 0 0
+      PositionX 216
+      OffsetLeft 216
+      PositionY 44
+      OffsetTop 44
+      SizeX 44
+      OffsetRight -260
+      SizeY 34
+      OffsetBottom -78
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{65B1588E31887130}" {
+     Name "BLUFOR_Subtract_1"
+     Slot FrameWidgetSlot "{6A6E1100000002CC}" {
+      Anchor 0 0 0 0
+      PositionX 216
+      OffsetLeft 216
+      PositionY 44
+      OffsetTop 44
+      SizeX 44
+      OffsetRight -260
+      SizeY 34
+      OffsetBottom -78
+     }
+     Color 1 1 1 0
+     "Z Order" 2
+     components {
+      SCR_ButtonTextComponent "{62993E178E05DA3C}" {
+       m_bCanBeToggled 1
+       m_sTextWidgetName ""
+      }
+     }
+     {
+      TextWidgetClass "{65B1588E31884724}" {
+       Name "ActionButtonText"
+       Slot ButtonWidgetSlot "{62992E44F11398F5}" {
+       }
+       Text "−1"
+       "Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E1100000002CD}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+     }
     }
     TextWidgetClass "{659CDD543D8D3DB4}" {
      Name "BluforTicketCount"
-     Slot FrameWidgetSlot "{659CDD570CAD5675}" {
-      PositionX 144
-      OffsetLeft 144
-      PositionY 40
-      OffsetTop 40
-      SizeX 80
-      OffsetRight -224
-      SizeY 32
-      OffsetBottom -72
+     Slot FrameWidgetSlot "{6A6E1100000002D0}" {
+      Anchor 0 0 0 0
+      PositionX 266
+      OffsetLeft 266
+      PositionY 44
+      OffsetTop 44
+      SizeX 74
+      OffsetRight -340
+      SizeY 34
+      OffsetBottom -78
      }
      Clipping False
      Color 0 0.584 1 1
      Text "000"
-     "Font Size" 20
-     "Min Font Size" 10
+     "Font Size" 22
+     "Min Font Size" 14
      "Horizontal Alignment" Center
      "Vertical Alignment" Center
-     FontProperties FontProperties "{629B0EA7D0E4BF47}" {
-     }
      Offset 0 0
+     FontProperties FontProperties "{6A6E1100000002D1}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{6A6E1100000002D5}" {
+     Name "BLUFOR_Add_1BG"
+     Slot FrameWidgetSlot "{6A6E1100000002D4}" {
+      Anchor 0 0 0 0
+      PositionX 346
+      OffsetLeft 346
+      PositionY 44
+      OffsetTop 44
+      SizeX 44
+      OffsetRight -390
+      SizeY 34
+      OffsetBottom -78
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
     }
     ButtonWidgetClass "{659CDD544880223A}" {
      Name "BLUFOR_Add_1"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 232
-      OffsetLeft 232
-      PositionY 40
-      OffsetTop 40
-      SizeX 32
-      OffsetRight -264
-      SizeY 29.999
-      OffsetBottom -69.999
+     Slot FrameWidgetSlot "{6A6E1100000002D2}" {
+      Anchor 0 0 0 0
+      PositionX 346
+      OffsetLeft 346
+      PositionY 44
+      OffsetTop 44
+      SizeX 44
+      OffsetRight -390
+      SizeY 34
+      OffsetBottom -78
      }
-     Color 0.013 0.0152 0.0176 1
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -422,23 +706,46 @@ FrameWidgetClass {
        }
        Text "+1"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E1100000002D3}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
+    SmartPanelWidgetClass "{6A6E1100000002D9}" {
+     Name "BLUFOR_Add_5BG"
+     Slot FrameWidgetSlot "{6A6E1100000002D8}" {
+      Anchor 0 0 0 0
+      PositionX 396
+      OffsetLeft 396
+      PositionY 44
+      OffsetTop 44
+      SizeX 44
+      OffsetRight -440
+      SizeY 34
+      OffsetBottom -78
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
     ButtonWidgetClass "{659CDD543D82E5BB}" {
      Name "BLUFOR_Add_5"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 272
-      OffsetLeft 272
-      PositionY 40
-      OffsetTop 40
-      SizeX 32
-      OffsetRight -304
-      SizeY 29.999
-      OffsetBottom -69.999
+     Slot FrameWidgetSlot "{6A6E1100000002D6}" {
+      Anchor 0 0 0 0
+      PositionX 396
+      OffsetLeft 396
+      PositionY 44
+      OffsetTop 44
+      SizeX 44
+      OffsetRight -440
+      SizeY 34
+      OffsetBottom -78
      }
-     Color 0.013 0.0152 0.0176 1
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -452,23 +759,46 @@ FrameWidgetClass {
        }
        Text "+5"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E1100000002D7}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
+    SmartPanelWidgetClass "{6A6E1100000002DD}" {
+     Name "BLUFOR_Add_10BG"
+     Slot FrameWidgetSlot "{6A6E1100000002DC}" {
+      Anchor 0 0 0 0
+      PositionX 446
+      OffsetLeft 446
+      PositionY 44
+      OffsetTop 44
+      SizeX 44
+      OffsetRight -490
+      SizeY 34
+      OffsetBottom -78
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
     ButtonWidgetClass "{659CDD543D82E253}" {
      Name "BLUFOR_Add_10"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 312
-      OffsetLeft 312
-      PositionY 40
-      OffsetTop 40
-      SizeX 32
-      OffsetRight -344
-      SizeY 29.999
-      OffsetBottom -69.999
+     Slot FrameWidgetSlot "{6A6E1100000002DA}" {
+      Anchor 0 0 0 0
+      PositionX 446
+      OffsetLeft 446
+      PositionY 44
+      OffsetTop 44
+      SizeX 44
+      OffsetRight -490
+      SizeY 34
+      OffsetBottom -78
      }
-     Color 0.013 0.0152 0.0176 1
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -482,23 +812,84 @@ FrameWidgetClass {
        }
        Text "+10"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E1100000002DB}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
-    ButtonWidgetClass "{65B1588E31887130}" {
-     Name "BLUFOR_Subtract_1"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 104
-      OffsetLeft 104
-      PositionY 40
-      OffsetTop 40
-      SizeX 32
-      OffsetRight -136
-      SizeY 29.999
-      OffsetBottom -69.999
+    ImageWidgetClass "{6A6E1100000002DF}" {
+     Name "OPFORTicketPill"
+     Slot FrameWidgetSlot "{6A6E1100000002DE}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 95
+      OffsetTop 95
+      SizeX 3
+      OffsetRight -19
+      SizeY 16
+      OffsetBottom -111
      }
-     Color 0.013 0.0152 0.0176 1
+     Color 0.855 0.031 0.028 1
+    }
+    TextWidgetClass "{6A6E1100000002E1}" {
+     Name "OPFORTicketLabel"
+     Slot FrameWidgetSlot "{6A6E1100000002E0}" {
+      Anchor 0 0 0 0
+      PositionX 28
+      OffsetLeft 28
+      PositionY 86
+      OffsetTop 86
+      SizeX 80
+      OffsetRight -108
+      SizeY 34
+      OffsetBottom -120
+     }
+     Color 0.8632 0.8879 0.9301 1
+     Text "OPFOR"
+     "Font Size" 14
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E1100000002E2}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{6A6E1100000002E6}" {
+     Name "OPFOR_Subtract_10BG"
+     Slot FrameWidgetSlot "{6A6E1100000002E5}" {
+      Anchor 0 0 0 0
+      PositionX 116
+      OffsetLeft 116
+      PositionY 86
+      OffsetTop 86
+      SizeX 44
+      OffsetRight -160
+      SizeY 34
+      OffsetBottom -120
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{65B1588E7C48908A}" {
+     Name "OPFOR_Subtract_10"
+     Slot FrameWidgetSlot "{6A6E1100000002E3}" {
+      Anchor 0 0 0 0
+      PositionX 116
+      OffsetLeft 116
+      PositionY 86
+      OffsetTop 86
+      SizeX 44
+      OffsetRight -160
+      SizeY 34
+      OffsetBottom -120
+     }
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -506,29 +897,52 @@ FrameWidgetClass {
       }
      }
      {
-      TextWidgetClass "{65B1588E31884724}" {
+      TextWidgetClass "{65B1588E7C48908B}" {
        Name "ActionButtonText"
        Slot ButtonWidgetSlot "{62992E44F11398F5}" {
        }
-       Text "-1"
+       Text "−10"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E1100000002E4}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
-    ButtonWidgetClass "{65B1588E31887147}" {
-     Name "BLUFOR_Subtract_5"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 64
-      OffsetLeft 64
-      PositionY 40
-      OffsetTop 40
-      SizeX 32
-      OffsetRight -96
-      SizeY 29.999
-      OffsetBottom -69.999
+    SmartPanelWidgetClass "{6A6E1100000002EA}" {
+     Name "OPFOR_Subtract_5BG"
+     Slot FrameWidgetSlot "{6A6E1100000002E9}" {
+      Anchor 0 0 0 0
+      PositionX 166
+      OffsetLeft 166
+      PositionY 86
+      OffsetTop 86
+      SizeX 44
+      OffsetRight -210
+      SizeY 34
+      OffsetBottom -120
      }
-     Color 0.013 0.0152 0.0176 1
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{65B1588E7C48914F}" {
+     Name "OPFOR_Subtract_5"
+     Slot FrameWidgetSlot "{6A6E1100000002E7}" {
+      Anchor 0 0 0 0
+      PositionX 166
+      OffsetLeft 166
+      PositionY 86
+      OffsetTop 86
+      SizeX 44
+      OffsetRight -210
+      SizeY 34
+      OffsetBottom -120
+     }
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -536,29 +950,52 @@ FrameWidgetClass {
       }
      }
      {
-      TextWidgetClass "{65B1588E31887144}" {
+      TextWidgetClass "{65B1588E7C48153C}" {
        Name "ActionButtonText"
        Slot ButtonWidgetSlot "{62992E44F11398F5}" {
        }
-       Text "-5"
+       Text "−5"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E1100000002E8}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
-    ButtonWidgetClass "{65B1588E31887089}" {
-     Name "BLUFOR_Subtract_10"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 24
-      OffsetLeft 24
-      PositionY 40
-      OffsetTop 40
-      SizeX 32
-      OffsetRight -56
-      SizeY 29.999
-      OffsetBottom -69.999
+    SmartPanelWidgetClass "{6A6E1100000002EE}" {
+     Name "OPFOR_Subtract_1BG"
+     Slot FrameWidgetSlot "{6A6E1100000002ED}" {
+      Anchor 0 0 0 0
+      PositionX 216
+      OffsetLeft 216
+      PositionY 86
+      OffsetTop 86
+      SizeX 44
+      OffsetRight -260
+      SizeY 34
+      OffsetBottom -120
      }
-     Color 0.013 0.0152 0.0176 1
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{65B1588E7C481572}" {
+     Name "OPFOR_Subtract_1"
+     Slot FrameWidgetSlot "{6A6E1100000002EB}" {
+      Anchor 0 0 0 0
+      PositionX 216
+      OffsetLeft 216
+      PositionY 86
+      OffsetTop 86
+      SizeX 44
+      OffsetRight -260
+      SizeY 34
+      OffsetBottom -120
+     }
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -566,52 +1003,77 @@ FrameWidgetClass {
       }
      }
      {
-      TextWidgetClass "{65B1588E31887086}" {
+      TextWidgetClass "{65B1588E7C481575}" {
        Name "ActionButtonText"
        Slot ButtonWidgetSlot "{62992E44F11398F5}" {
        }
-       Text "-10"
+       Text "−1"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E1100000002EC}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
     TextWidgetClass "{659CDD548AFE9BF4}" {
      Name "OpforTicketCount"
-     Slot FrameWidgetSlot "{659CDD570CAD5675}" {
-      PositionX 144
-      OffsetLeft 144
-      PositionY 80
-      OffsetTop 80
-      SizeX 80
-      OffsetRight -224
-      SizeY 32
-      OffsetBottom -112
+     Slot FrameWidgetSlot "{6A6E1100000002EF}" {
+      Anchor 0 0 0 0
+      PositionX 266
+      OffsetLeft 266
+      PositionY 86
+      OffsetTop 86
+      SizeX 74
+      OffsetRight -340
+      SizeY 34
+      OffsetBottom -120
      }
      Clipping False
      Color 0.855 0.031 0.028 1
      Text "000"
-     "Font Size" 20
-     "Min Font Size" 10
+     "Font Size" 22
+     "Min Font Size" 14
      "Horizontal Alignment" Center
      "Vertical Alignment" Center
-     FontProperties FontProperties "{629B0EA7D0E4BF47}" {
-     }
      Offset 0 0
+     FontProperties FontProperties "{6A6E1100000002F0}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{6A6E1100000002F4}" {
+     Name "OPFOR_Add_1BG"
+     Slot FrameWidgetSlot "{6A6E1100000002F3}" {
+      Anchor 0 0 0 0
+      PositionX 346
+      OffsetLeft 346
+      PositionY 86
+      OffsetTop 86
+      SizeX 44
+      OffsetRight -390
+      SizeY 34
+      OffsetBottom -120
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
     }
     ButtonWidgetClass "{659CDD548AFE9A76}" {
      Name "OPFOR_Add_1"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 232
-      OffsetLeft 232
-      PositionY 80
-      OffsetTop 80
-      SizeX 32
-      OffsetRight -264
-      SizeY 29.999
-      OffsetBottom -109.999
+     Slot FrameWidgetSlot "{6A6E1100000002F1}" {
+      Anchor 0 0 0 0
+      PositionX 346
+      OffsetLeft 346
+      PositionY 86
+      OffsetTop 86
+      SizeX 44
+      OffsetRight -390
+      SizeY 34
+      OffsetBottom -120
      }
-     Color 0.013 0.0152 0.0176 1
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -625,23 +1087,46 @@ FrameWidgetClass {
        }
        Text "+1"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E1100000002F2}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
+    SmartPanelWidgetClass "{6A6E1100000002F8}" {
+     Name "OPFOR_Add_5BG"
+     Slot FrameWidgetSlot "{6A6E1100000002F7}" {
+      Anchor 0 0 0 0
+      PositionX 396
+      OffsetLeft 396
+      PositionY 86
+      OffsetTop 86
+      SizeX 44
+      OffsetRight -440
+      SizeY 34
+      OffsetBottom -120
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
     ButtonWidgetClass "{659CDD548AFEF7A6}" {
      Name "OPFOR_Add_5"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 272
-      OffsetLeft 272
-      PositionY 80
-      OffsetTop 80
-      SizeX 32
-      OffsetRight -304
-      SizeY 29.999
-      OffsetBottom -109.999
+     Slot FrameWidgetSlot "{6A6E1100000002F5}" {
+      Anchor 0 0 0 0
+      PositionX 396
+      OffsetLeft 396
+      PositionY 86
+      OffsetTop 86
+      SizeX 44
+      OffsetRight -440
+      SizeY 34
+      OffsetBottom -120
      }
-     Color 0.013 0.0152 0.0176 1
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -655,23 +1140,46 @@ FrameWidgetClass {
        }
        Text "+5"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E1100000002F6}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
+    SmartPanelWidgetClass "{6A6E1100000002FC}" {
+     Name "OPFOR_Add_10BG"
+     Slot FrameWidgetSlot "{6A6E1100000002FB}" {
+      Anchor 0 0 0 0
+      PositionX 446
+      OffsetLeft 446
+      PositionY 86
+      OffsetTop 86
+      SizeX 44
+      OffsetRight -490
+      SizeY 34
+      OffsetBottom -120
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
     ButtonWidgetClass "{659CDD548AFE1BA8}" {
      Name "OPFOR_Add_10"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 312
-      OffsetLeft 312
-      PositionY 80
-      OffsetTop 80
-      SizeX 32
-      OffsetRight -344
-      SizeY 29.999
-      OffsetBottom -109.999
+     Slot FrameWidgetSlot "{6A6E1100000002F9}" {
+      Anchor 0 0 0 0
+      PositionX 446
+      OffsetLeft 446
+      PositionY 86
+      OffsetTop 86
+      SizeX 44
+      OffsetRight -490
+      SizeY 34
+      OffsetBottom -120
      }
-     Color 0.013 0.0152 0.0176 1
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -685,23 +1193,84 @@ FrameWidgetClass {
        }
        Text "+10"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E1100000002FA}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
-    ButtonWidgetClass "{65B1588E7C481572}" {
-     Name "OPFOR_Subtract_1"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 104
-      OffsetLeft 104
-      PositionY 80
-      OffsetTop 80
-      SizeX 32
-      OffsetRight -136
-      SizeY 29.999
-      OffsetBottom -109.999
+    ImageWidgetClass "{6A6E1100000002FE}" {
+     Name "INDFORTicketPill"
+     Slot FrameWidgetSlot "{6A6E1100000002FD}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 137
+      OffsetTop 137
+      SizeX 3
+      OffsetRight -19
+      SizeY 16
+      OffsetBottom -153
      }
-     Color 0.013 0.0152 0.0176 1
+     Color 0 0.44 0.078 1
+    }
+    TextWidgetClass "{6A6E110000000300}" {
+     Name "INDFORTicketLabel"
+     Slot FrameWidgetSlot "{6A6E1100000002FF}" {
+      Anchor 0 0 0 0
+      PositionX 28
+      OffsetLeft 28
+      PositionY 128
+      OffsetTop 128
+      SizeX 80
+      OffsetRight -108
+      SizeY 34
+      OffsetBottom -162
+     }
+     Color 0.8632 0.8879 0.9301 1
+     Text "INDFOR"
+     "Font Size" 14
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E110000000301}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{6A6E110000000305}" {
+     Name "INDFOR_Subtract_10BG"
+     Slot FrameWidgetSlot "{6A6E110000000304}" {
+      Anchor 0 0 0 0
+      PositionX 116
+      OffsetLeft 116
+      PositionY 128
+      OffsetTop 128
+      SizeX 44
+      OffsetRight -160
+      SizeY 34
+      OffsetBottom -162
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{65B1588E40E87C85}" {
+     Name "INDFOR_Subtract_10"
+     Slot FrameWidgetSlot "{6A6E110000000302}" {
+      Anchor 0 0 0 0
+      PositionX 116
+      OffsetLeft 116
+      PositionY 128
+      OffsetTop 128
+      SizeX 44
+      OffsetRight -160
+      SizeY 34
+      OffsetBottom -162
+     }
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -709,29 +1278,52 @@ FrameWidgetClass {
       }
      }
      {
-      TextWidgetClass "{65B1588E7C481575}" {
+      TextWidgetClass "{65B1588E40E87C84}" {
        Name "ActionButtonText"
        Slot ButtonWidgetSlot "{62992E44F11398F5}" {
        }
-       Text "-1"
+       Text "−10"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E110000000303}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
-    ButtonWidgetClass "{65B1588E7C48914F}" {
-     Name "OPFOR_Subtract_5"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 64
-      OffsetLeft 64
-      PositionY 80
-      OffsetTop 80
-      SizeX 32
-      OffsetRight -96
-      SizeY 29.999
-      OffsetBottom -109.999
+    SmartPanelWidgetClass "{6A6E110000000309}" {
+     Name "INDFOR_Subtract_5BG"
+     Slot FrameWidgetSlot "{6A6E110000000308}" {
+      Anchor 0 0 0 0
+      PositionX 166
+      OffsetLeft 166
+      PositionY 128
+      OffsetTop 128
+      SizeX 44
+      OffsetRight -210
+      SizeY 34
+      OffsetBottom -162
      }
-     Color 0.013 0.0152 0.0176 1
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{65B1588E40E87CD6}" {
+     Name "INDFOR_Subtract_5"
+     Slot FrameWidgetSlot "{6A6E110000000306}" {
+      Anchor 0 0 0 0
+      PositionX 166
+      OffsetLeft 166
+      PositionY 128
+      OffsetTop 128
+      SizeX 44
+      OffsetRight -210
+      SizeY 34
+      OffsetBottom -162
+     }
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -739,29 +1331,52 @@ FrameWidgetClass {
       }
      }
      {
-      TextWidgetClass "{65B1588E7C48153C}" {
+      TextWidgetClass "{65B1588E40E87CE9}" {
        Name "ActionButtonText"
        Slot ButtonWidgetSlot "{62992E44F11398F5}" {
        }
-       Text "-5"
+       Text "−5"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E110000000307}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
-    ButtonWidgetClass "{65B1588E7C48908A}" {
-     Name "OPFOR_Subtract_10"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 24
-      OffsetLeft 24
-      PositionY 80
-      OffsetTop 80
-      SizeX 32
-      OffsetRight -56
-      SizeY 29.999
-      OffsetBottom -109.999
+    SmartPanelWidgetClass "{6A6E11000000030D}" {
+     Name "INDFOR_Subtract_1BG"
+     Slot FrameWidgetSlot "{6A6E11000000030C}" {
+      Anchor 0 0 0 0
+      PositionX 216
+      OffsetLeft 216
+      PositionY 128
+      OffsetTop 128
+      SizeX 44
+      OffsetRight -260
+      SizeY 34
+      OffsetBottom -162
      }
-     Color 0.013 0.0152 0.0176 1
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{65B1588E40E87D06}" {
+     Name "INDFOR_Subtract_1"
+     Slot FrameWidgetSlot "{6A6E11000000030A}" {
+      Anchor 0 0 0 0
+      PositionX 216
+      OffsetLeft 216
+      PositionY 128
+      OffsetTop 128
+      SizeX 44
+      OffsetRight -260
+      SizeY 34
+      OffsetBottom -162
+     }
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -769,52 +1384,77 @@ FrameWidgetClass {
       }
      }
      {
-      TextWidgetClass "{65B1588E7C48908B}" {
+      TextWidgetClass "{65B1588E40E87D19}" {
        Name "ActionButtonText"
        Slot ButtonWidgetSlot "{62992E44F11398F5}" {
        }
-       Text "-10"
+       Text "−1"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E11000000030B}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
     TextWidgetClass "{659CDD5481919462}" {
      Name "IndforTicketCount"
-     Slot FrameWidgetSlot "{659CDD570CAD5675}" {
-      PositionX 144
-      OffsetLeft 144
-      PositionY 120
-      OffsetTop 120
-      SizeX 80
-      OffsetRight -224
-      SizeY 32
-      OffsetBottom -152
+     Slot FrameWidgetSlot "{6A6E11000000030E}" {
+      Anchor 0 0 0 0
+      PositionX 266
+      OffsetLeft 266
+      PositionY 128
+      OffsetTop 128
+      SizeX 74
+      OffsetRight -340
+      SizeY 34
+      OffsetBottom -162
      }
      Clipping False
      Color 0 0.44 0.078 1
      Text "000"
-     "Font Size" 20
-     "Min Font Size" 10
+     "Font Size" 22
+     "Min Font Size" 14
      "Horizontal Alignment" Center
      "Vertical Alignment" Center
-     FontProperties FontProperties "{629B0EA7D0E4BF47}" {
-     }
      Offset 0 0
+     FontProperties FontProperties "{6A6E11000000030F}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{6A6E110000000313}" {
+     Name "INDFOR_Add_1BG"
+     Slot FrameWidgetSlot "{6A6E110000000312}" {
+      Anchor 0 0 0 0
+      PositionX 346
+      OffsetLeft 346
+      PositionY 128
+      OffsetTop 128
+      SizeX 44
+      OffsetRight -390
+      SizeY 34
+      OffsetBottom -162
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
     }
     ButtonWidgetClass "{659CDD54819194FB}" {
      Name "INDFOR_Add_1"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 232
-      OffsetLeft 232
-      PositionY 120
-      OffsetTop 120
-      SizeX 32
-      OffsetRight -264
-      SizeY 29.999
-      OffsetBottom -149.999
+     Slot FrameWidgetSlot "{6A6E110000000310}" {
+      Anchor 0 0 0 0
+      PositionX 346
+      OffsetLeft 346
+      PositionY 128
+      OffsetTop 128
+      SizeX 44
+      OffsetRight -390
+      SizeY 34
+      OffsetBottom -162
      }
-     Color 0.013 0.0152 0.0176 1
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -828,23 +1468,46 @@ FrameWidgetClass {
        }
        Text "+1"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E110000000311}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
+    SmartPanelWidgetClass "{6A6E110000000317}" {
+     Name "INDFOR_Add_5BG"
+     Slot FrameWidgetSlot "{6A6E110000000316}" {
+      Anchor 0 0 0 0
+      PositionX 396
+      OffsetLeft 396
+      PositionY 128
+      OffsetTop 128
+      SizeX 44
+      OffsetRight -440
+      SizeY 34
+      OffsetBottom -162
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
     ButtonWidgetClass "{659CDD548191952E}" {
      Name "INDFOR_Add_5"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 272
-      OffsetLeft 272
-      PositionY 120
-      OffsetTop 120
-      SizeX 32
-      OffsetRight -304
-      SizeY 29.999
-      OffsetBottom -149.999
+     Slot FrameWidgetSlot "{6A6E110000000314}" {
+      Anchor 0 0 0 0
+      PositionX 396
+      OffsetLeft 396
+      PositionY 128
+      OffsetTop 128
+      SizeX 44
+      OffsetRight -440
+      SizeY 34
+      OffsetBottom -162
      }
-     Color 0.013 0.0152 0.0176 1
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -858,23 +1521,46 @@ FrameWidgetClass {
        }
        Text "+5"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E110000000315}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
+    SmartPanelWidgetClass "{6A6E11000000031B}" {
+     Name "INDFOR_Add_10BG"
+     Slot FrameWidgetSlot "{6A6E11000000031A}" {
+      Anchor 0 0 0 0
+      PositionX 446
+      OffsetLeft 446
+      PositionY 128
+      OffsetTop 128
+      SizeX 44
+      OffsetRight -490
+      SizeY 34
+      OffsetBottom -162
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
     ButtonWidgetClass "{659CDD548191C6CF}" {
      Name "INDFOR_Add_10"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 312
-      OffsetLeft 312
-      PositionY 120
-      OffsetTop 120
-      SizeX 32
-      OffsetRight -344
-      SizeY 29.999
-      OffsetBottom -149.999
+     Slot FrameWidgetSlot "{6A6E110000000318}" {
+      Anchor 0 0 0 0
+      PositionX 446
+      OffsetLeft 446
+      PositionY 128
+      OffsetTop 128
+      SizeX 44
+      OffsetRight -490
+      SizeY 34
+      OffsetBottom -162
      }
-     Color 0.013 0.0152 0.0176 1
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -888,23 +1574,84 @@ FrameWidgetClass {
        }
        Text "+10"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E110000000319}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
-    ButtonWidgetClass "{65B1588E40E87D06}" {
-     Name "INDFOR_Subtract_1"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 104
-      OffsetLeft 104
-      PositionY 120
-      OffsetTop 120
-      SizeX 32
-      OffsetRight -136
-      SizeY 29.999
-      OffsetBottom -149.999
+    ImageWidgetClass "{6A6E11000000031D}" {
+     Name "CIVTicketPill"
+     Slot FrameWidgetSlot "{6A6E11000000031C}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 179
+      OffsetTop 179
+      SizeX 3
+      OffsetRight -19
+      SizeY 16
+      OffsetBottom -195
      }
-     Color 0.013 0.0152 0.0176 1
+     Color 0.392 0.156 0.624 1
+    }
+    TextWidgetClass "{6A6E11000000031F}" {
+     Name "CIVTicketLabel"
+     Slot FrameWidgetSlot "{6A6E11000000031E}" {
+      Anchor 0 0 0 0
+      PositionX 28
+      OffsetLeft 28
+      PositionY 170
+      OffsetTop 170
+      SizeX 80
+      OffsetRight -108
+      SizeY 34
+      OffsetBottom -204
+     }
+     Color 0.8632 0.8879 0.9301 1
+     Text "CIV"
+     "Font Size" 14
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E110000000320}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{6A6E110000000324}" {
+     Name "CIV_Subtract_10BG"
+     Slot FrameWidgetSlot "{6A6E110000000323}" {
+      Anchor 0 0 0 0
+      PositionX 116
+      OffsetLeft 116
+      PositionY 170
+      OffsetTop 170
+      SizeX 44
+      OffsetRight -160
+      SizeY 34
+      OffsetBottom -204
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{65B1588E57978B00}" {
+     Name "CIV_Subtract_10"
+     Slot FrameWidgetSlot "{6A6E110000000321}" {
+      Anchor 0 0 0 0
+      PositionX 116
+      OffsetLeft 116
+      PositionY 170
+      OffsetTop 170
+      SizeX 44
+      OffsetRight -160
+      SizeY 34
+      OffsetBottom -204
+     }
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -912,29 +1659,52 @@ FrameWidgetClass {
       }
      }
      {
-      TextWidgetClass "{65B1588E40E87D19}" {
+      TextWidgetClass "{65B1588E57978B03}" {
        Name "ActionButtonText"
        Slot ButtonWidgetSlot "{62992E44F11398F5}" {
        }
-       Text "-1"
+       Text "−10"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E110000000322}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
-    ButtonWidgetClass "{65B1588E40E87CD6}" {
-     Name "INDFOR_Subtract_5"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 64
-      OffsetLeft 64
-      PositionY 120
-      OffsetTop 120
-      SizeX 32
-      OffsetRight -96
-      SizeY 29.999
-      OffsetBottom -149.999
+    SmartPanelWidgetClass "{6A6E110000000328}" {
+     Name "CIV_Subtract_5BG"
+     Slot FrameWidgetSlot "{6A6E110000000327}" {
+      Anchor 0 0 0 0
+      PositionX 166
+      OffsetLeft 166
+      PositionY 170
+      OffsetTop 170
+      SizeX 44
+      OffsetRight -210
+      SizeY 34
+      OffsetBottom -204
      }
-     Color 0.013 0.0152 0.0176 1
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{65B1588E57978B44}" {
+     Name "CIV_Subtract_5"
+     Slot FrameWidgetSlot "{6A6E110000000325}" {
+      Anchor 0 0 0 0
+      PositionX 166
+      OffsetLeft 166
+      PositionY 170
+      OffsetTop 170
+      SizeX 44
+      OffsetRight -210
+      SizeY 34
+      OffsetBottom -204
+     }
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -942,29 +1712,52 @@ FrameWidgetClass {
       }
      }
      {
-      TextWidgetClass "{65B1588E40E87CE9}" {
+      TextWidgetClass "{65B1588E57978B47}" {
        Name "ActionButtonText"
        Slot ButtonWidgetSlot "{62992E44F11398F5}" {
        }
-       Text "-5"
+       Text "−5"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E110000000326}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
-    ButtonWidgetClass "{65B1588E40E87C85}" {
-     Name "INDFOR_Subtract_10"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 24
-      OffsetLeft 24
-      PositionY 120
-      OffsetTop 120
-      SizeX 32
-      OffsetRight -56
-      SizeY 29.999
-      OffsetBottom -149.999
+    SmartPanelWidgetClass "{6A6E11000000032C}" {
+     Name "CIV_Subtract_1BG"
+     Slot FrameWidgetSlot "{6A6E11000000032B}" {
+      Anchor 0 0 0 0
+      PositionX 216
+      OffsetLeft 216
+      PositionY 170
+      OffsetTop 170
+      SizeX 44
+      OffsetRight -260
+      SizeY 34
+      OffsetBottom -204
      }
-     Color 0.013 0.0152 0.0176 1
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{65B1588E57978B8B}" {
+     Name "CIV_Subtract_1"
+     Slot FrameWidgetSlot "{6A6E110000000329}" {
+      Anchor 0 0 0 0
+      PositionX 216
+      OffsetLeft 216
+      PositionY 170
+      OffsetTop 170
+      SizeX 44
+      OffsetRight -260
+      SizeY 34
+      OffsetBottom -204
+     }
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -972,52 +1765,77 @@ FrameWidgetClass {
       }
      }
      {
-      TextWidgetClass "{65B1588E40E87C84}" {
+      TextWidgetClass "{65B1588E57985624}" {
        Name "ActionButtonText"
        Slot ButtonWidgetSlot "{62992E44F11398F5}" {
        }
-       Text "-10"
+       Text "−1"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E11000000032A}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
     TextWidgetClass "{65AD2582CF4DBCBB}" {
      Name "CivTicketCount"
-     Slot FrameWidgetSlot "{659CDD570CAD5675}" {
-      PositionX 144
-      OffsetLeft 144
-      PositionY 160
-      OffsetTop 160
-      SizeX 80
-      OffsetRight -224
-      SizeY 32
-      OffsetBottom -192
+     Slot FrameWidgetSlot "{6A6E11000000032D}" {
+      Anchor 0 0 0 0
+      PositionX 266
+      OffsetLeft 266
+      PositionY 170
+      OffsetTop 170
+      SizeX 74
+      OffsetRight -340
+      SizeY 34
+      OffsetBottom -204
      }
      Clipping False
      Color 0.392 0.156 0.624 1
      Text "000"
-     "Font Size" 20
-     "Min Font Size" 10
+     "Font Size" 22
+     "Min Font Size" 14
      "Horizontal Alignment" Center
      "Vertical Alignment" Center
-     FontProperties FontProperties "{629B0EA7D0E4BF47}" {
-     }
      Offset 0 0
+     FontProperties FontProperties "{6A6E11000000032E}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{6A6E110000000332}" {
+     Name "CIV_Add_1BG"
+     Slot FrameWidgetSlot "{6A6E110000000331}" {
+      Anchor 0 0 0 0
+      PositionX 346
+      OffsetLeft 346
+      PositionY 170
+      OffsetTop 170
+      SizeX 44
+      OffsetRight -390
+      SizeY 34
+      OffsetBottom -204
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
     }
     ButtonWidgetClass "{65AD2582CEDF1C3C}" {
      Name "CIV_Add_1"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 232
-      OffsetLeft 232
-      PositionY 160
-      OffsetTop 160
-      SizeX 32
-      OffsetRight -264
-      SizeY 29.999
-      OffsetBottom -189.999
+     Slot FrameWidgetSlot "{6A6E11000000032F}" {
+      Anchor 0 0 0 0
+      PositionX 346
+      OffsetLeft 346
+      PositionY 170
+      OffsetTop 170
+      SizeX 44
+      OffsetRight -390
+      SizeY 34
+      OffsetBottom -204
      }
-     Color 0.013 0.0152 0.0176 1
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -1031,23 +1849,46 @@ FrameWidgetClass {
        }
        Text "+1"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E110000000330}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
+    SmartPanelWidgetClass "{6A6E110000000336}" {
+     Name "CIV_Add_5BG"
+     Slot FrameWidgetSlot "{6A6E110000000335}" {
+      Anchor 0 0 0 0
+      PositionX 396
+      OffsetLeft 396
+      PositionY 170
+      OffsetTop 170
+      SizeX 44
+      OffsetRight -440
+      SizeY 34
+      OffsetBottom -204
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
     ButtonWidgetClass "{65AD2582C8604219}" {
      Name "CIV_Add_5"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 272
-      OffsetLeft 272
-      PositionY 160
-      OffsetTop 160
-      SizeX 32
-      OffsetRight -304
-      SizeY 29.999
-      OffsetBottom -189.999
+     Slot FrameWidgetSlot "{6A6E110000000333}" {
+      Anchor 0 0 0 0
+      PositionX 396
+      OffsetLeft 396
+      PositionY 170
+      OffsetTop 170
+      SizeX 44
+      OffsetRight -440
+      SizeY 34
+      OffsetBottom -204
      }
-     Color 0.013 0.0152 0.0176 1
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -1061,23 +1902,46 @@ FrameWidgetClass {
        }
        Text "+5"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E110000000334}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }
+    SmartPanelWidgetClass "{6A6E11000000033A}" {
+     Name "CIV_Add_10BG"
+     Slot FrameWidgetSlot "{6A6E110000000339}" {
+      Anchor 0 0 0 0
+      PositionX 446
+      OffsetLeft 446
+      PositionY 170
+      OffsetTop 170
+      SizeX 44
+      OffsetRight -490
+      SizeY 34
+      OffsetBottom -204
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
     ButtonWidgetClass "{65AD2582CBCAB705}" {
      Name "CIV_Add_10"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 312
-      OffsetLeft 312
-      PositionY 160
-      OffsetTop 160
-      SizeX 32
-      OffsetRight -344
-      SizeY 29.999
-      OffsetBottom -189.999
+     Slot FrameWidgetSlot "{6A6E110000000337}" {
+      Anchor 0 0 0 0
+      PositionX 446
+      OffsetLeft 446
+      PositionY 170
+      OffsetTop 170
+      SizeX 44
+      OffsetRight -490
+      SizeY 34
+      OffsetBottom -204
      }
-     Color 0.013 0.0152 0.0176 1
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -1091,442 +1955,116 @@ FrameWidgetClass {
        }
        Text "+10"
        "Font Size" 15
-       "Min Font Size" 15
-      }
-     }
-    }
-    ButtonWidgetClass "{65B1588E57978B00}" {
-     Name "CIV_Subtract_10"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 24
-      OffsetLeft 24
-      PositionY 160
-      OffsetTop 160
-      SizeX 32
-      OffsetRight -56
-      SizeY 29.999
-      OffsetBottom -189.999
-     }
-     Color 0.013 0.0152 0.0176 1
-     components {
-      SCR_ButtonTextComponent "{62993E178E05DA3C}" {
-       m_bCanBeToggled 1
-       m_sTextWidgetName ""
-      }
-     }
-     {
-      TextWidgetClass "{65B1588E57978B03}" {
-       Name "ActionButtonText"
-       Slot ButtonWidgetSlot "{62992E44F11398F5}" {
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E110000000338}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
        }
-       Text "-10"
-       "Font Size" 15
-       "Min Font Size" 15
-      }
-     }
-    }
-    ButtonWidgetClass "{65B1588E57978B44}" {
-     Name "CIV_Subtract_5"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 64
-      OffsetLeft 64
-      PositionY 160
-      OffsetTop 160
-      SizeX 32
-      OffsetRight -96
-      SizeY 29.999
-      OffsetBottom -189.999
-     }
-     Color 0.013 0.0152 0.0176 1
-     components {
-      SCR_ButtonTextComponent "{62993E178E05DA3C}" {
-       m_bCanBeToggled 1
-       m_sTextWidgetName ""
-      }
-     }
-     {
-      TextWidgetClass "{65B1588E57978B47}" {
-       Name "ActionButtonText"
-       Slot ButtonWidgetSlot "{62992E44F11398F5}" {
-       }
-       Text "-5"
-       "Font Size" 15
-       "Min Font Size" 15
-      }
-     }
-    }
-    ButtonWidgetClass "{65B1588E57978B8B}" {
-     Name "CIV_Subtract_1"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 104
-      OffsetLeft 104
-      PositionY 160
-      OffsetTop 160
-      SizeX 32
-      OffsetRight -136
-      SizeY 29.999
-      OffsetBottom -189.999
-     }
-     Color 0.013 0.0152 0.0176 1
-     components {
-      SCR_ButtonTextComponent "{62993E178E05DA3C}" {
-       m_bCanBeToggled 1
-       m_sTextWidgetName ""
-      }
-     }
-     {
-      TextWidgetClass "{65B1588E57985624}" {
-       Name "ActionButtonText"
-       Slot ButtonWidgetSlot "{62992E44F11398F5}" {
-       }
-       Text "-1"
-       "Font Size" 15
-       "Min Font Size" 15
       }
      }
     }
    }
   }
-  FrameWidgetClass "{659CDD578CE45841}" {
-   Name "GameTimer"
-   Slot FrameWidgetSlot "{659CDD578CE45868}" {
-    Anchor 0.5 0.5 0.5 0.5
-    PositionX -792
-    OffsetLeft -792
-    PositionY -356
-    OffsetTop -356
-    SizeX 360
-    OffsetRight 432
-    SizeY 80
-    OffsetBottom 276
-   }
-   "Z Order" 5
-   "Ignore Cursor" 0
-   {
-    TextWidgetClass "{659CDD577D3AC183}" {
-     Name "CurrentGameTime0"
-     Slot FrameWidgetSlot "{659CDD570CAD5675}" {
-      PositionX 136
-      OffsetLeft 136
-      PositionY 40
-      OffsetTop 40
-      SizeX 80
-      OffsetRight -216
-      SizeY 32
-      OffsetBottom -72
-     }
-     Clipping False
-     Text "00:00:00"
-     "Font Size" 20
-     "Min Font Size" 10
-     "Horizontal Alignment" Center
-     "Vertical Alignment" Center
-     FontProperties FontProperties "{629B0EA7D0E4BF47}" {
-     }
-     Offset 0 0
-    }
-    TextWidgetClass "{659CDD570CAD4DAE}" {
-     Name "CurrentGameTimeTitle0"
-     Slot FrameWidgetSlot "{659CDD570CAD5675}" {
-      PositionX 0
-      OffsetLeft 0
-      PositionY 0
-      OffsetTop 0
-      SizeX 112
-      OffsetRight -112
-      SizeY 32
-      OffsetBottom -32
-     }
-     Clipping False
-     Text "Game Timer"
-     "Font Size" 20
-     "Min Font Size" 10
-     "Horizontal Alignment" Center
-     "Vertical Alignment" Center
-     FontProperties FontProperties "{629B0EA7D0E4BF47}" {
-     }
-     Offset 0 0
-    }
-    ButtonWidgetClass "{659CDD56E38391DB}" {
-     Name "-5"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 72
-      OffsetLeft 72
-      PositionY 40
-      OffsetTop 40
-      SizeX 56
-      OffsetRight -128
-      SizeY 29.999
-      OffsetBottom -69.999
-     }
-     Color 0.013 0.0152 0.0176 1
-     components {
-      SCR_ButtonTextComponent "{62993E178E05DA3C}" {
-       m_bCanBeToggled 1
-       m_sTextWidgetName ""
-      }
-     }
-     {
-      TextWidgetClass "{659CDD56E383F780}" {
-       Name "ActionButtonText"
-       Slot ButtonWidgetSlot "{62992E44F11398F5}" {
-       }
-       Text "-5 mins"
-       "Font Size" 15
-       "Min Font Size" 15
-      }
-     }
-    }
-    ButtonWidgetClass "{659CDD56E383919F}" {
-     Name "-10"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 8
-      OffsetLeft 8
-      PositionY 40
-      OffsetTop 40
-      SizeX 56
-      OffsetRight -64
-      SizeY 29.999
-      OffsetBottom -69.999
-     }
-     Color 0.013 0.0152 0.0176 1
-     components {
-      SCR_ButtonTextComponent "{62993E178E05DA3C}" {
-       m_bCanBeToggled 1
-       m_sTextWidgetName ""
-      }
-     }
-     {
-      TextWidgetClass "{659CDD56E383919C}" {
-       Name "ActionButtonText"
-       Slot ButtonWidgetSlot "{62992E44F11398F5}" {
-       }
-       Text "-10 mins"
-       "Font Size" 15
-       "Min Font Size" 15
-      }
-     }
-    }
-    ButtonWidgetClass "{659CDD56EC254EC3}" {
-     Name "10"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 288
-      OffsetLeft 288
-      PositionY 40
-      OffsetTop 40
-      SizeX 64
-      OffsetRight -352
-      SizeY 29.999
-      OffsetBottom -69.999
-     }
-     Color 0.013 0.0152 0.0176 1
-     components {
-      SCR_ButtonTextComponent "{62993E178E05DA3C}" {
-       m_bCanBeToggled 1
-       m_sTextWidgetName ""
-      }
-     }
-     {
-      TextWidgetClass "{659CDD56EC254EC0}" {
-       Name "ActionButtonText"
-       Slot ButtonWidgetSlot "{62992E44F11398F5}" {
-       }
-       Text "+10 mins"
-       "Font Size" 15
-       "Min Font Size" 15
-      }
-     }
-    }
-    ButtonWidgetClass "{659CDD56B54C913B}" {
-     Name "5"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 224
-      OffsetLeft 224
-      PositionY 40
-      OffsetTop 40
-      SizeX 56
-      OffsetRight -280
-      SizeY 29.999
-      OffsetBottom -69.999
-     }
-     "Z Order" 5
-     Color 0.013 0.0152 0.0176 1
-     components {
-      SCR_ButtonTextComponent "{62993E178E05DA3C}" {
-       m_bCanBeToggled 1
-       m_sTextWidgetName ""
-      }
-     }
-     {
-      TextWidgetClass "{659CDD56B54C7A53}" {
-       Name "ActionButtonText"
-       Slot ButtonWidgetSlot "{62992E44F11398F5}" {
-       }
-       Text "+5 mins"
-       "Font Size" 15
-       "Min Font Size" 15
-      }
-     }
-    }
-   }
-  }
-  ButtonWidgetClass "{65CCC227EA9D6B21}" {
-   Name "EnterAAR"
-   Slot FrameWidgetSlot "{62992E477A603216}" {
-    Anchor 0.5 0.5 0.5 0.5
-    PositionX -784
-    OffsetLeft -784
-    PositionY -436
-    OffsetTop -436
-    SizeX 80
-    OffsetRight 704
-    SizeY 40
-    OffsetBottom 396
-   }
-   Color 0.013 0.0152 0.0176 1
-   components {
-    SCR_ButtonTextComponent "{62993E178E05DA3C}" {
-     m_bCanBeToggled 1
-     m_sTextWidgetName ""
-    }
-   }
-   {
-    TextWidgetClass "{65CCC227EA9D6B3F}" {
-     Name "ActionButtonText"
-     Slot ButtonWidgetSlot "{62992E44F11398F5}" {
-     }
-     Text "AAR"
-     "Font Size" 15
-     "Min Font Size" 15
-    }
-   }
-  }
-  FrameWidgetClass "{66909C54719148EC}" {
+  FrameWidgetClass "{6A6E110000000358}" {
    Name "Respawns"
-   Slot FrameWidgetSlot "{659CDD578CE45868}" {
+   Slot FrameWidgetSlot "{6A6E110000000357}" {
     Anchor 0.5 0.5 0.5 0.5
-    PositionX -792
-    OffsetLeft -792
-    PositionY -60.464
-    OffsetTop -60.464
-    SizeX 361.827
-    OffsetRight 430.173
-    SizeY 185.209
-    OffsetBottom -124.744
+    PositionX -744
+    OffsetLeft -744
+    PositionY -10
+    OffsetTop -10
+    SizeX 520
+    OffsetRight 224
+    SizeY 144
+    OffsetBottom -134
    }
    {
-    EditBoxWidgetClass "{66909C55F4CDE072}" {
-     Name "TicketsInput"
-     Slot FrameWidgetSlot "{66909C55F4CDE05D}" {
-      PositionX 12.867
-      OffsetLeft 12.867
-      PositionY 121.731
-      OffsetTop 121.731
-      SizeX 52.821
-      OffsetRight -65.688
-      SizeY 30
-      OffsetBottom -151.731
-     }
-     text "50"
-    }
-    TextWidgetClass "{66909C5471914713}" {
-     Name "RespawnTitle"
-     Slot FrameWidgetSlot "{659CDD570CAD5675}" {
+    SmartPanelWidgetClass "{6A6E11000000033E}" {
+     Name "RespawnsCard"
+     Slot FrameWidgetSlot "{6A6E11000000033D}" {
+      Anchor 0 0 0 0
       PositionX 0
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 80
-      OffsetRight -80
-      SizeY 32
+      SizeX 520
+      OffsetRight -520
+      SizeY 144
+      OffsetBottom -144
+     }
+     Color 0.0075 0.0086 0.0123 1
+     style rounded_6px
+    }
+    ImageWidgetClass "{6A6E110000000340}" {
+     Name "RespawnsCardPill"
+     Slot FrameWidgetSlot "{6A6E11000000033F}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 15
+      OffsetTop 15
+      SizeX 3
+      OffsetRight -3
+      SizeY 14
+      OffsetBottom -29
+     }
+     Color 0.5841 0.0369 0.0369 1
+    }
+    TextWidgetClass "{6A6E110000000342}" {
+     Name "RespawnsCardTitle"
+     Slot FrameWidgetSlot "{6A6E110000000341}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 12
+      OffsetTop 12
+      SizeX 488
+      OffsetRight -504
+      SizeY 20
       OffsetBottom -32
      }
-     Clipping False
-     Text "Respawns"
-     "Font Size" 20
+     Color 0.3968 0.4564 0.6038 1
+     Text "RESPAWNS"
+     "Font Size" 13
      "Min Font Size" 10
-     "Horizontal Alignment" Center
+     "Horizontal Alignment" Left
      "Vertical Alignment" Center
-     FontProperties FontProperties "{629B0EA7D0E4BF47}" {
-     }
-     Offset 0 0
-    }
-    ButtonWidgetClass "{66909C55A2E860CF}" {
-     Name "RespawnWaveButton"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 12.172
-      OffsetLeft 12.172
-      PositionY 80.115
-      OffsetTop 80.115
-      SizeX 173.861
-      OffsetRight -186.032
-      SizeY 29.999
-      OffsetBottom -110.114
-     }
-     "Z Order" 5
-     Color 0.013 0.0152 0.0176 1
-     components {
-      SCR_ButtonTextComponent "{62993E178E05DA3C}" {
-       m_bCanBeToggled 1
-       m_sTextWidgetName ""
-      }
-     }
-     {
-      TextWidgetClass "{66909C55A2E860C0}" {
-       Name "ActionButtonText"
-       Slot ButtonWidgetSlot "{62992E44F11398F5}" {
-       }
-       Text "Enable Respawn Wave"
-       "Font Size" 15
-       "Min Font Size" 15
-      }
+     FontProperties FontProperties "{6A6E110000000343}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
-    ButtonWidgetClass "{66909C55ED4B9ECC}" {
-     Name "SetRespawnTimeButton"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 68.818
-      OffsetLeft 68.818
-      PositionY 121.78
-      OffsetTop 121.78
-      SizeX 117.01
-      OffsetRight -185.828
-      SizeY 29.999
-      OffsetBottom -151.779
+    SmartPanelWidgetClass "{6A6E110000000347}" {
+     Name "EnableRespawnButtonBG"
+     Slot FrameWidgetSlot "{6A6E110000000346}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 44
+      OffsetTop 44
+      SizeX 239
+      OffsetRight -255
+      SizeY 36
+      OffsetBottom -80
      }
-     "Z Order" 5
-     Color 0.013 0.0152 0.0176 1
-     components {
-      SCR_ButtonTextComponent "{62993E178E05DA3C}" {
-       m_bCanBeToggled 1
-       m_sTextWidgetName ""
-      }
-     }
-     {
-      TextWidgetClass "{66909C55ED4B9ECD}" {
-       Name "ActionButtonText"
-       Slot ButtonWidgetSlot "{62992E44F11398F5}" {
-       }
-       Text "Set Respawn Time"
-       "Font Size" 15
-       "Min Font Size" 15
-      }
-     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
     }
     ButtonWidgetClass "{66909CB2B26095DD}" {
      Name "EnableRespawnButton"
-     Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 12.172
-      OffsetLeft 12.172
-      PositionY 37.937
-      OffsetTop 37.937
-      SizeX 173.86
-      OffsetRight -186.032
-      SizeY 29.999
-      OffsetBottom -67.936
+     Slot FrameWidgetSlot "{6A6E110000000344}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 44
+      OffsetTop 44
+      SizeX 239
+      OffsetRight -255
+      SizeY 36
+      OffsetBottom -80
      }
-     "Z Order" 5
-     Color 0.013 0.0152 0.0176 1
+     Color 1 1 1 0
+     "Z Order" 2
      components {
       SCR_ButtonTextComponent "{62993E178E05DA3C}" {
        m_bCanBeToggled 1
@@ -1540,7 +2078,965 @@ FrameWidgetClass {
        }
        Text "Enable Respawns"
        "Font Size" 15
-       "Min Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E110000000345}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+     }
+    }
+    SmartPanelWidgetClass "{6A6E11000000034B}" {
+     Name "RespawnWaveButtonBG"
+     Slot FrameWidgetSlot "{6A6E11000000034A}" {
+      Anchor 0 0 0 0
+      PositionX 265
+      OffsetLeft 265
+      PositionY 44
+      OffsetTop 44
+      SizeX 239
+      OffsetRight -504
+      SizeY 36
+      OffsetBottom -80
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{66909C55A2E860CF}" {
+     Name "RespawnWaveButton"
+     Slot FrameWidgetSlot "{6A6E110000000348}" {
+      Anchor 0 0 0 0
+      PositionX 265
+      OffsetLeft 265
+      PositionY 44
+      OffsetTop 44
+      SizeX 239
+      OffsetRight -504
+      SizeY 36
+      OffsetBottom -80
+     }
+     Color 1 1 1 0
+     "Z Order" 2
+     components {
+      SCR_ButtonTextComponent "{62993E178E05DA3C}" {
+       m_bCanBeToggled 1
+       m_sTextWidgetName ""
+      }
+     }
+     {
+      TextWidgetClass "{66909C55A2E860C0}" {
+       Name "ActionButtonText"
+       Slot ButtonWidgetSlot "{62992E44F11398F5}" {
+       }
+       Text "Enable Respawn Wave"
+       "Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E110000000349}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+     }
+    }
+    TextWidgetClass "{6A6E11000000034D}" {
+     Name "RespawnTimeLabel"
+     Slot FrameWidgetSlot "{6A6E11000000034C}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 92
+      OffsetTop 92
+      SizeX 170
+      OffsetRight -186
+      SizeY 36
+      OffsetBottom -128
+     }
+     Color 0.3968 0.4564 0.6038 1
+     Text "Respawn time (seconds)"
+     "Font Size" 14
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E11000000034E}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{6A6E110000000352}" {
+     Name "TicketsInputBG"
+     Slot FrameWidgetSlot "{6A6E110000000351}" {
+      Anchor 0 0 0 0
+      PositionX 196
+      OffsetLeft 196
+      PositionY 92
+      OffsetTop 92
+      SizeX 100
+      OffsetRight -296
+      SizeY 36
+      OffsetBottom -128
+     }
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    EditBoxWidgetClass "{66909C55F4CDE072}" {
+     Name "TicketsInput"
+     Slot FrameWidgetSlot "{6A6E11000000034F}" {
+      Anchor 0 0 0 0
+      PositionX 204
+      OffsetLeft 204
+      PositionY 92
+      OffsetTop 92
+      SizeX 84
+      OffsetRight -288
+      SizeY 36
+      OffsetBottom -128
+     }
+     text "50"
+     Color 0.8632 0.8879 0.9301 1
+     "Font Size" 17
+     FontProperties FontProperties "{6A6E110000000350}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{6A6E110000000356}" {
+     Name "SetRespawnTimeButtonBG"
+     Slot FrameWidgetSlot "{6A6E110000000355}" {
+      Anchor 0 0 0 0
+      PositionX 306
+      OffsetLeft 306
+      PositionY 92
+      OffsetTop 92
+      SizeX 198
+      OffsetRight -504
+      SizeY 36
+      OffsetBottom -128
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{66909C55ED4B9ECC}" {
+     Name "SetRespawnTimeButton"
+     Slot FrameWidgetSlot "{6A6E110000000353}" {
+      Anchor 0 0 0 0
+      PositionX 306
+      OffsetLeft 306
+      PositionY 92
+      OffsetTop 92
+      SizeX 198
+      OffsetRight -504
+      SizeY 36
+      OffsetBottom -128
+     }
+     Color 1 1 1 0
+     "Z Order" 2
+     components {
+      SCR_ButtonTextComponent "{62993E178E05DA3C}" {
+       m_bCanBeToggled 1
+       m_sTextWidgetName ""
+      }
+     }
+     {
+      TextWidgetClass "{66909C55ED4B9ECD}" {
+       Name "ActionButtonText"
+       Slot ButtonWidgetSlot "{62992E44F11398F5}" {
+       }
+       Text "Set respawn time"
+       "Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E110000000354}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+     }
+    }
+   }
+  }
+  SmartPanelWidgetClass "{6A6E11000000035A}" {
+   Name "EndCard"
+   Slot FrameWidgetSlot "{6A6E110000000359}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -744
+    OffsetLeft -744
+    PositionY 150
+    OffsetTop 150
+    SizeX 520
+    OffsetRight 224
+    SizeY 96
+    OffsetBottom -246
+   }
+   Color 0.0075 0.0086 0.0123 1
+   style rounded_6px
+  }
+  ImageWidgetClass "{6A6E11000000035C}" {
+   Name "EndCardPill"
+   Slot FrameWidgetSlot "{6A6E11000000035B}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -744
+    OffsetLeft -744
+    PositionY 165
+    OffsetTop 165
+    SizeX 3
+    OffsetRight 741
+    SizeY 14
+    OffsetBottom -179
+   }
+   Color 0.5841 0.0369 0.0369 1
+  }
+  TextWidgetClass "{6A6E11000000035E}" {
+   Name "EndCardTitle"
+   Slot FrameWidgetSlot "{6A6E11000000035D}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY 162
+    OffsetTop 162
+    SizeX 488
+    OffsetRight 240
+    SizeY 20
+    OffsetBottom -182
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "MISSION END"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{6A6E11000000035F}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{6A6E110000000363}" {
+   Name "EnterAARBG"
+   Slot FrameWidgetSlot "{6A6E110000000362}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY 194
+    OffsetTop 194
+    SizeX 488
+    OffsetRight 240
+    SizeY 36
+    OffsetBottom -230
+   }
+   "Z Order" 1
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  ButtonWidgetClass "{65CCC227EA9D6B21}" {
+   Name "EnterAAR"
+   Slot FrameWidgetSlot "{6A6E110000000360}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY 194
+    OffsetTop 194
+    SizeX 488
+    OffsetRight 240
+    SizeY 36
+    OffsetBottom -230
+   }
+   Color 1 1 1 0
+   "Z Order" 2
+   components {
+    SCR_ButtonTextComponent "{62993E178E05DA3C}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{65CCC227EA9D6B3F}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{62992E44F11398F5}" {
+     }
+     Text "End the mission and open the AAR"
+     "Font Size" 15
+     "Min Font Size" 11
+     Color 0.8070 0.1170 0.1170 1
+     FontProperties FontProperties "{6A6E110000000361}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+  FrameWidgetClass "{6A6E1100000003A7}" {
+   Name "GearSets"
+   Slot FrameWidgetSlot "{6A6E1100000003A6}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -208
+    OffsetLeft -208
+    PositionY -400
+    OffsetTop -400
+    SizeX 561
+    OffsetRight -353
+    SizeY 872
+    OffsetBottom -472
+   }
+   {
+    SmartPanelWidgetClass "{6A6E110000000365}" {
+     Name "GearSetsCard"
+     Slot FrameWidgetSlot "{6A6E110000000364}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 561
+      OffsetRight -561
+      SizeY 872
+      OffsetBottom -872
+     }
+     Color 0.0075 0.0086 0.0123 1
+     style rounded_6px
+    }
+    ImageWidgetClass "{6A6E110000000367}" {
+     Name "GearSetsCardPill"
+     Slot FrameWidgetSlot "{6A6E110000000366}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 15
+      OffsetTop 15
+      SizeX 3
+      OffsetRight -3
+      SizeY 14
+      OffsetBottom -29
+     }
+     Color 0.5841 0.0369 0.0369 1
+    }
+    TextWidgetClass "{6A6E110000000369}" {
+     Name "GearSetsCardTitle"
+     Slot FrameWidgetSlot "{6A6E110000000368}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 12
+      OffsetTop 12
+      SizeX 529
+      OffsetRight -545
+      SizeY 20
+      OffsetBottom -32
+     }
+     Color 0.3968 0.4564 0.6038 1
+     Text "GEAR SETS"
+     "Font Size" 13
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E11000000036A}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{6A6E11000000036C}" {
+     Name "GearSetsCardHint"
+     Slot FrameWidgetSlot "{6A6E11000000036B}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 12
+      OffsetTop 12
+      SizeX 529
+      OffsetRight -545
+      SizeY 20
+      OffsetBottom -32
+     }
+     Color 0.3968 0.4564 0.6038 1
+     Text "Pick a set per side, then apply"
+     "Font Size" 12
+     "Min Font Size" 10
+     "Horizontal Alignment" Right
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E11000000036D}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    ImageWidgetClass "{6A6E11000000036F}" {
+     Name "BLUFORGearPill"
+     Slot FrameWidgetSlot "{6A6E11000000036E}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 47
+      OffsetTop 47
+      SizeX 3
+      OffsetRight -19
+      SizeY 14
+      OffsetBottom -61
+     }
+     Color 0 0.584 1 1
+    }
+    TextWidgetClass "{6A6E110000000371}" {
+     Name "BLUFORGearLabel"
+     Slot FrameWidgetSlot "{6A6E110000000370}" {
+      Anchor 0 0 0 0
+      PositionX 26
+      OffsetLeft 26
+      PositionY 44
+      OffsetTop 44
+      SizeX 114
+      OffsetRight -140
+      SizeY 20
+      OffsetBottom -64
+     }
+     Color 0.8632 0.8879 0.9301 1
+     Text "BLUFOR"
+     "Font Size" 14
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E110000000372}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{65AD25822D4EE727}" {
+     Name "BLUFORListTitle"
+     Slot FrameWidgetSlot "{6A6E110000000373}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 66
+      OffsetTop 66
+      SizeX 124
+      OffsetRight -140
+      SizeY 18
+      OffsetBottom -84
+     }
+     Clipping False
+     Color 0.3968 0.4564 0.6038 1
+     Text "BLUFOR"
+     "Font Size" 12
+     "Min Font Size" 9
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E110000000374}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{6A6E110000000377}" {
+     Name "BLUFORListBoxBG"
+     Slot FrameWidgetSlot "{6A6E110000000376}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 92
+      OffsetTop 92
+      SizeX 124
+      OffsetRight -140
+      SizeY 712
+      OffsetBottom -804
+     }
+     Color 0.0033 0.0037 0.0052 1
+     style rounded_6px
+    }
+    TextWidgetClass "{6A6E110000000379}" {
+     Name "BLUFORListBoxEmpty"
+     Slot FrameWidgetSlot "{6A6E110000000378}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 104
+      OffsetTop 104
+      SizeX 124
+      OffsetRight -140
+      SizeY 20
+      OffsetBottom -124
+     }
+     Color 0.3968 0.4564 0.6038 1
+     Text "No gear sets"
+     "Font Size" 13
+     "Min Font Size" 10
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E11000000037A}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    OverlayWidgetClass "{65AD25822D4EE726}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
+     Name "BLUFORListBox"
+     Slot FrameWidgetSlot "{6A6E110000000375}" {
+      Anchor 0 0 0 0
+      PositionX 20
+      OffsetLeft 20
+      PositionY 96
+      OffsetTop 96
+      SizeX 116
+      OffsetRight -136
+      SizeY 704
+      OffsetBottom -800
+     }
+     components {
+      SCR_ListBoxComponent "{566C9415BAA54E1B}" {
+       m_sElementLayout "{6A6A0D0000000001}UI/Listbox/COA_AdminListRow.layout"
+      }
+     }
+     {
+      ScrollLayoutWidgetClass "{56691148E692435A}" {
+       Prefab "{56691148E692435A}"
+       {
+        VerticalLayoutWidgetClass "{56691148E013D981}" {
+         Prefab "{56691148E013D981}"
+        }
+       }
+      }
+      ImageWidgetClass "{5DB6D18100D38307}" {
+       Prefab "{5DB6D18100D38307}"
+       "Is Visible" 0
+      }
+     }
+    }
+    ImageWidgetClass "{6A6E11000000037C}" {
+     Name "OPFORGearPill"
+     Slot FrameWidgetSlot "{6A6E11000000037B}" {
+      Anchor 0 0 0 0
+      PositionX 150
+      OffsetLeft 150
+      PositionY 47
+      OffsetTop 47
+      SizeX 3
+      OffsetRight -153
+      SizeY 14
+      OffsetBottom -61
+     }
+     Color 0.855 0.031 0.028 1
+    }
+    TextWidgetClass "{6A6E11000000037E}" {
+     Name "OPFORGearLabel"
+     Slot FrameWidgetSlot "{6A6E11000000037D}" {
+      Anchor 0 0 0 0
+      PositionX 160
+      OffsetLeft 160
+      PositionY 44
+      OffsetTop 44
+      SizeX 114
+      OffsetRight -274
+      SizeY 20
+      OffsetBottom -64
+     }
+     Color 0.8632 0.8879 0.9301 1
+     Text "OPFOR"
+     "Font Size" 14
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E11000000037F}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{65AD25820B2A5D6B}" {
+     Name "OPFORListTitle"
+     Slot FrameWidgetSlot "{6A6E110000000380}" {
+      Anchor 0 0 0 0
+      PositionX 150
+      OffsetLeft 150
+      PositionY 66
+      OffsetTop 66
+      SizeX 124
+      OffsetRight -274
+      SizeY 18
+      OffsetBottom -84
+     }
+     Clipping False
+     Color 0.3968 0.4564 0.6038 1
+     Text "OPFOR"
+     "Font Size" 12
+     "Min Font Size" 9
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E110000000381}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{6A6E110000000384}" {
+     Name "OPFORListBoxBG"
+     Slot FrameWidgetSlot "{6A6E110000000383}" {
+      Anchor 0 0 0 0
+      PositionX 150
+      OffsetLeft 150
+      PositionY 92
+      OffsetTop 92
+      SizeX 124
+      OffsetRight -274
+      SizeY 712
+      OffsetBottom -804
+     }
+     Color 0.0033 0.0037 0.0052 1
+     style rounded_6px
+    }
+    TextWidgetClass "{6A6E110000000386}" {
+     Name "OPFORListBoxEmpty"
+     Slot FrameWidgetSlot "{6A6E110000000385}" {
+      Anchor 0 0 0 0
+      PositionX 150
+      OffsetLeft 150
+      PositionY 104
+      OffsetTop 104
+      SizeX 124
+      OffsetRight -274
+      SizeY 20
+      OffsetBottom -124
+     }
+     Color 0.3968 0.4564 0.6038 1
+     Text "No gear sets"
+     "Font Size" 13
+     "Min Font Size" 10
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E110000000387}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    OverlayWidgetClass "{65AD25820B2A5D6A}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
+     Name "OPFORListBox"
+     Slot FrameWidgetSlot "{6A6E110000000382}" {
+      Anchor 0 0 0 0
+      PositionX 154
+      OffsetLeft 154
+      PositionY 96
+      OffsetTop 96
+      SizeX 116
+      OffsetRight -270
+      SizeY 704
+      OffsetBottom -800
+     }
+     components {
+      SCR_ListBoxComponent "{566C9415BAA54E1B}" {
+       m_sElementLayout "{6A6A0D0000000001}UI/Listbox/COA_AdminListRow.layout"
+      }
+     }
+     {
+      ScrollLayoutWidgetClass "{56691148E692435A}" {
+       Prefab "{56691148E692435A}"
+       {
+        VerticalLayoutWidgetClass "{56691148E013D981}" {
+         Prefab "{56691148E013D981}"
+        }
+       }
+      }
+      ImageWidgetClass "{5DB6D18100D38307}" {
+       Prefab "{5DB6D18100D38307}"
+       "Is Visible" 0
+      }
+     }
+    }
+    ImageWidgetClass "{6A6E110000000389}" {
+     Name "INDFORGearPill"
+     Slot FrameWidgetSlot "{6A6E110000000388}" {
+      Anchor 0 0 0 0
+      PositionX 284
+      OffsetLeft 284
+      PositionY 47
+      OffsetTop 47
+      SizeX 3
+      OffsetRight -287
+      SizeY 14
+      OffsetBottom -61
+     }
+     Color 0 0.44 0.078 1
+    }
+    TextWidgetClass "{6A6E11000000038B}" {
+     Name "INDFORGearLabel"
+     Slot FrameWidgetSlot "{6A6E11000000038A}" {
+      Anchor 0 0 0 0
+      PositionX 294
+      OffsetLeft 294
+      PositionY 44
+      OffsetTop 44
+      SizeX 114
+      OffsetRight -408
+      SizeY 20
+      OffsetBottom -64
+     }
+     Color 0.8632 0.8879 0.9301 1
+     Text "INDFOR"
+     "Font Size" 14
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E11000000038C}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{65AD258205AF14E9}" {
+     Name "INDFORListTitle"
+     Slot FrameWidgetSlot "{6A6E11000000038D}" {
+      Anchor 0 0 0 0
+      PositionX 284
+      OffsetLeft 284
+      PositionY 66
+      OffsetTop 66
+      SizeX 124
+      OffsetRight -408
+      SizeY 18
+      OffsetBottom -84
+     }
+     Clipping False
+     Color 0.3968 0.4564 0.6038 1
+     Text "INDFOR"
+     "Font Size" 12
+     "Min Font Size" 9
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E11000000038E}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{6A6E110000000391}" {
+     Name "INDFORListBoxBG"
+     Slot FrameWidgetSlot "{6A6E110000000390}" {
+      Anchor 0 0 0 0
+      PositionX 284
+      OffsetLeft 284
+      PositionY 92
+      OffsetTop 92
+      SizeX 124
+      OffsetRight -408
+      SizeY 712
+      OffsetBottom -804
+     }
+     Color 0.0033 0.0037 0.0052 1
+     style rounded_6px
+    }
+    TextWidgetClass "{6A6E110000000393}" {
+     Name "INDFORListBoxEmpty"
+     Slot FrameWidgetSlot "{6A6E110000000392}" {
+      Anchor 0 0 0 0
+      PositionX 284
+      OffsetLeft 284
+      PositionY 104
+      OffsetTop 104
+      SizeX 124
+      OffsetRight -408
+      SizeY 20
+      OffsetBottom -124
+     }
+     Color 0.3968 0.4564 0.6038 1
+     Text "No gear sets"
+     "Font Size" 13
+     "Min Font Size" 10
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E110000000394}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    OverlayWidgetClass "{65AD258205AF14E8}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
+     Name "INDFORListBox"
+     Slot FrameWidgetSlot "{6A6E11000000038F}" {
+      Anchor 0 0 0 0
+      PositionX 288
+      OffsetLeft 288
+      PositionY 96
+      OffsetTop 96
+      SizeX 116
+      OffsetRight -404
+      SizeY 704
+      OffsetBottom -800
+     }
+     components {
+      SCR_ListBoxComponent "{566C9415BAA54E1B}" {
+       m_sElementLayout "{6A6A0D0000000001}UI/Listbox/COA_AdminListRow.layout"
+      }
+     }
+     {
+      ScrollLayoutWidgetClass "{56691148E692435A}" {
+       Prefab "{56691148E692435A}"
+       {
+        VerticalLayoutWidgetClass "{56691148E013D981}" {
+         Prefab "{56691148E013D981}"
+        }
+       }
+      }
+      ImageWidgetClass "{5DB6D18100D38307}" {
+       Prefab "{5DB6D18100D38307}"
+       "Is Visible" 0
+      }
+     }
+    }
+    ImageWidgetClass "{6A6E110000000396}" {
+     Name "CIVGearPill"
+     Slot FrameWidgetSlot "{6A6E110000000395}" {
+      Anchor 0 0 0 0
+      PositionX 418
+      OffsetLeft 418
+      PositionY 47
+      OffsetTop 47
+      SizeX 3
+      OffsetRight -421
+      SizeY 14
+      OffsetBottom -61
+     }
+     Color 0.392 0.156 0.624 1
+    }
+    TextWidgetClass "{6A6E110000000398}" {
+     Name "CIVGearLabel"
+     Slot FrameWidgetSlot "{6A6E110000000397}" {
+      Anchor 0 0 0 0
+      PositionX 428
+      OffsetLeft 428
+      PositionY 44
+      OffsetTop 44
+      SizeX 114
+      OffsetRight -542
+      SizeY 20
+      OffsetBottom -64
+     }
+     Color 0.8632 0.8879 0.9301 1
+     Text "CIV"
+     "Font Size" 14
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E110000000399}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{65AD258270A8610C}" {
+     Name "CIVListTitle"
+     Slot FrameWidgetSlot "{6A6E11000000039A}" {
+      Anchor 0 0 0 0
+      PositionX 418
+      OffsetLeft 418
+      PositionY 66
+      OffsetTop 66
+      SizeX 124
+      OffsetRight -542
+      SizeY 18
+      OffsetBottom -84
+     }
+     Clipping False
+     Color 0.3968 0.4564 0.6038 1
+     Text "CIV"
+     "Font Size" 12
+     "Min Font Size" 9
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E11000000039B}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{6A6E11000000039E}" {
+     Name "CIVListBoxBG"
+     Slot FrameWidgetSlot "{6A6E11000000039D}" {
+      Anchor 0 0 0 0
+      PositionX 418
+      OffsetLeft 418
+      PositionY 92
+      OffsetTop 92
+      SizeX 124
+      OffsetRight -542
+      SizeY 712
+      OffsetBottom -804
+     }
+     Color 0.0033 0.0037 0.0052 1
+     style rounded_6px
+    }
+    TextWidgetClass "{6A6E1100000003A0}" {
+     Name "CIVListBoxEmpty"
+     Slot FrameWidgetSlot "{6A6E11000000039F}" {
+      Anchor 0 0 0 0
+      PositionX 418
+      OffsetLeft 418
+      PositionY 104
+      OffsetTop 104
+      SizeX 124
+      OffsetRight -542
+      SizeY 20
+      OffsetBottom -124
+     }
+     Color 0.3968 0.4564 0.6038 1
+     Text "No gear sets"
+     "Font Size" 13
+     "Min Font Size" 10
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6E1100000003A1}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    OverlayWidgetClass "{65AD258270A8610E}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
+     Name "CIVListBox"
+     Slot FrameWidgetSlot "{6A6E11000000039C}" {
+      Anchor 0 0 0 0
+      PositionX 422
+      OffsetLeft 422
+      PositionY 96
+      OffsetTop 96
+      SizeX 116
+      OffsetRight -538
+      SizeY 704
+      OffsetBottom -800
+     }
+     components {
+      SCR_ListBoxComponent "{566C9415BAA54E1B}" {
+       m_sElementLayout "{6A6A0D0000000001}UI/Listbox/COA_AdminListRow.layout"
+      }
+     }
+     {
+      ScrollLayoutWidgetClass "{56691148E692435A}" {
+       Prefab "{56691148E692435A}"
+       {
+        VerticalLayoutWidgetClass "{56691148E013D981}" {
+         Prefab "{56691148E013D981}"
+        }
+       }
+      }
+      ImageWidgetClass "{5DB6D18100D38307}" {
+       Prefab "{5DB6D18100D38307}"
+       "Is Visible" 0
+      }
+     }
+    }
+    SmartPanelWidgetClass "{6A6E1100000003A5}" {
+     Name "ApplyGearSetsBG"
+     Slot FrameWidgetSlot "{6A6E1100000003A4}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 816
+      OffsetTop 816
+      SizeX 529
+      OffsetRight -545
+      SizeY 40
+      OffsetBottom -856
+     }
+     "Z Order" 1
+     Color 0.5841 0.0369 0.0369 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{65AD258304B658A8}" {
+     Name "ApplyGearSets"
+     Slot FrameWidgetSlot "{6A6E1100000003A2}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 816
+      OffsetTop 816
+      SizeX 529
+      OffsetRight -545
+      SizeY 40
+      OffsetBottom -856
+     }
+     Color 1 1 1 0
+     "Z Order" 2
+     components {
+      SCR_ButtonTextComponent "{62993E178E05DA3C}" {
+       m_bCanBeToggled 1
+       m_sTextWidgetName ""
+      }
+     }
+     {
+      TextWidgetClass "{65AD258304B67ECB}" {
+       Name "ActionButtonText"
+       Slot ButtonWidgetSlot "{62992E44F11398F5}" {
+       }
+       Text "Apply gear sets"
+       "Font Size" 15
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{6A6E1100000003A3}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
       }
      }
     }

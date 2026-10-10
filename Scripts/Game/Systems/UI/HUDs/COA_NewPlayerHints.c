@@ -40,8 +40,8 @@ class COA_NewPlayerHints
 
 		COA_PlayerProfile.MarkHintSeen(hintId);
 
-		// Same display path the server's hints use, run locally for this player only
-		broadcastManager.RpcDo_SendHint(text, -1, string.Empty);
+		// Same display path the server's hints use, run locally for this player only ("[Tip]" is the card's heading)
+		broadcastManager.RpcDo_SendHint("[Tip] " + text, -1, string.Empty);
 
 		// These can fire while a full-screen lobby menu is open - keep the hint above it
 		COA_PlayerControllerManager playerControllerManager = COA_PlayerControllerManager.GetInstance();

@@ -1,28 +1,43 @@
-modded class SCR_NotificationsComponent
+//----------------------------------------------------------------
+// Kill feed suppression for admins: an admin who is alive and playing
+// (not in Game Master, not spectating) doesn't get the kill feed, so it
+// can't give them information players don't have. Spectating and
+// Game Master admins see it like everyone else in those modes.
+// Used by SCR_NotificationsComponent and SCR_NotificationSenderComponent.
+//----------------------------------------------------------------
+class COA_AdminKillfeed
 {
-	//----------------------------------------------------------------
-	// Returns true only when killfeed should be suppressed for this admin:
-	// - Must be an unlimited editor user (admin)
-	// - Must NOT have zeus open (zeus-open admins see killfeed)
-	// - Must have a controlled entity (spectating admins see killfeed)
-	//----------------------------------------------------------------
-	private static bool IsLocalPlayerUnlimitedEditor()
+	static bool ShouldSuppressForLocalPlayer()
 	{
 		SCR_EditorManagerEntity editorManager = SCR_EditorManagerEntity.GetInstance();
 		if (!editorManager || editorManager.IsLimited())
 			return false;
-		
-		// Zeus is open - admin should see killfeed
+
+		// Game Master open - show
 		if (editorManager.IsOpened())
 			return false;
-		
-		// Admin is spectating (no controlled entity) - should see killfeed
+
+		// Spectating - show. Spectators control a COA_SpectatorCharacter, so "has a controlled
+		// entity" alone is not "alive" (that check is what hid it from spectating admins).
+		if (COA_EntityHelper.IsSpectator())
+			return false;
+
+		// No body at all (between states) - nothing to protect
 		PlayerController pc = GetGame().GetPlayerController();
 		if (!pc || !pc.GetControlledEntity())
 			return false;
-		
-		// Admin is alive and playing without zeus open - suppress killfeed
+
+		// Alive and playing - suppress
 		return true;
+	}
+}
+
+modded class SCR_NotificationsComponent
+{
+	//----------------------------------------------------------------
+	private static bool IsLocalPlayerUnlimitedEditor()
+	{
+		return COA_AdminKillfeed.ShouldSuppressForLocalPlayer();
 	}
 	
 	//----------------------------------------------------------------

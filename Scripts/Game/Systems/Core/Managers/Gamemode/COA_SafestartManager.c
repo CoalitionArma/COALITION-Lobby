@@ -13,6 +13,11 @@ class COA_SafestartManager : ScriptComponent
 
 	[RplProp()]
 	protected ref array<string> m_aFactionsStatusArray;
+
+	//! Who readied each side, same order as m_aFactionsStatusArray (BLUFOR, OPFOR, INDFOR, CIV); "" while not ready
+	[RplProp()]
+	protected ref array<string> m_aReadyBy = {"", "", "", ""};
+	protected static const ref array<string> READY_FACTION_KEYS = {"BLUFOR", "OPFOR", "INDFOR", "CIV"};
 	protected ref array<SCR_Faction> m_aPlayedFactionsArray = {};
 
 	[RplProp()]
@@ -23,6 +28,12 @@ class COA_SafestartManager : ScriptComponent
 	
 	[RplProp()]
 	protected bool m_bCountdownMode = false; // True if using time limit countdown instead of ready-up countdown
+	
+	[RplProp()]
+	protected bool m_bGoingLive = false; // Every side is ready and the final go-live countdown is running
+	
+	//! Length of the go-live countdown once every side is ready (both modes)
+	static const int GO_LIVE_SECONDS = 30;
 	
 	protected int m_iStoredTimeBeforeReadyUp = 0; // Stores the time remaining before all sides readied up
 
@@ -49,7 +60,6 @@ class COA_SafestartManager : ScriptComponent
 	protected bool m_bUpdatePlayedFactions = false;
 	protected bool m_bActivateSafeStartEHs = false;
 	protected bool m_bUpdateMissionEndTimer = false;
-	protected bool m_bCheckStartCountdown = false;
 
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 MANAGER INITIALIZATION
@@ -91,6 +101,13 @@ class COA_SafestartManager : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
+	//! True while every side is ready and the go-live countdown runs (GetSafeStartTimeRemaining counts it down)
+	bool GetGoingLive()
+	{
+		return m_bGoingLive;
+	}
+	
+	//------------------------------------------------------------------------------------------------
 	int GetSafeStartTimeRemaining()
 	{
 		return m_iSafeStartTimeRemaining;
@@ -120,6 +137,28 @@ class COA_SafestartManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Who readied each side (same order as GetWhosReady); "" while that side is not ready
+	TStringArray GetReadyBy()
+	{
+		return m_aReadyBy;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SetReadyBy(FactionKey factionKey, string playerName)
+	{
+		int index = READY_FACTION_KEYS.Find(factionKey);
+		if (index != -1 && m_aReadyBy.IsIndexValid(index))
+			m_aReadyBy[index] = playerName;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ClearReadyBy(string playerName = "")
+	{
+		for (int i = 0; i < m_aReadyBy.Count(); i++)
+			m_aReadyBy[i] = playerName;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void AddSafestartZone(IEntity entity)
 	{
 		m_aSafestartZones.Insert(entity);
@@ -142,7 +181,6 @@ class COA_SafestartManager : ScriptComponent
 //=============================================================================================================================================================================================================================================================================================================================================================
 	
 	float m_fUpdateBuffer = 0;
-	float m_fMediumUpdateBuffer = 0;
 	float m_fLongUpdateBuffer = 0;
 	//------------------------------------------------------------------------------------------------
 	override void EOnFixedFrame(IEntity owner, float timeSlice)
@@ -167,23 +205,18 @@ class COA_SafestartManager : ScriptComponent
 			if (m_bUpdateMissionEndTimer)
 				m_GameTimerManager.UpdateMissionEndTimer();
 			
-			// Handle countdown mode (time limit based) - Update every second
-			if (m_bCountdownMode && m_bSafeStartEnabled)
-				CheckCountdownMode();
+			// Time limit countdown, or the go-live countdown once every side is ready - both every second
+			if (m_bSafeStartEnabled)
+			{
+				if (m_bCountdownMode)
+					CheckCountdownMode();
+				else
+					TickReadyCountdown();
+			}
 			
 			m_fUpdateBuffer = 0;
 		}
 		m_fUpdateBuffer += timeSlice;
-		
-		if (m_fMediumUpdateBuffer >= 5)
-		{
-			// Handle traditional ready-up countdown - Keep at 5 second intervals
-			if (!m_bCountdownMode && m_bCheckStartCountdown)
-				if(FactionsReadyCount() != 0 && m_iPlayedFactionsCount != 0 && FactionsReadyCount() == m_iPlayedFactionsCount)
-					CheckStartCountDown();
-			m_fMediumUpdateBuffer = 0;
-		}
-		m_fMediumUpdateBuffer += timeSlice;
 		
 		if (m_fLongUpdateBuffer >= 10)
 		{
@@ -297,55 +330,57 @@ class COA_SafestartManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void CheckStartCountDown()
+	//! Ready-up mode, called every second: once every playing side is ready a GO_LIVE_SECONDS countdown
+	//! starts; if any side un-readies it is cancelled and resets (previously it only paused, since the
+	//! check only ran while everyone was ready, and it moved in 5 second steps clients never saw)
+	protected void TickReadyCountdown()
 	{
-		string message;
 		string submessage = "Any leader can toggle ready to cancel the countdown";
-		float popupLife = 3.25;
 		
-		// Count how many factions are ready
+		if (!AllSidesReady())
+		{
+			if (!m_bGoingLive)
+				return;
+			
+			m_bGoingLive = false;
+			m_iSafeStartTimeRemaining = GO_LIVE_SECONDS;
+			Replication.BumpMe();
+			m_RplBroadcastManager.PopUpNotification(4, "[LOBBY] : Game Live Countdown Canceled!", "A side is no longer ready");
+			return;
+		}
+		
+		if (!m_bGoingLive)
+		{
+			m_bGoingLive = true;
+			m_iSafeStartTimeRemaining = GO_LIVE_SECONDS;
+			Replication.BumpMe();
+			m_RplBroadcastManager.PopUpNotification(4, string.Format("[LOBBY] : All Sides Ready! Game Live In: %1 Seconds!", GO_LIVE_SECONDS), submessage);
+			return;
+		}
+		
+		if (m_iSafeStartTimeRemaining > 0)
+			m_iSafeStartTimeRemaining--;
+		Replication.BumpMe();
+		
+		if (m_iSafeStartTimeRemaining == 0)
+		{
+			m_bGoingLive = false;
+			ToggleSafeStartServer(false);
+			m_RplBroadcastManager.PopUpNotification(8, "[LOBBY] : GAME LIVE!", "Safestart has ended, weapons are now live!");
+			return;
+		}
+		
+		// The HUD shows every second; popups only at a few marks
+		if (m_iSafeStartTimeRemaining == 20 || m_iSafeStartTimeRemaining == 10 || m_iSafeStartTimeRemaining <= 5)
+			m_RplBroadcastManager.PopUpNotification(1.5, string.Format("[LOBBY] : Game Live In: %1 Seconds!", m_iSafeStartTimeRemaining), submessage);
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	protected bool AllSidesReady()
+	{
 		int readyFactionsCount = FactionsReadyCount();
-
-		// Exit if no factions playing or not all factions ready at initial countdown time
-		if ((readyFactionsCount == 0 && m_iPlayedFactionsCount == 0) ||
-			(readyFactionsCount != m_iPlayedFactionsCount && m_iSafeStartTimeRemaining == 35))
-			return;
-
-		// Cancel countdown if a faction unreadied after countdown began
-		if (readyFactionsCount != m_iPlayedFactionsCount && m_iSafeStartTimeRemaining != 35)
-		{
-			message = "[LOBBY] : Game Live Countdown Canceled!";
-			m_iSafeStartTimeRemaining = 35;
-			m_bCheckStartCountdown = false;
-			m_RplBroadcastManager.PopUpNotification(popupLife, message, submessage);
-			return;
-		}
-
-		// Process countdown if all factions are ready
-		if (readyFactionsCount == m_iPlayedFactionsCount)
-		{
-			// Prevent going below zero
-			if (m_iSafeStartTimeRemaining > 0)
-				m_iSafeStartTimeRemaining -= 5;
-			
-			// Clamp to zero just in case
-			if (m_iSafeStartTimeRemaining < 0)
-				m_iSafeStartTimeRemaining = 0;
-			
-			message = string.Format("[LOBBY] : Game Live In: %1 Seconds!", m_iSafeStartTimeRemaining);
-
-			// End safe start when countdown reaches zero
-			if (m_iSafeStartTimeRemaining == 0) {
-				ToggleSafeStartServer(false);
-				m_bCheckStartCountdown = false;
-				message = "[LOBBY] : GAME LIVE!";
-				submessage = "Safestart has ended, weapons are now live!";
-				popupLife = 8;
-			}
-
-			m_RplBroadcastManager.PopUpNotification(popupLife, message, submessage);
-		}
-	};
+		return readyFactionsCount != 0 && m_iPlayedFactionsCount != 0 && readyFactionsCount == m_iPlayedFactionsCount;
+	}
 	
 	//------------------------------------------------------------------------------------------------
 	protected void CheckCountdownMode()
@@ -365,7 +400,8 @@ class COA_SafestartManager : ScriptComponent
 				// Store the current time before jumping to 30 seconds
 				m_iStoredTimeBeforeReadyUp = m_iSafeStartTimeRemaining;
 				
-				m_iSafeStartTimeRemaining = 30;
+				m_iSafeStartTimeRemaining = GO_LIVE_SECONDS;
+				m_bGoingLive = true;
 				message = "[LOBBY] : All Factions Ready! Game Live In: 30 Seconds!";
 				submessage = "Any leader can toggle ready to cancel the countdown";
 				popupLife = 5;
@@ -389,6 +425,7 @@ class COA_SafestartManager : ScriptComponent
 			// Restore to the time we had before all sides readied up
 			m_iSafeStartTimeRemaining = m_iStoredTimeBeforeReadyUp;
 			m_iStoredTimeBeforeReadyUp = 0; // Reset the stored time
+			m_bGoingLive = false;
 			Replication.BumpMe();
 			
 			if (showMessage)
@@ -480,6 +517,7 @@ class COA_SafestartManager : ScriptComponent
 			
 			ToggleSafeStartServer(false);
 			m_bCountdownMode = false;
+			m_bGoingLive = false;
 			message = "[LOBBY] : GAME LIVE!";
 			submessage = "Safestart timer expired, mission is now live!";
 			popupLife = 8;
@@ -495,6 +533,9 @@ class COA_SafestartManager : ScriptComponent
 	protected int FactionsReadyCount()
 	{
 		int readyFactionsCount = 0;
+		if (!m_aFactionsStatusArray)
+			return 0;
+		
 		foreach (string factionStatus : m_aFactionsStatusArray)
 		{
 			if (factionStatus == "Ready")
@@ -526,6 +567,11 @@ class COA_SafestartManager : ScriptComponent
 			m_bIndforReady = newReadyState;
 			m_bCivReady = newReadyState;
 
+			if (newReadyState)
+				ClearReadyBy(string.Format("Admin (%1)", playerName));
+			else
+				ClearReadyBy();
+
 			string actionText;
 			if (newReadyState) {
 				actionText = "Force Readied";
@@ -539,7 +585,6 @@ class COA_SafestartManager : ScriptComponent
 			m_RplBroadcastManager.PopUpNotification(3.25, message);
 			
 			UpdatePlayedFactions();
-			m_bCheckStartCountdown = true;
 			return;
 		}
 
@@ -595,12 +640,16 @@ class COA_SafestartManager : ScriptComponent
 			}
 		}
 
+		if (newStatus)
+			SetReadyBy(setReady, playerName);
+		else
+			SetReadyBy(setReady, "");
+
 		message = string.Format("%1 - %2", messageKey, playerName);
 		
 		m_RplBroadcastManager.PopUpNotification(3.25, message, "Any leader can toggle ready to cancel the countdown");
 		
 		UpdatePlayedFactions();
-		m_bCheckStartCountdown = true;
 	};
 
 	//------------------------------------------------------------------------------------------------
@@ -626,8 +675,10 @@ class COA_SafestartManager : ScriptComponent
 			else
 			{
 				m_bCountdownMode = false;
-				m_iSafeStartTimeRemaining = 35; // Default ready-up countdown
+				m_iSafeStartTimeRemaining = GO_LIVE_SECONDS;
 			}
+			m_bGoingLive = false;
+			m_iStoredTimeBeforeReadyUp = 0;
 
 			m_bUpdateMissionEndTimer = false;
 			m_bUpdatedServerWorldTime = true;
@@ -648,6 +699,8 @@ class COA_SafestartManager : ScriptComponent
 			UpdatePlayedFactions();
 
 			m_bKillRedundantUnitsBool = true;
+			m_bGoingLive = false;
+			ClearReadyBy();
 			m_bAdminForcedReady = false;
 			m_bBluforReady = false;
 			m_bOpforReady = false;

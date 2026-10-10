@@ -14,6 +14,8 @@ class COA_SafeStartInfoDisplay : SCR_InfoDisplayExtended
 	protected TextWidget m_wMissionLengthValue;
 	protected TextWidget m_wJIPAfterSafestartValue;
 	protected TextWidget m_wRespawnValue;
+	protected TextWidget m_wRespawnDetail;		// tickets / cutoff line under the respawn row
+	protected Widget m_wMissionMetaDot;
 	protected TextWidget m_wRallyPointsValue;
 	protected TextWidget m_wEspionageValue;
 	
@@ -37,6 +39,10 @@ class COA_SafeStartInfoDisplay : SCR_InfoDisplayExtended
 	//------------------------------------------------------------------------------------------------
 	protected bool m_bInitialized = false;
 	protected bool m_bDataLoaded = false;
+
+	// Values that mean "not available" are drawn muted (linear palette)
+	protected static ref Color s_ValueColor = new Color(0.8632, 0.8879, 0.9301, 1);
+	protected static ref Color s_MutedColor = new Color(0.3968, 0.4564, 0.6038, 1);
 	
 	//------------------------------------------------------------------------------------------------
 	// Override functions
@@ -116,6 +122,8 @@ class COA_SafeStartInfoDisplay : SCR_InfoDisplayExtended
 		m_wMissionLengthValue = TextWidget.Cast(m_wRoot.FindAnyWidget("MissionLengthValue"));
 		m_wJIPAfterSafestartValue = TextWidget.Cast(m_wRoot.FindAnyWidget("JIPAfterSafestartValue"));
 		m_wRespawnValue = TextWidget.Cast(m_wRoot.FindAnyWidget("RespawnValue"));
+		m_wRespawnDetail = TextWidget.Cast(m_wRoot.FindAnyWidget("RespawnDetail"));
+		m_wMissionMetaDot = m_wRoot.FindAnyWidget("MissionMetaDot");
 		m_wRallyPointsValue = TextWidget.Cast(m_wRoot.FindAnyWidget("RallyPointsValue"));
 		m_wEspionageValue = TextWidget.Cast(m_wRoot.FindAnyWidget("EspionageValue"));
 		
@@ -144,6 +152,23 @@ class COA_SafeStartInfoDisplay : SCR_InfoDisplayExtended
 			   m_wRallyPointsValue;
 	}
 	
+	//------------------------------------------------------------------------------------------------
+	//! Sets a row value; "No" / "Off" / "N/A" style values are drawn muted so what you do have stands out
+	protected void SetValue(TextWidget widget, string value)
+	{
+		if (!widget)
+			return;
+
+		widget.SetText(value);
+
+		string lower = value;
+		lower.ToLower();
+		if (lower == "no" || lower == "off" || lower == "n/a" || lower == "none" || lower == "unknown")
+			widget.SetColor(s_MutedColor);
+		else
+			widget.SetColor(s_ValueColor);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	/**
 	 * Loads and displays mission data
@@ -177,13 +202,16 @@ class COA_SafeStartInfoDisplay : SCR_InfoDisplayExtended
 		SCR_MissionHeader missionHeader = SCR_MissionHeader.Cast(GetGame().GetMissionHeader());
 		if (missionHeader && missionHeader.m_sAuthor && !missionHeader.m_sAuthor.IsEmpty())
 			missionAuthor = missionHeader.m_sAuthor;
-		m_wMissionAuthorValue.SetText(string.Format("By: %1", missionAuthor));
+		m_wMissionAuthorValue.SetText(string.Format("by %1", missionAuthor));
 		
-		// Mission Type - Get from mission header's game mode
-		string missionType = "N/A";
+		// Mission Type - Get from mission header's game mode (the separator dot hides with it)
+		string missionType;
 		if (missionHeader && missionHeader.m_sGameMode && !missionHeader.m_sGameMode.IsEmpty())
 			missionType = missionHeader.m_sGameMode;
 		m_wMissionTypeValue.SetText(missionType);
+		m_wMissionTypeValue.SetVisible(!missionType.IsEmpty());
+		if (m_wMissionMetaDot)
+			m_wMissionMetaDot.SetVisible(!missionType.IsEmpty());
 		
 		// Side Ratios
 		string sideRatios = "N/A";
@@ -203,13 +231,13 @@ class COA_SafeStartInfoDisplay : SCR_InfoDisplayExtended
 		if (m_Gamemode.m_bUseSafestartTimeLimit && m_Gamemode.m_iSafestartTimeLimit > 0)
 		{
 			int minutes = m_Gamemode.m_iSafestartTimeLimit;
-			safeStartLimit = string.Format("Yes - %1:00", minutes.ToString(2));
+			safeStartLimit = string.Format("%1:00", minutes.ToString(2));
 		}
 		else
 		{
 			safeStartLimit = "No";
 		}
-		m_wSafeStartHardLimitValue.SetText(safeStartLimit);
+		SetValue(m_wSafeStartHardLimitValue, safeStartLimit);
 		
 		// Mission Length
 		string missionLength;
@@ -223,7 +251,7 @@ class COA_SafeStartInfoDisplay : SCR_InfoDisplayExtended
 		{
 			missionLength = "Unlimited";
 		}
-		m_wMissionLengthValue.SetText(missionLength);
+		SetValue(m_wMissionLengthValue, missionLength);
 		
 		// JIP After Safestart
 		string jipAfterSafestart;
@@ -231,10 +259,11 @@ class COA_SafeStartInfoDisplay : SCR_InfoDisplayExtended
 			jipAfterSafestart = "No";
 		else
 			jipAfterSafestart = "Yes";
-		m_wJIPAfterSafestartValue.SetText(jipAfterSafestart);
+		SetValue(m_wJIPAfterSafestartValue, jipAfterSafestart);
 		
 		// Respawn
 		string respawnStatus;
+		string respawnDetail;
 		if (m_Gamemode.m_bRespawnEnabled)
 		{
 			int seconds = m_Gamemode.m_iTimeToRespawn;
@@ -278,31 +307,32 @@ class COA_SafeStartInfoDisplay : SCR_InfoDisplayExtended
 				}
 			}
 			
-			string ticketString;
+			// Tickets and cutoff go on the detail line under the row
 			if (tickets > 0)
-				ticketString = string.Format(" - %1 Tickets", tickets);
+				respawnDetail = string.Format("%1 tickets", tickets);
 			else if (tickets == -1)
-				ticketString = " - Unlimited Tickets";
+				respawnDetail = "Unlimited tickets";
 			else
-				ticketString = " - No Tickets";
+				respawnDetail = "No tickets";
 			
-			// Add respawn cutoff info if configured
-			string cutoffString = "";
 			if (m_Gamemode.m_iRespawnCutoffMinutes > 0)
-			{
-				cutoffString = string.Format(" (Disabled After %1 Min)", m_Gamemode.m_iRespawnCutoffMinutes);
-			}
+				respawnDetail += string.Format("  ·  ends after %1 min", m_Gamemode.m_iRespawnCutoffMinutes);
 			
 			if (m_Gamemode.m_bWaveRespawn)
-				respawnStatus = string.Format("Yes - Waves - %1%2%3", timeString, ticketString, cutoffString);
+				respawnStatus = string.Format("Waves  ·  %1", timeString);
 			else
-				respawnStatus = string.Format("Yes - %1%2%3", timeString, ticketString, cutoffString);
+				respawnStatus = string.Format("On  ·  %1", timeString);
 		}
 		else
 		{
 			respawnStatus = "Off";
 		}
-		m_wRespawnValue.SetText(respawnStatus);
+		SetValue(m_wRespawnValue, respawnStatus);
+		if (m_wRespawnDetail)
+		{
+			m_wRespawnDetail.SetText(respawnDetail);
+			m_wRespawnDetail.SetVisible(!respawnDetail.IsEmpty());
+		}
 		
 		// Rally Points
 		string rallyPointsStatus;
@@ -310,7 +340,7 @@ class COA_SafeStartInfoDisplay : SCR_InfoDisplayExtended
 			rallyPointsStatus = "On";
 		else
 			rallyPointsStatus = "Off";
-		m_wRallyPointsValue.SetText(rallyPointsStatus);
+		SetValue(m_wRallyPointsValue, rallyPointsStatus);
 		
 		// Espionage
 		string espionageStatus;
@@ -318,7 +348,7 @@ class COA_SafeStartInfoDisplay : SCR_InfoDisplayExtended
 			espionageStatus = "On";
 		else
 			espionageStatus = "Off";
-		m_wEspionageValue.SetText(espionageStatus);
+		SetValue(m_wEspionageValue, espionageStatus);
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -418,7 +448,7 @@ class COA_SafeStartInfoDisplay : SCR_InfoDisplayExtended
 											if (dotIndex >= 0)
 												binocularsName = binocularsName.Substring(0, dotIndex);
 											
-											binocularsValue = string.Format("Yes - %1", binocularsName);
+											binocularsValue = binocularsName;
 										}
 									}
 								}
@@ -510,12 +540,13 @@ class COA_SafeStartInfoDisplay : SCR_InfoDisplayExtended
 			}
 		}
 		
-		m_wFactionNameValue.SetText(string.Format("Faction Name: %1", factionName));
-		m_wRadiosValue.SetText(string.Format("Radios: %1", radiosValue));
-		m_wMapValue.SetText(string.Format("Map: %1", mapValue));
-		m_wBinocularsValue.SetText(string.Format("Binoculars: %1", binocularsValue));
-		m_wEntrenchingToolValue.SetText(string.Format("Entrenching Tool: %1", entrenchingToolValue));
-		m_wNightVisionValue.SetText(string.Format("Night Vision: %1", nightVisionValue));
-		m_wFlashlightValue.SetText(string.Format("Flashlight: %1", flashlightValue));
+		// Labels live in the layout; values only
+		SetValue(m_wFactionNameValue, factionName);
+		SetValue(m_wRadiosValue, radiosValue);
+		SetValue(m_wMapValue, mapValue);
+		SetValue(m_wBinocularsValue, binocularsValue);
+		SetValue(m_wEntrenchingToolValue, entrenchingToolValue);
+		SetValue(m_wNightVisionValue, nightVisionValue);
+		SetValue(m_wFlashlightValue, flashlightValue);
 	}
 }

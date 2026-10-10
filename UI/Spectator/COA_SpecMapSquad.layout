@@ -1,0 +1,187 @@
+FrameWidgetClass {
+ Name "SpecMapSquad"
+ Slot FrameWidgetSlot "{6A7515000000011C}" {
+  Anchor 0 0 0 0
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 1
+  OffsetRight -1
+  SizeY 1
+  OffsetBottom -1
+ }
+ Clipping False
+ {
+  ImageWidgetClass "{6A75150000000119}" {
+   Name "AnchorRing"
+   Slot FrameWidgetSlot "{6A75150000000118}" {
+    Anchor 0 0 0 0
+    PositionX -5
+    OffsetLeft -5
+    PositionY -5
+    OffsetTop -5
+    SizeX 10
+    OffsetRight -5
+    SizeY 10
+    OffsetBottom -5
+   }
+   Color 0.0033 0.0037 0.0052 0.92
+   Texture "{8479B3B5347DF5CF}UI/Imagesets/MilitarySymbol/ID_D.imageset"
+   Image "Friend_SeaSurface_Bcg"
+   Size 32 32
+  }
+  ImageWidgetClass "{6A7515000000011B}" {
+   Name "AnchorDot"
+   Slot FrameWidgetSlot "{6A7515000000011A}" {
+    Anchor 0 0 0 0
+    PositionX -3
+    OffsetLeft -3
+    PositionY -3
+    OffsetTop -3
+    SizeX 6
+    OffsetRight -3
+    SizeY 6
+    OffsetBottom -3
+   }
+   "Z Order" 1
+   Color 1 1 1 1
+   Texture "{8479B3B5347DF5CF}UI/Imagesets/MilitarySymbol/ID_D.imageset"
+   Image "Friend_SeaSurface_Bcg"
+   Size 32 32
+  }
+  FrameWidgetClass "{6A75150000000117}" {
+   Name "Card"
+   Slot FrameWidgetSlot "{6A7515000000010D}" {
+    Anchor 0 0 0 0
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 100
+    OffsetRight -100
+    SizeY 24
+    OffsetBottom -24
+    SizeToContent 1
+   }
+   "Z Order" 1
+   {
+    OverlayWidgetClass "{6A75150000000116}" {
+     Name "CardOverlay"
+     Slot FrameWidgetSlot "{6A7515000000010E}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 100
+      OffsetRight -100
+      SizeY 24
+      OffsetBottom -24
+      SizeToContent 1
+     }
+     {
+      SmartPanelWidgetClass "{6A75150000000110}" {
+       Name "CardBG"
+       Slot OverlayWidgetSlot "{6A7515000000010F}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0033 0.0037 0.0052 0.88
+       style rounded_6px
+      }
+      SmartPanelWidgetClass "{6A75150000000112}" {
+       Name "CardOutline"
+       Slot OverlayWidgetSlot "{6A75150000000111}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 1 1 1 0.05
+       style outline_rounded_6px
+      }
+      HorizontalLayoutWidgetClass "{6A7515000000010C}" {
+       Name "CardRow"
+       Slot OverlayWidgetSlot "{6A75150000000105}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+        Padding 7 4 9 4
+       }
+       {
+        SizeLayoutWidgetClass "{6A75150000000104}" {
+         Name "FlagSize"
+         Slot LayoutSlot "{6A75150000000101}" {
+          HorizontalAlign 0
+          VerticalAlign 1
+         }
+         AllowWidthOverride 1
+         WidthOverride 32
+         AllowHeightOverride 1
+         HeightOverride 20
+         {
+          ImageWidgetClass "{6A75150000000103}" {
+           Name "Flag"
+           Slot AlignableSlot "{6A75150000000102}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 1 1 1 1
+           Texture "{F3A9B47F55BE8D2B}UI/Images/SpecImages/Spec_Atlas_x64.imageset"
+           Image "Circle"
+           Size 40 40
+          }
+         }
+        }
+        TextWidgetClass "{6A75150000000107}" {
+         Name "SquadName"
+         Slot LayoutSlot "{6A75150000000106}" {
+          HorizontalAlign 0
+          VerticalAlign 1
+          Padding 7 0 0 0
+         }
+         Color 0.8632 0.8879 0.9301 1
+         Text ""
+         "Font Size" 14
+         "Min Font Size" 14
+         "Horizontal Alignment" Left
+         "Vertical Alignment" Center
+         FontProperties FontProperties "{6A75150000000108}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{6A7515000000010A}" {
+         Name "SquadCount"
+         Slot LayoutSlot "{6A75150000000109}" {
+          HorizontalAlign 0
+          VerticalAlign 1
+          Padding 8 0 0 0
+         }
+         Color 0.3968 0.4564 0.6038 1
+         Text ""
+         "Font Size" 13
+         "Min Font Size" 13
+         "Horizontal Alignment" Left
+         "Vertical Alignment" Center
+         FontProperties FontProperties "{6A7515000000010B}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+       }
+      }
+      ButtonWidgetClass "{6A75150000000115}" {
+       Name "HitArea"
+       Slot OverlayWidgetSlot "{6A75150000000113}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 1 1 1 0
+       components {
+        COA_SpecMapPin "{6A75150000000114}" {
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

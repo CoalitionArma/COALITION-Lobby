@@ -8,6 +8,8 @@ class COA_GameTimerDisplay : SCR_InfoDisplayExtended
 	protected SCR_MapEntity m_MapEntity;
 	protected TextWidget m_wTimer;
 	protected ImageWidget m_wBackground;
+	protected TextWidget m_wTimerLabel;		// "MISSION END" caption left of the time
+	protected ImageWidget m_wTimerAccent;	// state bar: brand red, amber under 15 min, bright red under 5
 	
 	// Ticket display for faction one (BLUFOR)
 	protected ImageWidget m_wTicketOneImage; // Missing semicolon fixed
@@ -40,6 +42,17 @@ class COA_GameTimerDisplay : SCR_InfoDisplayExtended
 	protected SCR_PopUpNotification m_PopUpNotification = null;
 	
 	protected bool m_bUpdateTimer = false;
+
+	// Ticket rows live in a drawer tucked into the right edge behind a "TICKETS" tab; hovering it
+	// slides it out (COA_HoverDrawer, like the briefing player list). See COA_GameTimerDisplay.layout.
+	protected static const float TICKET_DRAWER_OPEN_X = -280;		// -(screen margin 12 + drawer width 268)
+	protected static const float TICKET_DRAWER_CLOSED_X = -44;		// only the 44 px tab on screen
+	protected static const float TICKET_DRAWER_BOTTOM = -50;		// just above the mission timer row
+	protected static const float TICKET_ROW_PITCH = 38;
+	protected static const float TICKET_TAB_MIN_HEIGHT = 72;
+	protected Widget m_wTicketDrawer;
+	protected TextWidget m_wTicketTabArrow;
+	protected ref COA_HoverDrawer m_TicketDrawer;
 	
 	//-------------------------------------------------------------------------
 	// Initialization
@@ -70,6 +83,10 @@ class COA_GameTimerDisplay : SCR_InfoDisplayExtended
 	override protected void DisplayUpdate(IEntity owner, float timeSlice)
 	{
 		super.DisplayUpdate(owner, timeSlice);
+
+		// Slide the ticket drawer every frame while it's shown
+		if (m_TicketDrawer && m_wTicketDrawer && m_wTicketDrawer.IsVisible() && m_wTicketDrawer.GetOpacity() > 0)
+			m_TicketDrawer.Update(timeSlice);
 		
 		// Only fire if in-game
 		if (!GetGame().GetWorld().GetWorldTime() || !SCR_PlayerController.GetLocalControlledEntity())
@@ -93,32 +110,43 @@ class COA_GameTimerDisplay : SCR_InfoDisplayExtended
 			m_MapEntity = SCR_MapEntity.GetMapInstance();
 			
 			// Find and cast main timer widgets
-			m_wTimer = TextWidget.Cast(m_wRoot.FindWidget("timeLeftTimer"));
-			m_wBackground = ImageWidget.Cast(m_wRoot.FindWidget("timeLeftBackground"));
+			m_wTimer = TextWidget.Cast(m_wRoot.FindAnyWidget("timeLeftTimer"));
+			m_wBackground = ImageWidget.Cast(m_wRoot.FindAnyWidget("timeLeftBackground"));
+			m_wTimerLabel = TextWidget.Cast(m_wRoot.FindAnyWidget("timeLeftLabel"));
+			m_wTimerAccent = ImageWidget.Cast(m_wRoot.FindAnyWidget("timeLeftAccent"));
 			
 			// Find and cast faction one ticket widgets
-			m_wTicketOneImage = ImageWidget.Cast(m_wRoot.FindWidget("TicketOneImage"));
-			m_wTicketOneText = TextWidget.Cast(m_wRoot.FindWidget("TicketOneText"));
-			m_wTicketOneNumber = TextWidget.Cast(m_wRoot.FindWidget("TicketOneNumber"));
-			m_wTicketOneBackground = ImageWidget.Cast(m_wRoot.FindWidget("TicketOneBackground"));
+			m_wTicketOneImage = ImageWidget.Cast(m_wRoot.FindAnyWidget("TicketOneImage"));
+			m_wTicketOneText = TextWidget.Cast(m_wRoot.FindAnyWidget("TicketOneText"));
+			m_wTicketOneNumber = TextWidget.Cast(m_wRoot.FindAnyWidget("TicketOneNumber"));
+			m_wTicketOneBackground = ImageWidget.Cast(m_wRoot.FindAnyWidget("TicketOneBackground"));
 			
 			// Find and cast faction two ticket widgets
-			m_wTicketTwoImage = ImageWidget.Cast(m_wRoot.FindWidget("TicketTwoImage"));
-			m_wTicketTwoText = TextWidget.Cast(m_wRoot.FindWidget("TicketTwoText"));
-			m_wTicketTwoNumber = TextWidget.Cast(m_wRoot.FindWidget("TicketTwoNumber"));
-			m_wTicketTwoBackground = ImageWidget.Cast(m_wRoot.FindWidget("TicketTwoBackground"));
+			m_wTicketTwoImage = ImageWidget.Cast(m_wRoot.FindAnyWidget("TicketTwoImage"));
+			m_wTicketTwoText = TextWidget.Cast(m_wRoot.FindAnyWidget("TicketTwoText"));
+			m_wTicketTwoNumber = TextWidget.Cast(m_wRoot.FindAnyWidget("TicketTwoNumber"));
+			m_wTicketTwoBackground = ImageWidget.Cast(m_wRoot.FindAnyWidget("TicketTwoBackground"));
 			
 			// Find and cast faction three ticket widgets
-			m_wTicketThreeImage = ImageWidget.Cast(m_wRoot.FindWidget("TicketThreeImage"));
-			m_wTicketThreeText = TextWidget.Cast(m_wRoot.FindWidget("TicketThreeText"));
-			m_wTicketThreeNumber = TextWidget.Cast(m_wRoot.FindWidget("TicketThreeNumber"));
-			m_wTicketThreeBackground = ImageWidget.Cast(m_wRoot.FindWidget("TicketThreeBackground"));
+			m_wTicketThreeImage = ImageWidget.Cast(m_wRoot.FindAnyWidget("TicketThreeImage"));
+			m_wTicketThreeText = TextWidget.Cast(m_wRoot.FindAnyWidget("TicketThreeText"));
+			m_wTicketThreeNumber = TextWidget.Cast(m_wRoot.FindAnyWidget("TicketThreeNumber"));
+			m_wTicketThreeBackground = ImageWidget.Cast(m_wRoot.FindAnyWidget("TicketThreeBackground"));
 			
 			// Find and cast faction four ticket widgets
-			m_wTicketFourImage = ImageWidget.Cast(m_wRoot.FindWidget("TicketFourImage"));
-			m_wTicketFourText = TextWidget.Cast(m_wRoot.FindWidget("TicketFourText"));
-			m_wTicketFourNumber = TextWidget.Cast(m_wRoot.FindWidget("TicketFourNumber"));
-			m_wTicketFourBackground = ImageWidget.Cast(m_wRoot.FindWidget("TicketFourBackground"));
+			m_wTicketFourImage = ImageWidget.Cast(m_wRoot.FindAnyWidget("TicketFourImage"));
+			m_wTicketFourText = TextWidget.Cast(m_wRoot.FindAnyWidget("TicketFourText"));
+			m_wTicketFourNumber = TextWidget.Cast(m_wRoot.FindAnyWidget("TicketFourNumber"));
+			m_wTicketFourBackground = ImageWidget.Cast(m_wRoot.FindAnyWidget("TicketFourBackground"));
+
+			// Hover drawer holding the ticket rows
+			m_wTicketDrawer = m_wRoot.FindAnyWidget("TicketDrawer");
+			m_wTicketTabArrow = TextWidget.Cast(m_wRoot.FindAnyWidget("TicketTabArrow"));
+			if (m_wTicketDrawer && !m_TicketDrawer)
+			{
+				m_TicketDrawer = new COA_HoverDrawer(m_wTicketDrawer, TICKET_DRAWER_CLOSED_X, TICKET_DRAWER_OPEN_X);
+				m_TicketDrawer.m_OnOpenChanged.Insert(OnTicketDrawerChanged);
+			}
 			
 			return;
 		}
@@ -198,6 +226,12 @@ class COA_GameTimerDisplay : SCR_InfoDisplayExtended
 		// Set main timer visibility
 		m_wTimer.SetVisible(isVisible);
 		m_wBackground.SetVisible(isVisible);
+		if (m_wTicketDrawer)
+			m_wTicketDrawer.SetVisible(isVisible);
+		if (m_wTimerLabel)
+			m_wTimerLabel.SetVisible(isVisible);
+		if (m_wTimerAccent)
+			m_wTimerAccent.SetVisible(isVisible);
 		
 		// Set ticket one visibility
 		m_wTicketOneImage.SetVisible(isVisible);
@@ -206,6 +240,44 @@ class COA_GameTimerDisplay : SCR_InfoDisplayExtended
 		m_wTicketOneBackground.SetVisible(isVisible);
 	}
 	
+	/**
+	* Show/hide the ticket drawer and fit it to the rows it holds (its rows sit at its bottom)
+	*/
+	protected void ShowTicketDrawer(bool show, bool allFactions)
+	{
+		if (!m_wTicketDrawer)
+			return;
+
+		if (!show)
+		{
+			m_wTicketDrawer.SetOpacity(0);
+			return;
+		}
+
+		int rows = 1;
+		if (allFactions)
+			rows = 4;
+
+		float height = Math.Max(rows * TICKET_ROW_PITCH - 4, TICKET_TAB_MIN_HEIGHT);
+		FrameSlot.SetSizeY(m_wTicketDrawer, height);
+		FrameSlot.SetPosY(m_wTicketDrawer, TICKET_DRAWER_BOTTOM - height);
+		m_wTicketDrawer.SetOpacity(1);
+	}
+
+	/**
+	* Tab arrow points the way the drawer will move
+	*/
+	protected void OnTicketDrawerChanged(bool open)
+	{
+		if (!m_wTicketTabArrow)
+			return;
+
+		if (open)
+			m_wTicketTabArrow.SetText("›");
+		else
+			m_wTicketTabArrow.SetText("‹");
+	}
+
 	/**
 	* Updates the ticket display based on player faction or admin status
 	*/
@@ -224,10 +296,8 @@ class COA_GameTimerDisplay : SCR_InfoDisplayExtended
 			// Skip ticket display for spectators
 			if (faction != "SPEC") 
 			{
-				// Set color based on player's faction
-				m_wTicketOneText.SetColor(factionManager.GetFactionByKey(faction).GetFactionColor());
-				m_wTicketOneNumber.SetColor(factionManager.GetFactionByKey(faction).GetFactionColor());
-				m_wTicketOneImage.SetColor(factionManager.GetFactionByKey(faction).GetFactionColor());
+				// Faction colour on the accent bar and the number; the label stays neutral
+				StyleTicketRow(m_wTicketOneImage, m_wTicketOneText, m_wTicketOneNumber, factionManager.GetFactionByKey(faction), "TICKETS LEFT");
 				
 				// Display appropriate ticket count based on faction
 				UpdateFactionTickets(faction, m_wTicketOneNumber);
@@ -236,31 +306,40 @@ class COA_GameTimerDisplay : SCR_InfoDisplayExtended
 			// For admins - show all factions' tickets
 			
 			// BLUFOR tickets (position one)
-			m_wTicketOneText.SetColor(factionManager.GetFactionByKey("BLUFOR").GetFactionColor());
-			m_wTicketOneNumber.SetColor(factionManager.GetFactionByKey("BLUFOR").GetFactionColor());
-			m_wTicketOneImage.SetColor(factionManager.GetFactionByKey("BLUFOR").GetFactionColor());
+			StyleTicketRow(m_wTicketOneImage, m_wTicketOneText, m_wTicketOneNumber, factionManager.GetFactionByKey("BLUFOR"), "BLUFOR TICKETS");
 			UpdateFactionTickets("BLUFOR", m_wTicketOneNumber);
 			
 			// OPFOR tickets (position two)
-			m_wTicketTwoText.SetColor(factionManager.GetFactionByKey("OPFOR").GetFactionColor());
-			m_wTicketTwoNumber.SetColor(factionManager.GetFactionByKey("OPFOR").GetFactionColor());
-			m_wTicketTwoImage.SetColor(factionManager.GetFactionByKey("OPFOR").GetFactionColor());
+			StyleTicketRow(m_wTicketTwoImage, m_wTicketTwoText, m_wTicketTwoNumber, factionManager.GetFactionByKey("OPFOR"), "OPFOR TICKETS");
 			UpdateFactionTickets("OPFOR", m_wTicketTwoNumber);
 			
 			// INDFOR tickets (position three)
-			m_wTicketThreeText.SetColor(factionManager.GetFactionByKey("INDFOR").GetFactionColor());
-			m_wTicketThreeNumber.SetColor(factionManager.GetFactionByKey("INDFOR").GetFactionColor());
-			m_wTicketThreeImage.SetColor(factionManager.GetFactionByKey("INDFOR").GetFactionColor());
+			StyleTicketRow(m_wTicketThreeImage, m_wTicketThreeText, m_wTicketThreeNumber, factionManager.GetFactionByKey("INDFOR"), "INDFOR TICKETS");
 			UpdateFactionTickets("INDFOR", m_wTicketThreeNumber);
 			
 			// CIV tickets (position four)
-			m_wTicketFourText.SetColor(factionManager.GetFactionByKey("CIV").GetFactionColor());
-			m_wTicketFourNumber.SetColor(factionManager.GetFactionByKey("CIV").GetFactionColor());
-			m_wTicketFourImage.SetColor(factionManager.GetFactionByKey("CIV").GetFactionColor());
+			StyleTicketRow(m_wTicketFourImage, m_wTicketFourText, m_wTicketFourNumber, factionManager.GetFactionByKey("CIV"), "CIV TICKETS");
 			UpdateFactionTickets("CIV", m_wTicketFourNumber);
 		}
 	}
 	
+	/**
+	* Colours a ticket row: faction colour on the accent bar and number, neutral caption
+	*/
+	protected void StyleTicketRow(ImageWidget accent, TextWidget label, TextWidget number, Faction faction, string caption)
+	{
+		if (!faction)
+			return;
+
+		Color factionColor = faction.GetFactionColor();
+		if (accent)
+			accent.SetColor(factionColor);
+		if (number)
+			number.SetColor(factionColor);
+		if (label)
+			label.SetText(caption);
+	}
+
 	/**
 	* Updates ticket display for a specific faction
 	* @param faction - faction key ("BLUFOR", "OPFOR", "INDFOR", "CIV")
@@ -308,7 +387,8 @@ class COA_GameTimerDisplay : SCR_InfoDisplayExtended
 			{
 				m_bUpdateTimer = false;
 				m_PopUpNotification.PopupMsg(m_sServerWorldTime, 10);
-				m_wTimer.SetText(m_sServerWorldTime);
+				m_wTimer.SetText("EXPIRED");
+				m_wTimer.SetColor(Color.FromSRGBA(232, 96, 96, 255));
 				return;
 			}
 		}
@@ -339,6 +419,10 @@ class COA_GameTimerDisplay : SCR_InfoDisplayExtended
 			// Show timer
 			m_wTimer.SetOpacity(1);
 			m_wBackground.SetOpacity(1);
+			if (m_wTimerLabel)
+				m_wTimerLabel.SetOpacity(1);
+			if (m_wTimerAccent)
+				m_wTimerAccent.SetOpacity(1);
 			
 			// Determine if tickets should be shown
 			COA_RespawnManager respawnManager = COA_RespawnManager.GetInstance();
@@ -351,6 +435,8 @@ class COA_GameTimerDisplay : SCR_InfoDisplayExtended
 								respawnManager.GetFactionTickets("CIV") > -1);
 			}
 			
+			ShowTicketDrawer(hasAnyTickets, SCR_Global.IsAdmin(SCR_PlayerController.GetLocalPlayerId()));
+
 			if (hasAnyTickets)
 			{
 				// Show player faction tickets
@@ -387,24 +473,25 @@ class COA_GameTimerDisplay : SCR_InfoDisplayExtended
 			displayTime = string.Format("%1:%2", timeParts[1], timeParts[2]);
 		}
 		
-		m_wTimer.SetText("Mission End: " + displayTime);
+		m_wTimer.SetText(displayTime);
 		
-		// Set color based on time remaining
+		// Value and accent bar follow the time remaining
+		Color valueColor = Color.FromSRGBA(239, 242, 247, 255);	// normal
+		Color accentColor = Color.FromSRGBA(201, 54, 54, 255);
 		if (timeParts[0] == "00" && timeParts[1].ToInt() < 5)
 		{
-			// Less than 5 minutes - red
-			m_wTimer.SetColorInt(ARGB(255, 200, 65, 65));
+			valueColor = Color.FromSRGBA(232, 96, 96, 255);		// under 5 minutes
+			accentColor = Color.FromSRGBA(232, 96, 96, 255);
 		}
 		else if (timeParts[0] == "00" && timeParts[1].ToInt() < 15)
 		{
-			// Less than 15 minutes - yellow
-			m_wTimer.SetColorInt(ARGB(255, 230, 230, 0));
+			valueColor = Color.FromSRGBA(232, 170, 72, 255);	// under 15 minutes
+			accentColor = Color.FromSRGBA(232, 170, 72, 255);
 		}
-		else
-		{
-			// Normal - light gray
-			m_wTimer.SetColorInt(ARGB(255, 215, 215, 215));
-		}
+
+		m_wTimer.SetColor(valueColor);
+		if (m_wTimerAccent)
+			m_wTimerAccent.SetColor(accentColor);
 	}
 	
 	/**
@@ -416,7 +503,14 @@ class COA_GameTimerDisplay : SCR_InfoDisplayExtended
 		// Main timer elements
 		m_wTimer.SetOpacity(opacity);
 		m_wBackground.SetOpacity(opacity);
+		if (m_wTimerLabel)
+			m_wTimerLabel.SetOpacity(opacity);
+		if (m_wTimerAccent)
+			m_wTimerAccent.SetOpacity(opacity);
 		
+		if (m_wTicketDrawer)
+			m_wTicketDrawer.SetOpacity(opacity);
+
 		// Faction one ticket elements
 		m_wTicketOneImage.SetOpacity(opacity);
 		m_wTicketOneText.SetOpacity(opacity);

@@ -18,7 +18,7 @@ FrameWidgetClass {
    "Z Order" 99
    "Is Visible" 0
    {
-    PanelWidgetClass "{6694ADF1AE3F49B5}" {
+    SmartPanelWidgetClass "{6694ADF1AE3F49B5}" {
      Name "Panel0"
      Slot FrameWidgetSlot "{6694ADF1AE3F49D1}" {
       Anchor 0.5 0.5 0.5 0.5
@@ -31,7 +31,8 @@ FrameWidgetClass {
       SizeY 50
       OffsetBottom 18.43
      }
-     Color 0.042 0.042 0.042 1
+     Color 0.0033 0.0037 0.0052 0.92
+     style rounded_12px
     }
     TextWidgetClass "{66948BF1C605874F}" {
      Name "SlotWarningText"
@@ -46,7 +47,7 @@ FrameWidgetClass {
       SizeY 0
       OffsetBottom 0
      }
-     Color 1 0.5427 0.0513 1
+     Color 0.8070 0.4020 0.0648 1
      Text "Hold U to Open Slotting Menu"
      "Font Size" 237
      "Horizontal Alignment" Center
@@ -196,7 +197,7 @@ FrameWidgetClass {
    "Z Order" 90
    "Is Visible" 0
    {
-    ImageWidgetClass "{6A64000000001026}" {
+    SmartPanelWidgetClass "{6A64000000001026}" {
      Name "DamageReportBackground"
      Slot FrameWidgetSlot "{6A64000000001025}" {
       Anchor 0 0 1 1
@@ -210,6 +211,7 @@ FrameWidgetClass {
       OffsetBottom 0
      }
      Color 0.0033 0.0037 0.0052 0.985
+     style rounded_12px
     }
     ImageWidgetClass "{6A64000000001028}" {
      Name "DamageReportAccent"
@@ -324,7 +326,7 @@ FrameWidgetClass {
       OffsetBottom 24
      }
      {
-      ImageWidgetClass "{6A64000000001003}" {
+      SmartPanelWidgetClass "{6A64000000001003}" {
        Name "DamageReportBodyBackground"
        Slot FrameWidgetSlot "{6A64000000001002}" {
         Anchor 0 0 1 1
@@ -338,6 +340,7 @@ FrameWidgetClass {
         OffsetBottom 0
        }
        Color 0.0075 0.0086 0.0123 1
+       style rounded_6px
       }
       ImageWidgetClass "{6A64000000001005}" {
        Name "DamageReportBodyOutline"
@@ -512,7 +515,7 @@ FrameWidgetClass {
       OffsetBottom 24
      }
      {
-      ImageWidgetClass "{6A6400000000101A}" {
+      SmartPanelWidgetClass "{6A6400000000101A}" {
        Name "DamageReportLogBackground"
        Slot FrameWidgetSlot "{6A64000000001019}" {
         Anchor 0 0 1 1
@@ -526,6 +529,7 @@ FrameWidgetClass {
         OffsetBottom 0
        }
        Color 0.0075 0.0086 0.0123 1
+       style rounded_6px
       }
       TextWidgetClass "{6A6400000000101D}" {
        Name "DamageReportLogTitle"
@@ -2004,122 +2008,142 @@ FrameWidgetClass {
     }
    }
   }
-  ScaleWidgetClass "{CFC5CA0000000100}" : "{B206B37D7D02D9F4}UI/layouts/Menus/Spectator/Elements/CameraModeButtons.layout" {
-   Name "CameraModeButtons"
-   Slot FrameWidgetSlot "{CFC5CA0000000101}" {
+  ScaleWidgetClass "{68B43878917A5827}" : "{80CE24AD6D65F26C}UI/layouts/Menus/Spectator/Elements/EntityInfoDisplay.layout" {
+   Name "EntityInfoDisplay"
+   Slot FrameWidgetSlot "{6A7114000000014D}" {
     Anchor 0.5 1 0.5 1
-    PositionX -175
-    OffsetLeft -175
-    PositionY -154
-    OffsetTop -154
-    SizeX 350
-    OffsetRight -175
-    SizeY 36
-    OffsetBottom 118
+    PositionX -210
+    OffsetLeft -210
+    PositionY -244
+    OffsetTop -244
+    SizeX 420
+    OffsetRight -210
+    SizeY 172
+    OffsetBottom 72
    }
+  }
+  FrameWidgetClass "{6A71140000000159}" {
+   Name "KeyHintBar"
+   Slot FrameWidgetSlot "{6A71140000000151}" {
+    Anchor 0.5 1 0.5 1
+    PositionX -500
+    OffsetLeft -500
+    PositionY -64
+    OffsetTop -64
+    SizeX 1000
+    OffsetRight -500
+    SizeY 52
+    OffsetBottom 12
+   }
+   "Z Order" 5
    {
-    FrameWidgetClass "{CFC5CA0000000002}" {
-     Prefab "{CFC5CA0000000002}"
-     {
-      ImageWidgetClass "{CFC5CA0000000004}" {
-       Prefab "{CFC5CA0000000004}"
-      }
-      HorizontalLayoutWidgetClass "{CFC5CA0000000006}" {
-       Prefab "{CFC5CA0000000006}"
-       {
-        FrameWidgetClass "{CFC5CA0000000008}" {
-         Prefab "{CFC5CA0000000008}"
-         {
-          ImageWidgetClass "{CFC5CA0000000010}" {
-           Prefab "{CFC5CA0000000010}"
-          }
-          TextWidgetClass "{CFC5CA0000000012}" {
-           Prefab "{CFC5CA0000000012}"
-          }
-          ButtonWidgetClass "{CFC5CA0000000014}" {
-           Prefab "{CFC5CA0000000014}"
-          }
-         }
-        }
-        FrameWidgetClass "{CFC5CA0000000018}" {
-         Prefab "{CFC5CA0000000018}"
-         {
-          ImageWidgetClass "{CFC5CA0000000020}" {
-           Prefab "{CFC5CA0000000020}"
-          }
-          TextWidgetClass "{CFC5CA0000000022}" {
-           Prefab "{CFC5CA0000000022}"
-          }
-          ButtonWidgetClass "{CFC5CA0000000024}" {
-           Prefab "{CFC5CA0000000024}"
-          }
-         }
-        }
-        FrameWidgetClass "{CFC5CA0000000028}" {
-         Prefab "{CFC5CA0000000028}"
-         {
-          ImageWidgetClass "{CFC5CA0000000030}" {
-           Prefab "{CFC5CA0000000030}"
-          }
-          TextWidgetClass "{CFC5CA0000000032}" {
-           Prefab "{CFC5CA0000000032}"
-          }
-          ButtonWidgetClass "{CFC5CA0000000034}" {
-           Prefab "{CFC5CA0000000034}"
-          }
-         }
-        }
-       }
-      }
+    SmartPanelWidgetClass "{6A71140000000153}" {
+     Name "KeyHintTab"
+     Slot FrameWidgetSlot "{6A71140000000152}" {
+      Anchor 0 0 0 0
+      PositionX 425
+      OffsetLeft 425
+      PositionY 0
+      OffsetTop 0
+      SizeX 150
+      OffsetRight -575
+      SizeY 28
+      OffsetBottom -28
+     }
+     Color 0.0033 0.0037 0.0052 0.85
+     style rounded_6px
+    }
+    TextWidgetClass "{6A71140000000155}" {
+     Name "KeyHintTabLabel"
+     Slot FrameWidgetSlot "{6A71140000000154}" {
+      Anchor 0 0 0 0
+      PositionX 425
+      OffsetLeft 425
+      PositionY 0
+      OffsetTop 0
+      SizeX 150
+      OffsetRight -575
+      SizeY 22
+      OffsetBottom -22
+     }
+     Color 0.3968 0.4564 0.6038 1
+     Text "CONTROLS"
+     "Font Size" 11
+     "Min Font Size" 10
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A71140000000156}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{6A71140000000158}" {
+     Name "KeyHintBG"
+     Slot FrameWidgetSlot "{6A71140000000157}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 22
+      OffsetTop 22
+      SizeX 0
+      OffsetRight 0
+      SizeY -22
+      OffsetBottom 0
+     }
+     Color 0.0033 0.0037 0.0052 0.85
+     style rounded_6px
+    }
+    RichTextWidgetClass "{6A7114000000014F}" {
+     Name "KeyHintText"
+     Slot FrameWidgetSlot "{6A7114000000014E}" {
+      Anchor 0 0 1 1
+      PositionX 14
+      OffsetLeft 14
+      PositionY 22
+      OffsetTop 22
+      SizeX -28
+      OffsetRight 14
+      SizeY -22
+      OffsetBottom 0
+     }
+     Color 0.3968 0.4564 0.6038 1
+     Text ""
+     "Font Size" 13
+     "Min Font Size" 9
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A71140000000150}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
      }
     }
    }
   }
-  ScaleWidgetClass "{68B43878917A5827}" : "{80CE24AD6D65F26C}UI/layouts/Menus/Spectator/Elements/EntityInfoDisplay.layout" {
-   Name "EntityInfoDisplay"
-   Slot FrameWidgetSlot "{68B4386FF0862A5A}" {
-    Anchor 0.5 1 0.5 1
-    PositionX -175
-    OffsetLeft -175
-    PositionY -110
-    OffsetTop -110
-    SizeX 350
-    OffsetRight -175
-    SizeY 90
-    OffsetBottom 20
+  FrameWidgetClass "{6A7114000000015D}" {
+   Name "KillFeed"
+   Slot FrameWidgetSlot "{6A7114000000015A}" {
+    Anchor 1 0 1 0
+    PositionX -376
+    OffsetLeft -376
+    PositionY 60
+    OffsetTop 60
+    SizeX 360
+    OffsetRight 16
+    SizeY 200
+    OffsetBottom -260
    }
+   "Z Order" 5
    {
-    FrameWidgetClass "{68B4386F22E954D9}" {
-     Prefab "{68B4386F22E954D9}"
-     {
-      ImageWidgetClass "{68B4386F2B93A280}" {
-       Prefab "{68B4386F2B93A280}"
-      }
-      VerticalLayoutWidgetClass "{68B4386142F725B6}" {
-       Prefab "{68B4386142F725B6}"
-       {
-        TextWidgetClass "{68B4386F74A20FAF}" {
-         Prefab "{68B4386F74A20FAF}"
-        }
-        TextWidgetClass "{68B4386017BABB0A}" {
-         Prefab "{68B4386017BABB0A}"
-        }
-        HorizontalLayoutWidgetClass "{68B43863815C8A4B}" {
-         Prefab "{68B43863815C8A4B}"
-         {
-          TextWidgetClass "{68B4386049A85C9C}" {
-           Prefab "{68B4386049A85C9C}"
-          }
-          TextWidgetClass "{68B43863AE17F1F1}" {
-           Prefab "{68B43863AE17F1F1}"
-          }
-         }
-        }
-        SliderWidgetClass "{68B438635C75B6D2}" {
-         Prefab "{68B438635C75B6D2}"
-        }
-       }
-      }
+    VerticalLayoutWidgetClass "{6A7114000000015C}" {
+     Name "KillFeedList"
+     Slot FrameWidgetSlot "{6A7114000000015B}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
      }
     }
    }

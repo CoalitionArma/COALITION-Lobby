@@ -1,21 +1,138 @@
-FrameWidgetClass : "{8A4C0D6D625BB09D}UI/Spectator/SpectatorLabelIcon.layout" {
+FrameWidgetClass {
+ Name "SpectatorLabelIconFrame"
+ Slot FrameWidgetSlot "{6A7515000000010E}" {
+  Anchor 0 0 0 0
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 1
+  OffsetRight -1
+  SizeY 1
+  OffsetBottom -1
+ }
+ Clipping False
  components {
   COA_SpectatorLabelIconCharacter "{63221ACB3BE0CEA8}" {
   }
  }
  {
-  ButtonWidgetClass "{61CB0492818382EF}" {
-   Name "LabelButton"
-   Slot FrameWidgetSlot "{61CB0492818382D3}" {
+  ImageWidgetClass "{6A75150000000105}" {
+   Name "Ring"
+   Slot FrameWidgetSlot "{6A75150000000104}" {
+    Anchor 0 0 0 0
+    PositionX -8
+    OffsetLeft -8
+    PositionY -8
+    OffsetTop -8
+    SizeX 16
+    OffsetRight -8
+    SizeY 16
+    OffsetBottom -8
+   }
+   "Z Order" 1
+   "Is Visible" 0
+   Color 0.8070 0.4020 0.0648 1
+   Texture "{F3A9B47F55BE8D2B}UI/Images/SpecImages/Spec_Atlas_x64.imageset"
+   Image "Circle"
+   Size 32 32
+  }
+  ImageWidgetClass "{6A75150000000107}" {
+   Name "SpectatorLabelIconBackground"
+   Slot FrameWidgetSlot "{6A75150000000106}" {
+    Anchor 0 0 0 0
+    PositionX -6
+    OffsetLeft -6
+    PositionY -6
+    OffsetTop -6
+    SizeX 12
+    OffsetRight -6
+    SizeY 12
+    OffsetBottom -6
+   }
+   "Z Order" 2
+   Color 1 1 1 1
+   Texture "{8479B3B5347DF5CF}UI/Imagesets/MilitarySymbol/ID_D.imageset"
+   Image "Friend_SeaSurface_Bcg"
+   Size 32 32
+  }
+  ImageWidgetClass "{6A75150000000109}" {
+   Name "SpectatorLabelIcon"
+   Slot FrameWidgetSlot "{6A75150000000108}" {
+    Anchor 0 0 0 0
+    PositionX -4
+    OffsetLeft -4
+    PositionY -4
+    OffsetTop -4
+    SizeX 8
+    OffsetRight -4
+    SizeY 8
+    OffsetBottom -4
+   }
+   "Z Order" 3
+   "Is Visible" 0
+   Color 0.8632 0.8879 0.9301 1
+   Texture "{789DC92AF28E0AB1}UI/Imagesets/Characters/CharacterWrapperUI.imageset"
+   Image "Rifleman"
+   Size 32 32
+  }
+  FrameWidgetClass "{6A7515000000010B}" {
+   Name "SpectatorLabel"
+   Slot FrameWidgetSlot "{6A7515000000010A}" {
+    Anchor 0 0 0 0
     PositionX 0
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 64
-    OffsetRight -64
-    SizeY 64
-    OffsetBottom -64
+    SizeX 100
+    OffsetRight -100
+    SizeY 24
+    OffsetBottom -24
+    SizeToContent 1
    }
+   "Z Order" 1
+   {
+    RichTextWidgetClass "{6A75150000000102}" {
+     Name "SpectatorLabelText"
+     Slot FrameWidgetSlot "{6A75150000000101}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 100
+      OffsetRight -100
+      SizeY 24
+      OffsetBottom -24
+      SizeToContent 1
+     }
+     Color 0.8632 0.8879 0.9301 1
+     Text ""
+     "Font Size" 15
+     "Min Font Size" 15
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A75150000000103}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+      OutlineSize 2
+     }
+    }
+   }
+  }
+  ButtonWidgetClass "{6A7515000000010D}" {
+   Name "LabelButton"
+   Slot FrameWidgetSlot "{6A7515000000010C}" {
+    Anchor 0 0 0 0
+    PositionX -12
+    OffsetLeft -12
+    PositionY -12
+    OffsetTop -12
+    SizeX 24
+    OffsetRight -12
+    SizeY 24
+    OffsetBottom -12
+   }
+   "Z Order" 5
    Color 1 1 1 0
    components {
     SCR_ButtonTextComponent "{647E43645E4B835D}" {
@@ -23,100 +140,13 @@ FrameWidgetClass : "{8A4C0D6D625BB09D}UI/Spectator/SpectatorLabelIcon.layout" {
      m_sSoundClicked ""
      m_BackgroundDefault 1 1 1 0
      m_BackgroundHovered 1 1 1 0
-     m_BackgroundSelected 0.76 0.392 0.08 0
-     m_BackgroundSelectedHovered 0.898 0.541 0.184 0
-     m_BackgroundClicked 0.898 0.541 0.184 0
+     m_BackgroundSelected 1 1 1 0
+     m_BackgroundSelectedHovered 1 1 1 0
+     m_BackgroundClicked 1 1 1 0
      m_TextDefault 1 1 1 0
-     m_TextToggled 0.761 0.386 0.078 0
+     m_TextToggled 1 1 1 0
     }
    }
-   {
-    OverlayWidgetClass "{60DB071976551894}" {
-     Name "SpectatorLabelBackground"
-     Slot ButtonWidgetSlot "{63221ACB28A9FBE6}" {
-     }
-     {
-      ImageWidgetClass "{60DCA24F25DC2EF8}" {
-       Name "SpectatorLabelIconCircleSmall"
-       Slot OverlayWidgetSlot "{60DB07187FD3FD8A}" {
-       }
-       Texture "{8479B3B5347DF5CF}UI/Imagesets/MilitarySymbol/ID_D.imageset"
-       Image "Friend_SeaSurface_Bcg"
-       Size 16 16
-      }
-      OverlayWidgetClass "{60DCA2489B9D5917}" {
-       Name "OverlayCircle"
-       Slot OverlayWidgetSlot "{60DCA2489B9D597D}" {
-       }
-       {
-        ImageWidgetClass "{60DB07187E8C4DF4}" {
-         Name "SpectatorLabelIconBackground"
-         Slot OverlayWidgetSlot "{60DB071F89457600}" {
-         }
-         Color 0 0 0 1
-         Texture "{8479B3B5347DF5CF}UI/Imagesets/MilitarySymbol/ID_D.imageset"
-         Image "Character_Bcg"
-         Size 32 32
-        }
-        ImageWidgetClass "{60DB07187FD3FDF7}" {
-         Name "SpectatorLabelIconCircle"
-         Slot OverlayWidgetSlot "{60DB07187FD3FD8A}" {
-         }
-         Texture "{8479B3B5347DF5CF}UI/Imagesets/MilitarySymbol/ID_D.imageset"
-         Image "Character"
-         Size 32 32
-        }
-        ImageWidgetClass "{60DB7BB025C1EAD7}" {
-         Name "SpectatorLabelIconWounded"
-         Slot OverlayWidgetSlot "{60DB07187FD3FD8A}" {
-          HorizontalAlign 0
-          VerticalAlign 0
-          Padding -8 -8 0 0
-         }
-         "Z Order" 25
-         "Is Visible" 0
-         Color 0.855 0.641 0 1
-         Texture "{F3A9B47F55BE8D2B}UI/Images/SpecImages/Spec_Atlas_x64.imageset"
-         Image "Wounded"
-         Size 32 32
-        }
-       }
-      }
-     }
-    }
-   }
-  }
-  PanelWidgetClass "{5EE8948F20BE168B}" {
-   Prefab "{5EE8948F20BE168B}"
-   {
-    OverlayWidgetClass "{5EE89488CCB4B28D}" {
-     Prefab "{5EE89488CCB4B28D}"
-     {
-      RichTextWidgetClass "{5EE8948EAC337C76}" {
-       Prefab "{5EE8948EAC337C76}"
-       "Font Size" 16
-       "Min Font Size" 16
-       FontProperties FontProperties "{60DB071CCF92F13F}" {
-        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-        OutlineSize 3
-       }
-      }
-     }
-    }
-   }
-  }
-  ImageWidgetClass "{5EE8948EC9B919B8}" {
-   Prefab "{5EE8948EC9B919B8}"
-   Slot FrameWidgetSlot "{5EE8948CA93791EA}" {
-    OffsetLeft 0
-    OffsetTop 0
-    SizeX 20
-    OffsetRight -20
-    SizeY 20
-    OffsetBottom -20
-   }
-   Image "Player"
-   Size 32 32
   }
  }
 }

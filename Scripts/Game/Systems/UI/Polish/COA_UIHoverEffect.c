@@ -284,7 +284,8 @@ class COA_UIHoverEffect : ScriptedWidgetEventHandler
 		if (!widget.IsVisible() || widget.GetColor().A() < MIN_FILL_ALPHA)
 			return false;
 
-		if (!ImageWidget.Cast(widget) && !PanelWidget.Cast(widget))
+		// SmartPanelWidget: rounded nine-slice backgrounds (vanilla rounded_* styles)
+		if (!ImageWidget.Cast(widget) && !PanelWidget.Cast(widget) && !SmartPanelWidget.Cast(widget))
 			return false;
 
 		string name = widget.GetName();

@@ -10,6 +10,10 @@ class COA_PlayerController : SCR_PlayerController
 	//Last time this character was respawned.
 	float m_fTimeOfLastRespawn;
 
+	//! Server copy of the spawn time (m_fTimeOfLastRespawn is only set on the owning client), used to
+	//! validate grace-period requests such as the mini arsenal
+	float m_fServerTimeOfLastSpawn;
+
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 ENTITY UPDATES
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -17,6 +21,17 @@ class COA_PlayerController : SCR_PlayerController
 	//------------------------------------------------------------------------------------------------
 	//! Checks to see if grace period is up for a respawn to use the mini arsenal
 	//! \return if the grace period is over and we have to hide the mini arsenal
+	//! Server: has the respawn grace period passed for this player (see m_fServerTimeOfLastSpawn)
+	static bool IsGracePeriodOverForPlayer(int playerId)
+	{
+		COA_PlayerController pc = COA_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
+		if (!pc)
+			return true;
+
+		return GetGame().GetWorld().GetWorldTime() - pc.m_fServerTimeOfLastSpawn > GRACE_PERIOD_TIME;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool IsGracePeriodOver()
 	{
 		COA_PlayerController pc = COA_PlayerController.Cast(GetGame().GetPlayerController());
@@ -53,6 +68,10 @@ class COA_PlayerController : SCR_PlayerController
 		if (!Replication.IsServer())
 		{
 			m_fTimeOfLastRespawn = GetGame().GetWorld().GetWorldTime();
+		}
+		else if (to)
+		{
+			m_fServerTimeOfLastSpawn = GetGame().GetWorld().GetWorldTime();
 		};
 	}
 	

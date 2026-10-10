@@ -18,9 +18,9 @@ class COA_SpectatorLabelIcon : SCR_ScriptedWidgetComponent
 	// Widget references
 	ImageWidget m_wSpectatorLabelIcon;
 	ButtonWidget m_wLabelButton;
-	OverlayWidget m_wSpectatorLabelBackground;
+	Widget m_wSpectatorLabelBackground;
 	RichTextWidget m_wSpectatorLabelText;
-	PanelWidget m_wSpectatorLabel;
+	Widget m_wSpectatorLabel;				// panel or rounded pill frame, only positioned / faded
 	
 	// Icon display distance configuration
 	protected float m_fMaxIconDistance = 800.0; // Icons disappear beyond this distance
@@ -55,9 +55,9 @@ class COA_SpectatorLabelIcon : SCR_ScriptedWidgetComponent
 		
 		m_wSpectatorLabelIcon = ImageWidget.Cast(w.FindAnyWidget("SpectatorLabelIcon"));
 		m_wLabelButton = ButtonWidget.Cast(w.FindAnyWidget("LabelButton"));
-		m_wSpectatorLabelBackground = OverlayWidget.Cast(w.FindAnyWidget("SpectatorLabelBackground"));
+		m_wSpectatorLabelBackground = w.FindAnyWidget("SpectatorLabelBackground");
 		m_wSpectatorLabelText = RichTextWidget.Cast(w.FindAnyWidget("SpectatorLabelText"));
-		m_wSpectatorLabel = PanelWidget.Cast(w.FindAnyWidget("SpectatorLabel"));
+		m_wSpectatorLabel = w.FindAnyWidget("SpectatorLabel");
 		
 		// Start hidden and non-interactive until the first Update() positions and shows the icon.
 		m_wRoot.SetOpacity(0.0);

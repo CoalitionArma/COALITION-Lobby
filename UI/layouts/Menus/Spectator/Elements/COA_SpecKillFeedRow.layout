@@ -1,0 +1,92 @@
+ButtonWidgetClass {
+ Name "KillFeedRow"
+ Slot AlignableSlot "{6A7114000000014C}" {
+  HorizontalAlign 3
+  Padding 0 0 0 4
+ }
+ Color 1 1 1 0
+ components {
+  SCR_ButtonComponent "{6A7114000000014B}" {
+   m_BackgroundDefault 0.0033 0.0037 0.0052 0.85
+   m_BackgroundHovered 0.011 0.0137 0.0212 1
+   m_BackgroundSelected 0.0033 0.0037 0.0052 0.85
+   m_BackgroundSelectedHovered 0.011 0.0137 0.0212 1
+   m_BackgroundClicked 0.0144 0.0168 0.0262 1
+   m_bShowBorderOnFocus 0
+  }
+ }
+ {
+  SizeLayoutWidgetClass "{6A7114000000014A}" {
+   Name "KillSize"
+   Slot ButtonWidgetSlot "{6A71140000000147}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   AllowHeightOverride 1
+   HeightOverride 30
+   {
+    OverlayWidgetClass "{6A71140000000149}" {
+     Name "KillLayers"
+     Slot AlignableSlot "{6A71140000000148}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      SmartPanelWidgetClass "{6A7114000000013E}" {
+       Name "Background"
+       Slot OverlayWidgetSlot "{6A7114000000013D}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0033 0.0037 0.0052 0.85
+       style rounded_6px
+      }
+      ImageWidgetClass "{6A71140000000140}" {
+       Name "KillPill"
+       Slot OverlayWidgetSlot "{6A7114000000013F}" {
+        HorizontalAlign 0
+        VerticalAlign 1
+        Padding 8 0 0 0
+       }
+       Color 0.5841 0.0369 0.0369 1
+       Size 3 14
+      }
+      RichTextWidgetClass "{6A71140000000142}" {
+       Name "KillText"
+       Slot OverlayWidgetSlot "{6A71140000000141}" {
+        HorizontalAlign 3
+        VerticalAlign 1
+        Padding 18 0 50 0
+       }
+       Color 0.8632 0.8879 0.9301 1
+       Text ""
+       "Font Size" 14
+       "Min Font Size" 10
+       "Vertical Alignment" Center
+       FontProperties FontProperties "{6A71140000000143}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+      TextWidgetClass "{6A71140000000145}" {
+       Name "KillAge"
+       Slot OverlayWidgetSlot "{6A71140000000144}" {
+        HorizontalAlign 2
+        VerticalAlign 1
+        Padding 0 0 10 0
+       }
+       Color 0.3968 0.4564 0.6038 1
+       Text "now"
+       "Font Size" 12
+       "Min Font Size" 10
+       "Horizontal Alignment" Right
+       "Vertical Alignment" Center
+       FontProperties FontProperties "{6A71140000000146}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

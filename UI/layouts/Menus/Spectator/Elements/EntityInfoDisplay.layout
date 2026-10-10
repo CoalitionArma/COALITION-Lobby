@@ -1,127 +1,521 @@
 ScaleWidgetClass {
  Name "EntityInfoDisplay"
- Slot FrameWidgetSlot "{68B4386FF0862A5A}" {
+ Slot FrameWidgetSlot "{6A7114000000013C}" {
+  Anchor 0 0 0 0
   PositionX 0
   OffsetLeft 0
   PositionY 0
   OffsetTop 0
-  SizeX 350
-  OffsetRight -350
-  SizeY 90
-  OffsetBottom -90
+  SizeX 420
+  OffsetRight -420
+  SizeY 172
+  OffsetBottom -172
  }
  components {
   COA_EntityInfoDisplay "{68B4387969E57D45}" {
   }
  }
  {
-  FrameWidgetClass "{68B4386F22E954D9}" {
+  FrameWidgetClass "{6A7114000000013B}" {
    Name "EntityFrame"
-   Slot AlignableSlot "{68B4386F22E9553E}" {
+   Slot AlignableSlot "{6A7114000000013A}" {
     HorizontalAlign 3
     VerticalAlign 3
    }
    {
-    ImageWidgetClass "{68B4386F2B93A280}" {
+    SmartPanelWidgetClass "{6A71140000000102}" {
+     Name "CardShadow"
+     Slot FrameWidgetSlot "{6A71140000000101}" {
+      Anchor 0 0 1 1
+      PositionX -16
+      OffsetLeft -16
+      PositionY -12
+      OffsetTop -12
+      SizeX 32
+      OffsetRight -16
+      SizeY 32
+      OffsetBottom -20
+     }
+     Color 0 0 0 0.5
+     style rounded_faded_16
+    }
+    SmartPanelWidgetClass "{6A71140000000104}" {
      Name "Background"
-     Slot FrameWidgetSlot "{68B4386F2B93A2F8}" {
+     Slot FrameWidgetSlot "{6A71140000000103}" {
       Anchor 0 0 1 1
       PositionX 0
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX -249.9
+      SizeX 0
       OffsetRight 0
-      SizeY -60.03
+      SizeY 0
       OffsetBottom 0
      }
-     Color 0 0 0 0.85
+     Color 0.0033 0.0037 0.0052 0.92
+     style rounded_12px
     }
-    VerticalLayoutWidgetClass "{68B4386142F725B6}" {
-     Name "EntityLayout"
-     Slot FrameWidgetSlot "{68B4386142F725A8}" {
+    SmartPanelWidgetClass "{6A71140000000106}" {
+     Name "CardOutline"
+     Slot FrameWidgetSlot "{6A71140000000105}" {
       Anchor 0 0 1 1
       PositionX 0
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX -250
+      SizeX 0
       OffsetRight 0
-      SizeY -60
+      SizeY 0
       OffsetBottom 0
+     }
+     Color 1 1 1 0.04
+     style outline_rounded_12px
+    }
+    ImageWidgetClass "{6A71140000000108}" {
+     Name "FactionPill"
+     Slot FrameWidgetSlot "{6A71140000000107}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 16
+      OffsetTop 16
+      SizeX 3
+      OffsetRight -19
+      SizeY 50
+      OffsetBottom -66
+     }
+     Color 0.5841 0.0369 0.0369 1
+    }
+    TextWidgetClass "{6A7114000000010A}" {
+     Name "SpectatingLabel"
+     Slot FrameWidgetSlot "{6A71140000000109}" {
+      Anchor 0 0 0 0
+      PositionX 28
+      OffsetLeft 28
+      PositionY 13
+      OffsetTop 13
+      SizeX 300
+      OffsetRight -328
+      SizeY 14
+      OffsetBottom -27
+     }
+     Color 0.3968 0.4564 0.6038 1
+     Text "NOW SPECTATING"
+     "Font Size" 11
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A7114000000010B}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{6A7114000000010D}" {
+     Name "EntityName"
+     Slot FrameWidgetSlot "{6A7114000000010C}" {
+      Anchor 0 0 0 0
+      PositionX 28
+      OffsetLeft 28
+      PositionY 27
+      OffsetTop 27
+      SizeX 376
+      OffsetRight -404
+      SizeY 26
+      OffsetBottom -53
+     }
+     Color 0.8632 0.8879 0.9301 1
+     Text ""
+     "Font Size" 20
+     "Min Font Size" 14
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A7114000000010E}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{6A71140000000110}" {
+     Name "EntityRole"
+     Slot FrameWidgetSlot "{6A7114000000010F}" {
+      Anchor 0 0 0 0
+      PositionX 28
+      OffsetLeft 28
+      PositionY 53
+      OffsetTop 53
+      SizeX 376
+      OffsetRight -404
+      SizeY 18
+      OffsetBottom -71
+     }
+     Color 0.3968 0.4564 0.6038 1
+     Text ""
+     "Font Size" 14
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A71140000000111}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{6A71140000000113}" {
+     Name "HealthTrack"
+     Slot FrameWidgetSlot "{6A71140000000112}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 84
+      OffsetTop 84
+      SizeX 388
+      OffsetRight -404
+      SizeY 6
+      OffsetBottom -90
+     }
+     Color 0.011 0.0137 0.0212 1
+     style rounded_2px
+    }
+    SmartPanelWidgetClass "{6A71140000000115}" {
+     Name "EntityHealthFill"
+     Slot FrameWidgetSlot "{6A71140000000114}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 84
+      OffsetTop 84
+      SizeX 388
+      OffsetRight -404
+      SizeY 6
+      OffsetBottom -90
+     }
+     Color 0.1022 0.5520 0.2159 1
+     style rounded_2px
+    }
+    TextWidgetClass "{6A71140000000117}" {
+     Name "EntityDamage"
+     Slot FrameWidgetSlot "{6A71140000000116}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 96
+      OffsetTop 96
+      SizeX 250
+      OffsetRight -266
+      SizeY 22
+      OffsetBottom -118
+     }
+     Color 0.3968 0.4564 0.6038 1
+     Text ""
+     "Font Size" 13
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A71140000000118}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{6A7114000000011A}" {
+     Name "StateChipBG"
+     Slot FrameWidgetSlot "{6A71140000000119}" {
+      Anchor 0 0 0 0
+      PositionX 274
+      OffsetLeft 274
+      PositionY 96
+      OffsetTop 96
+      SizeX 130
+      OffsetRight -404
+      SizeY 22
+      OffsetBottom -118
+     }
+     "Is Visible" 0
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    TextWidgetClass "{6A7114000000011C}" {
+     Name "EntityDamageType"
+     Slot FrameWidgetSlot "{6A7114000000011B}" {
+      Anchor 0 0 0 0
+      PositionX 274
+      OffsetLeft 274
+      PositionY 96
+      OffsetTop 96
+      SizeX 130
+      OffsetRight -404
+      SizeY 22
+      OffsetBottom -118
+     }
+     Color 0.8632 0.8879 0.9301 1
+     Text ""
+     "Font Size" 12
+     "Min Font Size" 10
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A7114000000011D}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    FrameWidgetClass "{6A71140000000139}" {
+     Name "CameraModeButtons"
+     Slot FrameWidgetSlot "{6A71140000000138}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 128
+      OffsetTop 128
+      SizeX 388
+      OffsetRight -404
+      SizeY 30
+      OffsetBottom -158
      }
      {
-      TextWidgetClass "{68B4386F74A20FAF}" {
-       Name "EntityName"
-       Slot LayoutSlot "{68B4386607C6A380}" {
-        Padding 8 6 8 0
-        SizeMode Fill
-        FillWeight 1.25
+      SmartPanelWidgetClass "{6A7114000000011F}" {
+       Name "CameraModeTrack"
+       Slot FrameWidgetSlot "{6A7114000000011E}" {
+        Anchor 0 0 1 1
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 0
+        OffsetRight 0
+        SizeY 0
+        OffsetBottom 0
        }
-       Text ""
-       "Font Size" 18
-       "Min Font Size" 18
-       "Vertical Alignment" Center
-       FontProperties FontProperties "{68B4386EBB7331CA}" {
-        Bold 1
-        OutlineSize 1
-       }
+       Color 0.011 0.0137 0.0212 0.55
+       style rounded_6px
       }
-      TextWidgetClass "{68B4386017BABB0A}" {
-       Name "EntityRole"
-       Slot LayoutSlot "{68B4386017BABB6F}" {
-        Padding 8 0 8 0
-        SizeMode Fill
-       }
-       Color 0.591 0.591 0.591 1
-       Text ""
-       "Font Size" 15
-       "Min Font Size" 15
-       "Vertical Alignment" Center
-       FontProperties FontProperties "{68B438600EDAB1D6}" {
-        OutlineSize 1
-       }
-      }
-      HorizontalLayoutWidgetClass "{68B43863815C8A4B}" {
-       Name "EntityHealthInfo"
-       Slot LayoutSlot "{68B43863815C8AAF}" {
-        Padding 8 0 8 6
-        SizeMode Fill
+      FrameWidgetClass "{6A71140000000127}" {
+       Name "HelmetCamButton"
+       Slot FrameWidgetSlot "{6A71140000000121}" {
+        Anchor 0 0 0 0
+        PositionX 2
+        OffsetLeft 2
+        PositionY 2
+        OffsetTop 2
+        SizeX 128
+        OffsetRight -130
+        SizeY 26
+        OffsetBottom -28
        }
        {
-        TextWidgetClass "{68B4386049A85C9C}" {
-         Name "EntityDamage"
-         Slot LayoutSlot "{68B4386049A85CF0}" {
-          SizeMode Fill
+        SmartPanelWidgetClass "{6A71140000000123}" {
+         Name "HelmetCamBG"
+         Slot FrameWidgetSlot "{6A71140000000122}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
          }
-         Color 0.456 0.456 0.456 1
-         Text ""
-         "Font Size" 12
-         "Min Font Size" 12
-         "Vertical Alignment" Center
+         Color 1 1 1 0
+         style rounded_4px
         }
-        TextWidgetClass "{68B43863AE17F1F1}" {
-         Name "EntityDamageType"
-         Slot LayoutSlot "{68B4386049A85CF0}" {
-          SizeMode Fill
+        TextWidgetClass "{6A71140000000125}" {
+         Name "HelmetCamText"
+         Slot FrameWidgetSlot "{6A71140000000124}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
          }
-         Color 0.855 0.031 0.028 1
-         Text ""
+         Color 0.3968 0.4564 0.6038 1
+         Text "HELMET"
          "Font Size" 12
-         "Min Font Size" 12
+         "Min Font Size" 10
+         "Horizontal Alignment" Center
          "Vertical Alignment" Center
+         FontProperties FontProperties "{6A71140000000126}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        ButtonWidgetClass "{CFC5CA0000000014}" {
+         Name "HelmetCamSelectButton"
+         Slot FrameWidgetSlot "{6A71140000000120}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+         }
+         Color 1 1 1 0
+         components {
+          ButtonComponent "{CFC5CA0000000016}" {
+           m_ColorButtonDefault 1 1 1 0
+           m_ColorButtonFocused 1 1 1 0.1
+           m_ColorButtonPressed 1 1 1 0.2
+          }
+          SCR_ButtonTextComponent "{CFC5CA0000000017}" {
+          }
+         }
         }
        }
       }
-      SliderWidgetClass "{68B438635C75B6D2}" {
-       Name "EntityHealthSlider"
-       Slot LayoutSlot "{68B438635C75B736}" {
-        SizeMode Fill
-        FillWeight 0.75
+      FrameWidgetClass "{6A7114000000012F}" {
+       Name "EyeCamButton"
+       Slot FrameWidgetSlot "{6A71140000000129}" {
+        Anchor 0 0 0 0
+        PositionX 131
+        OffsetLeft 131
+        PositionY 2
+        OffsetTop 2
+        SizeX 128
+        OffsetRight -259
+        SizeY 26
+        OffsetBottom -28
        }
-       maximum 1
-       step 0.001
-       current 0.101
+       {
+        SmartPanelWidgetClass "{6A7114000000012B}" {
+         Name "EyeCamBG"
+         Slot FrameWidgetSlot "{6A7114000000012A}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+         }
+         Color 1 1 1 0
+         style rounded_4px
+        }
+        TextWidgetClass "{6A7114000000012D}" {
+         Name "EyeCamText"
+         Slot FrameWidgetSlot "{6A7114000000012C}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+         }
+         Color 0.3968 0.4564 0.6038 1
+         Text "EYE"
+         "Font Size" 12
+         "Min Font Size" 10
+         "Horizontal Alignment" Center
+         "Vertical Alignment" Center
+         FontProperties FontProperties "{6A7114000000012E}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        ButtonWidgetClass "{CFC5CA0000000024}" {
+         Name "EyeCamSelectButton"
+         Slot FrameWidgetSlot "{6A71140000000128}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+         }
+         Color 1 1 1 0
+         components {
+          ButtonComponent "{CFC5CA0000000026}" {
+           m_ColorButtonDefault 1 1 1 0
+           m_ColorButtonFocused 1 1 1 0.1
+           m_ColorButtonPressed 1 1 1 0.2
+          }
+          SCR_ButtonTextComponent "{CFC5CA0000000027}" {
+          }
+         }
+        }
+       }
+      }
+      FrameWidgetClass "{6A71140000000137}" {
+       Name "OrbitCamButton"
+       Slot FrameWidgetSlot "{6A71140000000131}" {
+        Anchor 0 0 0 0
+        PositionX 260
+        OffsetLeft 260
+        PositionY 2
+        OffsetTop 2
+        SizeX 128
+        OffsetRight -388
+        SizeY 26
+        OffsetBottom -28
+       }
+       {
+        SmartPanelWidgetClass "{6A71140000000133}" {
+         Name "OrbitCamBG"
+         Slot FrameWidgetSlot "{6A71140000000132}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+         }
+         Color 1 1 1 0
+         style rounded_4px
+        }
+        TextWidgetClass "{6A71140000000135}" {
+         Name "OrbitCamText"
+         Slot FrameWidgetSlot "{6A71140000000134}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+         }
+         Color 0.3968 0.4564 0.6038 1
+         Text "ORBIT"
+         "Font Size" 12
+         "Min Font Size" 10
+         "Horizontal Alignment" Center
+         "Vertical Alignment" Center
+         FontProperties FontProperties "{6A71140000000136}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        ButtonWidgetClass "{CFC5CA0000000034}" {
+         Name "OrbitCamSelectButton"
+         Slot FrameWidgetSlot "{6A71140000000130}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+         }
+         Color 1 1 1 0
+         components {
+          ButtonComponent "{CFC5CA0000000036}" {
+           m_ColorButtonDefault 1 1 1 0
+           m_ColorButtonFocused 1 1 1 0.1
+           m_ColorButtonPressed 1 1 1 0.2
+          }
+          SCR_ButtonTextComponent "{CFC5CA0000000037}" {
+          }
+         }
+        }
+       }
       }
      }
     }

@@ -2238,6 +2238,7 @@ class COA_SlottingMenu: ChimeraMenuBase
 
 		array<ResourceName> icons = {};
 		array<string> names = {};
+		array<string> groupNames = {};
 		string signature = m_fSelectedFaction.GetFactionKey();
 
 		foreach (SCR_AIGroup group : GetPlayableGroupsForSelectedFaction())
@@ -2248,6 +2249,11 @@ class COA_SlottingMenu: ChimeraMenuBase
 			RplId groupId;
 			if (!COA_ReplicationHelper.GetRplId(group, groupId))
 				continue;
+
+			// Shown at the right end of each leader's row
+			string groupName = group.GetCustomName();
+			if (groupName.IsEmpty())
+				groupName = group.GetCustomNameWithOriginal();
 
 			foreach (int slotId : slottingManager.GetAllSlotIDsForGroup(groupId))
 			{
@@ -2269,7 +2275,8 @@ class COA_SlottingMenu: ChimeraMenuBase
 				string playerName = playerManager.GetPlayerName(playerId);
 				icons.Insert(slotData.GetSlotIconResource());
 				names.Insert(playerName);
-				signature += "|" + slotId.ToString() + ":" + playerName;
+				groupNames.Insert(groupName);
+				signature += "|" + slotId.ToString() + ":" + playerName + ":" + groupName;
 			}
 		}
 
@@ -2293,6 +2300,10 @@ class COA_SlottingMenu: ChimeraMenuBase
 			TextWidget nameText = TextWidget.Cast(row.FindAnyWidget("NameText"));
 			if (nameText)
 				nameText.SetText(playerName);
+
+			TextWidget groupText = TextWidget.Cast(row.FindAnyWidget("GroupText"));
+			if (groupText)
+				groupText.SetText(groupNames[i]);
 
 			ImageWidget rankIcon = ImageWidget.Cast(row.FindAnyWidget("RankIcon"));
 			if (!rankIcon)

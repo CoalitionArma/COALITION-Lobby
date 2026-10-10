@@ -4,8 +4,12 @@ class COA_EntityInfoDisplay : SCR_ScriptedWidgetComponent
 	protected TextWidget    m_wEntityName;
 	protected TextWidget    m_wEntityRole;
 	protected TextWidget    m_wEntityDamage;  // ACE blood state label (left side of status row)
-	protected TextWidget    m_wEntityDamageType;     // "BLEEDING" indicator (right side of status row)
-	protected SliderWidget  m_wEntityHealthSlider;
+	protected TextWidget    m_wEntityDamageType;     // state chip text: UNCON / BLEEDING / cause of death
+	protected Widget        m_wHealthFill;           // rounded bar, width = blood/health fraction
+	protected Widget        m_wStateChip;            // rounded chip behind m_wEntityDamageType
+	protected Widget        m_wFactionPill;          // accent pill in the spectated player's faction colour
+
+	protected static const float HEALTH_BAR_WIDTH = 388;	// matches HealthTrack in EntityInfoDisplay.layout
 	
 	//------------------------------------------------------------------------------------------------
 	override void HandlerAttached(Widget w)
@@ -17,7 +21,9 @@ class COA_EntityInfoDisplay : SCR_ScriptedWidgetComponent
 		m_wEntityRole = TextWidget.Cast(w.FindAnyWidget("EntityRole"));
 		m_wEntityDamage = TextWidget.Cast(w.FindAnyWidget("EntityDamage"));
 		m_wEntityDamageType = TextWidget.Cast(w.FindAnyWidget("EntityDamageType"));
-		m_wEntityHealthSlider = SliderWidget.Cast(w.FindAnyWidget("EntityHealthSlider"));
+		m_wHealthFill = w.FindAnyWidget("EntityHealthFill");
+		m_wStateChip = w.FindAnyWidget("StateChipBG");
+		m_wFactionPill = w.FindAnyWidget("FactionPill");
 	}
 
 	/**
@@ -38,6 +44,16 @@ class COA_EntityInfoDisplay : SCR_ScriptedWidgetComponent
 		}
 
 		m_wEntityInfoDisplay.SetVisible(true);
+
+		// Faction accent
+		if (m_wFactionPill)
+		{
+			FactionAffiliationComponent factionComponent = FactionAffiliationComponent.Cast(specEntity.FindComponent(FactionAffiliationComponent));
+			if (factionComponent && factionComponent.GetAffiliatedFaction())
+				m_wFactionPill.SetColor(factionComponent.GetAffiliatedFaction().GetFactionColor());
+			else
+				m_wFactionPill.SetColor(Color.FromSRGBA(201, 54, 54, 255));
+		}
 
 		string playerName = "";
 		RplComponent rpl = RplComponent.Cast(specEntity.FindComponent(RplComponent));
@@ -80,7 +96,7 @@ class COA_EntityInfoDisplay : SCR_ScriptedWidgetComponent
 						if (groupName.IsEmpty())
 							groupName = playerGroup.GetCustomNameWithOriginal();
 						if (!groupName.IsEmpty())
-							roleName = groupName + " | " + roleName;
+							roleName = groupName + "  ·  " + roleName;
 					}
 				}
 			}
@@ -99,9 +115,9 @@ class COA_EntityInfoDisplay : SCR_ScriptedWidgetComponent
 					vehicleName = vehicleInfo.GetName();
 			}
 			if (!vehicleName.IsEmpty())
-				roleName = roleName + "  |  " + vehicleName;
+				roleName = roleName + "  ·  " + vehicleName;
 			else
-				roleName = roleName + "  |  In Vehicle";
+				roleName = roleName + "  ·  In vehicle";
 		}
 
 		// Truncate with ellipsis if the string is too long to fit the role line (~48 chars at font 14)
@@ -199,22 +215,26 @@ class COA_EntityInfoDisplay : SCR_ScriptedWidgetComponent
 		// Drive the fill purely by anchors: AnchorMin.x = 0, AnchorMax.x = bloodScaled.
 		// This is resolution/DPI-independent — no pixel math required.
 		float clamped = Math.Clamp(bloodScaled, 0.0, 1.0);
-		m_wEntityHealthSlider.SetCurrent(clamped);
 
-		// Color: green → yellow → red as blood drops; deep red when critically low
+		// Colour: green -> amber -> orange -> red as blood drops; grey when dead (palette, sRGB)
 		Color barColor;
 		if (bloodScaled > 0.75)
-			barColor = Color.FromRGBA(25, 191, 25, 255);    // green  — normal
+			barColor = Color.FromSRGBA(92, 196, 128, 255);
 		else if (bloodScaled > 0.5)
-			barColor = Color.FromRGBA(220, 180, 20, 255);   // yellow — Class I/II
+			barColor = Color.FromSRGBA(232, 170, 72, 255);
 		else if (bloodScaled > 0.25)
-			barColor = Color.FromRGBA(210, 100, 20, 255);   // orange — Class III
+			barColor = Color.FromSRGBA(232, 128, 64, 255);
 		else if (bloodScaled > 0)
-			barColor = Color.FromRGBA(200, 30, 30, 255);    // red    — Class IV / fatal
+			barColor = Color.FromSRGBA(232, 96, 96, 255);
 		else
-			barColor = Color.FromRGBA(80, 80, 80, 255);	 // grey   — Dead
+			barColor = Color.FromSRGBA(90, 96, 110, 255);
 
-		m_wEntityHealthSlider.SetColor(barColor);
+		if (m_wHealthFill)
+		{
+			FrameSlot.SetSizeX(m_wHealthFill, Math.Max(HEALTH_BAR_WIDTH * clamped, 1));
+			m_wHealthFill.SetColor(barColor);
+			m_wHealthFill.SetVisible(clamped > 0);
+		}
 		
 		// --- Bleeding / unconscious indicator ---
 		SCR_CharacterControllerComponent ctrl = SCR_CharacterControllerComponent.Cast(
@@ -236,31 +256,37 @@ class COA_EntityInfoDisplay : SCR_ScriptedWidgetComponent
 				damageStateText = "UNCON";
 		}
 		
+		// State chip: text + chip colour (palette, sRGB)
+		string chipText;
+		Color chipColor = Color.FromSRGBA(28, 31, 40, 255);
 		if (isDead)
 		{
-			m_wEntityDamageType.SetText(damageStateText);
-			m_wEntityDamageType.SetColor(new Color(0.5, 0.5, 0.5, 1.0));
-			return;
+			chipText = damageStateText;
+			chipColor = Color.FromSRGBA(54, 58, 70, 255);
 		}
 		else if (isUnconscious && isBleeding)
 		{
-			// Both — combine into one label, colour orange (bleeding is already implied as critical)
-			m_wEntityDamageType.SetText(damageStateText + " | BLEEDING");
-			m_wEntityDamageType.SetColor(new Color(1.0, 0.5, 0.0, 1.0));
+			chipText = damageStateText + "  ·  BLEEDING";
+			chipColor = Color.FromSRGBA(168, 92, 32, 255);
 		}
 		else if (isUnconscious)
 		{
-			m_wEntityDamageType.SetText(damageStateText);
-			m_wEntityDamageType.SetColor(new Color(1.0, 0.5, 0.0, 1.0));
+			chipText = damageStateText;
+			chipColor = Color.FromSRGBA(168, 112, 32, 255);
 		}
 		else if (isBleeding)
 		{
-			m_wEntityDamageType.SetText("BLEEDING");
-			m_wEntityDamageType.SetColor(new Color(0.9, 0.15, 0.15, 1));
+			chipText = "BLEEDING";
+			chipColor = Color.FromSRGBA(160, 40, 40, 255);
 		}
-		else
+
+		chipText.ToUpper();
+		m_wEntityDamageType.SetText(chipText);
+		m_wEntityDamageType.SetColor(Color.FromSRGBA(239, 242, 247, 255));
+		if (m_wStateChip)
 		{
-			m_wEntityDamageType.SetText("");
+			m_wStateChip.SetVisible(!chipText.IsEmpty());
+			m_wStateChip.SetColor(chipColor);
 		}
 	}
 };
