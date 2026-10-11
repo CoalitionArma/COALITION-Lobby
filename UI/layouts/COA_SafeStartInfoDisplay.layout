@@ -7,12 +7,12 @@ FrameWidgetClass {
     Anchor 0 0 0 0
     PositionX 20
     OffsetLeft 20
-    PositionY 20
-    OffsetTop 20
+    PositionY 200
+    OffsetTop 200
     SizeX 260
     OffsetRight -280
     SizeY 600
-    OffsetBottom -620
+    OffsetBottom -800
     SizeToContent 1
    }
    {
