@@ -153,6 +153,10 @@ class COA_PlayerController : SCR_PlayerController
 			if (!radioComp)
 				continue;
 
+			// A vehicle radio stays with the vehicle; settings are for the radios a player carries
+			if (CVON_VehicleRadioComponent.Cast(radioComp))
+				continue;
+
 			if (radioComp.m_sFactionKey != "")
 			{
 				Faction playerFaction = factionMan.GetPlayerFaction(GetPlayerId());

@@ -289,282 +289,55 @@ modded class SCR_VONController
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	float m_fSpecCheckBuffer = 0;
-	override void EOnFixedFrame(IEntity owner, float timeSlice)
+	//! CVON runs the voice update (membership, gains, plugin files, heartbeat); the Lobby only says who
+	//! is on a spectator channel and when in-world voice is off, through CVON's hooks below.
+	override void UpdateMembership()
 	{
-		if (m_fWriteTeamspeakClientIdCooldown > 0)
-			m_fWriteTeamspeakClientIdCooldown -= timeSlice;
-		else
-			m_fWriteTeamspeakClientIdCooldown = 0;
-		
-		if (!CVON_VONGameModeComponent.GetInstance())
-			return;
-		if (!m_PlayerController)
-			m_PlayerController = SCR_PlayerController.Cast(GetGame().GetPlayerController());
-		
-		//What the player is that we have to process this frame
-		m_Player = m_PlayerController.GetControlledEntity();
-		
-		if (!m_CharacterController)
-			if (m_Player)
-				m_CharacterController = SCR_CharacterControllerComponent.Cast(m_Player.FindComponent(SCR_CharacterControllerComponent));
-		
-		if (!m_PlayerRplComponent)
-			if (m_Player)
-				m_PlayerRplComponent = RplComponent.Cast(m_Player.FindComponent(RplComponent));
-		
-		if (!m_PlayerRplComponent || !m_CharacterController || !m_Player)
-			return;
-		
-		m_Camera = m_CameraManager.CurrentCamera();
-		if (!m_Camera)
-			return;
-		
-		if (!m_bFirstConnect)
-		{
-			WriteJSON(true, true);
-			m_bFirstConnect = true;
-		}
-		
-		m_PlayerIdTemp.Clear();
-		m_PlayerManager.GetPlayers(m_PlayerIdTemp);
-		
-		if (m_fHeadCacheBuffer >= 0.2)
-		{
-			UpdateHeadCache();
-			m_fHeadCacheBuffer = 0;
-		}
-		else
-			m_fHeadCacheBuffer += timeSlice;
-		
-    	//When a player disconnects, they are no longer in the players array, so it just leaves an empty container.
-		//This removes that container as when they reconnect they will no longer be heard.
-		//Also sound updating for maximum optimizations
-		foreach (int playerId, CVON_VONContainer container: m_PlayerController.m_aLocalEntries)
-		{
-			if (!m_PlayerIdTemp.Contains(playerId))
-			{
-				m_PlayerController.m_aLocalEntries.Remove(playerId);
-				continue;
-			}
-			
-			if (container.m_bIsSpectator)
-			{
-				if (!SpectatorCheck(playerId))
-					m_PlayerController.m_aLocalEntries.Remove(playerId);
-			}
-		
-			if (container.m_SoundSource)
-			{
-				int volume = m_VONGameModeComponent.GetPlayerVolume(playerId);
-				int maxDistance = volume;
-				maxDistance *= maxDistance;
-				container.m_iVolume = volume;
-				
-				float distance = vector.DistanceSq(container.m_SoundSource.GetOrigin(), m_Camera.GetOrigin());
-				if (distance < maxDistance)
-					container.m_fDistanceToSender = distance;
-				else
-					container.m_fDistanceToSender = -1;
-			}
-			
-		}
-		
-		bool isLocalSpectator = SpectatorCheck(m_PlayerController.GetPlayerId());
-		if (m_fSpecCheckBuffer >= 0.1)
-		{
-			m_fSpecCheckBuffer = 0;
-			UpdateSpectatorChecksIfNeeded();
-		}
-		else
-			m_fSpecCheckBuffer += timeSlice;
-		foreach (int playerId: m_PlayerIdTemp)
-		{
-			if (!m_Player)
-				continue;
-			
-			if (playerId == m_PlayerController.GetPlayerId())
-				continue;
-
-			bool isOtherSpectator = SpectatorCheck(playerId);
-			//Not usual an issue but when the player is listening to an entity and he swaps to spectator, he goes into null space until he clicks game.
-			//Meaning unless we remove his direct voice line here it just stays and he'll never be heard on spectator.;
-			IEntity player = m_PlayerManager.GetPlayerControlledEntity(playerId);
-			if (!player)
-			{
-				//Sometimes spectators and players listening are not in eachothers Rpl bubble.
-				if (isLocalSpectator && isOtherSpectator)
-				{
-					if (m_PlayerController.m_aLocalEntries.Contains(playerId))
-						continue;
-					else
-					{
-						CVON_VONContainer container = new CVON_VONContainer();
-						container.m_eVonType = CVON_EVONType.DIRECT;
-						container.m_iVolume = m_VONGameModeComponent.GetPlayerVolume(playerId);
-						container.m_iClientId = m_PlayerController.GetPlayersTeamspeakClientId(playerId);
-						container.m_iPlayerId = playerId;
-						container.m_bIsSpectator = isOtherSpectator;
-						m_PlayerController.m_aLocalEntries.Insert(playerId, container);
-					}
-				}
-				else if (m_PlayerController.m_aLocalEntries.Contains(playerId))
-				{
-					//If this VON Transmission is radio, don't do shit
-					
-					if (m_PlayerController.m_aLocalEntries.Get(playerId).m_eVonType == CVON_EVONType.RADIO)
-						continue;
-					m_PlayerController.m_aLocalEntries.Remove(playerId);
-					continue;
-				}
-				else
-					continue;
-			}
-			else
-			{
-				ChimeraCharacter character = ChimeraCharacter.Cast(player);
-				if (!character)
-					continue;
-
-				SCR_CharacterControllerComponent charCont = SCR_CharacterControllerComponent.Cast(character.GetCharacterController());
-				if (!charCont)
-					continue;
-
-				if (charCont.IsDead() || charCont.IsUnconscious())
-					if (m_PlayerController.m_aLocalEntries.Contains(playerId))
-					{
-						m_PlayerController.m_aLocalEntries.Remove(playerId);
-						continue;
-					}
-					else
-						continue;
-				
-				int maxDistance = m_VONGameModeComponent.GetPlayerVolume(playerId);
-				maxDistance *= maxDistance;
-				float distance = vector.DistanceSq(player.GetOrigin(), m_Camera.GetOrigin());
-				if (distance > maxDistance)
-				{
-					if (isLocalSpectator && isOtherSpectator)
-					{
-						if (m_PlayerController.m_aLocalEntries.Contains(playerId))
-							continue;
-						else
-						{
-							CVON_VONContainer container = new CVON_VONContainer();
-							container.m_eVonType = CVON_EVONType.DIRECT;
-							container.m_iVolume = m_VONGameModeComponent.GetPlayerVolume(playerId);
-							RplComponent rplComponent = RplComponent.Cast(player.FindComponent(RplComponent));
-							if (!rplComponent)
-								continue;
-
-							container.m_SenderRplId = rplComponent.Id();
-							container.m_iClientId = m_PlayerController.GetPlayersTeamspeakClientId(playerId);
-							container.m_iPlayerId = playerId;
-							container.m_bIsSpectator = isOtherSpectator;
-							m_PlayerController.m_aLocalEntries.Insert(playerId, container);
-						}
-					}
-					else if (m_PlayerController.m_aLocalEntries.Contains(playerId))
-					{
-						//If this VON Transmission is radio, don't do shit
-						if (m_PlayerController.m_aLocalEntries.Get(playerId).m_eVonType == CVON_EVONType.RADIO)
-							continue;
-						m_PlayerController.m_aLocalEntries.Remove(playerId);
-						continue;
-					}
-					else
-						continue;
-				}
-				else
-				{
-					if (m_PlayerController.m_aLocalEntries.Contains(playerId))
-							continue;
-					else
-					{
-						CVON_VONContainer container = new CVON_VONContainer();
-						container.m_eVonType = CVON_EVONType.DIRECT;
-						container.m_iVolume = m_VONGameModeComponent.GetPlayerVolume(playerId);
-						RplComponent rplComponent = RplComponent.Cast(player.FindComponent(RplComponent));
-						if (!rplComponent)
-							continue;
-
-						container.m_SenderRplId = rplComponent.Id();
-						container.m_iClientId = m_PlayerController.GetPlayersTeamspeakClientId(playerId);
-						container.m_iPlayerId = playerId;
-						container.m_bIsSpectator = isOtherSpectator;
-						m_PlayerController.m_aLocalEntries.Insert(playerId, container);
-					}
-					
-				}
-			}
-		}
-
-		//Handles broadcasting to other players
-		if (m_bIsBroadcasting)
-		{
-			if (m_CharacterController.GetLifeState() != ECharacterLifeState.ALIVE)
-			{
-				if (m_bToggleBuffer)
-				{
-					m_bToggleBuffer = false;
-					DeactivateCVON();
-					m_VONHud.DirectToggleDelay();
-				}
-				else
-					DeactivateCVON();
-				return;
-			}	
-		}
-		
-		if (!m_bHasBroadcasted && m_bIsBroadcasting)
-		{
-			m_PlayerController.BroadcastLocalVONToServer(m_CurrentVONContainer, m_PlayerController.GetPlayerId(), m_CurrentVONContainer.m_iRadioId);
-			m_bHasBroadcasted = true;
-		}
-		
-		// WriteJSON runs every tick; the dirty flag inside skips SaveToFile when nothing changed.
-		WriteJSON();
+		UpdateSpectatorChecksIfNeeded();
+		super.UpdateMembership();
 	}
-	
+
 	//------------------------------------------------------------------------------------------------
-	override void ComputeStereoLR(
-	    IEntity listener,
-	    vector  sourcePos,
-	    float   volume_m,    
-		int playerId ,       // interpret as the inaudible distance (≈ −45 dB)
-		out float outBehindIntensity,   
-	    out float outLeft,
-	    out float outRight,
-	    out int  silencedDecibels = 0,
-	    float   rearPanBoost   = 0.55,
-	    float   rearShadow     = 0.12,
-	    float   elevNarrow     = 0.25,
-	    float   bleed          = 0.10,
-	    bool    normalizePeak  = true
-	)
+	//! Spectators in our channel: gains come from ComputeSpectatorLR
+	override bool IsSpectatorTalker(int playerId)
+	{
+		return SpectatorCheck(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Both of us spectating in the same channel: heard at any distance, even when not streamed in
+	override bool HearOverChannel(int playerId)
+	{
+		if (!m_PlayerController)
+			return false;
+
+		return SpectatorCheck(m_PlayerController.GetPlayerId()) && SpectatorCheck(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! End credits: silence. AAR: no in-world voice, only players in your channel are heard.
+	override bool OverrideTalkerGains(int playerId, out float left, out float right)
 	{
 		if (COA_Gamemode.GetInstance() && COA_Gamemode.GetInstance().m_bIsInEndCredits)
 		{
-			outLeft = 0;
-			outRight = 0;
-			return;
+			left = 0;
+			right = 0;
+			return true;
 		}
-		
+
 		if (SpectatorCheck(playerId))
 		{
-			outLeft = 1;
-			outRight = 1;
-			return;
+			left = 1;
+			right = 1;
+			return true;
 		}
 
-		// No in-world proximity voice during the AAR - only players in your channel are heard
 		if (IsAARVoiceActive())
 		{
-			outLeft = 0;
-			outRight = 0;
-			return;
+			left = 0;
+			right = 0;
+			return true;
 		}
-
-		super.ComputeStereoLR(listener, sourcePos, volume_m, playerId, outBehindIntensity, outLeft, outRight, silencedDecibels, rearPanBoost, rearShadow, elevNarrow, bleed, normalizePeak);
+		return false;
 	}
 }
