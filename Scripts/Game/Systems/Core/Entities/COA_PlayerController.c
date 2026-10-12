@@ -153,6 +153,10 @@ class COA_PlayerController : SCR_PlayerController
 			if (!radioComp)
 				continue;
 
+			// Settings are for the radios a player carries: not a vehicle radio or someone else's handset
+			if (radioComp.GetCarrier() != GetControlledEntity())
+				continue;
+
 			if (radioComp.m_sFactionKey != "")
 			{
 				Faction playerFaction = factionMan.GetPlayerFaction(GetPlayerId());

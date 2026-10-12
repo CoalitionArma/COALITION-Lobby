@@ -9,13 +9,12 @@ modded class CVON_RadioComponent
 		if (m_sFactionKey != "")
 			return;
 	
-		if (!GetOwner().GetRootParent())
-			return;
-
-		if (!SCR_ChimeraCharacter.Cast(GetOwner().GetRootParent()))
+		// The character carrying the radio (GetRootParent() is the vehicle for a seated player)
+		IEntity carrier = GetCarrier();
+		if (!SCR_ChimeraCharacter.Cast(carrier))
 			return;
 		
-		FactionAffiliationComponent factionComp = FactionAffiliationComponent.Cast(GetOwner().GetRootParent().FindComponent(FactionAffiliationComponent));
+		FactionAffiliationComponent factionComp = FactionAffiliationComponent.Cast(carrier.FindComponent(FactionAffiliationComponent));
 		if (!factionComp)
 			return;
 		m_sFactionKey = factionComp.GetAffiliatedFactionKey();
@@ -38,14 +37,12 @@ modded class CVON_RadioComponent
 			if (m_sFactionKey != "")
 				return;
 
-			if (!GetOwner().GetRootParent())
+			//Radio is in the inventory of a player (GetRootParent() is the vehicle for a seated player)
+			IEntity carrier = GetCarrier();
+			if (!SCR_ChimeraCharacter.Cast(carrier))
 				return;
 
-			//Radio is in the inventory of a player.
-			if (!SCR_ChimeraCharacter.Cast(GetOwner().GetRootParent()))
-				return;
-
-			FactionAffiliationComponent factionComp = FactionAffiliationComponent.Cast(GetOwner().GetRootParent().FindComponent(FactionAffiliationComponent));
+			FactionAffiliationComponent factionComp = FactionAffiliationComponent.Cast(carrier.FindComponent(FactionAffiliationComponent));
 			if (!factionComp)
 				return;
 
