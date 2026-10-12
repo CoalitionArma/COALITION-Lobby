@@ -1363,29 +1363,30 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		
 		if (resourceSpawned)
 			if (resourceSpawned.FindComponent(CVON_RadioComponent))
-			{
 				GetGame().GetCallqueue().CallLater(InitializePlayerRadiosDelayed, 500, false, playerId);
-				COA_PlayerRplToOwnerManager ownerManager = COA_PlayerRplToOwnerManager.GetForPlayer(playerId);
-				if (ownerManager)
-					ownerManager.InitializeRadioFromServer();
-			
-			}
 	}
-	
+
 	//------------------------------------------------------------------------------------------------
+	//! Same order as COA_GearscriptManager.InitializeCharacterRadios: rebuild the server's radio list
+	//! first (tuning only touches radios in it, so the new one was skipped and kept its default
+	//! frequency), then tune to the group's frequencies, then have the client rebuild its list.
 	static void InitializePlayerRadiosDelayed(int playerId)
 	{
 		IEntity player = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		if (!player)
 			return;
 
+		COA_PlayerController playerController = COA_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
+		if (playerController)
+			playerController.InitializeRadios(player);
+
 		SCR_GroupsManagerComponent groupsManager = SCR_GroupsManagerComponent.GetInstance();
 		if (groupsManager)
 			groupsManager.TuneFreqDelayWithPresets(playerId, player);
 
-		COA_PlayerController playerController = COA_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
-		if (playerController)
-			playerController.InitializeRadios(player);
+		COA_PlayerRplToOwnerManager ownerManager = COA_PlayerRplToOwnerManager.GetForPlayer(playerId);
+		if (ownerManager && playerController)
+			ownerManager.InitializeRadioFromServer();
 	}
 	
 	//------------------------------------------------------------------------------------------------
