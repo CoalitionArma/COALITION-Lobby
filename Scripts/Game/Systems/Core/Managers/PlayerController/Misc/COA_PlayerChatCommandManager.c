@@ -52,12 +52,16 @@ class COA_PlayerChatCommandManager : ScriptComponent
 		ChatCommandInvoker invokerFreq = chatPanelManager.GetCommandInvoker("freq");
 		invokerFreq.Insert(ShowFrequencies);
 
+		ChatCommandInvoker invokerIncident = chatPanelManager.GetCommandInvoker("incident");
+		invokerIncident.Insert(MarkIncident);
+
 		RegisterHelp("/help", "List chat commands");
 		RegisterHelp("/a <message>", "Message the admins (also /admin)");
 		RegisterHelp("/freq", "Show your radios' channels and frequencies");
 		RegisterHelp("/r <player> <message>", "Reply to a player's admin message", true);
 		RegisterHelp("/aar <faction>", "End the mission with a winner", true);
 		RegisterHelp("/adminmenu", "Open the admin menu", true);
+		RegisterHelp("/incident <note>", "Mark an incident for the AAR and session report", true);
 	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -255,7 +259,32 @@ class COA_PlayerChatCommandManager : ScriptComponent
 		toSend = string.Format("\"%1\"", toSend);
 		m_PlayerRplToAuthorityManager.ReplyAdminMessage(toSend, playerId, adminID, true);
 	}
-	
+
+	//------------------------------------------------------------------------------------------------
+	//! Staff bookmark: shows on the mission's AAR timeline (at this moment of the playback) and in
+	//! the website's session report.
+	//! Usage: /incident <what happened>
+	void MarkIncident(SCR_ChatPanel panel, string data)
+	{
+		COA_PermissionManager permissionManager = COA_PermissionManager.GetInstance();
+		if (!SCR_Global.IsAdmin() && !(permissionManager && permissionManager.IsModerator()))
+			return;
+
+		SCR_ChatComponent chatComponent = GetLocalChatComponent();
+		if (!chatComponent)
+			return;
+
+		string note = data.Trim();
+		if (note.IsEmpty())
+		{
+			chatComponent.ShowMessage("Describe the incident after /incident, e.g. /incident Blue 2 teamkill at the bridge");
+			return;
+		}
+
+		m_PlayerRplToAuthorityManager.MarkIncident(note);
+		chatComponent.ShowMessage(string.Format("Incident marked: \"%1\"", note));
+	}
+
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 GAMEMODE STATE METHODS
 //=============================================================================================================================================================================================================================================================================================================================================================

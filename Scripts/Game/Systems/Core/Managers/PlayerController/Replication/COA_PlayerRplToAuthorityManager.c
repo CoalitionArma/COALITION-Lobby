@@ -362,9 +362,16 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void LogAdminAction(string data, int playerId, bool sendToPlayer, COA_EAdminLogLevel level) 
+	void LogAdminAction(string data, int playerId, bool sendToPlayer, COA_EAdminLogLevel level)
 	{
-		Rpc(RpcAsk_LogAdminAction, data, playerId, sendToPlayer, level); 
+		Rpc(RpcAsk_LogAdminAction, data, playerId, sendToPlayer, level);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Staff: bookmark something that happened (/incident) for the AAR timeline and the session report
+	void MarkIncident(string note)
+	{
+		Rpc(RpcAsk_MarkIncident, note);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1162,8 +1169,12 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		
 		// Create a new ticket or/and add reply to existing ticket if not a admin/mod
 		if (!SCR_Global.IsAdmin(playerID) && !m_PermissionManager.IsModerator(playerID))
+		{
 			m_AdminMenuManager.NewTicketMessage(playerID, playerID, data);
-	}	
+			if (!ticketExists)
+				COA_SessionLog.Ticket("open", GetGame().GetPlayerManager().GetPlayerName(playerID), string.Empty);
+		}
+	}
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
@@ -1200,8 +1211,13 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			return;
 		adminID = GetCallerPlayerId();
 
+		// The ticket ID is the requesting player's ID
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (m_AdminMenuManager.TicketExists(ticketID))
+			COA_SessionLog.Ticket("closed", playerManager.GetPlayerName(ticketID), playerManager.GetPlayerName(adminID));
+
 		m_AdminMenuManager.CloseTicket(ticketID);
-		
+
 		// Broadcast to admins that ticket was clsoed
 		m_RplBroadcastManager.CloseAdminTicket(ticketID, adminID, true);
 	}
@@ -1220,7 +1236,37 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			return;
 		adminID = GetCallerPlayerId();
 
+		if (m_AdminMenuManager.TicketExists(ticketID))
+		{
+			PlayerManager playerManager = GetGame().GetPlayerManager();
+			COA_SessionLog.Ticket("assigned", playerManager.GetPlayerName(ticketID), playerManager.GetPlayerName(adminID));
+		}
+
 		m_AdminMenuManager.AssignAdminTicket(ticketID, adminID);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_MarkIncident(string note)
+	{
+		LogTelemetry("RpcAsk_MarkIncident", COA_BandwidthTelemetryManager.EstimateSize_String(note));
+
+		if (!IsCallerStaff())
+			return;
+
+		note = note.Trim();
+		if (note.IsEmpty())
+			return;
+
+		// Keep log lines (and the website card) a sensible size
+		if (note.Length() > 300)
+			note = note.Substring(0, 300);
+
+		string adminName = GetGame().GetPlayerManager().GetPlayerName(GetCallerPlayerId());
+		COA_SessionLog.Incident(adminName, note);
+
+		// Other staff see it in the admin log; nobody else is told
+		m_RplBroadcastManager.LogAdminAction(string.Format("%1 marked an incident: %2", adminName, note), GetCallerPlayerId(), false, COA_EAdminLogLevel.Medium);
 	}
 
 	

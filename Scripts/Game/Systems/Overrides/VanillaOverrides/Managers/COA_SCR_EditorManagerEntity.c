@@ -8,6 +8,10 @@ modded class SCR_EditorManagerEntity
 	// added), so COA_RefreshTacticalMode can re-run the same decision after a slot change.
 	protected EEditorMode m_COA_RoleModes;
 
+	// World time (ms) staff entered Game Master (Zeus); -1 when not in a logged Zeus session.
+	// See COA_LogZeusOpened / COA_LogZeusClosed.
+	protected float m_fCOA_ZeusSince = -1;
+
 	//----------------------------------------------------------------
 	// True when the local player is allowed unlimited editor access
 	// (spectators, moderators and admins). Used both to decide the
@@ -152,17 +156,93 @@ modded class SCR_EditorManagerEntity
 		{
 			if (m_CurrentModeEntity)
 				m_CurrentModeEntity.ActivateModeServer();
-			
+
 			Event_OnOpenedServer.Invoke();
+			COA_LogZeusOpened();
 		}
 		// Handle editor being closed
 		else
 		{
 			if (m_CurrentModeEntity)
 				m_CurrentModeEntity.DeactivateModeServer();
-			
+
 			Event_OnClosedServer.Invoke();
+			COA_LogZeusClosed();
 		}
+	}
+
+	//----------------------------------------------------------------
+	// Switching into Game Master while the editor is already open (e.g. from the
+	// spectator or photo camera) counts as opening Zeus too.
+	//----------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	override protected void SetCurrentModeServer(EEditorMode mode)
+	{
+		super.SetCurrentModeServer(mode);
+
+		if (m_bIsOpened && COA_Gamemode.GetInstance())
+			COA_LogZeusOpened();
+	}
+
+	//----------------------------------------------------------------
+	// Admin log for Zeus (Game Master) use by staff. Goes to the in-game admin
+	// menu log and, via COA_SessionLog, the server log the website's session
+	// report reads. Spectators and the tactical camera open the editor too, so
+	// only staff in a Game Master mode (EDIT / ADMIN) are logged.
+	//----------------------------------------------------------------
+
+	protected bool COA_IsStaffPlayer(int playerId)
+	{
+		if (playerId <= 0)
+			return false;
+
+		if (SCR_Global.IsAdmin(playerId))
+			return true;
+
+		COA_PermissionManager permissionManager = COA_PermissionManager.GetInstance();
+		return permissionManager && permissionManager.IsModerator(playerId);
+	}
+
+	protected void COA_LogZeusOpened()
+	{
+		if (m_fCOA_ZeusSince >= 0)
+			return;
+
+		EEditorMode mode = GetCurrentMode();
+		if (mode != EEditorMode.EDIT && mode != EEditorMode.ADMIN)
+			return;
+
+		int playerId = GetPlayerID();
+		COA_RplBroadcastManager broadcastManager = COA_RplBroadcastManager.GetInstance();
+		if (!broadcastManager || !COA_IsStaffPlayer(playerId))
+			return;
+
+		m_fCOA_ZeusSince = GetGame().GetWorld().GetWorldTime();
+		string playerName = GetGame().GetPlayerManager().GetPlayerName(playerId);
+		broadcastManager.LogAdminAction(string.Format("%1 opened Zeus", playerName), playerId, false, COA_EAdminLogLevel.Medium);
+	}
+
+	protected void COA_LogZeusClosed()
+	{
+		if (m_fCOA_ZeusSince < 0)
+			return;
+
+		int minutes = (GetGame().GetWorld().GetWorldTime() - m_fCOA_ZeusSince) / 60000;
+		m_fCOA_ZeusSince = -1;
+
+		int playerId = GetPlayerID();
+		COA_RplBroadcastManager broadcastManager = COA_RplBroadcastManager.GetInstance();
+		if (!broadcastManager)
+			return;
+
+		string playerName = GetGame().GetPlayerManager().GetPlayerName(playerId);
+		string duration = "under a minute";
+		if (minutes == 1)
+			duration = "1 minute";
+		else if (minutes > 1)
+			duration = string.Format("%1 minutes", minutes);
+
+		broadcastManager.LogAdminAction(string.Format("%1 closed Zeus after %2", playerName, duration), playerId, false, COA_EAdminLogLevel.Low);
 	}
 	
 	//----------------------------------------------------------------

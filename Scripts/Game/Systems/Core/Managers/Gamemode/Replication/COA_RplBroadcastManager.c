@@ -392,6 +392,9 @@ class COA_RplBroadcastManager : ScriptComponent
 			return;
 		}
 
+		// Server log for the website's session report
+		COA_SessionLog.AdminAction(data, level);
+
 		// Admin logs go to staff only (plus the affected player when sendToPlayer is set)
 		int extraPlayerId = -1;
 		if (sendToPlayer)
