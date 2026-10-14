@@ -69,7 +69,7 @@ class COA_TacticalHintEditorComponent : SCR_BaseEditorComponent
 		string text = string.Format(
 			"Overhead view of friendly units within %1 m of your body (up to %2 m high) - the yellow ring is your limit.\n"
 			+ "Select a squad by clicking one of its members or its row in the squad list, then right-click the ground to order it there: Move, Attack, Defend, Hold, Regroup or Cancel.\n"
-			+ "Every member of that squad gets the order as a hint and a marker on their map. Orders from every leader on your side show here and on your map.\n"
+			+ "The squad's leader gets the order as a hint and a marker on their map, and passes it on to the squad. Orders from every leader on your side show here and on your map.\n"
 			+ "Nothing can be placed or edited here. Press the Game Master key again to return to your body.",
 			Math.Round(COA_TacticalCamera.GetRange()), Math.Round(COA_TacticalCamera.GetMaxHeight()));
 

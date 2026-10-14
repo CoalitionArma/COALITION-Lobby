@@ -483,20 +483,23 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 
 		string issuerName = GetGame().GetPlayerManager().GetPlayerName(callerId);
 
-		// Everyone in the squad gets the order as a hint; the squad leader also gets the map marker
-		// (everyone does when the squad has no leader)
-		array<int> memberIds = group.GetPlayerIDs();
+		// Only the squad leader gets the order (hint and map marker) and passes it on to the squad.
+		// A squad without a leader gets it on every member instead, so the order isn't lost.
+		array<int> recipientIds = {};
 		int squadLeaderId = group.GetLeaderID();
-		bool hasSquadLeader = memberIds.Contains(squadLeaderId);
+		if (group.GetPlayerIDs().Contains(squadLeaderId))
+			recipientIds.Insert(squadLeaderId);
+		else
+			recipientIds.Copy(group.GetPlayerIDs());
 
 		int delivered;
-		foreach (int memberId : memberIds)
+		foreach (int recipientId : recipientIds)
 		{
-			COA_PlayerRplToOwnerManager ownerManager = COA_PlayerRplToOwnerManager.GetForPlayer(memberId);
+			COA_PlayerRplToOwnerManager ownerManager = COA_PlayerRplToOwnerManager.GetForPlayer(recipientId);
 			if (!ownerManager)
 				continue;
 
-			ownerManager.ReceiveTacticalOrder(order, position, issuerName, memberId == squadLeaderId || !hasSquadLeader);
+			ownerManager.ReceiveTacticalOrder(order, position, issuerName);
 			delivered++;
 		}
 
@@ -504,7 +507,15 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			return;
 
 		if (m_RplBroadcastManager)
-			m_RplBroadcastManager.SendHint(string.Format("%1 order sent to %2 (%3 players).", COA_TacticalCamera.GetOrderName(order), group.GetCustomNameWithOriginal(), delivered), callerId);
+		{
+			string sentTo;
+			if (recipientIds.Count() == 1 && recipientIds[0] == squadLeaderId)
+				sentTo = "squad leader " + GetGame().GetPlayerManager().GetPlayerName(squadLeaderId);
+			else
+				sentTo = string.Format("no squad leader - sent to all %1 players", delivered);
+
+			m_RplBroadcastManager.SendHint(string.Format("%1 order sent to %2 (%3).", COA_TacticalCamera.GetOrderName(order), group.GetCustomNameWithOriginal(), sentTo), callerId);
+		}
 
 		// Every platoon leader / commander on the side keeps the order on their board, so the
 		// Tactical Camera and their map show what each squad has been told

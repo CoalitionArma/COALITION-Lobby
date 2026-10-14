@@ -280,19 +280,19 @@ class COA_PlayerRplToOwnerManager : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Tactical camera: an order from a leader for this player's squad (see COA_TacticalOrderClient)
-	void ReceiveTacticalOrder(COA_ETacticalOrder order, vector position, string issuerName, bool showMarker)
+	void ReceiveTacticalOrder(COA_ETacticalOrder order, vector position, string issuerName)
 	{
 		if (IsLocallyOwned())
-			RpcDo_ReceiveTacticalOrder(order, position, issuerName, showMarker);
+			RpcDo_ReceiveTacticalOrder(order, position, issuerName);
 		else
-			Rpc(RpcDo_ReceiveTacticalOrder, order, position, issuerName, showMarker);
+			Rpc(RpcDo_ReceiveTacticalOrder, order, position, issuerName);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_ReceiveTacticalOrder(COA_ETacticalOrder order, vector position, string issuerName, bool showMarker)
+	protected void RpcDo_ReceiveTacticalOrder(COA_ETacticalOrder order, vector position, string issuerName)
 	{
-		COA_TacticalOrderClient.Receive(order, position, issuerName, showMarker);
+		COA_TacticalOrderClient.Receive(order, position, issuerName);
 	}
 
 	//------------------------------------------------------------------------------------------------

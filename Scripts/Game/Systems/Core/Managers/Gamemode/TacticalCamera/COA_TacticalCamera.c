@@ -367,9 +367,9 @@ class COA_TacticalOrderMarker
 }
 
 //------------------------------------------------------------------------------------------------
-//! Client side of an order: every member of the squad gets a hint, and the squad leader gets a
-//! map marker showing the order type at the ordered spot. One order marker is kept per player; a
-//! new order (or CANCEL) replaces it.
+//! Client side of an order, on the ordered squad's leader (or every member when the squad has no
+//! leader): a hint and a map marker showing the order type at the ordered spot. One order marker is
+//! kept per player; a new order (or CANCEL) replaces it.
 class COA_TacticalOrderClient
 {
 	protected static ref COA_TacticalOrderMarker s_OrderMarker;
@@ -381,8 +381,7 @@ class COA_TacticalOrderClient
 	protected static const int MARKER_Z_ORDER = 60;
 
 	//------------------------------------------------------------------------------------------------
-	//! \param[in] showMarker True for the squad leader (or everyone, when the squad has no leader)
-	static void Receive(COA_ETacticalOrder order, vector position, string issuerName, bool showMarker)
+	static void Receive(COA_ETacticalOrder order, vector position, string issuerName)
 	{
 		ClearMarker();
 
@@ -396,15 +395,10 @@ class COA_TacticalOrderClient
 		string orderName = COA_TacticalCamera.GetOrderName(order);
 		string grid = SCR_MapEntity.GetGridLabel(position);
 
-		string text = string.Format("%1 - grid %2.", orderName, grid);
-		if (showMarker)
-			text += " Marked on your map.";
-
-		SCR_HintManagerComponent.ShowCustomHint(text, "Order from " + issuerName, HINT_DURATION);
+		SCR_HintManagerComponent.ShowCustomHint(string.Format("%1 - grid %2. Marked on your map.", orderName, grid), "Order from " + issuerName, HINT_DURATION);
 		AudioSystem.PlaySound(ORDER_SOUND);
 
-		if (showMarker)
-			s_OrderMarker = CreateMarker(order, position, orderName + " - " + issuerName);
+		s_OrderMarker = CreateMarker(order, position, orderName + " - " + issuerName);
 	}
 
 	//------------------------------------------------------------------------------------------------
