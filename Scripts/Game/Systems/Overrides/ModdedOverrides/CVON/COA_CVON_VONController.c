@@ -199,6 +199,10 @@ modded class SCR_VONController
 	{
 		if (SpectatorCheck(playerId))
 			return false;
+
+		// Spectator or Game Master camera: it isn't inside any building or vehicle
+		if (IsListeningFromCamera())
+			return false;
 		
 		IEntity player = m_PlayerController.GetLocalControlledEntity();
 		if (!player)
@@ -295,6 +299,14 @@ modded class SCR_VONController
 	{
 		UpdateSpectatorChecksIfNeeded();
 		super.UpdateMembership();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Spectating: hear the world around the spectator camera (free camera or a followed player's view),
+	//! not around the hidden spectator character
+	override bool IsListeningFromCamera()
+	{
+		return super.IsListeningFromCamera() || COA_EntityHelper.IsSpectator();
 	}
 
 	//------------------------------------------------------------------------------------------------
