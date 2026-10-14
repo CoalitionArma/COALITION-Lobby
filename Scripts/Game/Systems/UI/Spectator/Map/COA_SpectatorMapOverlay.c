@@ -6,7 +6,8 @@ enum COA_ESpecMapPinKind
 	VEHICLE,
 	SQUAD,
 	CAMERA,
-	KILL
+	KILL,
+	GRENADE
 }
 
 //------------------------------------------------------------------------------------------------
@@ -69,8 +70,8 @@ class COA_SpecMapPin : ScriptedWidgetComponent
 		if (m_wArrow)
 			m_wArrow.SetPivot(0.5, 0.5);
 
-		// Kill and camera markers are informational only, and must not swallow map clicks
-		if (kind == COA_ESpecMapPinKind.KILL || kind == COA_ESpecMapPinKind.CAMERA)
+		// Kill, grenade and camera markers are informational only, and must not swallow map clicks
+		if (kind == COA_ESpecMapPinKind.KILL || kind == COA_ESpecMapPinKind.CAMERA || kind == COA_ESpecMapPinKind.GRENADE)
 		{
 			m_wHitArea.SetEnabled(false);
 			m_wHitArea.SetVisible(false);
@@ -356,6 +357,14 @@ class COA_SpecMapSquad : Managed
 
 //------------------------------------------------------------------------------------------------
 //! A recent death, drawn as a fading marker (fed by the spectator kill feed)
+class COA_SpecMapGrenade
+{
+	Widget m_wRoot;
+	COA_SpecMapPin m_Pin;
+	bool m_bSeen;
+}
+
+//------------------------------------------------------------------------------------------------
 class COA_SpecMapKillEvent
 {
 	vector m_vPosition;
@@ -391,6 +400,8 @@ class COA_SpectatorMapOverlay : Managed
 	protected static const float TOOLTIP_WIDTH = 240;		// matches TooltipWidth in COA_SpecMapTooltip.layout
 
 	protected static const int Z_KILL = 10;
+	protected static const int Z_GRENADE = 35;
+	protected static const float GRENADE_SIZE = 12;
 	protected static const int Z_SQUAD = 20;
 	protected static const int Z_UNIT = 30;
 	protected static const int Z_VEHICLE = 40;
@@ -415,6 +426,7 @@ class COA_SpectatorMapOverlay : Managed
 	protected ref map<RplId, ref COA_SpecMapUnit> m_mUnits = new map<RplId, ref COA_SpecMapUnit>();
 	protected ref map<RplId, ref COA_SpecMapVehicle> m_mVehicles = new map<RplId, ref COA_SpecMapVehicle>();
 	protected ref map<int, ref COA_SpecMapSquad> m_mSquads = new map<int, ref COA_SpecMapSquad>();
+	protected ref map<RplId, ref COA_SpecMapGrenade> m_mGrenades = new map<RplId, ref COA_SpecMapGrenade>();
 
 	protected Widget m_wCameraRoot;
 	protected COA_SpecMapPin m_CameraPin;
@@ -499,6 +511,13 @@ class COA_SpectatorMapOverlay : Managed
 			kill.m_Pin = null;
 		}
 
+		foreach (RplId grenadeId, COA_SpecMapGrenade closingMarker : m_mGrenades)
+		{
+			if (closingMarker.m_wRoot)
+				closingMarker.m_wRoot.RemoveFromHierarchy();
+		}
+		m_mGrenades.Clear();
+
 		if (m_wCameraRoot)
 			m_wCameraRoot.RemoveFromHierarchy();
 		m_wCameraRoot = null;
@@ -569,6 +588,7 @@ class COA_SpectatorMapOverlay : Managed
 
 		UpdateCamera(followed);
 		UpdateKills();
+		UpdateGrenades();
 		PositionTooltip();
 	}
 
@@ -1249,6 +1269,81 @@ class COA_SpectatorMapOverlay : Managed
 			kill.m_Pin.Layout(13 + 12 * pulse, false, true);
 			kill.m_wRoot.SetOpacity(Math.Clamp(1.2 - age / KILL_LIFETIME, 0.2, 1));
 			PlacePin(kill.m_Pin, kill.m_vPosition);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Thrown grenades (COA_GrenadeTracker): a small red grenade from the throw until it explodes or
+	//! its smoke runs out
+	protected void UpdateGrenades()
+	{
+		foreach (RplId markerId, COA_SpecMapGrenade marker : m_mGrenades)
+		{
+			marker.m_bSeen = false;
+		}
+
+		COA_GrenadeTracker tracker = COA_GrenadeTracker.GetInstance();
+		if (tracker)
+		{
+			COA_Gamemode gamemode = COA_Gamemode.GetInstance();
+			bool hideOtherFactions = gamemode && gamemode.m_bHideOtherSpectatorFactions;
+			Faction localFaction;
+			if (hideOtherFactions)
+				localFaction = COA_SlottingManager.GetInstance().GetPlayerSlotFaction(SCR_PlayerController.GetLocalPlayerId());
+
+			array<COA_ThrownGrenade> grenades = {};
+			tracker.GetActiveGrenades(grenades);
+			foreach (COA_ThrownGrenade grenade : grenades)
+			{
+				if (!COA_GrenadeTracker.IsVisibleToFaction(grenade, hideOtherFactions, localFaction))
+					continue;
+
+				IEntity grenadeEntity = COA_GrenadeTracker.GetThrownEntity(grenade);
+				if (!grenadeEntity)
+					continue;
+
+				COA_SpecMapGrenade grenadeMarker = m_mGrenades.Get(grenade.m_Id);
+				if (!grenadeMarker)
+				{
+					COA_SpecMapPin grenadePin;
+					Widget grenadeRoot = CreatePin(COA_ESpecMapPinKind.GRENADE, Z_GRENADE, grenadePin);
+					if (!grenadeRoot)
+						continue;
+
+					Color red = COA_GrenadeTracker.GetIconColor();
+					grenadePin.Init(grenadeRoot, COA_ESpecMapPinKind.GRENADE, null, this);
+					grenadePin.SetColors(s_Ring, red);
+					grenadePin.SetIconImage(ATLAS, "Grenade");
+					grenadePin.SetIconColor(red);
+					grenadePin.SetLabel("");
+					grenadePin.SetLabelShown(false);
+					grenadePin.Layout(GRENADE_SIZE, false, true);
+
+					grenadeMarker = new COA_SpecMapGrenade();
+					grenadeMarker.m_wRoot = grenadeRoot;
+					grenadeMarker.m_Pin = grenadePin;
+					m_mGrenades.Set(grenade.m_Id, grenadeMarker);
+				}
+
+				grenadeMarker.m_bSeen = true;
+				PlacePin(grenadeMarker.m_Pin, grenadeEntity.GetOrigin());
+			}
+		}
+
+		array<RplId> gone = {};
+		foreach (RplId oldId, COA_SpecMapGrenade oldMarker : m_mGrenades)
+		{
+			if (oldMarker.m_bSeen)
+				continue;
+
+			if (oldMarker.m_wRoot)
+				oldMarker.m_wRoot.RemoveFromHierarchy();
+			gone.Insert(oldId);
+		}
+
+		foreach (RplId goneId : gone)
+		{
+			m_mGrenades.Remove(goneId);
 		}
 	}
 

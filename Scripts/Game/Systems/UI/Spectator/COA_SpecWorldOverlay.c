@@ -400,6 +400,15 @@ class COA_SpecWorldVehicle : Managed
 }
 
 //------------------------------------------------------------------------------------------------
+//! A thrown grenade's in-world marker
+class COA_SpecWorldGrenade
+{
+	Widget m_wRoot;
+	COA_SpecMapPin m_Pin;
+	bool m_bSeen;
+}
+
+//------------------------------------------------------------------------------------------------
 //! A recent death's in-world marker
 class COA_SpecWorldKill
 {
@@ -412,7 +421,8 @@ class COA_SpecWorldKill
 
 //------------------------------------------------------------------------------------------------
 //! In-world spectator markers besides the player / squad icons: occupied vehicles (vehicle icon,
-//! crew count, name on hover) and recent kills (fading skull in the victim's faction colour).
+//! crew count, name on hover), recent kills (fading skull in the victim's faction colour) and thrown
+//! grenades (small red grenade, from COA_GrenadeTracker).
 //! Reuses the spectator map pin layout. Owned and driven by COA_SpectatorMenu.
 class COA_SpecWorldMarkers
 {
@@ -430,12 +440,17 @@ class COA_SpecWorldMarkers
 	protected static const float KILL_MAX_DISTANCE = 800;
 	protected static const int KILL_MAX = 20;
 
+	protected static const float GRENADE_MAX_DISTANCE = 600;
+	protected static const float GRENADE_SIZE = 14;
+	protected static const float GRENADE_ABOVE = 0.35;		// metres above the grenade, so grass doesn't hide it
+
 	protected static ref Color s_Ring = new Color(0.0033, 0.0037, 0.0052, 0.92);
 	protected static ref Color s_White = new Color(0.8632, 0.8879, 0.9301, 1);
 
 	protected Widget m_wParent;
 	protected ref map<RplId, ref COA_SpecWorldVehicle> m_mVehicles = new map<RplId, ref COA_SpecWorldVehicle>();
 	protected ref array<ref COA_SpecWorldKill> m_aKills = {};
+	protected ref map<RplId, ref COA_SpecWorldGrenade> m_mGrenades = new map<RplId, ref COA_SpecWorldGrenade>();
 	protected float m_fNextVehicleRefresh;
 	protected COA_SpecWorldVehicle m_HoveredVehicle;
 
@@ -467,6 +482,13 @@ class COA_SpecWorldMarkers
 				kill.m_wRoot.RemoveFromHierarchy();
 		}
 		m_aKills.Clear();
+
+		foreach (RplId grenadeId, COA_SpecWorldGrenade clearedMarker : m_mGrenades)
+		{
+			if (clearedMarker.m_wRoot)
+				clearedMarker.m_wRoot.RemoveFromHierarchy();
+		}
+		m_mGrenades.Clear();
 		m_HoveredVehicle = null;
 	}
 
@@ -517,6 +539,7 @@ class COA_SpecWorldMarkers
 		}
 
 		UpdateKills(now, cameraPos);
+		UpdateGrenades(cameraPos, hideOtherFactions, localFaction);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -720,6 +743,84 @@ class COA_SpecWorldMarkers
 			kill.m_wRoot.SetOpacity(Math.Clamp(1.2 - age / KILL_LIFETIME_MS, 0.15, 1));
 			kill.m_Pin.SetScreenPos(screen[0], screen[1]);
 			kill.m_wRoot.SetZOrder(screen[2] * -10000 - 2);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A small red grenade over every thrown grenade nearby, until it explodes or its smoke runs out
+	protected void UpdateGrenades(vector cameraPos, bool hideOtherFactions, Faction localFaction)
+	{
+		foreach (RplId markerId, COA_SpecWorldGrenade marker : m_mGrenades)
+		{
+			marker.m_bSeen = false;
+		}
+
+		COA_GrenadeTracker tracker = COA_GrenadeTracker.GetInstance();
+		if (tracker)
+		{
+			array<COA_ThrownGrenade> grenades = {};
+			tracker.GetActiveGrenades(grenades);
+			foreach (COA_ThrownGrenade grenade : grenades)
+			{
+				if (!COA_GrenadeTracker.IsVisibleToFaction(grenade, hideOtherFactions, localFaction))
+					continue;
+
+				IEntity grenadeEntity = COA_GrenadeTracker.GetThrownEntity(grenade);
+				if (!grenadeEntity)
+					continue;
+
+				COA_SpecWorldGrenade grenadeMarker = m_mGrenades.Get(grenade.m_Id);
+				if (!grenadeMarker)
+				{
+					COA_SpecMapPin grenadePin;
+					Widget grenadeRoot = CreatePin(grenadePin);
+					if (!grenadeRoot)
+						continue;
+
+					Color red = COA_GrenadeTracker.GetIconColor();
+					grenadePin.Init(grenadeRoot, COA_ESpecMapPinKind.GRENADE, null, null);
+					grenadePin.SetColors(s_Ring, red);
+					grenadePin.SetIconImage(ATLAS, "Grenade");
+					grenadePin.SetIconColor(red);
+					grenadePin.SetLabel("");
+					grenadePin.SetLabelShown(false);
+					grenadePin.Layout(GRENADE_SIZE, false, true);
+
+					grenadeMarker = new COA_SpecWorldGrenade();
+					grenadeMarker.m_wRoot = grenadeRoot;
+					grenadeMarker.m_Pin = grenadePin;
+					m_mGrenades.Set(grenade.m_Id, grenadeMarker);
+				}
+
+				grenadeMarker.m_bSeen = true;
+
+				vector point = grenadeEntity.GetOrigin();
+				point[1] = point[1] + GRENADE_ABOVE;
+				vector screen = GetGame().GetWorkspace().ProjWorldToScreen(point, GetGame().GetWorld());
+				bool show = screen[2] > 0 && vector.Distance(cameraPos, point) < GRENADE_MAX_DISTANCE;
+				grenadeMarker.m_Pin.SetShown(show);
+				if (!show)
+					continue;
+
+				grenadeMarker.m_Pin.SetScreenPos(screen[0], screen[1]);
+				grenadeMarker.m_wRoot.SetZOrder(screen[2] * -10000 - 1);
+			}
+		}
+
+		array<RplId> gone = {};
+		foreach (RplId oldId, COA_SpecWorldGrenade oldMarker : m_mGrenades)
+		{
+			if (oldMarker.m_bSeen)
+				continue;
+
+			if (oldMarker.m_wRoot)
+				oldMarker.m_wRoot.RemoveFromHierarchy();
+			gone.Insert(oldId);
+		}
+
+		foreach (RplId goneId : gone)
+		{
+			m_mGrenades.Remove(goneId);
 		}
 	}
 

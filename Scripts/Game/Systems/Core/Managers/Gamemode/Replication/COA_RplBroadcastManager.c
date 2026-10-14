@@ -42,6 +42,9 @@ class COA_RplBroadcastManager : ScriptComponent
 	
 	// AAR outro — winning faction received from the server (set in RpcDo_BroadcastOutro)
 	string m_sOutroWinningFaction = "";
+
+	// Thrown grenades: hooks throws on the server, keeps the live ones on clients for the spectator
+	protected ref COA_GrenadeTracker m_GrenadeTracker;
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 MANAGER INITIALIZATION
@@ -52,6 +55,7 @@ class COA_RplBroadcastManager : ScriptComponent
 	{
 		super.OnPostInit(owner);
 		InitializeManagerReferences();
+		m_GrenadeTracker = new COA_GrenadeTracker();
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -1784,6 +1788,26 @@ class COA_RplBroadcastManager : ScriptComponent
 			COA_KilledByCard.OnFatalEvent(victimPlayerId);
 	}
 
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a grenade was thrown - clients follow it for the spectator (COA_GrenadeTracker)
+	void BroadcastGrenadeThrown(RplId grenadeId, int grenadeType, string factionKey)
+	{
+		#ifdef WORKBENCH
+		RpcDo_BroadcastGrenadeThrown(grenadeId, grenadeType, factionKey);
+		#else
+		Rpc(RpcDo_BroadcastGrenadeThrown, grenadeId, grenadeType, factionKey);
+		#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_BroadcastGrenadeThrown(RplId grenadeId, int grenadeType, string factionKey)
+	{
+		COA_GrenadeTracker tracker = COA_GrenadeTracker.GetInstance();
+		if (tracker)
+			tracker.ReceiveThrown(grenadeId, grenadeType, factionKey);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
