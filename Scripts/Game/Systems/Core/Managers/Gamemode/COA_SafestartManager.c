@@ -369,10 +369,8 @@ class COA_SafestartManager : ScriptComponent
 			m_RplBroadcastManager.PopUpNotification(8, "[LOBBY] : GAME LIVE!", "Safestart has ended, weapons are now live!");
 			return;
 		}
-		
-		// The HUD shows every second; popups only at a few marks
-		if (m_iSafeStartTimeRemaining == 20 || m_iSafeStartTimeRemaining == 10 || m_iSafeStartTimeRemaining <= 5)
-			m_RplBroadcastManager.PopUpNotification(1.5, string.Format("[LOBBY] : Game Live In: %1 Seconds!", m_iSafeStartTimeRemaining), submessage);
+
+		// No per-second popups: the safe start HUD (COA_SafeStartDisplay) shows the countdown and its progress bar
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -402,7 +400,7 @@ class COA_SafestartManager : ScriptComponent
 				
 				m_iSafeStartTimeRemaining = GO_LIVE_SECONDS;
 				m_bGoingLive = true;
-				message = "[LOBBY] : All Factions Ready! Game Live In: 30 Seconds!";
+				message = string.Format("[LOBBY] : All Factions Ready! Game Live In: %1 Seconds!", GO_LIVE_SECONDS);
 				submessage = "Any leader can toggle ready to cancel the countdown";
 				popupLife = 5;
 				showMessage = true;
@@ -441,69 +439,10 @@ class COA_SafestartManager : ScriptComponent
 		if (m_iSafeStartTimeRemaining < 0)
 			m_iSafeStartTimeRemaining = 0;
 		
-		// Replicate the updated time to all clients
+		// Replicate the updated time to all clients. No countdown popups here: the safe start HUD
+		// (COA_SafeStartDisplay) shows the time remaining and its progress bar.
 		Replication.BumpMe();
-		
-		// Only show popup warnings when 5 minutes or less remain
-		if (m_iSafeStartTimeRemaining <= 300)
-		{
-			// Format time remaining as MM:SS
-			int minutesRemaining = m_iSafeStartTimeRemaining / 60;
-			int secondsRemaining = m_iSafeStartTimeRemaining % 60;
-			string timeString;
-			
-			if (minutesRemaining > 0)
-				timeString = string.Format("%1:%2", minutesRemaining, secondsRemaining.ToString(2)); // 2 digits for seconds
-			else
-				timeString = string.Format("%1 Seconds", secondsRemaining);
-			
-			message = string.Format("[LOBBY] : Safestart Ends In: %1", timeString);
-			
-			// Give warnings at specific intervals (5 minutes or less)
-			if (m_iSafeStartTimeRemaining == 300) // 5 minutes
-			{
-				submessage = "5 minutes remaining";
-				popupLife = 5;
-				showMessage = true;
-			}
-			else if (m_iSafeStartTimeRemaining == 240) // 4 minutes
-			{
-				submessage = "4 minutes remaining";
-				popupLife = 4;
-				showMessage = true;
-			}
-			else if (m_iSafeStartTimeRemaining == 180) // 3 minutes
-			{
-				submessage = "3 minutes remaining";
-				popupLife = 4;
-				showMessage = true;
-			}
-			else if (m_iSafeStartTimeRemaining == 120) // 2 minutes
-			{
-				submessage = "2 minutes remaining";
-				popupLife = 5;
-				showMessage = true;
-			}
-			else if (m_iSafeStartTimeRemaining == 60) // 1 minute
-			{
-				submessage = "1 minute remaining";
-				popupLife = 5;
-				showMessage = true;
-			}
-			else if (m_iSafeStartTimeRemaining == 30) // 30 seconds
-			{
-				submessage = "30 seconds remaining";
-				popupLife = 5;
-				showMessage = true;
-			}
-			else if (m_iSafeStartTimeRemaining <= 10 && m_iSafeStartTimeRemaining > 0) // Final 10 seconds
-			{
-				submessage = "Get ready!";
-				popupLife = 1;
-				showMessage = true;
-			}
-		}
-		
+
 		// End safe start when countdown reaches zero
 		if (m_iSafeStartTimeRemaining <= 0)
 		{
