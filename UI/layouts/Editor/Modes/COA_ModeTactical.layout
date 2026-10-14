@@ -3,11 +3,13 @@ FrameWidgetClass {
  components {
   SCR_BaseModeEditorUIComponent "{6A6612AB7E3CB101}" {
   }
+  COA_TacticalHUDEditorUIComponent "{6A6612AB7E3CB102}" {
+  }
  }
  {
-  FrameWidgetClass "{6A6612AB7E3CB102}" : "{7A376F90E18453C4}UI/layouts/HUD/Notifications/Notifications_Log.layout" {
-   Name "NotificationsLog0"
-   Slot FrameWidgetSlot "{6A6612AB7E3CB103}" {
+  FrameWidgetClass "{6A6612AB7E3CB110}" : "{2B8174DFA0BB53BD}UI/layouts/Editor/Cursors/Cursor_Gamepad.layout" {
+   Name "Cursor"
+   Slot FrameWidgetSlot "{6A6612AB7E3CB111}" {
     Anchor 0 0 1 1
     PositionX 0
     OffsetLeft 0
@@ -15,24 +17,56 @@ FrameWidgetClass {
     OffsetTop 0
     SizeX -1920
     OffsetRight 0
-    SizeY -680
+    SizeY -1080
     OffsetBottom 0
    }
    components {
-    SCR_NotificationsLogComponent "{6A6612AB7E3CB104}" {
+    SCR_SelectionEditorUIComponent "{50F4ED2BB98C80DA}" {
+     m_UnselectedState ACTIVE
     }
    }
+   {
+   }
+  }
+  FrameWidgetClass "{6A6612AB7E3CB112}" : "{6C241229C02E23AA}UI/layouts/Editor/EditableEntities/EditableEntities.layout" {
+   Name "Entities"
+   Slot FrameWidgetSlot "{6A6612AB7E3CB113}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX -1920
+    OffsetRight 0
+    SizeY -1080
+    OffsetBottom 0
+   }
+  }
+  FrameWidgetClass "{6A6612AB7E3CB114}" {
+   Name "SquadLabels"
+   Slot FrameWidgetSlot "{6A6612AB7E3CB115}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+   }
+   "Ignore Cursor" 1
   }
   FrameWidgetClass "{6A6612AB7E3CB201}" {
    Name "Header"
    Slot FrameWidgetSlot "{6A6612AB7E3CB202}" {
     Anchor 0.5 0 0.5 0
-    PositionX -260
-    OffsetLeft -260
+    PositionX -300
+    OffsetLeft -300
     PositionY 12
     OffsetTop 12
-    SizeX 520
-    OffsetRight -260
+    SizeX 600
+    OffsetRight -300
     SizeY 52
     OffsetBottom -64
    }
@@ -76,8 +110,8 @@ FrameWidgetClass {
       OffsetLeft 14
       PositionY 7
       OffsetTop 7
-      SizeX 380
-      OffsetRight -394
+      SizeX 460
+      OffsetRight -474
       SizeY 20
       OffsetBottom -27
      }
@@ -99,13 +133,13 @@ FrameWidgetClass {
       OffsetLeft 14
       PositionY 28
       OffsetTop 28
-      SizeX 380
-      OffsetRight -394
+      SizeX 460
+      OffsetRight -474
       SizeY 18
       OffsetBottom -46
      }
      Color 0.3968 0.4564 0.6038 1
-     Text "Friendly units only  -  right-click a squad to give it orders"
+     Text "Left-click a squad to select it  -  right-click the ground to give it an order"
      "Font Size" 13
      "Min Font Size" 10
      "Horizontal Alignment" Left
@@ -185,68 +219,212 @@ FrameWidgetClass {
     }
    }
   }
-  FrameWidgetClass "{6A6612AB7E3CB105}" {
-   Name "ContextMenu"
-   Slot FrameWidgetSlot "{6A6612AB7E3CB106}" {
+  VerticalLayoutWidgetClass "{6A6612AB7E3CB301}" {
+   Name "SquadPanel"
+   Slot FrameWidgetSlot "{6A6612AB7E3CB302}" {
     Anchor 0 0 0 0
-    PositionX 0
-    OffsetLeft 0
-    PositionY 0
-    OffsetTop 0
-    SizeX 250
-    OffsetRight -250
-    SizeY 240
-    OffsetBottom -240
+    PositionX 16
+    OffsetLeft 16
+    PositionY 84
+    OffsetTop 84
+    SizeX 320
+    OffsetRight -336
+    SizeY 400
+    OffsetBottom -484
+    SizeToContent 1
    }
-   "Z Order" 50
-   components {
-    SCR_ContextMenuActionsEditorUIComponent "{6A6612AB7E3CB107}" {
-     m_ButtonPath "{6A6612AB7E3CA005}UI/layouts/Editor/COA_TacticalContextButton.layout"
-     m_VLayoutWidgetName "VLayout"
-     m_sBottomBarName "BottomBar"
-     m_ButtonPrefabSizeX 250
-     m_ButtonPrefabSizeY 34
-    }
-   }
+   "Z Order" 20
    {
-    VerticalLayoutWidgetClass "{6A6612AB7E3CB108}" {
-     Name "MenuColumn"
-     Slot FrameWidgetSlot "{6A6612AB7E3CB109}" {
-      Anchor 0 0 1 0
-      PositionX 0
-      OffsetLeft 0
-      PositionY 0
-      OffsetTop 0
-      SizeX 0
-      OffsetRight 0
-      SizeY 0
-      OffsetBottom 0
+    OverlayWidgetClass "{6A6612AB7E3CB303}" {
+     Name "SquadHeader"
+     Slot LayoutSlot "{6A6612AB7E3CB304}" {
+      HorizontalAlign 3
+      Padding 0 0 0 2
      }
      {
-      ImageWidgetClass "{6A6612AB7E3CB10A}" {
-       Name "MenuAccent"
-       Slot VerticalLayoutSlot "{6A6612AB7E3CB10B}" {
+      ImageWidgetClass "{6A6612AB7E3CB305}" {
+       Name "SquadHeaderBG"
+       Slot OverlayWidgetSlot "{6A6612AB7E3CB306}" {
         HorizontalAlign 3
+        VerticalAlign 3
        }
-       Size 250 3
+       Color 0.0033 0.0037 0.0052 0.92
+      }
+      ImageWidgetClass "{6A6612AB7E3CB307}" {
+       Name "SquadHeaderAccent"
+       Slot OverlayWidgetSlot "{6A6612AB7E3CB308}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+       }
+       Size 320 3
        Color 0.5841 0.0369 0.0369 1
       }
-      VerticalLayoutWidgetClass "{6A6612AB7E3CB10C}" {
-       Name "VLayout"
-       Slot VerticalLayoutSlot "{6A6612AB7E3CB10D}" {
+      VerticalLayoutWidgetClass "{6A6612AB7E3CB309}" {
+       Name "SquadHeaderText"
+       Slot OverlayWidgetSlot "{6A6612AB7E3CB30A}" {
         HorizontalAlign 3
+        VerticalAlign 1
+        Padding 12 8 12 7
        }
-      }
-      ImageWidgetClass "{6A6612AB7E3CB10E}" {
-       Name "BottomBar"
-       Slot VerticalLayoutSlot "{6A6612AB7E3CB10F}" {
-        HorizontalAlign 3
+       {
+        HorizontalLayoutWidgetClass "{6A6612AB7E3CB30B}" {
+         Name "SquadTitleRow"
+         Slot LayoutSlot "{6A6612AB7E3CB30C}" {
+          HorizontalAlign 3
+         }
+         {
+          TextWidgetClass "{6A6612AB7E3CB30D}" {
+           Name "SquadTitle"
+           Slot LayoutSlot "{6A6612AB7E3CB30E}" {
+            SizeMode Fill
+            VerticalAlign 1
+           }
+           Color 0.8632 0.8879 0.9301 1
+           Text "SQUADS"
+           "Font Size" 16
+           "Min Font Size" 11
+           "Horizontal Alignment" Left
+           "Vertical Alignment" Center
+           FontProperties FontProperties "{6A6612AB7E3CB30F}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{6A6612AB7E3CB310}" {
+           Name "SquadCount"
+           Slot LayoutSlot "{6A6612AB7E3CB311}" {
+            VerticalAlign 1
+           }
+           Color 0.3968 0.4564 0.6038 1
+           Text "0"
+           "Font Size" 16
+           "Min Font Size" 11
+           "Horizontal Alignment" Right
+           "Vertical Alignment" Center
+           FontProperties FontProperties "{6A6612AB7E3CB312}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+         }
+        }
+        TextWidgetClass "{6A6612AB7E3CB313}" {
+         Name "SquadHint"
+         Slot LayoutSlot "{6A6612AB7E3CB314}" {
+          HorizontalAlign 3
+         }
+         Color 0.3968 0.4564 0.6038 1
+         Text "Click a squad to select it and fly to it"
+         "Font Size" 12
+         "Min Font Size" 9
+         "Horizontal Alignment" Left
+         "Vertical Alignment" Center
+         FontProperties FontProperties "{6A6612AB7E3CB315}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
        }
-       Size 250 2
-       Color 1 1 1 0.013
       }
      }
     }
+    VerticalLayoutWidgetClass "{6A6612AB7E3CB316}" {
+     Name "SquadList"
+     Slot LayoutSlot "{6A6612AB7E3CB317}" {
+      HorizontalAlign 3
+     }
+    }
+   }
+  }
+  OverlayWidgetClass "{6A6612AB7E3CB401}" {
+   Name "InfoPanel"
+   Slot FrameWidgetSlot "{6A6612AB7E3CB402}" {
+    Anchor 0.5 1 0.5 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY -24
+    OffsetTop -24
+    SizeX 600
+    OffsetRight -600
+    SizeY 56
+    OffsetBottom -32
+    Alignment 0.5 1
+    SizeToContent 1
+   }
+   "Z Order" 20
+   {
+    ImageWidgetClass "{6A6612AB7E3CB403}" {
+     Name "InfoBG"
+     Slot OverlayWidgetSlot "{6A6612AB7E3CB404}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.0033 0.0037 0.0052 0.85
+    }
+    VerticalLayoutWidgetClass "{6A6612AB7E3CB405}" {
+     Name "InfoText"
+     Slot OverlayWidgetSlot "{6A6612AB7E3CB406}" {
+      HorizontalAlign 1
+      VerticalAlign 1
+      Padding 18 8 18 8
+     }
+     {
+      TextWidgetClass "{6A6612AB7E3CB407}" {
+       Name "SelectionInfo"
+       Slot LayoutSlot "{6A6612AB7E3CB408}" {
+        HorizontalAlign 1
+       }
+       Color 0.3968 0.4564 0.6038 1
+       Text "No squad selected"
+       "Font Size" 15
+       "Min Font Size" 11
+       "Horizontal Alignment" Center
+       "Vertical Alignment" Center
+       FontProperties FontProperties "{6A6612AB7E3CB409}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{6A6612AB7E3CB40A}" {
+       Name "CameraInfo"
+       Slot LayoutSlot "{6A6612AB7E3CB40B}" {
+        HorizontalAlign 1
+       }
+       Color 0.3968 0.4564 0.6038 1
+       Text ""
+       "Font Size" 13
+       "Min Font Size" 10
+       "Horizontal Alignment" Center
+       "Vertical Alignment" Center
+       FontProperties FontProperties "{6A6612AB7E3CB40C}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+     }
+    }
+   }
+  }
+  FrameWidgetClass "{6A6612AB7E3CB501}" : "{DBF85B0190DE8C25}UI/layouts/Editor/Compass/Compass.layout" {
+   Name "Compass0"
+   Slot FrameWidgetSlot "{6A6612AB7E3CB502}" {
+    Anchor 1 1 1 1
+    PositionX -130
+    OffsetLeft -130
+    PositionY -130
+    OffsetTop -130
+    SizeX 200
+    OffsetRight -70
+    SizeY 200
+    OffsetBottom -70
+    Alignment 0.5 0.5
+   }
+   Opacity 0.5
+   {
+   }
+  }
+  FrameWidgetClass "{6A6612AB7E3CB503}" : "{854650EAF734E1EF}UI/layouts/Editor/Tooltips/Tooltip_Manager.layout" {
+   Name "TooltipManager0"
+   Slot FrameWidgetSlot "{6A6612AB7E3CB504}" {
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
    }
   }
  }

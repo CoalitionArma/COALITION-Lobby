@@ -1,22 +1,29 @@
+
 //------------------------------------------------------------------------------------------------
 //! Tactical camera context action: give the selected friendly squad(s) an order at the cursor.
-//! One instance per order type in COA_EditorModeTactical.et's context action list. Runs on the
-//! leader's client and asks the server through COA_PlayerRplToAuthorityManager.RequestTacticalOrder,
-//! which checks the leader's role and faction before telling the squad.
+//! One instance per order type in COA_EditorModeTactical.et's context action list. Select a squad
+//! first, then right-click the ground where the order should go (COA_TacticalContextActionsEditorComponent
+//! keeps the selection for that right-click). Right-clicking a squad member orders that squad at
+//! its own position. Runs on the leader's client and asks the server through
+//! COA_PlayerRplToAuthorityManager.RequestTacticalOrder, which checks the leader's role and faction.
 [BaseContainerProps(), SCR_BaseContainerCustomTitleUIInfo("m_Info")]
 class COA_TacticalOrderAction : SCR_SelectedEntitiesContextAction
 {
 	[Attribute(SCR_Enum.GetDefault(COA_ETacticalOrder.MOVE), UIWidgets.ComboBox, "Order this action gives", "", ParamEnumArray.FromEnum(COA_ETacticalOrder))]
 	protected COA_ETacticalOrder m_eOrder;
 
-	// Groups already ordered during one Perform, so a squad selected through several of its
+	// Squads already ordered during one Perform, so a squad selected through several of its
 	// members is told once
 	protected ref array<RplId> m_aOrderedGroups = {};
 
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShown(SCR_EditableEntityComponent selectedEntity, vector cursorWorldPosition, int flags)
 	{
-		return COA_TacticalCamera.IsEnabled() && GetPlayerGroup(selectedEntity) != null;
+		if (!COA_TacticalCamera.IsEnabled())
+			return false;
+
+		array<SCR_AIGroup> squads = {};
+		return COA_TacticalCamera.GetPlayerSquads(selectedEntity, squads) > 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -35,44 +42,20 @@ class COA_TacticalOrderAction : SCR_SelectedEntitiesContextAction
 	//------------------------------------------------------------------------------------------------
 	override void Perform(SCR_EditableEntityComponent selectedEntity, vector cursorWorldPosition)
 	{
-		SCR_AIGroup group = GetPlayerGroup(selectedEntity);
-		if (!group)
-			return;
-
-		RplId groupId = Replication.FindItemId(group);
-		if (groupId == RplId.Invalid() || m_aOrderedGroups.Contains(groupId))
-			return;
-
-		m_aOrderedGroups.Insert(groupId);
-
 		COA_PlayerRplToAuthorityManager authorityManager = COA_PlayerRplToAuthorityManager.GetInstance();
-		if (authorityManager)
+		if (!authorityManager)
+			return;
+
+		array<SCR_AIGroup> squads = {};
+		COA_TacticalCamera.GetPlayerSquads(selectedEntity, squads);
+		foreach (SCR_AIGroup squad : squads)
+		{
+			RplId groupId = Replication.FindItemId(squad);
+			if (groupId == RplId.Invalid() || m_aOrderedGroups.Contains(groupId))
+				continue;
+
+			m_aOrderedGroups.Insert(groupId);
 			authorityManager.RequestTacticalOrder(groupId, m_eOrder, cursorWorldPosition);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The player squad a selected group or character belongs to, if it is on the leader's side
-	protected SCR_AIGroup GetPlayerGroup(SCR_EditableEntityComponent entity)
-	{
-		if (!entity)
-			return null;
-
-		SCR_EditableGroupComponent groupEntity = SCR_EditableGroupComponent.Cast(entity);
-		if (!groupEntity)
-			groupEntity = SCR_EditableGroupComponent.Cast(entity.GetAIGroup());
-
-		if (!groupEntity)
-			return null;
-
-		SCR_AIGroup group = groupEntity.GetAIGroupComponent();
-		if (!group || group.GetPlayerCount() <= 0)
-			return null;
-
-		Faction localFaction = SCR_FactionManager.SGetLocalPlayerFaction();
-		Faction groupFaction = group.GetFaction();
-		if (!localFaction || !groupFaction || !localFaction.IsFactionFriendly(groupFaction))
-			return null;
-
-		return group;
+		}
 	}
 }

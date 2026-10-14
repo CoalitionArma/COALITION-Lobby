@@ -1,0 +1,103 @@
+ButtonWidgetClass {
+ Name "SquadRow"
+ Color 1 1 1 0
+ components {
+  COA_TacticalSquadRowComponent "{6A6612AB7E3CC201}" {
+  }
+ }
+ {
+  SizeLayoutWidgetClass "{6A6612AB7E3CC202}" {
+   Name "RowSize"
+   Slot ButtonWidgetSlot "{6A6612AB7E3CC203}" {
+    HorizontalAlign 3
+    Padding 0 0 0 2
+   }
+   AllowWidthOverride 1
+   WidthOverride 320
+   AllowHeightOverride 1
+   HeightOverride 58
+   {
+    OverlayWidgetClass "{6A6612AB7E3CC204}" {
+     Name "RowOverlay"
+     Slot LayoutSlot "{6A6612AB7E3CC205}" {
+      SizeMode Fill
+     }
+     {
+      ImageWidgetClass "{6A6612AB7E3CC206}" {
+       Name "RowBG"
+       Slot OverlayWidgetSlot "{6A6612AB7E3CC207}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0044 0.0052 0.0080 0.88
+      }
+      ImageWidgetClass "{6A6612AB7E3CC208}" {
+       Name "RowAccent"
+       Slot OverlayWidgetSlot "{6A6612AB7E3CC209}" {
+        HorizontalAlign 0
+        VerticalAlign 3
+       }
+       Size 3 58
+       Color 1 0.6172 0.0887 1
+      }
+      VerticalLayoutWidgetClass "{6A6612AB7E3CC20A}" {
+       Name "RowText"
+       Slot OverlayWidgetSlot "{6A6612AB7E3CC20B}" {
+        HorizontalAlign 3
+        VerticalAlign 1
+        Padding 12 4 10 4
+       }
+       {
+        TextWidgetClass "{6A6612AB7E3CC20C}" {
+         Name "Name"
+         Slot LayoutSlot "{6A6612AB7E3CC20D}" {
+          HorizontalAlign 3
+         }
+         Color 0.8632 0.8879 0.9301 1
+         Text "Squad"
+         "Font Size" 16
+         "Min Font Size" 11
+         "Horizontal Alignment" Left
+         "Vertical Alignment" Center
+         FontProperties FontProperties "{6A6612AB7E3CC20E}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{6A6612AB7E3CC20F}" {
+         Name "Info"
+         Slot LayoutSlot "{6A6612AB7E3CC210}" {
+          HorizontalAlign 3
+         }
+         Color 0.3968 0.4564 0.6038 1
+         Text "0 players"
+         "Font Size" 13
+         "Min Font Size" 10
+         "Horizontal Alignment" Left
+         "Vertical Alignment" Center
+         FontProperties FontProperties "{6A6612AB7E3CC211}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+        TextWidgetClass "{6A6612AB7E3CC212}" {
+         Name "Order"
+         Slot LayoutSlot "{6A6612AB7E3CC213}" {
+          HorizontalAlign 3
+         }
+         Color 0.3968 0.4564 0.6038 1
+         Text "No order"
+         "Font Size" 13
+         "Min Font Size" 10
+         "Horizontal Alignment" Left
+         "Vertical Alignment" Center
+         FontProperties FontProperties "{6A6612AB7E3CC214}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

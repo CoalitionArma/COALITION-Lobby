@@ -280,18 +280,35 @@ class COA_PlayerRplToOwnerManager : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Tactical camera: an order from a leader for this player's squad (see COA_TacticalOrderClient)
-	void ReceiveTacticalOrder(COA_ETacticalOrder order, vector position, string issuerName)
+	void ReceiveTacticalOrder(COA_ETacticalOrder order, vector position, string issuerName, bool showMarker)
 	{
 		if (IsLocallyOwned())
-			RpcDo_ReceiveTacticalOrder(order, position, issuerName);
+			RpcDo_ReceiveTacticalOrder(order, position, issuerName, showMarker);
 		else
-			Rpc(RpcDo_ReceiveTacticalOrder, order, position, issuerName);
+			Rpc(RpcDo_ReceiveTacticalOrder, order, position, issuerName, showMarker);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_ReceiveTacticalOrder(COA_ETacticalOrder order, vector position, string issuerName)
+	protected void RpcDo_ReceiveTacticalOrder(COA_ETacticalOrder order, vector position, string issuerName, bool showMarker)
 	{
-		COA_TacticalOrderClient.Receive(order, position, issuerName);
+		COA_TacticalOrderClient.Receive(order, position, issuerName, showMarker);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tactical camera: a leader on this player's side gave a squad an order (see COA_TacticalOrderBoard)
+	void ReceiveTacticalOrderIssued(RplId groupId, COA_ETacticalOrder order, vector position, string issuerName)
+	{
+		if (IsLocallyOwned())
+			RpcDo_ReceiveTacticalOrderIssued(groupId, order, position, issuerName);
+		else
+			Rpc(RpcDo_ReceiveTacticalOrderIssued, groupId, order, position, issuerName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_ReceiveTacticalOrderIssued(RplId groupId, COA_ETacticalOrder order, vector position, string issuerName)
+	{
+		COA_TacticalOrderBoard.Record(groupId, order, position, issuerName);
 	}
 };

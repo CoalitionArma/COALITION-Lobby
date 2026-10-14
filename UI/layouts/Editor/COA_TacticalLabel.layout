@@ -1,0 +1,71 @@
+OverlayWidgetClass {
+ Name "TacticalLabel"
+ Slot FrameWidgetSlot "{6A6612AB7E3CC301}" {
+  Anchor 0 0 0 0
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 160
+  OffsetRight -160
+  SizeY 40
+  OffsetBottom -40
+  Alignment 0.5 1
+  SizeToContent 1
+ }
+ "Ignore Cursor" 1
+ {
+  ImageWidgetClass "{6A6612AB7E3CC302}" {
+   Name "LabelBG"
+   Slot OverlayWidgetSlot "{6A6612AB7E3CC303}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   "Ignore Cursor" 1
+   Color 0.0033 0.0037 0.0052 0.7
+  }
+  VerticalLayoutWidgetClass "{6A6612AB7E3CC304}" {
+   Name "LabelText"
+   Slot OverlayWidgetSlot "{6A6612AB7E3CC305}" {
+    HorizontalAlign 1
+    VerticalAlign 1
+    Padding 8 3 8 3
+   }
+   "Ignore Cursor" 1
+   {
+    TextWidgetClass "{6A6612AB7E3CC306}" {
+     Name "Title"
+     Slot LayoutSlot "{6A6612AB7E3CC307}" {
+      HorizontalAlign 1
+     }
+     "Ignore Cursor" 1
+     Color 0.8632 0.8879 0.9301 1
+     Text "Squad"
+     "Font Size" 15
+     "Min Font Size" 10
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6612AB7E3CC308}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{6A6612AB7E3CC309}" {
+     Name "Subtitle"
+     Slot LayoutSlot "{6A6612AB7E3CC30A}" {
+      HorizontalAlign 1
+     }
+     "Ignore Cursor" 1
+     Color 0.3968 0.4564 0.6038 1
+     Text "0 players"
+     "Font Size" 12
+     "Min Font Size" 9
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{6A6612AB7E3CC30B}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+   }
+  }
+ }
+}

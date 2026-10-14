@@ -482,19 +482,47 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			return;
 
 		string issuerName = GetGame().GetPlayerManager().GetPlayerName(callerId);
+
+		// Everyone in the squad gets the order as a hint; the squad leader also gets the map marker
+		// (everyone does when the squad has no leader)
+		array<int> memberIds = group.GetPlayerIDs();
+		int squadLeaderId = group.GetLeaderID();
+		bool hasSquadLeader = memberIds.Contains(squadLeaderId);
+
 		int delivered;
-		foreach (int memberId : group.GetPlayerIDs())
+		foreach (int memberId : memberIds)
 		{
 			COA_PlayerRplToOwnerManager ownerManager = COA_PlayerRplToOwnerManager.GetForPlayer(memberId);
 			if (!ownerManager)
 				continue;
 
-			ownerManager.ReceiveTacticalOrder(order, position, issuerName);
+			ownerManager.ReceiveTacticalOrder(order, position, issuerName, memberId == squadLeaderId || !hasSquadLeader);
 			delivered++;
 		}
 
-		if (delivered > 0 && m_RplBroadcastManager)
+		if (delivered <= 0)
+			return;
+
+		if (m_RplBroadcastManager)
 			m_RplBroadcastManager.SendHint(string.Format("%1 order sent to %2 (%3 players).", COA_TacticalCamera.GetOrderName(order), group.GetCustomNameWithOriginal(), delivered), callerId);
+
+		// Every platoon leader / commander on the side keeps the order on their board, so the
+		// Tactical Camera and their map show what each squad has been told
+		array<int> playerIds = {};
+		GetGame().GetPlayerManager().GetPlayers(playerIds);
+		foreach (int leaderId : playerIds)
+		{
+			if (!COA_TacticalCamera.PlayerQualifies(leaderId))
+				continue;
+
+			Faction leaderFaction = m_SlottingManager.GetPlayerSlotFaction(leaderId, true);
+			if (!leaderFaction || (leaderFaction != callerFaction && !leaderFaction.IsFactionFriendly(callerFaction)))
+				continue;
+
+			COA_PlayerRplToOwnerManager leaderManager = COA_PlayerRplToOwnerManager.GetForPlayer(leaderId);
+			if (leaderManager)
+				leaderManager.ReceiveTacticalOrderIssued(groupId, order, position, issuerName);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

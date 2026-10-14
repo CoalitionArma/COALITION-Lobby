@@ -4,15 +4,15 @@ SCR_EditorModeEntity : "{E56F54E533ACE527}Prefabs/Editor/Modes/EditorModeBase.et
   SCR_CameraEditorComponent "{6A6612AB7E3CA011}" {
    m_CameraPrefab "{6A6612AB7E3CA002}Prefabs/!Systems/Editor/Camera/COA_ManualCameraTactical.et"
   }
-  SCR_ContextActionsEditorComponent "{6A6612AB7E3CA012}" {
+  COA_TacticalContextActionsEditorComponent "{6A6612AB7E3CA012}" {
    m_ActionsLists {
     SCR_EditorActionList "{6A6612AB7E3CA013}" {
      m_Actions {
       COA_TacticalOrderAction "{6A6612AB7E3CA030}" {
        m_Info SCR_UIInfo "{6A6612AB7E3CA031}" {
         Name "Order: Move"
-        Description "Move the selected squad to this position"
-        Icon "{81176D1734725AAB}UI/Textures/Editor/EditableEntities/Waypoints/EditableEntity_Waypoint_Move_Relaxed.edds"
+        Description "Move the selected squad to this spot"
+        Icon "{2006D8738EA93571}UI/Textures/Editor/Toolbar/Commanding/Toolbar_Commanding_Waypoint_Move.edds"
        }
        m_iOrder 1
        m_eOrder MOVE
@@ -21,7 +21,7 @@ SCR_EditorModeEntity : "{E56F54E533ACE527}Prefabs/Editor/Modes/EditorModeBase.et
        m_Info SCR_UIInfo "{6A6612AB7E3CA033}" {
         Name "Order: Attack"
         Description "Attack and clear this position"
-        Icon "{428583D4284BC412}UI/Textures/Editor/EditableEntities/Waypoints/EditableEntity_Waypoint_SearchAndDestroy.edds"
+        Icon "{36106BA9CF5483B0}UI/Textures/Editor/Toolbar/Commanding/Toolbar_Commanding_Waypoint_Attack.edds"
        }
        m_iOrder 2
        m_eOrder ATTACK
@@ -30,7 +30,7 @@ SCR_EditorModeEntity : "{E56F54E533ACE527}Prefabs/Editor/Modes/EditorModeBase.et
        m_Info SCR_UIInfo "{6A6612AB7E3CA035}" {
         Name "Order: Defend"
         Description "Set up a defence at this position"
-        Icon "{1B3B38AAA1577734}UI/Textures/Editor/EditableEntities/Waypoints/EditableEntity_Waypoint_Defend.edds"
+        Icon "{6FAED0D746483096}UI/Textures/Editor/Toolbar/Commanding/Toolbar_Commanding_Waypoint_Defend.edds"
        }
        m_iOrder 3
        m_eOrder DEFEND
@@ -129,7 +129,7 @@ SCR_EditorModeEntity : "{E56F54E533ACE527}Prefabs/Editor/Modes/EditorModeBase.et
  m_bIsLimited 1
  m_UIInfo SCR_UIInfo "{6A6612AB7E3CA019}" {
   Name "Tactical Camera"
-  Description "Overhead view of friendly units near you. Right-click a squad to give it orders."
-  Icon "{AC7E384FF9D8016A}Common/Textures/placeholder_BCR.edds"
+  Description "Overhead view of friendly units near you. Select a squad, then right-click the ground to give it an order."
+  Icon "{51634E209E38C108}UI/Textures/Editor/ContextMenu/ContextAction_Teleport_Camera.edds"
  }
 }

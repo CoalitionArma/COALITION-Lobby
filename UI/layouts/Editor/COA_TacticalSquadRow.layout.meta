@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{6A6612AB7E3CA005}UI/layouts/Editor/COA_TacticalContextButton.layout"
+ Name "{6A6612AB7E3CA007}UI/layouts/Editor/COA_TacticalSquadRow.layout"
  Configurations {
   LayoutResourceClass PC {
   }
