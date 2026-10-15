@@ -201,7 +201,7 @@ modded class SCR_VONController
 			return false;
 
 		// Spectator or Game Master camera: it isn't inside any building or vehicle
-		if (IsListeningFromCamera())
+		if (COA_EntityHelper.IsSpectator() || COA_IsInGameMaster())
 			return false;
 		
 		IEntity player = m_PlayerController.GetLocalControlledEntity();
@@ -302,11 +302,12 @@ modded class SCR_VONController
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Spectating: hear the world around the spectator camera (free camera or a followed player's view),
-	//! not around the hidden spectator character
-	override bool IsListeningFromCamera()
+	//! Game Master (not limited editors such as the Tactical Camera). Kept here rather than calling
+	//! CVON's helper, so the Lobby compiles against older CVON builds too.
+	protected bool COA_IsInGameMaster()
 	{
-		return super.IsListeningFromCamera() || COA_EntityHelper.IsSpectator();
+		SCR_EditorManagerEntity editorManager = SCR_EditorManagerEntity.GetInstance();
+		return editorManager && editorManager.IsOpened() && !editorManager.IsLimited();
 	}
 
 	//------------------------------------------------------------------------------------------------
