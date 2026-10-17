@@ -1085,6 +1085,19 @@ class COA_RplBroadcastManager : ScriptComponent
 		Rpc(RpcDo_BroadcastOutro, winningFaction);
 		#endif
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Safe start countdown sound for everyone: a tick with secondsLeft > 0, the end tone at 0 (game live)
+	void SafestartCountdownCue(int secondsLeft)
+	{
+		LogTelemetry("SafestartCountdownCue", COA_BandwidthTelemetryManager.EstimateSize_Int());
+
+		#ifdef WORKBENCH
+		RpcDo_SafestartCountdownCue(secondsLeft);
+		#else
+		Rpc(RpcDo_SafestartCountdownCue, secondsLeft);
+		#endif
+	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 REPLICATION METHODS
@@ -2025,6 +2038,22 @@ class COA_RplBroadcastManager : ScriptComponent
 		m_sOutroWinningFaction = winningFaction;
 		AudioSystem.PlaySound("{3D7F63CCD32B2F17}Sounds/Intro/outroCrescendo.wav");
 		GetGame().GetCallqueue().CallLater(OpenOutro, 2831, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The vanilla respawn countdown sounds - players already know them as "deploying in..."
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	void RpcDo_SafestartCountdownCue(int secondsLeft)
+	{
+		if (secondsLeft <= 0)
+		{
+			SCR_UISoundEntity.SoundEvent(SCR_SoundEvent.SOUND_RESPAWN_COUNTDOWN_END);
+			return;
+		}
+
+		SCR_UISoundEntity.SetSignalValueStr("countdownValue", secondsLeft);
+		SCR_UISoundEntity.SetSignalValueStr("maxCountdownValue", COA_SafestartManager.COUNTDOWN_CUE_SECONDS);
+		SCR_UISoundEntity.SoundEvent(SCR_SoundEvent.SOUND_RESPAWN_COUNTDOWN);
 	}
 	
 	//------------------------------------------------------------------------------------------------

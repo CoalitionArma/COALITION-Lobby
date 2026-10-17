@@ -34,6 +34,9 @@ class COA_SafestartManager : ScriptComponent
 	
 	//! Length of the go-live countdown once every side is ready (both modes)
 	static const int GO_LIVE_SECONDS = 30;
+
+	//! Everyone hears the countdown over its last this many seconds (PlayCountdownCue)
+	static const int COUNTDOWN_CUE_SECONDS = 30;
 	
 	protected int m_iStoredTimeBeforeReadyUp = 0; // Stores the time remaining before all sides readied up
 
@@ -355,20 +358,24 @@ class COA_SafestartManager : ScriptComponent
 			m_iSafeStartTimeRemaining = GO_LIVE_SECONDS;
 			Replication.BumpMe();
 			m_RplBroadcastManager.PopUpNotification(4, string.Format("[LOBBY] : All Sides Ready! Game Live In: %1 Seconds!", GO_LIVE_SECONDS), submessage);
+			PlayCountdownCue();
 			return;
 		}
-		
+
 		if (m_iSafeStartTimeRemaining > 0)
 			m_iSafeStartTimeRemaining--;
 		Replication.BumpMe();
-		
+
 		if (m_iSafeStartTimeRemaining == 0)
 		{
 			m_bGoingLive = false;
 			ToggleSafeStartServer(false);
 			m_RplBroadcastManager.PopUpNotification(8, "[LOBBY] : GAME LIVE!", "Safestart has ended, weapons are now live!");
+			m_RplBroadcastManager.SafestartCountdownCue(0);
 			return;
 		}
+
+		PlayCountdownCue();
 
 		// No per-second popups: the safe start HUD (COA_SafeStartDisplay) shows the countdown and its progress bar
 	}
@@ -409,6 +416,7 @@ class COA_SafestartManager : ScriptComponent
 				// Send notification and continue countdown
 				if (showMessage)
 					m_RplBroadcastManager.PopUpNotification(popupLife, message, submessage);
+				PlayCountdownCue();
 				return;
 			}
 		}
@@ -461,11 +469,31 @@ class COA_SafestartManager : ScriptComponent
 			submessage = "Safestart timer expired, mission is now live!";
 			popupLife = 8;
 			showMessage = true;
+			m_RplBroadcastManager.SafestartCountdownCue(0);
 		}
-		
+		else
+		{
+			PlayCountdownCue();
+		}
+
 		// Only send popup notification if we have something to show
 		if (showMessage)
 			m_RplBroadcastManager.PopUpNotification(popupLife, message, submessage);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Called as the countdown moves: over the last COUNTDOWN_CUE_SECONDS everyone hears a tick every
+	//! 10 seconds, then every second for the last 10 (going live has its own tone)
+	protected void PlayCountdownCue()
+	{
+		int secondsLeft = m_iSafeStartTimeRemaining;
+		if (secondsLeft <= 0 || secondsLeft > COUNTDOWN_CUE_SECONDS)
+			return;
+
+		if (secondsLeft >= 10 && secondsLeft % 10 != 0)
+			return;
+
+		m_RplBroadcastManager.SafestartCountdownCue(secondsLeft);
 	}
 	
 	//------------------------------------------------------------------------------------------------
