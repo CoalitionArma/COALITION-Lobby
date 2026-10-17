@@ -17,6 +17,7 @@ class COA_PlayerKeybindManager : ScriptComponent
 		GetGame().GetInputManager().AddActionListener("COA_AdminForceReady", EActionTrigger.DOWN, AdminForceReady);
 		GetGame().GetInputManager().AddActionListener("COA_OpenLobby", EActionTrigger.PRESSED, OpenSlottingMenu);
 		GetGame().GetInputManager().AddActionListener("SwitchSpectatorUI", EActionTrigger.DOWN, UpdateHUDVisible);
+		GetGame().GetInputManager().AddActionListener("COA_ToggleSafestartInfo", EActionTrigger.DOWN, ToggleSafestartInfo);
 	}
 	
 //=============================================================================================================================================================================================================================================================================================================================================================
@@ -29,6 +30,22 @@ class COA_PlayerKeybindManager : ScriptComponent
 		COA_PlayerControllerManager playerControllerManager = COA_PlayerControllerManager.GetInstance();
 		
 		playerControllerManager.m_bHUDVisible = !playerControllerManager.m_bHUDVisible
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Shows/hides the safe start mission and equipment panel (COA_SafeStartInfoDisplay); the
+	//! countdown and ready status (COA_SafeStartDisplay) stay up
+	protected void ToggleSafestartInfo()
+	{
+		COA_SafestartManager safestartManager = COA_SafestartManager.GetInstance();
+		if (!safestartManager || !safestartManager.GetSafestartStatus())
+			return;
+
+		COA_PlayerControllerManager playerControllerManager = COA_PlayerControllerManager.GetInstance();
+		if (!playerControllerManager)
+			return;
+
+		playerControllerManager.m_bSafestartInfoVisible = !playerControllerManager.m_bSafestartInfoVisible;
 	}
 	
 	//------------------------------------------------------------------------------------------------

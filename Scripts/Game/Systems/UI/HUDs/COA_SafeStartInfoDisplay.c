@@ -91,9 +91,11 @@ class COA_SafeStartInfoDisplay : SCR_InfoDisplayExtended
 		if (m_SafestartManager && m_wSafeStartInfoPanel)
 		{
 			bool safestartActive = m_SafestartManager.GetSafestartStatus();
-			bool hudVisible = COA_PlayerControllerManager.GetInstance().m_bHUDVisible;
-			
-			m_wSafeStartInfoPanel.SetVisible(safestartActive && hudVisible);
+			COA_PlayerControllerManager playerControllerManager = COA_PlayerControllerManager.GetInstance();
+			bool hudVisible = playerControllerManager.m_bHUDVisible;
+			bool infoVisible = playerControllerManager.m_bSafestartInfoVisible;
+
+			m_wSafeStartInfoPanel.SetVisible(safestartActive && hudVisible && infoVisible);
 		}
 	}
 	

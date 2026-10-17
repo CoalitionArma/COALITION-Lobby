@@ -12,6 +12,7 @@ class COA_PlayerControllerManager : ScriptComponent
 	// UI and Display
 	string m_sHintText = "Type Here";      // Text displayed for hints to player
 	bool m_bHUDVisible = true;             // Controls visibility of HUD elements
+	bool m_bSafestartInfoVisible = true;   // Mission/equipment panel during safe start (COA_ToggleSafestartInfo)
 	Widget m_wSavedHintWidget;             // Reference to hint widget for reuse
 	bool m_bIsListeningToSpec = false;
 	vector m_vPlayersLastDeath[4];
