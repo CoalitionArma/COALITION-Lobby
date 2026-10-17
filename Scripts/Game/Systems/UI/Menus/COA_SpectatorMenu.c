@@ -3028,11 +3028,6 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	}
 
 	/**
-	 * Teleports the spectator camera to the location of the most recent killfeed event.
-	 * Mirrors the Zeus "R" shortcut for jumping to kill events.
-	 * If currently following a player, detaches first so the free-cam teleport takes effect.
-	 */
-	/**
 	 * Follows a living member of the player's own squad; pressing again cycles to the next one
 	 */
 	void Action_FollowSquad()
@@ -3041,13 +3036,22 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		if (!slottingManager)
 			return;
 
+		// The squad comes from the slot's group ID - the group entity itself isn't needed (and isn't
+		// guaranteed to exist on this client once its members have died or been moved around)
 		int localPlayerId = SCR_PlayerController.GetLocalPlayerId();
-		SCR_AIGroup group = slottingManager.GetPlayerSlotGroup(localPlayerId);
+		COA_SlotData ownSlot = slottingManager.GetPlayerSlotData(localPlayerId);
 		RplId groupId;
-		if (!group || !COA_ReplicationHelper.GetRplId(group, groupId))
+		if (ownSlot)
+			groupId = ownSlot.GetSlotCurrentGroup();
+
+		if (!ownSlot || groupId == RplId.Invalid())
+		{
+			ShowFollowSquadMessage("Follow squad: you aren't in a squad");
 			return;
+		}
 
 		array<IEntity> squadmates = {};
+		array<int> squadmateIds = {};
 		foreach (int slotId : slottingManager.GetAllSlotIDsForGroup(groupId))
 		{
 			COA_SlotData slotData = slottingManager.GetSlotData(slotId);
@@ -3060,11 +3064,17 @@ class COA_SpectatorMenu: ChimeraMenuBase
 
 			IEntity character = COA_EntityHelper.GetEntityFromRplId(slotData.GetSlotCurrentCharacter());
 			if (character && COA_DamageHelper.CheckIfEntityAlive(character) && !COA_EntityHelper.IsSpectator(character))
+			{
 				squadmates.Insert(character);
+				squadmateIds.Insert(playerId);
+			}
 		}
 
 		if (squadmates.IsEmpty())
+		{
+			ShowFollowSquadMessage("Follow squad: no living squadmates");
 			return;
+		}
 
 		// Continue from whoever is being followed now, so repeated presses walk the squad
 		int next = 0;
@@ -3073,8 +3083,23 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			next = (current + 1) % squadmates.Count();
 
 		FollowEntity(squadmates[next]);
+		ShowFollowSquadMessage(string.Format("Following %1 (%2/%3)", GetGame().GetPlayerManager().GetPlayerName(squadmateIds[next]), next + 1, squadmates.Count()));
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! Feedback for the follow squad key, so a press always shows something - with one squadmate left
+	//! (already followed) it otherwise looked like the key did nothing
+	protected void ShowFollowSquadMessage(string message)
+	{
+		if (m_PopUpNotification)
+			m_PopUpNotification.PopupMsg(message, 2);
+	}
+
+	/**
+	 * Teleports the spectator camera to the location of the most recent killfeed event.
+	 * Mirrors the Zeus "R" shortcut for jumping to kill events.
+	 * If currently following a player, detaches first so the free-cam teleport takes effect.
+	 */
 	void Action_TeleportToKill()
 	{
 		if (m_vLastKillPosition == vector.Zero)
