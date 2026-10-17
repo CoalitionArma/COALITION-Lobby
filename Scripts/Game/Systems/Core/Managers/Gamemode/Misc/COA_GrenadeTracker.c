@@ -6,6 +6,8 @@
 // Clients: keep the thrown grenades (by RplId) until they explode, their smoke runs out or they time
 // out, so the spectator can draw them in the world (COA_SpecWorldMarkers) and on its map
 // (COA_SpectatorMapOverlay). Owned by COA_RplBroadcastManager.
+// An exploded grenade's entity lingers in the world for a while, so explosive grenades are dropped once
+// their fuse has run (thrown + TimerTriggerComponent timer) rather than when the entity goes.
 //------------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------------
@@ -22,6 +24,7 @@ class COA_ThrownGrenade
 	RplId m_Id;
 	int m_iType;			// COA_EGrenadeType
 	string m_sFactionKey;	// thrower's faction
+	float m_fThrownAt;		// world time (ms) the throw arrived
 	float m_fExpireAt;		// world time (ms)
 	bool m_bResolved;		// the entity has been seen on this client
 
@@ -88,8 +91,12 @@ class COA_GrenadeThrowListener
 //------------------------------------------------------------------------------------------------
 class COA_GrenadeTracker
 {
-	static const float EXPLOSIVE_LIFETIME_MS = 20000;
-	static const float SMOKE_LIFETIME_MS = 120000;
+	//! Explosive grenades without a fuse timer (impact fuzes) - ones with a timer go when it runs out
+	static const float EXPLOSIVE_LIFETIME_MS = 8000;
+	//! Smoke grenades stay marked while they are smoking
+	static const float SMOKE_LIFETIME_MS = 40000;
+	//! Added to the fuse so the icon is still there for the bang
+	static const float FUSE_MARGIN_MS = 250;
 
 	protected static const int HOOK_INTERVAL_MS = 1000;
 	protected static const int PRUNE_EVERY_TICKS = 60;
@@ -161,6 +168,20 @@ class COA_GrenadeTracker
 			return null;
 
 		return entity;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Fuse length of a grenade with a timer fuse in milliseconds, -1 for anything else
+	static float GetFuseMs(IEntity grenade)
+	{
+		if (!grenade)
+			return -1;
+
+		TimerTriggerComponent timer = TimerTriggerComponent.Cast(grenade.FindComponent(TimerTriggerComponent));
+		if (!timer || timer.GetTimer() <= 0)
+			return -1;
+
+		return timer.GetTimer() * 1000;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -285,6 +306,7 @@ class COA_GrenadeTracker
 		grenade.m_Id = grenadeId;
 		grenade.m_iType = grenadeType;
 		grenade.m_sFactionKey = factionKey;
+		grenade.m_fThrownAt = world.GetWorldTime();
 		grenade.m_fExpireAt = world.GetWorldTime() + lifetime;
 		m_aGrenades.Insert(grenade);
 	}
@@ -305,8 +327,17 @@ class COA_GrenadeTracker
 		{
 			COA_ThrownGrenade grenade = m_aGrenades[i];
 			IEntity entity = grenade.GetEntity();
-			if (entity)
+			if (entity && !grenade.m_bResolved)
+			{
 				grenade.m_bResolved = true;
+
+				// The throw event comes as it leaves the hand, so it goes off by the end of its fuse
+				float fuse = -1;
+				if (grenade.m_iType == COA_EGrenadeType.EXPLOSIVE)
+					fuse = GetFuseMs(entity);
+				if (fuse > 0)
+					grenade.m_fExpireAt = Math.Min(grenade.m_fExpireAt, grenade.m_fThrownAt + fuse + FUSE_MARGIN_MS);
+			}
 
 			if (now > grenade.m_fExpireAt || (grenade.m_bResolved && !entity))
 			{

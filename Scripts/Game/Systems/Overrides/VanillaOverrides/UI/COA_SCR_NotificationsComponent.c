@@ -30,6 +30,19 @@ class COA_AdminKillfeed
 		// Alive and playing - suppress
 		return true;
 	}
+
+	//----------------------------------------------------------------
+	//! Notifications that make up the vanilla kill feed
+	static bool IsKillfeedNotification(ENotification notificationID)
+	{
+		return notificationID == ENotification.PLAYER_DIED ||
+			notificationID == ENotification.PLAYER_KILLED_PLAYER ||
+			notificationID == ENotification.AI_KILLED_PLAYER ||
+			notificationID == ENotification.POSSESSED_AI_DIED ||
+			notificationID == ENotification.POSSESSED_AI_KILLED_PLAYER ||
+			notificationID == ENotification.POSSESSED_AI_KILLED_POSSESSED_AI ||
+			notificationID == ENotification.AI_KILLED_POSSESSED_AI;
+	}
 }
 
 modded class SCR_NotificationsComponent
@@ -69,16 +82,6 @@ modded class SCR_NotificationsComponent
 	//----------------------------------------------------------------
 	private static bool IsKillfeedNotification(ENotification notificationID)
 	{
-		// Check for all killfeed-related notification types
-		if (notificationID == ENotification.PLAYER_DIED ||
-			notificationID == ENotification.PLAYER_KILLED_PLAYER ||
-			notificationID == ENotification.AI_KILLED_PLAYER ||
-			notificationID == ENotification.POSSESSED_AI_DIED ||
-			notificationID == ENotification.POSSESSED_AI_KILLED_PLAYER ||
-			notificationID == ENotification.POSSESSED_AI_KILLED_POSSESSED_AI ||
-			notificationID == ENotification.AI_KILLED_POSSESSED_AI)
-			return true;
-		else
-			return false;
+		return COA_AdminKillfeed.IsKillfeedNotification(notificationID);
 	}
 }
