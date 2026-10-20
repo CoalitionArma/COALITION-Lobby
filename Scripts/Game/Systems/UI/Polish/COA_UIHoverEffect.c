@@ -3,7 +3,9 @@
 enum COA_EHoverStyle
 {
 	LIGHTEN,	//!< the target's colour gets lighter on hover, more so while pressed
-	OVERLAY		//!< the target (a transparent button) fades in a faint white overlay
+	OVERLAY,	//!< the target (a transparent button) fades in a faint white overlay
+	BRIGHTEN,	//!< the target is an icon or a label - a bigger step towards white
+	RAISE		//!< the target is a fill that may be transparent at rest (an unselected nav item) - it fades in
 }
 
 //------------------------------------------------------------------------------------------------
@@ -14,7 +16,9 @@ enum COA_EHoverStyle
 // or automatically:    COA_UIHoverEffect.AttachAuto(button)   (see COA_UIPolish)
 //
 // The colour the target returns to is captured when hover starts rather than when the effect is
-// attached, so state a menu sets in code (e.g. a selected filter) isn't undone on mouse-leave.
+// attached, so state a menu sets in code (e.g. a selected filter) isn't undone on mouse-leave. A menu
+// that recolours the target while it may be hovered (a nav item selected by clicking it) sets it with
+// COA_UIHoverEffect.SetTargetColor instead, or the running animation paints over it.
 // Focus only highlights with a gamepad: with a mouse a clicked button keeps focus, so a focus
 // highlight would stay stuck on after the click (which is why layouts set ButtonComponent's
 // focused colour to transparent).
@@ -26,10 +30,20 @@ class COA_UIHoverEffect : ScriptedWidgetEventHandler
 	// Progress per second - a transition takes about an eighth of a second
 	protected static const float ANIMATION_SPEED = 8;
 
-	// LIGHTEN amounts, added to each colour channel. Widget colours are linear (see Color.FromSRGBA),
-	// so small amounts are already very visible on dark fills: +0.02 takes #15171D to about #2A2C31.
-	protected static const float HOVER_LIGHTEN = 0.02;
-	protected static const float PRESS_LIGHTEN = 0.035;
+	// LIGHTEN amounts, added to each channel in sRGB - widget colours are linear (see Color.FromSRGBA),
+	// and a fixed linear step that shows on dark fills (#15171D) all but vanishes on bright ones (the
+	// accent red), so the step is taken in sRGB where it looks the same on both
+	protected static const float HOVER_LIGHTEN = 0.1;
+	protected static const float PRESS_LIGHTEN = 0.16;
+	protected static const float GAMMA = 2.2;
+
+	// BRIGHTEN amounts (sRGB), for icons and labels
+	protected static const float HOVER_BRIGHTEN = 0.22;
+	protected static const float PRESS_BRIGHTEN = 0.3;
+
+	// RAISE: least alpha while hovered / pressed
+	protected static const float HOVER_RAISE_ALPHA = 0.6;
+	protected static const float PRESS_RAISE_ALPHA = 0.85;
 
 	// Below this alpha a fill is treated as transparent (see ResolveTarget)
 	protected static const float MIN_FILL_ALPHA = 0.2;
@@ -72,6 +86,42 @@ class COA_UIHoverEffect : ScriptedWidgetEventHandler
 		effect.m_bAutoTarget = true;
 		button.AddHandler(effect);
 		return effect;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Recolour a button's hover target from code: becomes the colour it rests at, with the hover /
+	//! pressed look re-applied on top if the cursor is on it. Without an effect it just sets the colour.
+	static void SetTargetColor(Widget button, Widget target, Color color)
+	{
+		COA_UIHoverEffect effect;
+		if (button)
+			effect = COA_UIHoverEffect.Cast(button.FindHandler(COA_UIHoverEffect));
+
+		if (effect && effect.m_wTarget == target)
+		{
+			effect.SetRestColor(color);
+			return;
+		}
+
+		if (target)
+			target.SetColor(color);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetRestColor(Color color)
+	{
+		m_RestColor = new Color(color.R(), color.G(), color.B(), color.A());
+		if (!m_wTarget)
+			return;
+
+		AnimateWidget.StopAnimation(m_wTarget, WidgetAnimationColor);
+		m_bReturning = false;
+		if (m_bPressed)
+			m_wTarget.SetColor(GetActiveColor(true));
+		else if (m_bHovered || m_bFocused)
+			m_wTarget.SetColor(GetActiveColor(false));
+		else
+			m_wTarget.SetColor(m_RestColor);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -211,18 +261,39 @@ class COA_UIHoverEffect : ScriptedWidgetEventHandler
 		if (pressed)
 			amount = PRESS_LIGHTEN;
 
-		return new Color(
-			Math.Min(m_RestColor.R() + amount, 1),
-			Math.Min(m_RestColor.G() + amount, 1),
-			Math.Min(m_RestColor.B() + amount, 1),
-			m_RestColor.A());
+		if (m_eStyle == COA_EHoverStyle.BRIGHTEN)
+		{
+			amount = HOVER_BRIGHTEN;
+			if (pressed)
+				amount = PRESS_BRIGHTEN;
+		}
+
+		float alpha = m_RestColor.A();
+		if (m_eStyle == COA_EHoverStyle.RAISE)
+		{
+			if (pressed)
+				alpha = Math.Max(alpha, PRESS_RAISE_ALPHA);
+			else
+				alpha = Math.Max(alpha, HOVER_RAISE_ALPHA);
+		}
+
+		return new Color(Lighten(m_RestColor.R(), amount), Lighten(m_RestColor.G(), amount), Lighten(m_RestColor.B(), amount), alpha);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A linear channel, lightened by amount in sRGB
+	protected static float Lighten(float linear, float amount)
+	{
+		float srgb = Math.Pow(Math.Clamp(linear, 0, 1), 1 / GAMMA);
+		return Math.Pow(Math.Min(srgb + amount, 1), GAMMA);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! 1. A button with a visible fill lightens itself.
-	//! 2. Otherwise a background drawn just behind it (an earlier sibling named like a background,
-	//!    covering roughly the same area) lightens - the common "transparent button over a panel" setup.
-	//! 3. Otherwise the transparent button fades in a faint white overlay.
+	//! 2. Otherwise its background lightens (a sibling named after it, or named like a background and
+	//!    covering the same area) - the common "transparent button over a panel" setup.
+	//! 3. Otherwise an icon-only button (a search magnifier) brightens its icon.
+	//! 4. Otherwise the transparent button fades in a faint white overlay.
 	protected void ResolveTarget()
 	{
 		if (m_wButton.GetColor().A() >= MIN_FILL_ALPHA)
@@ -240,42 +311,86 @@ class COA_UIHoverEffect : ScriptedWidgetEventHandler
 			return;
 		}
 
+		ImageWidget icon = ImageWidget.Cast(m_wButton.GetChildren());
+		if (icon && !icon.GetSibling() && icon.IsVisible())
+		{
+			m_wTarget = icon;
+			m_eStyle = COA_EHoverStyle.BRIGHTEN;
+			return;
+		}
+
 		m_wTarget = m_wButton;
 		m_eStyle = COA_EHoverStyle.OVERLAY;
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The button's own background: one named after it ("SendButton" -> "SendButtonBG" or "SendBG"), else
+	//! the background covering the same area. Not "the last background before the button": children are
+	//! ordered by Z order, not as laid out, so with every background on one Z and every button on the next
+	//! that was the last button's background for all of them (the admin menu's hint buttons all lit up
+	//! "Send to everyone").
 	protected Widget FindBackgroundBehind()
 	{
 		Widget parent = m_wButton.GetParent();
 		if (!parent)
 			return null;
 
-		float buttonWidth, buttonHeight;
+		string name = m_wButton.GetName();
+		string stem = name;
+		stem.Replace("Button", "");
+		array<string> ownNames = {name + "BG", name + "Background", stem + "BG", stem + "Background"};
+
+		Widget sibling = parent.GetChildren();
+		while (sibling)
+		{
+			if (sibling != m_wButton && ownNames.Contains(sibling.GetName()) && IsBackgroundCandidate(sibling))
+				return sibling;
+
+			sibling = sibling.GetSibling();
+		}
+
+		float buttonX, buttonY, buttonWidth, buttonHeight;
+		m_wButton.GetScreenPos(buttonX, buttonY);
 		m_wButton.GetScreenSize(buttonWidth, buttonHeight);
-		float buttonArea = buttonWidth * buttonHeight;
-		if (buttonArea <= 0)
+		if (buttonWidth * buttonHeight <= 0)
 			return null;
 
+		// Same element, not a whole panel the button happens to sit on: at least half the combined area shared
 		Widget found;
-		Widget sibling = parent.GetChildren();
-		while (sibling && sibling != m_wButton)
+		float bestOverlap = 0.5;
+		sibling = parent.GetChildren();
+		while (sibling)
 		{
-			if (IsBackgroundCandidate(sibling))
+			if (sibling != m_wButton && IsBackgroundCandidate(sibling))
 			{
-				float width, height;
+				float x, y, width, height;
+				sibling.GetScreenPos(x, y);
 				sibling.GetScreenSize(width, height);
-
-				// Same element, not a whole panel the button happens to sit on
-				float ratio = (width * height) / buttonArea;
-				if (ratio >= 0.5 && ratio <= 2)
-					found = sibling; // keep the closest one drawn under the button
+				float overlap = OverlapRatio(buttonX, buttonY, buttonWidth, buttonHeight, x, y, width, height);
+				if (overlap > bestOverlap)
+				{
+					bestOverlap = overlap;
+					found = sibling;
+				}
 			}
 
 			sibling = sibling.GetSibling();
 		}
 
 		return found;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Shared area over combined area of two rectangles (1 = the same rectangle, 0 = apart)
+	protected static float OverlapRatio(float ax, float ay, float aw, float ah, float bx, float by, float bw, float bh)
+	{
+		float shareW = Math.Min(ax + aw, bx + bw) - Math.Max(ax, bx);
+		float shareH = Math.Min(ay + ah, by + bh) - Math.Max(ay, by);
+		if (shareW <= 0 || shareH <= 0)
+			return 0;
+
+		float shared = shareW * shareH;
+		return shared / (aw * ah + bw * bh - shared);
 	}
 
 	//------------------------------------------------------------------------------------------------

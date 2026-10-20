@@ -125,7 +125,7 @@ class COA_AdminMenu : ChimeraMenuBase
 		SCR_ButtonTextComponent filterLogHigh = GetMenuButton("HighFilterButton", m_wRoot);
 		SCR_ButtonTextComponent filterLogMedium = GetMenuButton("MediumFilterButton", m_wRoot);
 		SCR_ButtonTextComponent filterLogLow = GetMenuButton("LowFilterButton", m_wRoot);
-		if (!filterLogLow || !filterLogMedium || !filterLogLow)
+		if (!filterLogHigh || !filterLogMedium || !filterLogLow)
 			return;
 		
 		filterLogHigh.m_OnToggled.Insert(ToggleLogLevelFilter);
@@ -227,6 +227,18 @@ class COA_AdminMenu : ChimeraMenuBase
 		// Heal menu button
 		m_GamemodeMenuButton = SCR_ButtonTextComponent.GetButtonText("GamemodeButton", m_wRoot);
 		m_GamemodeMenuButton.m_OnClicked.Insert(GamemodeButton);
+
+		// Nav rail hover: the item's own rounded fill fades in (it's transparent until selected), rather than
+		// the generic square overlay COA_MenuPolish would give the transparent button
+		array<SCR_ButtonTextComponent> navButtons = {m_ticketMenuButton, m_respawnMenuButton, m_teleportMenuButton, m_healMenuButton, m_resetGearMenuButton, m_hintMenuButton, m_GamemodeMenuButton};
+		foreach (SCR_ButtonTextComponent navButton : navButtons)
+		{
+			if (!navButton)
+				continue;
+
+			Widget navRoot = navButton.GetRootWidget();
+			COA_UIHoverEffect.Attach(navRoot, navRoot.FindAnyWidget("NavBG"), COA_EHoverStyle.RAISE);
+		}
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -351,13 +363,14 @@ class COA_AdminMenu : ChimeraMenuBase
 		if (!button)
 			return;
 
+		// Through the hover effect: the item was just clicked, so it's hovered and its animation would paint over a plain SetColor
 		Widget navBG = button.FindAnyWidget("NavBG");
 		if (navBG)
 		{
 			if (active)
-				navBG.SetColor(Color.FromSRGBA(28, 31, 40, 255));
+				COA_UIHoverEffect.SetTargetColor(button, navBG, Color.FromSRGBA(28, 31, 40, 255));
 			else
-				navBG.SetColor(Color.FromSRGBA(28, 31, 40, 0));
+				COA_UIHoverEffect.SetTargetColor(button, navBG, Color.FromSRGBA(28, 31, 40, 0));
 		}
 
 		Widget accent = button.FindAnyWidget("NavAccent");
@@ -738,7 +751,7 @@ class COA_AdminMenu : ChimeraMenuBase
 		SCR_ButtonTextComponent filterLogHigh = GetMenuButton("HighFilterButton", m_wRoot);
 		SCR_ButtonTextComponent filterLogMedium = GetMenuButton("MediumFilterButton", m_wRoot);
 		SCR_ButtonTextComponent filterLogLow = GetMenuButton("LowFilterButton", m_wRoot);
-		if (!filterLogLow || !filterLogMedium || !filterLogLow)
+		if (!filterLogHigh || !filterLogMedium || !filterLogLow)
 			return;
 
 		ImageWidget filterLogHighCheck = GetImageWidget("HighFilterButtonImage", m_wRoot);
@@ -1472,7 +1485,7 @@ class COA_AdminMenu : ChimeraMenuBase
 		SCR_ButtonTextComponent filterLogHigh = GetMenuButton("HighFilterButton", m_wRoot);
 		SCR_ButtonTextComponent filterLogMedium = GetMenuButton("MediumFilterButton", m_wRoot);
 		SCR_ButtonTextComponent filterLogLow = GetMenuButton("LowFilterButton", m_wRoot);
-		if (!filterLogLow || !filterLogMedium || !filterLogLow)
+		if (!filterLogHigh || !filterLogMedium || !filterLogLow)
 			return;
 
 		// Format and add the messages to the list
