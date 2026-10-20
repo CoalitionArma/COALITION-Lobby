@@ -2014,11 +2014,11 @@ FrameWidgetClass {
     Anchor 0.5 1 0.5 1
     PositionX -210
     OffsetLeft -210
-    PositionY -244
-    OffsetTop -244
+    PositionY -268
+    OffsetTop -268
     SizeX 420
     OffsetRight -210
-    SizeY 172
+    SizeY 196
     OffsetBottom 72
    }
   }

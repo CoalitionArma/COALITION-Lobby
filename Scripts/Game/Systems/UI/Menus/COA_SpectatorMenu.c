@@ -133,6 +133,13 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	protected Widget m_wEyeCamBG;
 	protected Widget m_wOrbitCamBG;
 
+	// "Listen to their radio" checkbox on the follow card - see UpdateRadioListening
+	protected Widget m_wRadioListenRow;
+	protected Widget m_wRadioListenCheck;
+	protected SCR_ButtonTextComponent m_RadioListenButton;
+	protected bool m_bListenToRadio;
+	protected int m_iRadioListenFollowed;		// player followed when the box was last checked
+
 	// Kill feed (top right): last kills, newest at the bottom; clicking a row jumps the camera there
 	protected static const ResourceName KILL_FEED_ROW_LAYOUT = "{6A71140000000001}UI/layouts/Menus/Spectator/Elements/COA_SpecKillFeedRow.layout";
 	protected static const int KILL_FEED_MAX = 5;
@@ -229,6 +236,7 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		Widget entityInfoDisplay = m_wRoot.FindAnyWidget("EntityInfoDisplay");
 		m_EntityInfoDisplay = COA_EntityInfoDisplay.Cast(entityInfoDisplay.FindHandler(COA_EntityInfoDisplay));
 		InitCameraModeButtons();
+		InitRadioListen();
 		SetupKeyHints();
 		m_wKillFeedList = VerticalLayoutWidget.Cast(m_wRoot.FindAnyWidget("KillFeedList"));
 		InitDamageReportWidgets();
@@ -751,6 +759,98 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		}
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! "Listen to their radio" on the follow card: hear what the followed player's radios receive (CVON radio
+	//! listening - the server checks a spectator may, see COA_CVON_VONGameModeComponent)
+	protected void InitRadioListen()
+	{
+		m_wRadioListenRow = m_wRoot.FindAnyWidget("RadioListenRow");
+		m_wRadioListenCheck = m_wRoot.FindAnyWidget("RadioListenCheck");
+		Widget button = m_wRoot.FindAnyWidget("RadioListenButton");
+		if (button)
+			m_RadioListenButton = SCR_ButtonTextComponent.Cast(button.FindHandler(SCR_ButtonTextComponent));
+
+		if (m_RadioListenButton)
+			m_RadioListenButton.m_OnClicked.Insert(OnRadioListenClicked);
+
+		SetRadioListenChecked(false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnRadioListenClicked()
+	{
+		SetRadioListenChecked(!m_bListenToRadio);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SetRadioListenChecked(bool listen)
+	{
+		m_bListenToRadio = listen;
+		if (m_wRadioListenCheck)
+			m_wRadioListenCheck.SetVisible(listen);
+
+		if (m_RadioListenButton && m_RadioListenButton.IsToggled() != listen)
+			m_RadioListenButton.SetToggled(listen, false, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every frame: the box shows only while following a living player; following someone else (or nobody)
+	//! unticks it; CVON listens to whoever is ticked
+	protected void UpdateRadioListening()
+	{
+		// A CVON build without radio listening: no checkbox
+#ifndef CVON_RADIO_LISTEN
+		if (m_wRadioListenRow)
+			m_wRadioListenRow.SetVisible(false);
+#endif
+#ifdef CVON_RADIO_LISTEN
+		// Without CVON on the mission there are no radios to listen to
+		if (!CVON_VONGameModeComponent.GetInstance())
+		{
+			if (m_wRadioListenRow)
+				m_wRadioListenRow.SetVisible(false);
+			return;
+		}
+
+		int followedId;
+		if (m_eSpecEntity && !COA_EntityHelper.IsSpectator(m_eSpecEntity))
+			followedId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(m_eSpecEntity);
+
+		if (followedId != m_iRadioListenFollowed)
+		{
+			m_iRadioListenFollowed = followedId;
+			SetRadioListenChecked(false);
+		}
+
+		if (m_wRadioListenRow)
+			m_wRadioListenRow.SetVisible(followedId != 0);
+
+		int target;
+		if (m_bListenToRadio)
+			target = followedId;
+
+		SCR_PlayerController playerController = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		if (playerController && playerController.GetRadioListenTarget() != target)
+			playerController.SetRadioListenTarget(target);
+#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Leaving the spectator (respawning, the menu closing) stops listening
+	protected void StopRadioListening()
+	{
+		SetRadioListenChecked(false);
+		m_iRadioListenFollowed = 0;
+#ifdef CVON_RADIO_LISTEN
+		if (!CVON_VONGameModeComponent.GetInstance())
+			return;
+
+		SCR_PlayerController playerController = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		if (playerController)
+			playerController.SetRadioListenTarget(0);
+#endif
+	}
+
 	/**
 	 * Toggles night vision goggles in spectator mode
 	 */
@@ -943,6 +1043,7 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			m_UIPolish.Update(tDelta);
 
 		super.OnMenuUpdate(tDelta);
+		UpdateRadioListening();
 
 		// Update compass
 		UpdateCompass();
@@ -2618,6 +2719,8 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			m_UIPolish.Cleanup();
 			m_UIPolish = null;
 		}
+
+		StopRadioListening();
 
 		// Call parent class cleanup
 		super.OnMenuClose();

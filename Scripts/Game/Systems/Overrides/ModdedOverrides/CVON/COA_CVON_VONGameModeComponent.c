@@ -61,4 +61,29 @@ modded class CVON_VONGameModeComponent
 			
 		return m_sListeningPlayers;
 	}
+
+#ifdef CVON_RADIO_LISTEN
+	//------------------------------------------------------------------------------------------------
+	//! Spectators may listen to the radios of the living player they follow ("Listen to their radio" on the
+	//! spectator's follow card). With the mission's "hide other spectator factions" on, only their own side's.
+	//! Only with a CVON build that has radio listening (CVON_RADIO_LISTEN).
+	override bool CanListenToRadios(int listenerId, int targetId)
+	{
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		IEntity listener = playerManager.GetPlayerControlledEntity(listenerId);
+		IEntity target = playerManager.GetPlayerControlledEntity(targetId);
+		if (!listener || !target || !COA_EntityHelper.IsSpectator(listener) || COA_EntityHelper.IsSpectator(target))
+			return false;
+
+		COA_Gamemode gamemode = COA_Gamemode.GetInstance();
+		if (gamemode && gamemode.m_bHideOtherSpectatorFactions)
+		{
+			COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+			if (slottingManager && slottingManager.GetPlayerSlotFaction(listenerId) != slottingManager.GetPlayerSlotFaction(targetId))
+				return false;
+		}
+
+		return true;
+	}
+#endif
 }

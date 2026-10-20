@@ -8,8 +8,8 @@ ScaleWidgetClass {
   OffsetTop 0
   SizeX 420
   OffsetRight -420
-  SizeY 172
-  OffsetBottom -172
+  SizeY 196
+  OffsetBottom -196
  }
  components {
   COA_EntityInfoDisplay "{68B4387969E57D45}" {
@@ -248,6 +248,103 @@ ScaleWidgetClass {
      "Vertical Alignment" Center
      FontProperties FontProperties "{6A7114000000011D}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    FrameWidgetClass "{75CF217D8281B02F}" {
+     Name "RadioListenRow"
+     Slot FrameWidgetSlot "{6DD9B0167887BFB2}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 164
+      OffsetTop 164
+      SizeX 388
+      OffsetRight -404
+      SizeY 24
+      OffsetBottom -188
+     }
+     "Is Visible" 0
+     {
+      SmartPanelWidgetClass "{E0A59196B45F4297}" {
+       Name "RadioListenBG"
+       Slot FrameWidgetSlot "{D445D5C167526AD9}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 2
+        OffsetTop 2
+        SizeX 20
+        OffsetRight -20
+        SizeY 20
+        OffsetBottom -22
+       }
+       "Z Order" 1
+       Color 0.011 0.0137 0.0212 1
+       style rounded_4px
+      }
+      ImageWidgetClass "{4EB5EEE8238942D5}" {
+       Name "RadioListenCheck"
+       Slot FrameWidgetSlot "{BE6FAA0CC5FA4074}" {
+        Anchor 0 0 0 0
+        PositionX 3
+        OffsetLeft 3
+        PositionY 5
+        OffsetTop 5
+        SizeX 14
+        OffsetRight -17
+        SizeY 14
+        OffsetBottom -19
+       }
+       "Z Order" 2
+       "Is Visible" 0
+       Texture "{7DEEE956159B85D2}UI/Images/LobbyImages/check.edds"
+       Color 0.8632 0.8879 0.9301 1
+      }
+      TextWidgetClass "{D1BBEE8F4D9DD397}" {
+       Name "RadioListenText"
+       Slot FrameWidgetSlot "{187BA3D033B93701}" {
+        Anchor 0 0 0 0
+        PositionX 30
+        OffsetLeft 30
+        PositionY 0
+        OffsetTop 0
+        SizeX 358
+        OffsetRight -388
+        SizeY 24
+        OffsetBottom -24
+       }
+       "Z Order" 2
+       Color 0.3968 0.4564 0.6038 1
+       Text "Listen to their radio"
+       "Font Size" 14
+       "Min Font Size" 10
+       "Vertical Alignment" Center
+       FontProperties FontProperties "{8E669930993CE2CE}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+      ButtonWidgetClass "{9D93540FDB0B4CDE}" {
+       Name "RadioListenButton"
+       Slot FrameWidgetSlot "{DF9F27C075846F9F}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 230
+        OffsetRight -230
+        SizeY 24
+        OffsetBottom -24
+       }
+       "Z Order" 3
+       Color 1 1 1 0
+       components {
+        SCR_ButtonTextComponent "{A75F4A1771C6C326}" {
+         m_bCanBeToggled 1
+         m_sTextWidgetName ""
+        }
+       }
+      }
      }
     }
     FrameWidgetClass "{6A71140000000139}" {
