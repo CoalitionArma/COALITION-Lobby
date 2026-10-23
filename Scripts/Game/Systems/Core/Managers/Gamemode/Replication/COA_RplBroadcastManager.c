@@ -2042,6 +2042,9 @@ class COA_RplBroadcastManager : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! The vanilla respawn countdown sounds - players already know them as "deploying in..."
+	//! The tick's volume comes from UI_Respawn.sig: it fades in from silent at maxCountdownValue to full at 0,
+	//! with both inputs clamped to 10. Fed the seconds left, every tick from 10 seconds up was silent and
+	//! the rest barely audible - so every tick is sent as 0 of 10, full volume.
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	void RpcDo_SafestartCountdownCue(int secondsLeft)
 	{
@@ -2051,8 +2054,8 @@ class COA_RplBroadcastManager : ScriptComponent
 			return;
 		}
 
-		SCR_UISoundEntity.SetSignalValueStr("countdownValue", secondsLeft);
-		SCR_UISoundEntity.SetSignalValueStr("maxCountdownValue", COA_SafestartManager.COUNTDOWN_CUE_SECONDS);
+		SCR_UISoundEntity.SetSignalValueStr("countdownValue", 0);
+		SCR_UISoundEntity.SetSignalValueStr("maxCountdownValue", 10);
 		SCR_UISoundEntity.SoundEvent(SCR_SoundEvent.SOUND_RESPAWN_COUNTDOWN);
 	}
 	

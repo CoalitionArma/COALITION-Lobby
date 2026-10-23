@@ -32,16 +32,44 @@ class COA_AdminKillfeed
 	}
 
 	//----------------------------------------------------------------
-	//! Notifications that make up the vanilla kill feed
+	//! The vanilla notification log shows kills only to a Game Master with the editor open. Never to
+	//! spectators (they have the COALITION kill feed) or to an admin between dying and spectating -
+	//! vanilla sends unlimited-editor accounts the full feed even then.
+	static bool ShowKillsInVanillaLog()
+	{
+		if (COA_EntityHelper.IsSpectator())
+			return false;
+
+		SCR_EditorManagerEntity editorManager = SCR_EditorManagerEntity.GetInstance();
+		return editorManager && !editorManager.IsLimited() && editorManager.IsOpened();
+	}
+
+	//----------------------------------------------------------------
+	//! Notifications that make up the vanilla kill feed - every death and kill notification
 	static bool IsKillfeedNotification(ENotification notificationID)
 	{
-		return notificationID == ENotification.PLAYER_DIED ||
-			notificationID == ENotification.PLAYER_KILLED_PLAYER ||
-			notificationID == ENotification.AI_KILLED_PLAYER ||
-			notificationID == ENotification.POSSESSED_AI_DIED ||
-			notificationID == ENotification.POSSESSED_AI_KILLED_PLAYER ||
-			notificationID == ENotification.POSSESSED_AI_KILLED_POSSESSED_AI ||
-			notificationID == ENotification.AI_KILLED_POSSESSED_AI;
+		switch (notificationID)
+		{
+			case ENotification.PLAYER_DIED:
+			case ENotification.PLAYER_KILLED_PLAYER:
+			case ENotification.AI_KILLED_PLAYER:
+			case ENotification.POSSESSED_AI_DIED:
+			case ENotification.POSSESSED_AI_KILLED_PLAYER:
+			case ENotification.PLAYER_KILLED_POSSESSED_AI:
+			case ENotification.AI_KILLED_POSSESSED_AI:
+			case ENotification.POSSESSED_AI_KILLED_POSSESSED_AI:
+			case ENotification.PLAYER_KILLED_BY_EDITOR:
+			case ENotification.PLAYER_KILLED_BY_EDITOR_PLAYER:
+			case ENotification.POSSESSED_AI_KILLED_BY_EDITOR:
+			case ENotification.POSSESSED_AI_KILLED_BY_EDITOR_PLAYER:
+			case ENotification.AI_IN_GROUP_DIED:
+			case ENotification.PLAYER_KILLED_AI_IN_GROUP:
+			case ENotification.AI_KILLED_AI_IN_GROUP:
+			case ENotification.POSSESSED_AI_KILLED_AI_IN_GROUP:
+				return true;
+		}
+
+		return false;
 	}
 }
 
