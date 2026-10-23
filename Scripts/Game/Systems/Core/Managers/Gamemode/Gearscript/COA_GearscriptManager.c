@@ -601,7 +601,7 @@ class COA_GearscriptManager : ScriptComponent
 		for (int i = 1; i <= itemAmount; i++)
 		{
 			bool inserted = false;
-			BaseInventoryStorageComponent charStorageComp = inventoryManager.FindStorageForResourceInsert(item, inventory);
+			BaseInventoryStorageComponent charStorageComp = inventoryManager.FindStorageForResource(item, EStoragePurpose.PURPOSE_EQUIPMENT_ATTACHMENT);
 			
 			if (charStorageComp && SCR_EquipmentStorageComponent.Cast(charStorageComp)) // needed for flashlights, wristwatches, binoculars, etc to automatically assign themselves to their correct slot.
 				inserted = inventoryManager.TrySpawnPrefabToStorage(item, charStorageComp, cb: new SCR_PrefabSpawnCallback(inventory));
