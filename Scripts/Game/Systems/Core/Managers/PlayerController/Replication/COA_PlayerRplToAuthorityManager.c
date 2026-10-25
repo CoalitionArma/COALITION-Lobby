@@ -453,6 +453,14 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A dead body streamed in on this client without a ragdoll - ask the server to restart it
+	//! (see COA_SCR_CharacterControllerComponent)
+	void RequestBodyRagdoll(RplId bodyId)
+	{
+		Rpc(RpcAsk_RequestBodyRagdoll, bodyId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Player radial menu: alert the medics on the caller's faction
 	//------------------------------------------------------------------------------------------------
 	//! Tactical camera: give a friendly squad an order at a position (COA_TacticalOrderAction)
@@ -1877,6 +1885,21 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			return;
 
 		rallyPointComponent.DestroyRallPoint();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_RequestBodyRagdoll(RplId bodyId)
+	{
+		LogTelemetry("RpcAsk_RequestBodyRagdoll", COA_BandwidthTelemetryManager.EstimateSize_RplId());
+
+		SCR_ChimeraCharacter body = COA_EntityHelper.GetCharacterFromRplId(bodyId);
+		if (!body)
+			return;
+
+		SCR_CharacterControllerComponent controller = SCR_CharacterControllerComponent.Cast(body.GetCharacterController());
+		if (controller)
+			controller.COA_RestartBodyRagdoll(); // dead-only and rate limited per body
 	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================

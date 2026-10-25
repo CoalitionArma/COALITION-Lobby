@@ -273,9 +273,10 @@ class COA_AdminMenu : ChimeraMenuBase
 		
 		if (m_wMenuContent)
 			delete m_wMenuContent;
-		
+
 		CloseConfirmAction();
-		
+		CloseContextMenu();
+
 		if (m_ChatPanel)
 			m_ChatPanel.SetAlwaysVisible(false);
 	}
@@ -406,6 +407,8 @@ class COA_AdminMenu : ChimeraMenuBase
 	//! Resets visibility and clears event handlers
 	void ClearMenu()
 	{
+		CloseContextMenu();
+
 		// Remove menu widget
 		if (m_wMenuContent)
 			delete m_wMenuContent;
@@ -531,6 +534,8 @@ class COA_AdminMenu : ChimeraMenuBase
 
 			list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
 		}
+
+		AttachContextMenu(list);
 
 		if (selectOpenTicket)
 			SelectOpenTicketOnwer(list);
@@ -719,6 +724,8 @@ class COA_AdminMenu : ChimeraMenuBase
 
 			list.AddItemWithColor(string.Format("%1", name), playerFaction.GetFactionColor());
 		}
+
+		AttachContextMenu(list);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -779,7 +786,11 @@ class COA_AdminMenu : ChimeraMenuBase
 
 		if (m_ChatPanel)
 			m_ChatPanel.OnUpdateChat(tDelta);
-		
+
+		// The right-click menu's player left (ticket rows stay - a ticket can be closed after they leave)
+		if (m_wContextMenu && m_iContextTicket == -1 && !m_playerManager.IsPlayerConnected(m_iContextPlayerId))
+			CloseContextMenu();
+
 		if (m_fUpdateBuffer >= 1)
 		{
 			if (m_bGameModeMenuOpen)
@@ -1455,6 +1466,17 @@ class COA_AdminMenu : ChimeraMenuBase
 			string name = m_playerManager.GetPlayerName(playerId);
 			playerList.AddItem(string.Format("%1:%2", playerId ,name));
 		}
+
+		AttachContextMenu(playerList);
+
+		// "Open ticket" from another tab's right-click menu - rows are in the order of the tickets array
+		if (m_iTicketToSelect > 0)
+		{
+			int index = tickets.Find(m_iTicketToSelect);
+			m_iTicketToSelect = 0;
+			if (index >= 0 && index < playerList.GetItemCount())
+				playerList.SetItemSelected(index, true, true);
+		}
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -1633,6 +1655,8 @@ class COA_AdminMenu : ChimeraMenuBase
 				m_spawnPoints.Insert(playerId);
 			}
 		}
+
+		AttachContextMenu(respawnPoints);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2468,6 +2492,367 @@ class COA_AdminMenu : ChimeraMenuBase
 		}
 	}
 	
+	//-----------------------------------------------------------------------------
+	// Right-Click Menu Methods (see COA_AdminContextMenu.c)
+	//-----------------------------------------------------------------------------
+
+	protected static const ResourceName CONTEXT_MENU_LAYOUT = "{7C1A4E2B9D3F6A01}UI/layouts/Menus/PauseMenu/AdminMenuWidgets/AdminContextMenu.layout";
+	protected static const ResourceName CONTEXT_MENU_ROW_LAYOUT = "{7C1A4E2B9D3F6A02}UI/layouts/Menus/PauseMenu/AdminMenuWidgets/AdminContextMenuRow.layout";
+	protected static const float CONTEXT_MENU_WIDTH = 240;
+	protected static const float CONTEXT_MENU_HEADER = 36;
+	protected static const float CONTEXT_MENU_ROW_HEIGHT = 36;
+	protected static const float CONTEXT_MENU_PADDING = 6;
+
+	protected Widget m_wContextMenu;
+	protected int m_iContextPlayerId;
+	protected int m_iContextTicket = -1; // the ticket right-clicked in the Tickets tab, else -1
+	protected int m_iTicketToSelect; // player whose ticket "Open ticket" selects once the Tickets tab loads
+
+	//------------------------------------------------------------------------------------------------
+	//! Hook right click on every row of a player (or ticket) list - called after each repopulation
+	protected void AttachContextMenu(SCR_ListBoxComponent list)
+	{
+		if (!list)
+			return;
+
+		int count = list.GetItemCount();
+		for (int i = 0; i < count; i++)
+		{
+			Widget row = list.GetElementComponent(i).GetRootWidget();
+			if (!row || row.FindHandler(COA_AdminListRowContextHandler))
+				continue;
+
+			COA_AdminListRowContextHandler handler = new COA_AdminListRowContextHandler();
+			handler.m_Menu = this;
+			handler.m_List = list;
+			handler.m_wRow = row;
+			row.AddHandler(handler);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Right-click menu for a list row, at the cursor
+	//! \param[in] list the list the row is in
+	//! \param[in] row root widget of the row right-clicked
+	//! \param[in] screenX, screenY cursor position in screen pixels
+	void OpenContextMenu(SCR_ListBoxComponent list, Widget row, int screenX, int screenY)
+	{
+		CloseContextMenu();
+
+		int index = -1;
+		int count = list.GetItemCount();
+		for (int i = 0; i < count; i++)
+		{
+			if (list.GetElementComponent(i).GetRootWidget() == row)
+			{
+				index = i;
+				break;
+			}
+		}
+
+		if (index < 0)
+			return;
+
+		TextWidget rowText = TextWidget.Cast(row.FindAnyWidget("Text"));
+		if (!rowText)
+			return;
+
+		// Ticket rows read "playerId:name" (PopulateOpenTicketList), the other lists just the name
+		string rowName = rowText.GetText();
+		bool isTicketRow = GetCurrentOpenTab() == "Tickets" && list == GetListBox("PlayerListBox0");
+		int playerId;
+		if (isTicketRow)
+		{
+			array<string> data = {};
+			rowName.Split(":", data, true);
+			if (!data.IsEmpty())
+				playerId = data[0].ToInt();
+		}
+		else
+		{
+			playerId = GetplayerIdFromName(rowName);
+		}
+
+		bool connected = playerId > 0 && m_playerManager.IsPlayerConnected(playerId);
+		if (!connected && !isTicketRow)
+			return;
+
+		// The menu acts on the row, so select it like a left click would (this also loads a ticket's messages)
+		if (list.GetSelectedItem() != index)
+			list.SetItemSelected(index, true);
+
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		m_wContextMenu = workspace.CreateWidgets(CONTEXT_MENU_LAYOUT);
+		if (!m_wContextMenu)
+		{
+			Print("[COA_AdminMenu] Failed to create " + CONTEXT_MENU_LAYOUT, LogLevel.WARNING);
+			return;
+		}
+
+		m_wContextMenu.SetZOrder(300);
+		m_iContextPlayerId = playerId;
+		if (isTicketRow)
+			m_iContextTicket = playerId;
+
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+
+		TextWidget title = TextWidget.Cast(m_wContextMenu.FindAnyWidget("MenuTitle"));
+		if (title)
+		{
+			string name = string.Format("Ticket %1", playerId);
+			if (connected)
+				name = m_playerManager.GetPlayerName(playerId);
+
+			name.ToUpper();
+			title.SetText(name);
+		}
+
+		// Accent in the player's faction colour, like their name in the list
+		Faction faction = slottingManager.GetPlayerSlotFaction(playerId);
+		Widget accent = m_wContextMenu.FindAnyWidget("MenuAccent");
+		if (accent && faction)
+			accent.SetColor(faction.GetFactionColor());
+
+		COA_AdminContextActionButton backdrop = COA_AdminContextActionButton.Cast(m_wContextMenu.FindAnyWidget("Backdrop").FindHandler(COA_AdminContextActionButton));
+		if (backdrop)
+			backdrop.m_OnClicked.Insert(OnContextActionClicked);
+
+		// Which actions apply to this player right now
+		IEntity target = m_playerManager.GetPlayerControlledEntity(playerId);
+		bool hasBody = connected && target && !COA_EntityHelper.IsSpectator(target) && !slottingManager.IsPlayerConsideredDead(playerId);
+		bool canRespawn = connected && !hasBody && slottingManager.GetPlayerSlotGroup(playerId) != null;
+
+		int localPlayerId = SCR_PlayerController.GetLocalPlayerId();
+		IEntity localEntity = m_playerManager.GetPlayerControlledEntity(localPlayerId);
+		bool localHasBody = localEntity && !COA_EntityHelper.IsSpectator(localEntity);
+		bool isSelf = playerId == localPlayerId;
+
+		int rows;
+		if (hasBody)
+		{
+			rows += AddContextAction("Heal", COA_EAdminContextAction.HEAL);
+			if (SCR_CompartmentAccessComponent.GetVehicleIn(target))
+				rows += AddContextAction("Repair vehicle", COA_EAdminContextAction.REPAIR_VEHICLE);
+
+			rows += AddContextAction("Unstuck", COA_EAdminContextAction.UNSTUCK);
+			if (localHasBody && !isSelf)
+			{
+				rows += AddContextAction("Bring to me", COA_EAdminContextAction.BRING_TO_ME);
+				rows += AddContextAction("Go to player", COA_EAdminContextAction.GO_TO_PLAYER);
+			}
+
+			if (!GetPlayerRolePrefab(playerId).IsEmpty())
+				rows += AddContextAction("Reset gear", COA_EAdminContextAction.RESET_GEAR);
+		}
+
+		if (canRespawn)
+			rows += AddContextAction("Respawn on group", COA_EAdminContextAction.RESPAWN_ON_GROUP);
+
+		if (isTicketRow)
+		{
+			rows += AddContextAction("Assign ticket to me", COA_EAdminContextAction.ASSIGN_TICKET);
+			rows += AddContextAction("Close ticket", COA_EAdminContextAction.CLOSE_TICKET);
+		}
+		else if (m_CachedTickets.Contains(playerId))
+		{
+			rows += AddContextAction("Open ticket", COA_EAdminContextAction.OPEN_TICKET);
+		}
+
+		if (connected)
+			rows += AddContextAction("Copy name", COA_EAdminContextAction.COPY_NAME);
+
+		// Size to the rows and keep the menu on screen
+		Widget menu = m_wContextMenu.FindAnyWidget("Menu");
+		if (!menu)
+			return;
+
+		float height = CONTEXT_MENU_HEADER + rows * CONTEXT_MENU_ROW_HEIGHT + CONTEXT_MENU_PADDING;
+		float screenWidth = workspace.DPIUnscale(workspace.GetWidth());
+		float screenHeight = workspace.DPIUnscale(workspace.GetHeight());
+		float x = Math.Clamp(workspace.DPIUnscale(screenX), 0, Math.Max(0, screenWidth - CONTEXT_MENU_WIDTH));
+		float y = Math.Clamp(workspace.DPIUnscale(screenY), 0, Math.Max(0, screenHeight - height));
+
+		FrameSlot.SetSize(menu, CONTEXT_MENU_WIDTH, height);
+		FrameSlot.SetPos(menu, x, y);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return 1 if the row was added (for sizing), else 0
+	protected int AddContextAction(string label, COA_EAdminContextAction action)
+	{
+		Widget list = m_wContextMenu.FindAnyWidget("Actions");
+		if (!list)
+			return 0;
+
+		Widget row = GetGame().GetWorkspace().CreateWidgets(CONTEXT_MENU_ROW_LAYOUT, list);
+		if (!row)
+			return 0;
+
+		TextWidget text = TextWidget.Cast(row.FindAnyWidget("ActionText"));
+		if (text)
+			text.SetText(label);
+
+		COA_AdminContextActionButton button = COA_AdminContextActionButton.Cast(row.FindHandler(COA_AdminContextActionButton));
+		if (button)
+		{
+			button.m_iAction = action;
+			button.m_OnClicked.Insert(OnContextActionClicked);
+		}
+
+		// ActionBG starts fully transparent, so brighten by overlaying rather than lightening it
+		COA_UIHoverEffect.Attach(row, row.FindAnyWidget("ActionBG"), COA_EHoverStyle.OVERLAY);
+		return 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnContextActionClicked(int action)
+	{
+		int playerId = m_iContextPlayerId;
+		int ticket = m_iContextTicket;
+		CloseContextMenu();
+
+		if (action == COA_EAdminContextAction.CLOSE || playerId <= 0)
+			return;
+
+		COA_PlayerRplToAuthorityManager authorityManager = COA_PlayerRplToAuthorityManager.GetInstance();
+		if (!authorityManager)
+			return;
+
+		int localPlayerId = SCR_PlayerController.GetLocalPlayerId();
+
+		switch (action)
+		{
+			case COA_EAdminContextAction.HEAL:
+			{
+				authorityManager.Heal(playerId, true, false);
+				break;
+			}
+			case COA_EAdminContextAction.REPAIR_VEHICLE:
+			{
+				authorityManager.Heal(playerId, true, true);
+				break;
+			}
+			case COA_EAdminContextAction.UNSTUCK:
+			{
+				// Teleporting a player to themselves moves them to the nearest free spot (RpcDo_TeleportPlayers)
+				authorityManager.TeleportPlayers(playerId, playerId, true);
+				break;
+			}
+			case COA_EAdminContextAction.BRING_TO_ME:
+			{
+				authorityManager.TeleportPlayers(playerId, localPlayerId, true);
+				break;
+			}
+			case COA_EAdminContextAction.GO_TO_PLAYER:
+			{
+				TeleportLocalPlayer(localPlayerId, playerId);
+				break;
+			}
+			case COA_EAdminContextAction.RESET_GEAR:
+			{
+				ResourceName prefab = GetPlayerRolePrefab(playerId);
+				if (!prefab.IsEmpty())
+					authorityManager.ResetGear(playerId, prefab, true);
+				break;
+			}
+			case COA_EAdminContextAction.RESPAWN_ON_GROUP:
+			{
+				RespawnOnOwnGroup(playerId);
+				break;
+			}
+			case COA_EAdminContextAction.OPEN_TICKET:
+			{
+				m_iTicketToSelect = playerId;
+				TicketButton();
+				break;
+			}
+			case COA_EAdminContextAction.ASSIGN_TICKET:
+			{
+				m_iSelectedTicket = ticket;
+				authorityManager.AssignAdminTicket(ticket, localPlayerId, false);
+				break;
+			}
+			case COA_EAdminContextAction.CLOSE_TICKET:
+			{
+				authorityManager.CloseAdminTicket(ticket, localPlayerId, true);
+				m_iSelectedTicket = -1;
+				TicketButton();
+				break;
+			}
+			case COA_EAdminContextAction.COPY_NAME:
+			{
+				System.ExportToClipboard(m_playerManager.GetPlayerName(playerId));
+				break;
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void CloseContextMenu()
+	{
+		if (m_wContextMenu)
+			m_wContextMenu.RemoveFromHierarchy();
+
+		m_wContextMenu = null;
+		m_iContextPlayerId = 0;
+		m_iContextTicket = -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return the prefab of the role in the player's slot, for resetting their gear to it
+	protected ResourceName GetPlayerRolePrefab(int playerId)
+	{
+		COA_SlotData slotData = COA_SlottingManager.GetInstance().GetPlayerSlotData(playerId);
+		if (!slotData)
+			return ResourceName.Empty;
+
+		COA_RolesConfig rolesConfig = COA_GearscriptManager.GetRolesConfig();
+		if (!rolesConfig)
+			return ResourceName.Empty;
+
+		COA_RoleConfig roleConfig = rolesConfig.FindRoleConfig(slotData.GetSlotRole());
+		if (!roleConfig)
+			return ResourceName.Empty;
+
+		return roleConfig.m_RoleResource;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Respawn a dead or spectating player on a living member of their own group (the server falls
+	//! back to the group leader when nobody is alive)
+	protected void RespawnOnOwnGroup(int playerId)
+	{
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+		SCR_AIGroup group = slottingManager.GetPlayerSlotGroup(playerId);
+		if (!group)
+			return;
+
+		int spawnOnPlayerId = -1;
+		array<int> players = {};
+		m_playerManager.GetPlayers(players);
+		foreach (int memberId : players)
+		{
+			if (memberId == playerId || slottingManager.GetPlayerSlotGroup(memberId) != group)
+				continue;
+
+			IEntity member = m_playerManager.GetPlayerControlledEntity(memberId);
+			if (!member || COA_EntityHelper.IsSpectator(member) || slottingManager.IsPlayerConsideredDead(memberId))
+				continue;
+
+			spawnOnPlayerId = memberId;
+			break;
+		}
+
+		COA_PlayerRplToAuthorityManager.GetInstance().SpawnOnGroup(playerId, spawnOnPlayerId, group.GetGroupID(), true);
+
+		// Refresh the dead players list, as RespawnPlayer does
+		if (GetCurrentOpenTab() == "Respawn")
+		{
+			GetGame().GetCallqueue().CallLater(ClearMenu, 1250, false);
+			GetGame().GetCallqueue().CallLater(InitializeRespawnMenu, 1825, false);
+		}
+	}
+
 	//------------------------------------------------------------------------------------------------
 	// GETTERS
 	//------------------------------------------------------------------------------------------------
