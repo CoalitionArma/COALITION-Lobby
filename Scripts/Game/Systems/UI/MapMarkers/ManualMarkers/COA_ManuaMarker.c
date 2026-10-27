@@ -54,6 +54,9 @@ class COA_ManualMarker : GenericEntity
 	Widget m_wRoot;
 	SCR_MapEntity m_MapEntity;
 	COA_ManualMarkerComponent m_hManualMarkerComponent;
+
+	// The open map is the Game Master (Zeus) map, which shows every marker whatever the player's faction
+	protected bool m_bOnEditorMap;
 	[Attribute("{52CA8FF5F56C6F31}UI/Map/ManualMapMarkerBase.layout")]
 	protected ResourceName m_sMarkerPrefab;
 	
@@ -290,6 +293,10 @@ class COA_ManualMarker : GenericEntity
 	
 	bool IsCurrentFactionVisibility()
 	{
+		// Zeus sees every marker
+		if (m_bOnEditorMap)
+			return true;
+
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		if (!gameMode)
 			return true;
@@ -319,9 +326,20 @@ class COA_ManualMarker : GenericEntity
 		return GetVisibleForFaction(faction.GetFactionKey());
 	}
 	
+	//! Remembers whether the map being opened is the Game Master (Zeus) map
+	protected void NoteOpenedMap(MapConfiguration mapConfig)
+	{
+		if (!mapConfig && m_MapEntity)
+			mapConfig = m_MapEntity.GetMapConfig();
+
+		m_bOnEditorMap = mapConfig && mapConfig.MapEntityMode == EMapEntityMode.EDITOR;
+	}
+
 	// Create new widget in map frame widget
 	void CreateMapWidget(MapConfiguration mapConfig)
 	{
+		NoteOpenedMap(mapConfig);
+
 		// If marker already exists ignore
 		if (m_wRoot)
 			return;
@@ -360,6 +378,7 @@ class COA_ManualMarker : GenericEntity
 		// Forget
 		m_wRoot = null;
 		m_hManualMarkerComponent = null;
+		m_bOnEditorMap = false;
 		
 		// Disable every frame updating
 		ClearEventMask(EntityEvent.POSTFRAME);

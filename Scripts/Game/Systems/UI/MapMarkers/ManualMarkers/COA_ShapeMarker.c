@@ -66,6 +66,8 @@ class COA_ShapeMarker : COA_ManualMarker
 			return;
 		}
 
+		NoteOpenedMap(mapConfig);
+
 		if (m_wRoot)
 			return;
 
@@ -112,6 +114,7 @@ class COA_ShapeMarker : COA_ManualMarker
 
 		m_wRoot = null;
 		m_wShapeCanvas = null;
+		m_bOnEditorMap = false;
 		ClearEventMask(EntityEvent.POSTFRAME);
 	}
 
