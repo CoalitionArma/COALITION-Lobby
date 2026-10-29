@@ -23,13 +23,15 @@ class COA_GearscriptCharacter : COA_PlayerCharacter
 		
 		if (!GetGame().InPlayMode() || !gearscriptManager)
 			return;
-		
-		// Schedule gearscript identity setup with appropriate delay
-		GetGame().GetCallqueue().Call(
-			gearscriptManager.SetEntityIdentity, 
-			owner
-		);
-	
+
+		// Identity (face, body, voice) is picked on the server only and replicated from there. Not on
+		// clients: this runs again whenever a client streams the character in - a late joiner, or the
+		// body leaving and re-entering the replication bubble - and rebuilding the head and body of a
+		// corpse there throws away its ragdoll pose (the A-posed bodies), besides giving every client
+		// its own random face.
+		if (RplSession.Mode() != RplMode.Client)
+			GetGame().GetCallqueue().Call(gearscriptManager.SetEntityIdentity, owner);
+
 		// Apply gearscript if not on client.
 		//
 		// Deferred to end of frame on purpose. COA_GamemodeManager.InitilizePlayer() spawns this

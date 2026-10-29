@@ -5,7 +5,6 @@ enum COA_ESpecMapPinKind
 	UNIT,
 	VEHICLE,
 	SQUAD,
-	CAMERA,
 	KILL,
 	GRENADE
 }
@@ -70,8 +69,8 @@ class COA_SpecMapPin : ScriptedWidgetComponent
 		if (m_wArrow)
 			m_wArrow.SetPivot(0.5, 0.5);
 
-		// Kill, grenade and camera markers are informational only, and must not swallow map clicks
-		if (kind == COA_ESpecMapPinKind.KILL || kind == COA_ESpecMapPinKind.CAMERA || kind == COA_ESpecMapPinKind.GRENADE)
+		// Kill and grenade markers are informational only, and must not swallow map clicks
+		if (kind == COA_ESpecMapPinKind.KILL || kind == COA_ESpecMapPinKind.GRENADE)
 		{
 			m_wHitArea.SetEnabled(false);
 			m_wHitArea.SetVisible(false);
@@ -406,7 +405,6 @@ class COA_SpectatorMapOverlay : Managed
 	protected static const int Z_UNIT = 30;
 	protected static const int Z_VEHICLE = 40;
 	protected static const int Z_FOCUS = 60;
-	protected static const int Z_CAMERA = 70;
 
 	// Palette (linear)
 	protected static ref Color s_Ring = new Color(0.0033, 0.0037, 0.0052, 0.92);
@@ -427,9 +425,6 @@ class COA_SpectatorMapOverlay : Managed
 	protected ref map<RplId, ref COA_SpecMapVehicle> m_mVehicles = new map<RplId, ref COA_SpecMapVehicle>();
 	protected ref map<int, ref COA_SpecMapSquad> m_mSquads = new map<int, ref COA_SpecMapSquad>();
 	protected ref map<RplId, ref COA_SpecMapGrenade> m_mGrenades = new map<RplId, ref COA_SpecMapGrenade>();
-
-	protected Widget m_wCameraRoot;
-	protected COA_SpecMapPin m_CameraPin;
 
 	protected Widget m_wTooltip;
 	protected Widget m_wTooltipCard;
@@ -518,11 +513,6 @@ class COA_SpectatorMapOverlay : Managed
 		}
 		m_mGrenades.Clear();
 
-		if (m_wCameraRoot)
-			m_wCameraRoot.RemoveFromHierarchy();
-		m_wCameraRoot = null;
-		m_CameraPin = null;
-
 		if (m_wTooltip)
 			m_wTooltip.RemoveFromHierarchy();
 		m_wTooltip = null;
@@ -586,7 +576,6 @@ class COA_SpectatorMapOverlay : Managed
 			PositionSquad(squad, detail);
 		}
 
-		UpdateCamera(followed);
 		UpdateKills();
 		UpdateGrenades();
 		PositionTooltip();
@@ -1190,42 +1179,6 @@ class COA_SpectatorMapOverlay : Managed
 			squad.m_wCard.GetScreenSize(w, h);
 			FrameSlot.SetPos(squad.m_wCard, -m_Workspace.DPIUnscale(w) * 0.5, -m_Workspace.DPIUnscale(h) - 8);
 		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Free camera marker, only while not following anyone (the followed pin is highlighted instead)
-	protected void UpdateCamera(IEntity followed)
-	{
-		CameraBase camera = GetGame().GetCameraManager().CurrentCamera();
-		bool show = camera && !followed;
-
-		if (!m_wCameraRoot)
-		{
-			if (!show)
-				return;
-
-			COA_SpecMapPin cameraPin;
-			m_wCameraRoot = CreatePin(COA_ESpecMapPinKind.CAMERA, Z_CAMERA, cameraPin);
-			if (!m_wCameraRoot)
-				return;
-
-			m_CameraPin = cameraPin;
-
-			m_CameraPin.Init(m_wCameraRoot, COA_ESpecMapPinKind.CAMERA, null, this);
-			m_CameraPin.SetColors(s_White, s_Ring);
-			m_CameraPin.SetIconImage(ATLAS, "Binoculars");
-			m_CameraPin.SetIconColor(s_Ring);
-			m_CameraPin.SetLabel("Camera");
-			m_CameraPin.Layout(22, true, true);
-		}
-
-		m_CameraPin.SetShown(show);
-		if (!show)
-			return;
-
-		m_CameraPin.SetLabelShown(true);
-		PlacePin(m_CameraPin, camera.GetOrigin());
-		m_CameraPin.SetHeading(Heading(camera));
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -698,11 +698,12 @@ class COA_GearscriptManager : ScriptComponent
 //=============================================================================================================================================================================================================================================================================================================================================================
 	
 	//------------------------------------------------------------------------------------------------	
-	//! Set identity for an entity
+	//! Set identity for an entity. Server only: the identity is replicated to clients (SetIdentity), who
+	//! must not pick or rebuild it themselves (see COA_GearscriptCharacter.EOnInit).
 	//! \param[in] entity The entity to equip
 	void SetEntityIdentity(IEntity entity)
 	{
-		if (!entity)
+		if (!entity || RplSession.Mode() == RplMode.Client)
 			return;
 
 		// Determine faction from resource name
@@ -738,8 +739,10 @@ class COA_GearscriptManager : ScriptComponent
 			COA_Character_Sound_Identity gsSndIdentity;
 			
 			if (!gsCharIdentity.m_VisualIdentityArray.IsEmpty())
-				gsVisIdentity = gsCharIdentity.m_VisualIdentityArray.GetRandomElement();			if (!gsCharIdentity.m_SoundIdentityArray.IsEmpty())
-					gsSndIdentity = gsCharIdentity.m_SoundIdentityArray.GetRandomElement();
+				gsVisIdentity = gsCharIdentity.m_VisualIdentityArray.GetRandomElement();
+
+			if (!gsCharIdentity.m_SoundIdentityArray.IsEmpty())
+				gsSndIdentity = gsCharIdentity.m_SoundIdentityArray.GetRandomElement();
 			
 			if (gsVisIdentity)
 			{
@@ -753,8 +756,10 @@ class COA_GearscriptManager : ScriptComponent
 				sndIdentity.SetPitch(gsSndIdentity.m_VoicePitch);
 			};
 			
-			// Commit all changes to the identity comp
+			// Apply it here, then send it to every client: SetIdentity replicates, CommitChanges alone
+			// only rebuilds the character on this machine
 	        identityComp.CommitChanges();
+			identityComp.SetIdentity(identityComp.GetIdentity());
 		};
     }
 	
