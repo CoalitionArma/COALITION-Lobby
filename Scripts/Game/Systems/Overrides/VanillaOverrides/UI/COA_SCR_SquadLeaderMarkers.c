@@ -11,7 +11,16 @@ modded class SCR_MapMarkerSquadLeader
 	protected static const float NATO_SYMBOL_BOX_ASPECT = 2;
 	// Symbol parts darker than this (outline, unit icon, echelon marks) keep their colour
 	protected static const float NATO_TINT_MIN_BRIGHTNESS = 0.25;
+	// Your own group's symbol gets a gold rim: a gold copy of the symbol drawn behind it, this much bigger
+	protected static const float NATO_OWN_BORDER_SCALE = 1.18;
+	// COA gold #E8AA48, linear
+	protected static const float NATO_OWN_BORDER_R = 0.807;
+	protected static const float NATO_OWN_BORDER_G = 0.402;
+	protected static const float NATO_OWN_BORDER_B = 0.065;
 	protected Widget m_wNATOSymbolRoot;
+	protected Widget m_wNATOBorderRoot;
+	protected bool m_bNATOIsOwnGroup;
+	protected bool m_bNATOBorderBuilt;
 	protected ImageWidget m_wVanillaIcon;
 	protected float m_fNATOOffsetX;
 	protected float m_fNATOOffsetY;
@@ -33,6 +42,8 @@ modded class SCR_MapMarkerSquadLeader
 		if (!m_wVanillaIcon)
 			return;
 
+		// Created first so it draws behind the symbol
+		m_wNATOBorderRoot = GetGame().GetWorkspace().CreateWidgets(NATO_SYMBOL_LAYOUT, m_wRoot.GetParent());
 		m_wNATOSymbolRoot = GetGame().GetWorkspace().CreateWidgets(NATO_SYMBOL_LAYOUT, m_wRoot.GetParent());
 		if (!m_wNATOSymbolRoot)
 			return;
@@ -40,7 +51,12 @@ modded class SCR_MapMarkerSquadLeader
 		// Hidden but still laid out, so we can keep measuring where it sits
 		m_wVanillaIcon.SetOpacity(0);
 		m_wNATOSymbolRoot.SetVisible(false);
+		if (m_wNATOBorderRoot)
+			m_wNATOBorderRoot.SetVisible(false);
+
 		m_bNATOPlacementKnown = false;
+		m_bNATOIsOwnGroup = false;
+		m_bNATOBorderBuilt = false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -51,7 +67,11 @@ modded class SCR_MapMarkerSquadLeader
 		if (m_wNATOSymbolRoot)
 			m_wNATOSymbolRoot.RemoveFromHierarchy();
 
+		if (m_wNATOBorderRoot)
+			m_wNATOBorderRoot.RemoveFromHierarchy();
+
 		m_wNATOSymbolRoot = null;
+		m_wNATOBorderRoot = null;
 		m_wVanillaIcon = null;
 	}
 
@@ -77,6 +97,62 @@ modded class SCR_MapMarkerSquadLeader
 		Faction groupFaction = m_Group.GetFaction();
 		if (groupFaction)
 			TintNATOSymbol(overlay, groupFaction.GetFactionColor());
+
+		// The symbol may have changed - rebuild the gold rim from it next time it's needed
+		m_bNATOBorderBuilt = false;
+		if (m_bNATOIsOwnGroup)
+			BuildNATOBorder();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Fills the rim layer with the same symbol, every part of it gold, so behind the real symbol only
+	//! a gold edge around the frame, echelon marks and the rest shows
+	protected void BuildNATOBorder()
+	{
+		if (!m_Group || !m_wNATOBorderRoot)
+			return;
+
+		Widget overlay = m_wNATOBorderRoot.FindAnyWidget("SymbolOverlay");
+		if (!overlay)
+			return;
+
+		SCR_MilitarySymbolUIComponent symbolComponent = SCR_MilitarySymbolUIComponent.Cast(overlay.FindHandler(SCR_MilitarySymbolUIComponent));
+		if (!symbolComponent)
+			return;
+
+		symbolComponent.Update(COA_NATOSymbolHelper.BuildForGroup(m_Group));
+		ColorNATOBorder(overlay);
+		m_bNATOBorderBuilt = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ColorNATOBorder(Widget widget)
+	{
+		Widget child = widget.GetChildren();
+		while (child)
+		{
+			ImageWidget image = ImageWidget.Cast(child);
+			if (image)
+				image.SetColor(new Color(NATO_OWN_BORDER_R, NATO_OWN_BORDER_G, NATO_OWN_BORDER_B, image.GetColor().A()));
+
+			ColorNATOBorder(child);
+			child = child.GetSibling();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the local player is in this marker's group. Checked every update, as players can switch
+	//! groups without any marker event reaching this one.
+	protected void UpdateNATOOwnGroup()
+	{
+		bool isOwnGroup;
+		PlayerController pController = GetGame().GetPlayerController();
+		if (m_Group && pController)
+			isOwnGroup = m_Group.IsPlayerInGroup(pController.GetPlayerId());
+
+		m_bNATOIsOwnGroup = isOwnGroup;
+		if (isOwnGroup && !m_bNATOBorderBuilt)
+			BuildNATOBorder();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -105,6 +181,7 @@ modded class SCR_MapMarkerSquadLeader
 	override void OnUpdate()
 	{
 		super.OnUpdate();
+		UpdateNATOOwnGroup();
 		UpdateNATOSymbolPlacement();
 	}
 
@@ -135,6 +212,11 @@ modded class SCR_MapMarkerSquadLeader
 
 		bool show = m_bNATOPlacementKnown && m_wRoot.IsVisible() && m_wVanillaIcon.IsVisible();
 		m_wNATOSymbolRoot.SetVisible(show);
+
+		bool showBorder = show && m_bNATOIsOwnGroup && m_bNATOBorderBuilt;
+		if (m_wNATOBorderRoot)
+			m_wNATOBorderRoot.SetVisible(showBorder);
+
 		if (!show)
 			return;
 
@@ -148,6 +230,15 @@ modded class SCR_MapMarkerSquadLeader
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		FrameSlot.SetPos(m_wNATOSymbolRoot, workspace.DPIUnscale(centerX - boxWidth * 0.5), workspace.DPIUnscale(centerY - boxHeight * 0.5));
 		FrameSlot.SetSize(m_wNATOSymbolRoot, workspace.DPIUnscale(boxWidth), workspace.DPIUnscale(boxHeight));
+
+		if (!showBorder)
+			return;
+
+		// Same centre, scaled up - the ScaleWidget keeps the symbol's proportions, so the rim follows its shape
+		float borderHeight = boxHeight * NATO_OWN_BORDER_SCALE;
+		float borderWidth = boxWidth * NATO_OWN_BORDER_SCALE;
+		FrameSlot.SetPos(m_wNATOBorderRoot, workspace.DPIUnscale(centerX - borderWidth * 0.5), workspace.DPIUnscale(centerY - borderHeight * 0.5));
+		FrameSlot.SetSize(m_wNATOBorderRoot, workspace.DPIUnscale(borderWidth), workspace.DPIUnscale(borderHeight));
 	}
 
 	//------------------------------------------------------------------------------------------------
