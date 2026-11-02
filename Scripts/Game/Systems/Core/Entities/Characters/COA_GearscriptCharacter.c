@@ -107,4 +107,38 @@ class COA_GearscriptCharacter : COA_PlayerCharacter
 		// Use the shared weapon selection logic from helper
 		COA_WeaponHelper.SelectPrimaryWeaponForEntity(entity);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Put the weapon in a specific weapon slot in the character's hands: on the owner for a player
+	//! (the owner drives weapon selection), directly for AI. An owner RPC doesn't run on the machine
+	//! that sends it, so a host's own character (Workbench) is handled directly as well.
+	void SelectWeaponSlot(int slotIndex)
+	{
+		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(this);
+		if (playerId > 0 && playerId != SCR_PlayerController.GetLocalPlayerId())
+			Rpc(RpcDo_SelectWeaponSlot, slotIndex);
+		else
+			RpcDo_SelectWeaponSlot(slotIndex);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	void RpcDo_SelectWeaponSlot(int slotIndex)
+	{
+		BaseWeaponManagerComponent weaponManager = GetWeaponManager();
+		CharacterControllerComponent controller = GetCharacterController();
+		if (!weaponManager || !controller)
+			return;
+
+		array<WeaponSlotComponent> slots = {};
+		weaponManager.GetWeaponsSlots(slots);
+		foreach (WeaponSlotComponent slot : slots)
+		{
+			if (slot.GetWeaponSlotIndex() == slotIndex && slot.GetWeaponEntity() != null)
+			{
+				controller.SelectWeapon(slot);
+				return;
+			}
+		}
+	}
 }

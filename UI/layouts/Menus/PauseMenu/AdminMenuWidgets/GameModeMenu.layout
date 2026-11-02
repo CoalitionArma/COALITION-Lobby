@@ -2311,11 +2311,11 @@ FrameWidgetClass {
    Name "EnterAARBG"
    Slot FrameWidgetSlot "{6A6E110000000362}" {
     Anchor 0.5 0.5 0.5 0.5
-    PositionX -728
-    OffsetLeft -728
+    PositionX -479
+    OffsetLeft -479
     PositionY 194
     OffsetTop 194
-    SizeX 488
+    SizeX 239
     OffsetRight 240
     SizeY 36
     OffsetBottom -230
@@ -2328,11 +2328,11 @@ FrameWidgetClass {
    Name "EnterAAR"
    Slot FrameWidgetSlot "{6A6E110000000360}" {
     Anchor 0.5 0.5 0.5 0.5
-    PositionX -728
-    OffsetLeft -728
+    PositionX -479
+    OffsetLeft -479
     PositionY 194
     OffsetTop 194
-    SizeX 488
+    SizeX 239
     OffsetRight 240
     SizeY 36
     OffsetBottom -230
@@ -2350,7 +2350,7 @@ FrameWidgetClass {
      Name "ActionButtonText"
      Slot ButtonWidgetSlot "{62992E44F11398F5}" {
      }
-     Text "End the mission and open the AAR"
+     Text "Enter AAR, no result"
      "Font Size" 15
      "Min Font Size" 11
      Color 0.8070 0.1170 0.1170 1
@@ -3038,6 +3038,82 @@ FrameWidgetClass {
         Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
        }
       }
+     }
+    }
+   }
+  }
+  TextWidgetClass "{9E04156B63026F05}" {
+   Name "EndCardHint"
+   Slot FrameWidgetSlot "{B1694D44B144005D}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY 162
+    OffsetTop 162
+    SizeX 488
+    OffsetRight 240
+    SizeY 20
+    OffsetBottom -182
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "Winner or draw is recorded for the AAR"
+   "Font Size" 12
+   "Min Font Size" 10
+   "Horizontal Alignment" Right
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{21536111778791F0}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{5BFA20E5CF633B0E}" {
+   Name "EndMissionButtonBG"
+   Slot FrameWidgetSlot "{DD04194C1117A335}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY 194
+    OffsetTop 194
+    SizeX 239
+    OffsetRight 489
+    SizeY 36
+    OffsetBottom -230
+   }
+   "Z Order" 1
+   Color 0.5841 0.0369 0.0369 1
+   style rounded_4px
+  }
+  ButtonWidgetClass "{7A87E2CB6B3E44AE}" {
+   Name "EndMissionButton"
+   Slot FrameWidgetSlot "{B7901B8328054B4A}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY 194
+    OffsetTop 194
+    SizeX 239
+    OffsetRight 489
+    SizeY 36
+    OffsetBottom -230
+   }
+   Color 1 1 1 0
+   "Z Order" 2
+   components {
+    SCR_ButtonTextComponent "{86191E8DFD791077}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{0E984FD03FA95762}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{0E90C167529836CD}" {
+     }
+     Text "End with result..."
+     "Font Size" 15
+     "Min Font Size" 11
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{CFF7D7135DF72C4F}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
    }

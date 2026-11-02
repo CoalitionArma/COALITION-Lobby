@@ -162,7 +162,29 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	protected ImageWidget m_wDamageRegionLeftLeg;
 	protected ImageWidget m_wDamageRegionRightLeg;
 	protected ref array<ref COA_SpectatorDamageReportEntry> m_aDamageReportEntries = {};
-	
+
+	// Respawn / wave ETA panel (top centre) for players who died in a slot - see UpdateRespawnStatus
+	protected static const int RESPAWN_STATUS_HIDDEN = 0;
+	protected static const int RESPAWN_STATUS_WAITING = 1;	// timer running
+	protected static const int RESPAWN_STATUS_READY = 2;	// timer done, waiting on a spawn point
+	protected static const int RESPAWN_STATUS_NONE = 3;		// respawns off / used up
+	protected Widget m_wRespawnStatus;
+	protected TextWidget m_wRespawnStatusTitle;
+	protected RichTextWidget m_wRespawnStatusDetail;
+	protected ImageWidget m_wRespawnStatusPill;
+	protected string m_sRespawnStatusTitle;
+	protected string m_sRespawnStatusDetail;
+	protected int m_iRespawnStatusState = -1;
+
+	// Follow my squad by default - see TryAutoFollowSquad / UpdateSquadFollow
+	protected static const float SQUAD_FOLLOW_SWITCH_DELAY = 4;	// seconds to stay on a followed teammate's death before moving on
+	protected static const int AUTO_FOLLOW_MAX_TRIES = 3;			// teammates may still be streaming in right after death
+	protected static RplId s_AutoFollowSpectatorId;					// spectator entity the auto-follow last ran for (one per death)
+	protected static bool s_bAutoFollowRan;
+	protected IEntity m_SquadFollowTarget;		// teammate picked by the squad follow; following stops counting once the player picks someone else
+	protected float m_fSquadFollowDeadTime;
+	protected int m_iAutoFollowTries;
+
 	//=================================================================================================
 	// MENU LIFECYCLE METHODS
 	//=================================================================================================
@@ -240,7 +262,12 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		SetupKeyHints();
 		m_wKillFeedList = VerticalLayoutWidget.Cast(m_wRoot.FindAnyWidget("KillFeedList"));
 		InitDamageReportWidgets();
-		
+		InitRespawnStatus();
+
+		// Follow my squad by default, once the death has settled (camera set up, teammates streamed in)
+		m_iAutoFollowTries = 0;
+		GetGame().GetCallqueue().CallLater(TryAutoFollowSquad, 1000);
+
 		// Initialize VON (Voice Over Network)
 		if (!CVON_VONGameModeComponent.GetInstance())
 		{
@@ -306,6 +333,7 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		inputManager.AddActionListener("COA_SpecToggleCamMode", EActionTrigger.DOWN, ToggleCameraMode);
 		inputManager.AddActionListener("COA_SpecKillTeleport", EActionTrigger.DOWN, Action_TeleportToKill);
 		inputManager.AddActionListener("COA_SpecFollowSquad", EActionTrigger.DOWN, Action_FollowSquad);
+		inputManager.AddActionListener("COA_SpecRespawnMenu", EActionTrigger.DOWN, Action_ChooseSpawn);
 		inputManager.AddActionListener("COA_SpecNextPlayer", EActionTrigger.DOWN, Action_NextPlayer);
 		inputManager.AddActionListener("COA_SpecPrevPlayer", EActionTrigger.DOWN, Action_PrevPlayer);
 		inputManager.AddActionListener("COA_SpecToggleNames", EActionTrigger.DOWN, Action_ToggleNames);
@@ -1076,6 +1104,10 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		// No-op once parked; re-parks if anything moves the entity.
 		if (!CVON_VONGameModeComponent.GetInstance())
 			COA_EntityHelper.ParkLocalSpectatorForVoN();
+
+		// Respawn / wave ETA, and moving on when a followed teammate dies
+		UpdateRespawnStatus();
+		UpdateSquadFollow(tDelta);
 
 		// Update follow-mode HUD overlay
 		m_EntityInfoDisplay.UpdateEntityInfoDisplay(m_eSpecEntity);
@@ -2721,6 +2753,7 @@ class COA_SpectatorMenu: ChimeraMenuBase
 		}
 
 		StopRadioListening();
+		GetGame().GetCallqueue().Remove(TryAutoFollowSquad);
 
 		// Call parent class cleanup
 		super.OnMenuClose();
@@ -2760,6 +2793,7 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			inputManager.RemoveActionListener("COA_SpecToggleCamMode", EActionTrigger.DOWN, ToggleCameraMode);
 			inputManager.RemoveActionListener("COA_SpecKillTeleport", EActionTrigger.DOWN, Action_TeleportToKill);
 		inputManager.RemoveActionListener("COA_SpecFollowSquad", EActionTrigger.DOWN, Action_FollowSquad);
+		inputManager.RemoveActionListener("COA_SpecRespawnMenu", EActionTrigger.DOWN, Action_ChooseSpawn);
 		inputManager.RemoveActionListener("COA_SpecNextPlayer", EActionTrigger.DOWN, Action_NextPlayer);
 		inputManager.RemoveActionListener("COA_SpecPrevPlayer", EActionTrigger.DOWN, Action_PrevPlayer);
 		inputManager.RemoveActionListener("COA_SpecToggleNames", EActionTrigger.DOWN, Action_ToggleNames);
@@ -3135,26 +3169,52 @@ class COA_SpectatorMenu: ChimeraMenuBase
 	 */
 	void Action_FollowSquad()
 	{
-		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
-		if (!slottingManager)
-			return;
-
-		// The squad comes from the slot's group ID - the group entity itself isn't needed (and isn't
-		// guaranteed to exist on this client once its members have died or been moved around)
-		int localPlayerId = SCR_PlayerController.GetLocalPlayerId();
-		COA_SlotData ownSlot = slottingManager.GetPlayerSlotData(localPlayerId);
-		RplId groupId;
-		if (ownSlot)
-			groupId = ownSlot.GetSlotCurrentGroup();
-
-		if (!ownSlot || groupId == RplId.Invalid())
+		array<IEntity> squadmates = {};
+		array<int> squadmateIds = {};
+		if (!GetLivingSquadmates(squadmates, squadmateIds))
 		{
 			ShowFollowSquadMessage("Follow squad: you aren't in a squad");
 			return;
 		}
 
-		array<IEntity> squadmates = {};
-		array<int> squadmateIds = {};
+		if (squadmates.IsEmpty())
+		{
+			ShowFollowSquadMessage("Follow squad: no living squadmates");
+			return;
+		}
+
+		// Continue from whoever is being followed now, so repeated presses walk the squad
+		int next = 0;
+		int current = squadmates.Find(m_eSpecEntity);
+		if (current >= 0)
+			next = (current + 1) % squadmates.Count();
+
+		FollowEntity(squadmates[next]);
+		m_SquadFollowTarget = squadmates[next];
+		m_fSquadFollowDeadTime = 0;
+		ShowFollowSquadMessage(string.Format("Following %1 (%2/%3)", GetGame().GetPlayerManager().GetPlayerName(squadmateIds[next]), next + 1, squadmates.Count()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Living, streamed-in members of the local player's squad (not the player), in slot order.
+	//! The squad comes from the slot's group ID - the group entity itself isn't needed (and isn't
+	//! guaranteed to exist on this client once its members have died or been moved around).
+	//! \return false when the player isn't in a squad
+	protected bool GetLivingSquadmates(notnull array<IEntity> squadmates, notnull array<int> squadmateIds)
+	{
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+		if (!slottingManager)
+			return false;
+
+		int localPlayerId = SCR_PlayerController.GetLocalPlayerId();
+		COA_SlotData ownSlot = slottingManager.GetPlayerSlotData(localPlayerId);
+		if (!ownSlot)
+			return false;
+
+		RplId groupId = ownSlot.GetSlotCurrentGroup();
+		if (groupId == RplId.Invalid())
+			return false;
+
 		foreach (int slotId : slottingManager.GetAllSlotIDsForGroup(groupId))
 		{
 			COA_SlotData slotData = slottingManager.GetSlotData(slotId);
@@ -3173,20 +3233,383 @@ class COA_SpectatorMenu: ChimeraMenuBase
 			}
 		}
 
-		if (squadmates.IsEmpty())
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Living, streamed-in players on the local player's OWN side (not the player), in slot order.
+	//! Always the player's own faction, whatever the spectating restriction, so the squad-follow
+	//! fallback can never put the camera on an enemy.
+	protected void GetLivingSidePlayers(notnull array<IEntity> targets, notnull array<int> targetIds)
+	{
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+		if (!slottingManager)
+			return;
+
+		int localPlayerId = SCR_PlayerController.GetLocalPlayerId();
+		COA_SlotData ownSlot = slottingManager.GetPlayerSlotData(localPlayerId);
+		if (!ownSlot)
+			return;
+
+		FactionKey ownFactionKey = ownSlot.GetSlotFactionKey();
+		if (ownFactionKey.IsEmpty())
+			return;
+
+		array<int> playerIds = {};
+		GetGame().GetPlayerManager().GetPlayers(playerIds);
+
+		array<int> order = {};
+		foreach (int playerId : playerIds)
 		{
-			ShowFollowSquadMessage("Follow squad: no living squadmates");
+			if (playerId == localPlayerId)
+				continue;
+
+			COA_SlotData slotData = slottingManager.GetPlayerSlotData(playerId);
+			if (!slotData || slotData.GetIsDeadSlot() || slotData.GetSlotFactionKey() != ownFactionKey)
+				continue;
+
+			IEntity character = COA_EntityHelper.GetEntityFromRplId(slotData.GetSlotCurrentCharacter());
+			if (!character || !COA_DamageHelper.CheckIfEntityAlive(character) || COA_EntityHelper.IsSpectator(character))
+				continue;
+
+			// Insert sorted by slot id so it follows the ORBAT, like CyclePlayer
+			int slotId = slotData.GetSlotId();
+			int at = order.Count();
+			for (int i = 0; i < order.Count(); i++)
+			{
+				if (slotId < order[i])
+				{
+					at = i;
+					break;
+				}
+			}
+
+			order.InsertAt(slotId, at);
+			targets.InsertAt(character, at);
+			targetIds.InsertAt(playerId, at);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Follow the next living squadmate, or when the whole squad is down someone alive on the player's
+	//! own side. Nobody alive: leaves the camera alone and returns false.
+	protected bool FollowNextTeammate(bool announce)
+	{
+		array<IEntity> targets = {};
+		array<int> targetIds = {};
+		GetLivingSquadmates(targets, targetIds);
+
+		bool squad = !targets.IsEmpty();
+		if (!squad)
+			GetLivingSidePlayers(targets, targetIds);
+
+		if (targets.IsEmpty())
+			return false;
+
+		int next = 0;
+		int current = targets.Find(m_eSpecEntity);
+		if (current >= 0)
+			next = (current + 1) % targets.Count();
+
+		FollowEntity(targets[next]);
+		m_SquadFollowTarget = targets[next];
+		m_fSquadFollowDeadTime = 0;
+
+		if (announce)
+		{
+			string name = GetGame().GetPlayerManager().GetPlayerName(targetIds[next]);
+			if (squad)
+				ShowFollowSquadMessage("Following squadmate " + name);
+			else
+				ShowFollowSquadMessage("Squad is down - following " + name);
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Follow my squad by default: a player who just died in a slot starts on a living squadmate
+	//! (else someone alive on their own side, else the free camera stays where it is). Runs once per
+	//! death - reopening the menu (Game Master, respawn re-init) leaves the camera to the player.
+	protected void TryAutoFollowSquad()
+	{
+		// Already watching someone the player picked
+		if (m_eSpecEntity)
+			return;
+
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+		if (!slottingManager || !m_Gamemode || m_Gamemode.m_GamemodeState != COA_EGamemodeState.GAME)
+			return;
+
+		// Only players who died in a slot - not observers or players who never slotted
+		COA_SlotData ownSlot = slottingManager.GetPlayerSlotData(SCR_PlayerController.GetLocalPlayerId());
+		if (!ownSlot || !ownSlot.GetIsDeadSlot())
+			return;
+
+		IEntity spectator = SCR_PlayerController.GetLocalMainEntity();
+		if (!COA_EntityHelper.IsSpectator(spectator))
+			return;
+
+		// A new spectator entity is created for every death (COA_GamemodeManager.GetOrCreateSpectatorEntity)
+		RplId spectatorId;
+		bool hasSpectatorId = COA_ReplicationHelper.GetRplId(spectator, spectatorId);
+		if (hasSpectatorId && s_bAutoFollowRan && spectatorId == s_AutoFollowSpectatorId)
+			return;
+
+		// No popup while the respawn menu covers the spectator - the player sees who it is when they get here
+		if (!FollowNextTeammate(GetGame().GetMenuManager().GetTopMenu() == this))
+		{
+			// Teammates near the death may still be streaming in - try again shortly
+			m_iAutoFollowTries++;
+			if (m_iAutoFollowTries < AUTO_FOLLOW_MAX_TRIES)
+			{
+				GetGame().GetCallqueue().CallLater(TryAutoFollowSquad, 1500);
+				return;
+			}
+		}
+
+		if (hasSpectatorId)
+		{
+			s_AutoFollowSpectatorId = spectatorId;
+			s_bAutoFollowRan = true;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! While following a teammate the squad follow picked: once they die, give it a moment, then move
+	//! on to the next living squadmate / side member, or the free camera when nobody is left
+	protected void UpdateSquadFollow(float tDelta)
+	{
+		if (m_SquadFollowTarget == null)
+			return;
+
+		// The player switched to someone else or took the camera - no longer squad following
+		if (m_eSpecEntity != m_SquadFollowTarget)
+		{
+			m_SquadFollowTarget = null;
 			return;
 		}
 
-		// Continue from whoever is being followed now, so repeated presses walk the squad
-		int next = 0;
-		int current = squadmates.Find(m_eSpecEntity);
-		if (current >= 0)
-			next = (current + 1) % squadmates.Count();
+		if (COA_DamageHelper.CheckIfEntityAlive(m_SquadFollowTarget))
+		{
+			m_fSquadFollowDeadTime = 0;
+			return;
+		}
 
-		FollowEntity(squadmates[next]);
-		ShowFollowSquadMessage(string.Format("Following %1 (%2/%3)", GetGame().GetPlayerManager().GetPlayerName(squadmateIds[next]), next + 1, squadmates.Count()));
+		m_fSquadFollowDeadTime += tDelta;
+		if (m_fSquadFollowDeadTime < SQUAD_FOLLOW_SWITCH_DELAY)
+			return;
+
+		if (!FollowNextTeammate(true))
+		{
+			m_SquadFollowTarget = null;
+			FollowEntity(null);
+			ShowFollowSquadMessage("No living teammates - free camera");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Respawn / wave ETA
+	//------------------------------------------------------------------------------------------------
+
+	//------------------------------------------------------------------------------------------------
+	protected void InitRespawnStatus()
+	{
+		m_wRespawnStatus = m_wRoot.FindAnyWidget("RespawnStatus");
+		if (!m_wRespawnStatus)
+			return;
+
+		m_wRespawnStatusTitle = TextWidget.Cast(m_wRespawnStatus.FindAnyWidget("RespawnStatusTitle"));
+		m_wRespawnStatusDetail = RichTextWidget.Cast(m_wRespawnStatus.FindAnyWidget("RespawnStatusDetail"));
+		m_wRespawnStatusPill = ImageWidget.Cast(m_wRespawnStatus.FindAnyWidget("RespawnStatusPill"));
+		m_sRespawnStatusTitle = string.Empty;
+		m_sRespawnStatusDetail = string.Empty;
+		m_iRespawnStatusState = -1;
+		m_wRespawnStatus.SetVisible(false);
+
+		SCR_ButtonComponent button = SCR_ButtonComponent.Cast(m_wRespawnStatus.FindHandler(SCR_ButtonComponent));
+		if (button)
+			button.m_OnClicked.Insert(OnRespawnStatusClicked);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Respawn ETA for a player who died in a slot. Everything shown is read from replicated respawn
+	//! settings and the local respawn timer every frame, so admin changes (respawns on/off, wave
+	//! toggle, new time, tickets) show straight away; text is only pushed to widgets when it changes.
+	//! - waiting on a respawn: "Respawning in 0:42" / "Next wave in 1:15" (wave time is on the synced
+	//!   server clock, see COA_RespawnManager.GetWaveSecondsRemaining) plus respawns left if limited
+	//! - otherwise "No respawns - spectating"
+	protected void UpdateRespawnStatus()
+	{
+		if (!m_wRespawnStatus)
+			return;
+
+		int state = RESPAWN_STATUS_HIDDEN;
+		string title;
+		string detail;
+		string separator = "      ";
+		string squadHint = "<action name='COA_SpecFollowSquad'/> Follow squad";
+
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+		COA_SlotData ownSlot;
+		if (slottingManager)
+			ownSlot = slottingManager.GetPlayerSlotData(SCR_PlayerController.GetLocalPlayerId());
+
+		if (ownSlot != null && ownSlot.GetIsDeadSlot() && m_RespawnManager != null && m_Gamemode != null && m_Gamemode.m_GamemodeState == COA_EGamemodeState.GAME)
+		{
+			if (m_RespawnManager.IsLocalRespawnPending())
+			{
+				float remaining = m_RespawnManager.m_fRespawnTimer;
+				if (remaining > 0)
+				{
+					state = RESPAWN_STATUS_WAITING;
+					if (m_RespawnManager.m_bCurrentWaveRespawn)
+						title = "Next wave in " + FormatRespawnCountdown(remaining);
+					else
+						title = "Respawning in " + FormatRespawnCountdown(remaining);
+				}
+				else
+				{
+					state = RESPAWN_STATUS_READY;
+					title = "Respawn ready - pick a spawn point";
+				}
+
+				string pool = GetRespawnPoolText(ownSlot);
+				if (!pool.IsEmpty())
+					detail = pool + separator;
+
+				COA_SpawnPointData spawnPoint = m_RespawnManager.m_SelectedSpawnPoint;
+				if (m_RespawnManager.m_RespawnConfirmed && spawnPoint != null)
+					detail += "<action name='COA_SpecRespawnMenu'/> Spawn: " + spawnPoint.GetSpawnPointName();
+				else
+					detail += "<action name='COA_SpecRespawnMenu'/> Choose spawn";
+
+				detail += separator + squadHint;
+			}
+			else
+			{
+				state = RESPAWN_STATUS_NONE;
+				title = "No respawns - spectating";
+				detail = squadHint;
+			}
+		}
+
+		if (state == RESPAWN_STATUS_HIDDEN)
+		{
+			if (m_iRespawnStatusState != state)
+			{
+				m_wRespawnStatus.SetVisible(false);
+				m_iRespawnStatusState = state;
+			}
+			return;
+		}
+
+		if (title != m_sRespawnStatusTitle && m_wRespawnStatusTitle != null)
+		{
+			m_wRespawnStatusTitle.SetText(title);
+			m_sRespawnStatusTitle = title;
+		}
+
+		if (detail != m_sRespawnStatusDetail && m_wRespawnStatusDetail != null)
+		{
+			m_wRespawnStatusDetail.SetText(detail);
+			m_sRespawnStatusDetail = detail;
+		}
+
+		if (state != m_iRespawnStatusState)
+		{
+			m_wRespawnStatus.SetVisible(true);
+			m_iRespawnStatusState = state;
+
+			// Accent pill - linear colours: amber = counting down, green = ready, muted = no respawn
+			if (m_wRespawnStatusPill)
+			{
+				if (state == RESPAWN_STATUS_WAITING)
+					m_wRespawnStatusPill.SetColor(new Color(0.807, 0.402, 0.0648, 1));
+				else if (state == RESPAWN_STATUS_READY)
+					m_wRespawnStatusPill.SetColor(new Color(0.107, 0.552, 0.216, 1));
+				else
+					m_wRespawnStatusPill.SetColor(new Color(0.3968, 0.4564, 0.6038, 1));
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "Respawns left" text for the respawn mode in use, empty when unlimited. The respawn being waited
+	//! on was already taken from the pool at death, so this is what's left after it.
+	protected string GetRespawnPoolText(notnull COA_SlotData ownSlot)
+	{
+		if (m_Gamemode.m_eRespawnMode == COA_ERespawnMode.SLOT)
+		{
+			int remaining = ownSlot.GetSlotRespawnsRemaining();
+			if (remaining < 0)
+				return string.Empty;
+
+			if (ownSlot.GetRespawnPoolType() == COA_ERespawnPoolType.PER_GROUP)
+				return "Squad respawns left: " + remaining.ToString();
+
+			return "Respawns left: " + remaining.ToString();
+		}
+
+		int tickets = m_RespawnManager.GetFactionTickets(ownSlot.GetSlotFactionKey());
+		if (tickets < 0)
+			return string.Empty;
+
+		// Team pool: shared with the rest of the side (and vehicle respawns), so call it what it is
+		return "Side tickets left: " + tickets.ToString();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! 0:42 / 1:15 / 1:02:05
+	protected static string FormatRespawnCountdown(float seconds)
+	{
+		int total = (int)Math.Ceil(seconds);
+		int hours = total / 3600;
+		int minutes = (total % 3600) / 60;
+		int secs = total % 60;
+
+		if (hours > 0)
+			return string.Format("%1:%2:%3", hours, minutes.ToString(2), secs.ToString(2));
+
+		return string.Format("%1:%2", minutes, secs.ToString(2));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnRespawnStatusClicked()
+	{
+		if (!m_RespawnManager || !m_RespawnManager.IsLocalRespawnPending())
+			return;
+
+		OpenRespawnMenu();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! COA_SpecRespawnMenu key: back to the respawn menu (spawn point list) while waiting on a respawn
+	void Action_ChooseSpawn()
+	{
+		if (GetGame().GetMenuManager().GetTopMenu() != this)
+			return;
+
+		if (!m_RespawnManager || !m_RespawnManager.IsLocalRespawnPending() || !m_RespawnManager.ConsumeRespawnMenuToggle())
+			return;
+
+		OpenRespawnMenu();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OpenRespawnMenu()
+	{
+		m_RespawnManager.SetSpectateWhileWaiting(false);
+		PrepareForRespawnMenu();
+		GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.COA_RespawnMenu);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The respawn menu is about to open over this one: it brings its own map, so close ours first
+	void PrepareForRespawnMenu()
+	{
+		if (m_MapEntity != null && m_MapEntity.IsOpen())
+			CloseMap();
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,0 +1,119 @@
+FrameWidgetClass {
+ Name "adminCountdownRoot"
+ {
+  FrameWidgetClass "{F570025F287E1222}" {
+   Name "CountdownCard"
+   Slot FrameWidgetSlot "{81D74345CCC14351}" {
+    Anchor 0.5 0 0.5 0
+    PositionX -170
+    OffsetLeft -170
+    PositionY 28
+    OffsetTop 28
+    SizeX 340
+    OffsetRight -170
+    SizeY 46
+    OffsetBottom -74
+   }
+   "Z Order" 98
+   {
+    SmartPanelWidgetClass "{AE7F824742A59478}" {
+     Name "CountdownBG"
+     Slot FrameWidgetSlot "{5A5946B598EEE81A}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+     Color 0.0033 0.0037 0.0052 0.94
+     style rounded_12px
+    }
+    SmartPanelWidgetClass "{D2990D932BBA3C44}" {
+     Name "CountdownOutline"
+     Slot FrameWidgetSlot "{5A330B927A7293F0}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+     "Z Order" 1
+     Color 1 1 1 0.06
+     style outline_rounded_12px
+    }
+    ImageWidgetClass "{6C680AB4A3C35EF6}" {
+     Name "CountdownAccent"
+     Slot FrameWidgetSlot "{F1A31AC8C3060E83}" {
+      Anchor 0 0.5 0 0.5
+      PositionX 16
+      OffsetLeft 16
+      PositionY -9
+      OffsetTop -9
+      SizeX 3
+      OffsetRight -19
+      SizeY 18
+      OffsetBottom -9
+     }
+     "Z Order" 2
+     Color 0.5841 0.0369 0.0369 1
+    }
+    TextWidgetClass "{BB18F5FA86D8C8B3}" {
+     Name "CountdownLabel"
+     Slot FrameWidgetSlot "{2031CDCBBFE74115}" {
+      Anchor 0 0 1 1
+      PositionX 30
+      OffsetLeft 30
+      PositionY 0
+      OffsetTop 0
+      SizeX -134
+      OffsetRight 104
+      SizeY 0
+      OffsetBottom 0
+     }
+     "Z Order" 2
+     Color 0.3968 0.4564 0.6038 1
+     Text "COUNTDOWN"
+     "Font Size" 13
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{16FEF447530503DA}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{AA93C12EBF038727}" {
+     Name "CountdownTime"
+     Slot FrameWidgetSlot "{C48E1906E18E6E02}" {
+      Anchor 1 0 1 1
+      PositionX -104
+      OffsetLeft -104
+      PositionY 0
+      OffsetTop 0
+      SizeX 86
+      OffsetRight 18
+      SizeY 0
+      OffsetBottom 0
+     }
+     "Z Order" 2
+     Color 0.8632 0.8879 0.9301 1
+     Text "0:00"
+     "Font Size" 22
+     "Min Font Size" 10
+     "Horizontal Alignment" Right
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{C3E78FA8C366A567}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+ }
+}

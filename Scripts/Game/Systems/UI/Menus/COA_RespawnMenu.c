@@ -14,6 +14,7 @@ class COA_RespawnMenu: ChimeraMenuBase
 	protected OverlayWidget m_wSpawnListRoot;
 	protected SCR_ListBoxComponent m_wSpawnListBox;
 	protected SCR_ButtonTextComponent m_bConfirmSpawnButton;
+	protected Widget m_wSpectateButton;		// "Spectate" - watch the game while the timer runs, see OnSpectateClicked
 	protected ref array<COA_SpawnPointData> m_aSpawnPoints = {};
 	protected ref map<string, vector> m_MapMarkers = new map<string, vector>;
 	protected FactionKey m_factionKey;
@@ -29,6 +30,16 @@ class COA_RespawnMenu: ChimeraMenuBase
 			return;
 			
 		timerWidget.SetText(SCR_FormatHelper.FormatTime((int)COA_RespawnManager.GetInstance().m_fRespawnTimer));
+
+		// Wave respawn counts down to the shared wave (synced server clock), not a personal timer
+		TextWidget titleWidget = TextWidget.Cast(GetRootWidget().FindAnyWidget("timerTitle"));
+		if (titleWidget)
+		{
+			if (COA_RespawnManager.GetInstance().m_bCurrentWaveRespawn)
+				titleWidget.SetText("Next wave in");
+			else
+				titleWidget.SetText("Respawn in");
+		}
 	}
 	
 	/**
@@ -82,6 +93,54 @@ class COA_RespawnMenu: ChimeraMenuBase
 		// Setup button event handlers
 		m_bConfirmSpawnButton.m_OnClicked.Insert(ToggleSpawnSelection);
 		PopulateListBox();
+
+		// The menu is reopened after spectating while waiting - show the confirmation that's still in effect
+		COA_RespawnManager rm = COA_RespawnManager.GetInstance();
+		if (rm != null && rm.m_RespawnConfirmed)
+		{
+			TextWidget.Cast(m_bConfirmSpawnButton.GetRootWidget().FindWidget("ActionButtonText")).SetText("Cancel Selection");
+			m_bConfirmSpawnButton.SetToggled(true, false, false);
+		}
+
+		m_wSpectateButton = GetRootWidget().FindAnyWidget("SpectateButton");
+		if (m_wSpectateButton)
+		{
+			SCR_ButtonTextComponent spectateButton = SCR_ButtonTextComponent.Cast(m_wSpectateButton.FindHandler(SCR_ButtonTextComponent));
+			if (spectateButton)
+				spectateButton.m_OnClicked.Insert(OnSpectateClicked);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Leave the respawn menu for the spectator while the timer runs. The respawn manager brings the
+	//! menu back when it's needed: when the timer ends with a confirmed spawn (respawn goes through at
+	//! once), or COA_RespawnManager.SPECTATE_RETURN_SECONDS early when no spawn is confirmed yet.
+	protected void OnSpectateClicked()
+	{
+		COA_RespawnManager rm = COA_RespawnManager.GetInstance();
+		if (!rm || !rm.CanSpectateWhileWaiting())
+			return;
+
+		// Only when the spectator is underneath (it isn't for a moment right after death)
+		if (!GetGame().GetMenuManager().FindMenuByPreset(ChimeraMenuPreset.COA_SpectatorMenu))
+			return;
+
+		rm.SetSpectateWhileWaiting(true);
+		Close();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! COA_SpecRespawnMenu key while this menu is on top
+	protected void Action_Spectate()
+	{
+		if (GetGame().GetMenuManager().GetTopMenu() != this)
+			return;
+
+		COA_RespawnManager rm = COA_RespawnManager.GetInstance();
+		if (!rm || !rm.CanSpectateWhileWaiting() || !rm.ConsumeRespawnMenuToggle())
+			return;
+
+		OnSpectateClicked();
 	}
 	
 	protected void PopulateListBox()
@@ -98,6 +157,13 @@ class COA_RespawnMenu: ChimeraMenuBase
 		COA_RespawnManager respawnManager = COA_RespawnManager.GetInstance();
 		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
 		int playerID = GetGame().GetPlayerController().GetPlayerId();
+
+		// Keep the player's pick when the list is rebuilt (menu reopened after spectating, or a spawn
+		// point changed state) instead of jumping back to the first point
+		int previousSpawnPointId = -1;
+		if (respawnManager.m_SelectedSpawnPoint)
+			previousSpawnPointId = respawnManager.m_SelectedSpawnPoint.GetSpawnPointId();
+		int previousIndex = -1;
 		
 		m_factionKey = slottingManager.GetPlayerSlotFaction(playerID).GetFactionKey();
 		m_group = slottingManager.GetPlayerSlotGroup(playerID);
@@ -125,12 +191,29 @@ class COA_RespawnMenu: ChimeraMenuBase
 			else
 				m_wSpawnListBox.AddItem(spawnPointData.GetSpawnPointName());
 
-			if (m_wSpawnListBox.GetSelectedItem() == -1 && !spawnPointData.GetIsSpawnPointBlocked())
-			{
-				m_wSpawnListBox.SetItemSelected(index, true)
-			}
+			if (spawnPointData.GetSpawnPointId() == previousSpawnPointId && !spawnPointData.GetIsSpawnPointBlocked())
+				previousIndex = index;
+			else if (previousSpawnPointId == -1 && m_wSpawnListBox.GetSelectedItem() == -1 && !spawnPointData.GetIsSpawnPointBlocked())
+				m_wSpawnListBox.SetItemSelected(index, true);
 
 			index++;
+		}
+
+		if (previousIndex != -1)
+		{
+			m_wSpawnListBox.SetItemSelected(previousIndex, true);
+		}
+		else if (previousSpawnPointId != -1)
+		{
+			// The earlier pick is gone or blocked now - fall back to the first open point as before
+			for (int i = 0; i < m_aSpawnPoints.Count(); i++)
+			{
+				if (!m_aSpawnPoints[i].GetIsSpawnPointBlocked())
+				{
+					m_wSpawnListBox.SetItemSelected(i, true);
+					break;
+				}
+			}
 		}
 	}
 	
@@ -148,6 +231,7 @@ class COA_RespawnMenu: ChimeraMenuBase
 		}
 		inputManager.AddActionListener("MenuBack", EActionTrigger.DOWN, Action_Exit);
 		inputManager.AddActionListener("ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
+		inputManager.AddActionListener("COA_SpecRespawnMenu", EActionTrigger.DOWN, Action_Spectate);
 	}	
 	
 	/**
@@ -194,6 +278,13 @@ class COA_RespawnMenu: ChimeraMenuBase
 			GetGame().GetInputManager().ActivateContext("MapContext");
 		
 		UpdateTimer();
+
+		// Spectating is only offered while there's time for it (see COA_RespawnManager.CanSpectateWhileWaiting)
+		if (m_wSpectateButton)
+		{
+			COA_RespawnManager rm = COA_RespawnManager.GetInstance();
+			m_wSpectateButton.SetVisible(rm != null && rm.CanSpectateWhileWaiting());
+		}
 	}
 	
 	/**
@@ -238,6 +329,7 @@ class COA_RespawnMenu: ChimeraMenuBase
 		}
 		inputManager.RemoveActionListener("MenuBack", EActionTrigger.DOWN, Action_Exit);
 		inputManager.RemoveActionListener("ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
+		inputManager.RemoveActionListener("COA_SpecRespawnMenu", EActionTrigger.DOWN, Action_Spectate);
 	}	
 	
 	/**

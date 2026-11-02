@@ -43,6 +43,13 @@ class COA_RplBroadcastManager : ScriptComponent
 	// AAR outro — winning faction received from the server (set in RpcDo_BroadcastOutro)
 	string m_sOutroWinningFaction = "";
 
+	// AAR outro — the admin's optional result line ("Survivors extracted"), see COA_MissionResultHelper
+	string m_sOutroResultNote = "";
+
+	// Server: result an admin ended the mission with (admin menu > End with result), sent with the next outro
+	protected string m_sPendingOutroOutcome;
+	protected string m_sPendingOutroNote;
+
 	// Thrown grenades: hooks throws on the server, keeps the live ones on clients for the spectator
 	protected ref COA_GrenadeTracker m_GrenadeTracker;
 	
@@ -1079,11 +1086,30 @@ class COA_RplBroadcastManager : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	void BroadcastOutro(string winningFaction = "")
 	{
+		// An admin's End with result: its line always goes along, and its outcome is used when the
+		// caller has none (Lobby-only, or CRF without a logged winner)
+		string resultNote = m_sPendingOutroNote;
+		if (winningFaction.IsEmpty())
+			winningFaction = m_sPendingOutroOutcome;
+
+		m_sPendingOutroOutcome = string.Empty;
+		m_sPendingOutroNote = string.Empty;
+
 		#ifdef WORKBENCH
-		RpcDo_BroadcastOutro(winningFaction);
+		RpcDo_BroadcastOutro(winningFaction, resultNote);
 		#else
-		Rpc(RpcDo_BroadcastOutro, winningFaction);
+		Rpc(RpcDo_BroadcastOutro, winningFaction, resultNote);
 		#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: remember the result an admin ended the mission with, for the outro that follows
+	//! \param[in] outcome Faction key or COA_MissionResultHelper.DRAW
+	//! \param[in] resultNote Optional result line, already sanitized
+	void SetPendingOutroResult(string outcome, string resultNote)
+	{
+		m_sPendingOutroOutcome = outcome;
+		m_sPendingOutroNote = resultNote;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2033,9 +2059,10 @@ class COA_RplBroadcastManager : ScriptComponent
 	
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	void RpcDo_BroadcastOutro(string winningFaction)
+	void RpcDo_BroadcastOutro(string winningFaction, string resultNote)
 	{
 		m_sOutroWinningFaction = winningFaction;
+		m_sOutroResultNote = resultNote;
 		AudioSystem.PlaySound("{3D7F63CCD32B2F17}Sounds/Intro/outroCrescendo.wav");
 		GetGame().GetCallqueue().CallLater(OpenOutro, 2831, false);
 	}

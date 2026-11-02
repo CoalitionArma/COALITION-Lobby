@@ -7,7 +7,94 @@ class COA_PermissionManager : ScriptComponent
 	
 	[RplProp()]
 	ref array<int> m_aDonators = {};
-	
+
+	//! Connected players with the ADMINISTRATOR or SESSION_ADMINISTRATOR role. Kept by the server
+	//! (role changes, joins, leaves) so clients can list admins without relying on role replication.
+	[RplProp()]
+	protected ref array<int> m_aAdmins = {};
+
+//=============================================================================================================================================================================================================================================================================================================================================================
+//	 ADMIN TRACKING
+//=============================================================================================================================================================================================================================================================================================================================================================
+
+	//------------------------------------------------------------------------------------------------
+	override void OnPostInit(IEntity owner)
+	{
+		super.OnPostInit(owner);
+
+		// Every machine subscribes; the handlers only act on the server
+		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(owner);
+		if (!gameMode)
+			return;
+
+		gameMode.GetOnPlayerRoleChange().Insert(OnPlayerRoleChanged);
+		gameMode.GetOnPlayerConnected().Insert(OnPlayerConnected);
+		gameMode.GetOnPlayerDisconnected().Insert(OnPlayerDisconnected);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnPlayerRoleChanged(int playerId, EPlayerRole roleFlags)
+	{
+		RefreshAdmins(-1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnPlayerConnected(int playerId)
+	{
+		RefreshAdmins(-1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnPlayerDisconnected(int playerId, KickCauseCode cause, int timeout)
+	{
+		RefreshAdmins(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: rebuild the admin list from the connected players and replicate it if it changed
+	//! \param[in] leavingPlayerId Player who is disconnecting (may still be listed), or -1
+	protected void RefreshAdmins(int leavingPlayerId)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		array<int> playerIds = {};
+		GetGame().GetPlayerManager().GetPlayers(playerIds);
+
+		array<int> admins = {};
+		foreach (int playerId : playerIds)
+		{
+			if (playerId != leavingPlayerId && SCR_Global.IsAdmin(playerId))
+				admins.Insert(playerId);
+		}
+
+		bool changed = admins.Count() != m_aAdmins.Count();
+		if (!changed)
+		{
+			foreach (int adminId : admins)
+			{
+				if (!m_aAdmins.Contains(adminId))
+				{
+					changed = true;
+					break;
+				}
+			}
+		}
+
+		if (!changed)
+			return;
+
+		m_aAdmins.Copy(admins);
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Any machine: whether a player is a connected admin (replicated list, or the local role check)
+	bool IsAdminOnline(int playerId)
+	{
+		return m_aAdmins.Contains(playerId) || SCR_Global.IsAdmin(playerId);
+	}
+
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 PERMISSION GETTERS
 //=============================================================================================================================================================================================================================================================================================================================================================

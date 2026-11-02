@@ -94,6 +94,36 @@ class COA_PlayerRplToOwnerManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Gear Fix: the session's active gear overrides, to staff only
+	void ReceiveGearOverrides(array<string> overrides)
+	{
+		if (IsLocallyOwned())
+			RpcDo_ReceiveGearOverrides(overrides);
+		else
+			Rpc(RpcDo_ReceiveGearOverrides, overrides);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gear check results, to staff only, in a few small batches
+	void ReceiveGearCheckIssues(array<string> issues, bool first, bool last, int errors, int warnings, bool showCard)
+	{
+		if (IsLocallyOwned())
+			RpcDo_ReceiveGearCheckIssues(issues, first, last, errors, warnings, showCard);
+		else
+			Rpc(RpcDo_ReceiveGearCheckIssues, issues, first, last, errors, warnings, showCard);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gear Fix: outcome of the admin's own request
+	void ReceiveGearFixResult(bool success, string message)
+	{
+		if (IsLocallyOwned())
+			RpcDo_ReceiveGearFixResult(success, message);
+		else
+			Rpc(RpcDo_ReceiveGearFixResult, success, message);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! True when the player owning this controller is the player on this machine (Workbench or a
 	//! listen-server host). An owner RPC is not executed on the machine that sends it, so these
 	//! calls are made directly instead.
@@ -224,6 +254,27 @@ class COA_PlayerRplToOwnerManager : ScriptComponent
 		COA_RplBroadcastManager broadcastManager = COA_RplBroadcastManager.GetInstance();
 		if (broadcastManager)
 			broadcastManager.RpcDo_LogAdminAction(data, playerId, sendToPlayer, level);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_ReceiveGearOverrides(array<string> overrides)
+	{
+		COA_GearFixClient.ReceiveOverrides(overrides);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_ReceiveGearCheckIssues(array<string> issues, bool first, bool last, int errors, int warnings, bool showCard)
+	{
+		COA_GearFixClient.ReceiveIssues(issues, first, last, errors, warnings, showCard);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_ReceiveGearFixResult(bool success, string message)
+	{
+		COA_GearFixClient.ReceiveResult(success, message);
 	}
 
 	//------------------------------------------------------------------------------------------------

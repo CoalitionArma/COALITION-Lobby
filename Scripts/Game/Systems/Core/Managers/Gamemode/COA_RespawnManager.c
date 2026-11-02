@@ -28,6 +28,18 @@ class COA_RespawnManager : ScriptComponent
 	[RplProp()] int m_iCurrentTimeToRespawn;
 	int m_iLocalTimeToRespawn = 0;
 
+	// When the next respawn wave happens, on the synced server clock (ChimeraWorld.GetServerTimestamp).
+	// Only re-sent when the schedule changes (wave rollover, admin toggles wave / sets the time) - see
+	// SyncWaveTimestamp - so clients count down locally and all agree on the same moment.
+	[RplProp()] protected WorldTimestamp m_NextWaveTimestamp;
+
+	// Client: the dead player left the respawn menu to spectate while their timer runs (see
+	// SetSpectateWhileWaiting). The respawn menu comes back by itself when it is needed.
+	protected bool m_bSpectateWhileWaiting;
+	protected int m_iLastRespawnMenuToggleTick;
+	//! Seconds before the timer ends that the respawn menu returns when no spawn point is confirmed yet
+	static const float SPECTATE_RETURN_SECONDS = 10;
+
 	// Internal flag to prevent redundant replication updates
 	protected bool m_bSuppressReplication = false;
 	
@@ -438,8 +450,13 @@ class COA_RespawnManager : ScriptComponent
 		if (m_fUpdateBuffer >= 1)
 		{
 			if (m_bCurrentWaveRespawn)
+			{
 				WaveRespawnTimer();
-			m_fUpdateBuffer = 0;
+				SyncWaveTimestamp();
+			}
+			// Carry the overshoot instead of zeroing it, else every wave "second" runs a fixed tick long
+			// and the wave drifts behind real time (and behind m_NextWaveTimestamp)
+			m_fUpdateBuffer -= 1;
 		}
 		m_fUpdateBuffer += timeSlice;
 		#else
@@ -450,8 +467,11 @@ class COA_RespawnManager : ScriptComponent
 			if (m_fUpdateBuffer >= 1)
 			{
 				if (m_bCurrentWaveRespawn)
+				{
 					WaveRespawnTimer();
-				m_fUpdateBuffer = 0;
+					SyncWaveTimestamp();
+				}
+				m_fUpdateBuffer -= 1;
 			}
 			m_fUpdateBuffer += timeSlice;
 			return;
@@ -493,6 +513,95 @@ class COA_RespawnManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: keep m_NextWaveTimestamp in step with the wave counter. Runs after WaveRespawnTimer (also
+	//! when CRF overrides that), and only re-sends when the schedule really moved - rollover, admin
+	//! toggling wave respawn or setting the time - not every second.
+	protected void SyncWaveTimestamp()
+	{
+		if (!Replication.IsServer() || !m_Gamemode || m_Gamemode.m_GamemodeState != COA_EGamemodeState.GAME)
+			return;
+
+		ChimeraWorld world = GetGame().GetWorld();
+		if (!world)
+			return;
+
+		WorldTimestamp expected = world.GetServerTimestamp().PlusSeconds(m_iRespawnWaveCurrentTime);
+		if (m_NextWaveTimestamp != null && Math.AbsFloat(expected.DiffSeconds(m_NextWaveTimestamp)) < 1.5)
+			return;
+
+		m_NextWaveTimestamp = expected;
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Seconds until the next respawn wave on the synced server clock (same on every client), or -1
+	//! when wave respawn is off or the schedule hasn't arrived yet
+	float GetWaveSecondsRemaining()
+	{
+		if (!m_bCurrentWaveRespawn || m_NextWaveTimestamp == null)
+			return -1;
+
+		ChimeraWorld world = GetGame().GetWorld();
+		if (!world)
+			return -1;
+
+		float remaining = m_NextWaveTimestamp.DiffSeconds(world.GetServerTimestamp());
+		if (remaining < 0)
+			remaining = 0;
+
+		return remaining;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: true while the local player is dead and waiting on a respawn they were granted at death
+	bool IsLocalRespawnPending()
+	{
+		return m_bNeedsRespawn || m_fRespawnTimer > 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: whether the waiting player may leave the respawn menu to spectate right now. With a
+	//! confirmed spawn point they can watch until the timer ends; without one the menu comes back
+	//! SPECTATE_RETURN_SECONDS early so there is time to pick.
+	bool CanSpectateWhileWaiting()
+	{
+		if (!IsLocalRespawnPending() || m_fRespawnTimer <= 0)
+			return false;
+
+		if (m_RespawnConfirmed && m_SelectedSpawnPoint != null)
+			return true;
+
+		return m_fRespawnTimer > SPECTATE_RETURN_SECONDS;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: set by COA_RespawnMenu's Spectate button / COA_SpectatorMenu's Choose spawn
+	void SetSpectateWhileWaiting(bool spectate)
+	{
+		m_bSpectateWhileWaiting = spectate;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsSpectatingWhileWaiting()
+	{
+		return m_bSpectateWhileWaiting;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: true at most once per key press. COA_RespawnMenu and the COA_SpectatorMenu under it both
+	//! listen for COA_SpecRespawnMenu (input listeners are global, not per menu), so without this one
+	//! press would close the respawn menu and reopen it straight away.
+	bool ConsumeRespawnMenuToggle()
+	{
+		int now = System.GetTickCount();
+		if (m_iLastRespawnMenuToggleTick != 0 && now - m_iLastRespawnMenuToggleTick < 300)
+			return false;
+
+		m_iLastRespawnMenuToggleTick = now;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void RespawnTimer(float timeSlice)
 	{
 		string factionKey = m_SlottingManager.GetPlayerSlotFaction(SCR_PlayerController.GetLocalPlayerId()).GetFactionKey();
@@ -504,6 +613,7 @@ class COA_RespawnManager : ScriptComponent
 			m_SelectedSpawnPoint = null;
 			m_RespawnConfirmed = false; 
 			m_bNeedsRespawn = false;
+			m_bSpectateWhileWaiting = false;
 			
 			COA_PlayerRplToAuthorityManager.GetInstance().RequestInitilizePlayer(SCR_PlayerController.GetLocalPlayerId());
 			return;
@@ -518,6 +628,7 @@ class COA_RespawnManager : ScriptComponent
 			m_fRespawnTimer = 0;
 			m_SelectedSpawnPoint = null;
 			m_RespawnConfirmed = false;
+			m_bSpectateWhileWaiting = false;
 			return;
 		}
 		
@@ -532,6 +643,15 @@ class COA_RespawnManager : ScriptComponent
 			int timeToAdd = m_iCurrentTimeToRespawn - m_iLocalTimeToRespawn;
 			m_fRespawnTimer += (float)timeToAdd;
 			m_iLocalTimeToRespawn = m_iCurrentTimeToRespawn;
+		}
+		// Wave respawn: count down to the synced wave moment instead of a local timer seeded at death,
+		// so everyone waiting goes together and admin changes to the wave (toggle / new time) apply at
+		// once. Not once expired - a player still picking a spawn keeps their wave, as before.
+		if (m_fRespawnTimer > 0)
+		{
+			float waveRemaining = GetWaveSecondsRemaining();
+			if (waveRemaining >= 0)
+				m_fRespawnTimer = waveRemaining;
 		}
 		CloseSlottingMenu();
 		// Check if timer expired or we're in AAR
@@ -554,6 +674,7 @@ class COA_RespawnManager : ScriptComponent
 					m_fRespawnTimer = m_iRespawnWaveCurrentTime;
 					m_iLocalTimeToRespawn = m_iCurrentTimeToRespawn;
 					m_bNeedsRespawn = false;
+					m_bSpectateWhileWaiting = false;
 					// Only perform respawn if not in AAR state
 					if (!isGameInAARState)
 					{
@@ -585,6 +706,12 @@ class COA_RespawnManager : ScriptComponent
 		// If we're in spectator but not in respawn menu, open respawn menu
 		if (!topMenu.IsInherited(COA_RespawnMenu) && topMenu.IsInherited(COA_SpectatorMenu))
 		{
+			// The player chose to spectate while waiting - leave them until the menu is needed again
+			if (m_bSpectateWhileWaiting && CanSpectateWhileWaiting())
+				return;
+
+			m_bSpectateWhileWaiting = false;
+			COA_SpectatorMenu.Cast(topMenu).PrepareForRespawnMenu();
 			GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.COA_RespawnMenu);
 		}
 	}

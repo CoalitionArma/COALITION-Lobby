@@ -876,6 +876,166 @@ FrameWidgetClass {
       }
      }
     }
+    ButtonWidgetClass "{072374DA08D2F579}" {
+     Name "EnvironmentButton"
+     Slot FrameWidgetSlot "{4358D545BA988196}" {
+      Anchor 0 0 1 0
+      PositionX 14
+      OffsetLeft 14
+      PositionY 378
+      OffsetTop 378
+      SizeX -24
+      OffsetRight 10
+      SizeY 44
+      OffsetBottom -422
+     }
+     "Z Order" 2
+     Color 1 1 1 0
+     components {
+      SCR_ButtonTextComponent "{822FD9DFBE585EC4}" {
+       m_bMouseOverToFocus 1
+       m_bCanBeToggled 1
+       m_sTextWidgetName ""
+      }
+     }
+     {
+      OverlayWidgetClass "{366D1FFEA72A1729}" {
+       Name "NavOverlay"
+       Slot ButtonWidgetSlot "{9572D161645CF275}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        SmartPanelWidgetClass "{17B3B778A12E2009}" {
+         Name "NavBG"
+         Slot OverlayWidgetSlot "{A4F0B8D84AD6EAF5}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.011 0.0137 0.0212 0
+         style rounded_4px
+        }
+        ImageWidgetClass "{60DDAABA46C835E7}" {
+         Name "NavAccent"
+         Slot OverlayWidgetSlot "{6131240A5353DF4B}" {
+          HorizontalAlign 0
+          VerticalAlign 1
+         }
+         Color 0.5841 0.0369 0.0369 0
+         Size 3 20
+        }
+        ImageWidgetClass "{236F69E7FE7A1B7F}" {
+         Name "NavIcon"
+         Slot OverlayWidgetSlot "{78BB670DEAD7E4FA}" {
+          HorizontalAlign 0
+          VerticalAlign 1
+          Padding 16 0 0 0
+         }
+         Color 0.3968 0.4564 0.6038 1
+         Texture "{857DD01860810AE9}UI/Textures/Editor/Attributes/Categories/Attribute_Category_Weather.edds"
+         Size 22 22
+        }
+        TextWidgetClass "{8598436B1225CF5A}" {
+         Name "NavLabel"
+         Slot OverlayWidgetSlot "{5E928F2F29AF2340}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+          Padding 50 0 8 0
+         }
+         Color 0.3968 0.4564 0.6038 1
+         Text "Weather & Time"
+         "Font Size" 16
+         "Min Font Size" 10
+         "Horizontal Alignment" Left
+         "Vertical Alignment" Center
+         FontProperties FontProperties "{05DC1E690E20AC6C}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{8C75040738A682F4}" {
+     Name "GearFixButton"
+     Slot FrameWidgetSlot "{38BD2185D054A734}" {
+      Anchor 0 0 1 0
+      PositionX 14
+      OffsetLeft 14
+      PositionY 426
+      OffsetTop 426
+      SizeX -24
+      OffsetRight 10
+      SizeY 44
+      OffsetBottom -470
+     }
+     "Z Order" 2
+     Color 1 1 1 0
+     components {
+      SCR_ButtonTextComponent "{C0CAAD47B5D6370A}" {
+       m_bMouseOverToFocus 1
+       m_bCanBeToggled 1
+       m_sTextWidgetName ""
+      }
+     }
+     {
+      OverlayWidgetClass "{E3CB1ED48535EB3B}" {
+       Name "NavOverlay"
+       Slot ButtonWidgetSlot "{5C6EBF9AE1D8E9BE}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        SmartPanelWidgetClass "{5D304379C4895E92}" {
+         Name "NavBG"
+         Slot OverlayWidgetSlot "{186BFF271F58B8A2}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.011 0.0137 0.0212 0
+         style rounded_4px
+        }
+        ImageWidgetClass "{20A652AF47C33CB7}" {
+         Name "NavAccent"
+         Slot OverlayWidgetSlot "{F89828753E8057FC}" {
+          HorizontalAlign 0
+          VerticalAlign 1
+         }
+         Color 0.5841 0.0369 0.0369 0
+         Size 3 20
+        }
+        ImageWidgetClass "{59404639184C8406}" {
+         Name "NavIcon"
+         Slot OverlayWidgetSlot "{B3B3605D31B58423}" {
+          HorizontalAlign 0
+          VerticalAlign 1
+          Padding 16 0 0 0
+         }
+         Color 0.3968 0.4564 0.6038 1
+         Texture "{71648F15B3984B87}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_AssaultRifles.edds"
+         Size 22 22
+        }
+        TextWidgetClass "{CE400A2837C32170}" {
+         Name "NavLabel"
+         Slot OverlayWidgetSlot "{9AED78B095D7BD3D}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+          Padding 50 0 8 0
+         }
+         Color 0.3968 0.4564 0.6038 1
+         Text "Gear Fix"
+         "Font Size" 16
+         "Min Font Size" 10
+         "Horizontal Alignment" Left
+         "Vertical Alignment" Center
+         FontProperties FontProperties "{DA47E861B563643D}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
    }
   }
   TextWidgetClass "{6A6A0D0000000188}" {

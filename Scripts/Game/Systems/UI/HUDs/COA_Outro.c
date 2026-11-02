@@ -62,7 +62,14 @@ class COA_Outro: ChimeraMenuBase
 			TextWidget outcomeTxt = TextWidget.Cast(GetRootWidget().FindAnyWidget("TitleText3"));
 			if (outcomeTxt)
 			{
-				outcomeTxt.SetText(GetOutcomeText(rplBroadcast.m_sOutroWinningFaction));
+				// Plus the admin's result line when the mission was ended from the admin menu
+				string outcome = GetOutcomeText(rplBroadcast.m_sOutroWinningFaction);
+				string resultNote = rplBroadcast.m_sOutroResultNote;
+				resultNote.ToUpper();
+				if (!resultNote.IsEmpty())
+					outcome = outcome + " - " + resultNote;
+
+				outcomeTxt.SetText(outcome);
 				outcomeTxt.SetVisible(true);
 			}
 		}
@@ -77,6 +84,7 @@ class COA_Outro: ChimeraMenuBase
 		if (faction == "OPFOR")   return "OPFOR VICTORY";
 		if (faction == "INDFOR")  return "INDFOR VICTORY";
 		if (faction == "CIV")     return "CIVILIAN VICTORY";
+		if (faction == COA_MissionResultHelper.DRAW) return "DRAW";
 		return "";
 	}
 

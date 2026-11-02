@@ -1,0 +1,984 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ {
+  TextWidgetClass "{14CC26CB3F1F8055}" {
+   Name "PageHint"
+   Slot FrameWidgetSlot "{B8AEC2D481D1F38B}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -744
+    OffsetLeft -744
+    PositionY -434
+    OffsetTop -434
+    SizeX 1097
+    OffsetRight -353
+    SizeY 20
+    OffsetBottom 414
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "Weather and time of day for everyone on the server. Weather states come from this world's weather config, so mods that replace it show their own states."
+   "Font Size" 14
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{312796780FC3CB7E}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{F0C694CAF6987B37}" {
+   Name "WeatherCard"
+   Slot FrameWidgetSlot "{C9EA23DAF3EA2A51}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -744
+    OffsetLeft -744
+    PositionY -400
+    OffsetTop -400
+    SizeX 540
+    OffsetRight 204
+    SizeY 872
+    OffsetBottom -472
+   }
+   Color 0.0075 0.0086 0.0123 1
+   style rounded_6px
+  }
+  ImageWidgetClass "{BC88D476510D8EC9}" {
+   Name "WeatherCardPill"
+   Slot FrameWidgetSlot "{6BB8E90F03F3274D}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -744
+    OffsetLeft -744
+    PositionY -385
+    OffsetTop -385
+    SizeX 3
+    OffsetRight 741
+    SizeY 14
+    OffsetBottom 371
+   }
+   Color 0.5841 0.0369 0.0369 1
+  }
+  TextWidgetClass "{4DEB55D0B3CD244E}" {
+   Name "WeatherCardTitle"
+   Slot FrameWidgetSlot "{F4D071FE26400414}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY -388
+    OffsetTop -388
+    SizeX 508
+    OffsetRight 220
+    SizeY 20
+    OffsetBottom 368
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "WEATHER"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{E52326C1604E990B}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  TextWidgetClass "{FF7C1F55F25E0872}" {
+   Name "WeatherCardHint"
+   Slot FrameWidgetSlot "{6A8CF545C6FCF530}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY -388
+    OffsetTop -388
+    SizeX 508
+    OffsetRight 220
+    SizeY 20
+    OffsetBottom 368
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "From the world's weather config"
+   "Font Size" 12
+   "Min Font Size" 10
+   "Horizontal Alignment" Right
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{552798FD2B053B44}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{A4A2ADF1A430C63B}" {
+   Name "CurrentWeatherCaption"
+   Slot FrameWidgetSlot "{86ADD5B341CCBD7E}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY -360
+    OffsetTop -360
+    SizeX 508
+    OffsetRight 220
+    SizeY 18
+    OffsetBottom 342
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "Current weather"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{5AFEE24FCBA4C333}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{B9DCCB93ABD3201A}" {
+   Name "CurrentWeatherText"
+   Slot FrameWidgetSlot "{E2DB5B93B8FFD754}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY -340
+    OffsetTop -340
+    SizeX 508
+    OffsetRight 220
+    SizeY 34
+    OffsetBottom 306
+   }
+   Color 0.8632 0.8879 0.9301 1
+   Text "-"
+   "Font Size" 26
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{1F6B70DE18638E3C}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{615C79E04DA9E0C0}" {
+   Name "WeatherListBox0BG"
+   Slot FrameWidgetSlot "{2E1F4F750EC6DE65}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY -294
+    OffsetTop -294
+    SizeX 508
+    OffsetRight 220
+    SizeY 644
+    OffsetBottom -350
+   }
+   Color 0.0033 0.0037 0.0052 1
+   style rounded_6px
+  }
+  TextWidgetClass "{286D6ED7A0D83CD0}" {
+   Name "WeatherListBox0Empty"
+   Slot FrameWidgetSlot "{A24D83231E9B1F6E}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY -282
+    OffsetTop -282
+    SizeX 508
+    OffsetRight 220
+    SizeY 20
+    OffsetBottom 262
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "No weather states found"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{84888D77CC09FADA}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  OverlayWidgetClass "{6819C047E5DDB754}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
+   Name "WeatherListBox0"
+   Slot FrameWidgetSlot "{42C8EDF5F2D31BA0}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -724
+    OffsetLeft -724
+    PositionY -290
+    OffsetTop -290
+    SizeX 500
+    OffsetRight 224
+    SizeY 636
+    OffsetBottom -346
+   }
+   components {
+    SCR_ListBoxComponent "{D11B949603FF67E2}" {
+     m_sElementLayout "{6A6A0D0000000001}UI/Listbox/COA_AdminListRow.layout"
+    }
+   }
+   {
+    ScrollLayoutWidgetClass "{56691148E692435A}" {
+     Prefab "{56691148E692435A}"
+     {
+      VerticalLayoutWidgetClass "{56691148E013D981}" {
+       Prefab "{56691148E013D981}"
+      }
+     }
+    }
+    ImageWidgetClass "{5DB6D18100D38307}" {
+     Prefab "{5DB6D18100D38307}"
+     "Is Visible" 0
+    }
+   }
+  }
+  SmartPanelWidgetClass "{533F4B6EA96BFFF5}" {
+   Name "WeatherInstantButtonBG"
+   Slot FrameWidgetSlot "{D02AECD97E6618C8}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY 364
+    OffsetTop 364
+    SizeX 249
+    OffsetRight 479
+    SizeY 36
+    OffsetBottom -400
+   }
+   "Z Order" 1
+   Color 0.5841 0.0369 0.0369 1
+   style rounded_4px
+  }
+  ButtonWidgetClass "{047423C37D68B49D}" {
+   Name "WeatherInstantButton"
+   Slot FrameWidgetSlot "{100880455F52A8BB}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY 364
+    OffsetTop 364
+    SizeX 249
+    OffsetRight 479
+    SizeY 36
+    OffsetBottom -400
+   }
+   Color 1 1 1 0
+   "Z Order" 2
+   components {
+    SCR_ButtonTextComponent "{D17417DEC13FF787}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{96E655589EE8AF7C}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{C294DC7129077529}" {
+     }
+     Text "Apply now"
+     "Font Size" 15
+     "Min Font Size" 11
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{08F8B8138F8530ED}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+  SmartPanelWidgetClass "{3C99D83FC62C11D8}" {
+   Name "WeatherBlendButtonBG"
+   Slot FrameWidgetSlot "{BB49E56B89BDC5C9}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -469
+    OffsetLeft -469
+    PositionY 364
+    OffsetTop 364
+    SizeX 249
+    OffsetRight 220
+    SizeY 36
+    OffsetBottom -400
+   }
+   "Z Order" 1
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  ButtonWidgetClass "{1CBE2BB97848C1B9}" {
+   Name "WeatherBlendButton"
+   Slot FrameWidgetSlot "{62FD4EDF5CF9C900}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -469
+    OffsetLeft -469
+    PositionY 364
+    OffsetTop 364
+    SizeX 249
+    OffsetRight 220
+    SizeY 36
+    OffsetBottom -400
+   }
+   Color 1 1 1 0
+   "Z Order" 2
+   components {
+    SCR_ButtonTextComponent "{EB7980A3BF537DF5}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{FA2527478D1D7285}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{03B1218CC0260EAB}" {
+     }
+     Text "Blend over 15 min"
+     "Font Size" 15
+     "Min Font Size" 11
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{4F83656F52EB4AEC}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+  TextWidgetClass "{6A282CEE4C0BA3DE}" {
+   Name "WeatherNote"
+   Slot FrameWidgetSlot "{85EA7AAE34750411}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -728
+    OffsetLeft -728
+    PositionY 408
+    OffsetTop 408
+    SizeX 508
+    OffsetRight 220
+    SizeY 48
+    OffsetBottom -456
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "Apply now switches straight to the selected state; Blend fades into it over 15 in-game minutes. Either way it then holds until changed again."
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Top
+   Wrap 1
+   FontProperties FontProperties "{9B1972FF7046407F}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{2654E4BC1B4F837A}" {
+   Name "TimeCard"
+   Slot FrameWidgetSlot "{AC1FADC4E973C0A1}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -188
+    OffsetLeft -188
+    PositionY -400
+    OffsetTop -400
+    SizeX 541
+    OffsetRight -353
+    SizeY 344
+    OffsetBottom 56
+   }
+   Color 0.0075 0.0086 0.0123 1
+   style rounded_6px
+  }
+  ImageWidgetClass "{6C93445DCB31F04C}" {
+   Name "TimeCardPill"
+   Slot FrameWidgetSlot "{99EABE8BFC53D1A9}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -188
+    OffsetLeft -188
+    PositionY -385
+    OffsetTop -385
+    SizeX 3
+    OffsetRight 185
+    SizeY 14
+    OffsetBottom 371
+   }
+   Color 0.5841 0.0369 0.0369 1
+  }
+  TextWidgetClass "{A29D66631C1259B2}" {
+   Name "TimeCardTitle"
+   Slot FrameWidgetSlot "{95CEF2C6A30E5D75}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -172
+    OffsetLeft -172
+    PositionY -388
+    OffsetTop -388
+    SizeX 509
+    OffsetRight -337
+    SizeY 20
+    OffsetBottom 368
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "TIME OF DAY"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{A8C2CBED4249AF4F}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  TextWidgetClass "{3747002F2D77DD4B}" {
+   Name "TimeCardHint"
+   Slot FrameWidgetSlot "{2C84E596CA8EF71E}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -172
+    OffsetLeft -172
+    PositionY -388
+    OffsetTop -388
+    SizeX 509
+    OffsetRight -337
+    SizeY 20
+    OffsetBottom 368
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "In-game clock"
+   "Font Size" 12
+   "Min Font Size" 10
+   "Horizontal Alignment" Right
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{336B85094A25AB17}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{05FD9760AB059459}" {
+   Name "CurrentTimeCaption"
+   Slot FrameWidgetSlot "{7869AEDDAEF5F58B}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -172
+    OffsetLeft -172
+    PositionY -360
+    OffsetTop -360
+    SizeX 509
+    OffsetRight -337
+    SizeY 18
+    OffsetBottom 342
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "Current time"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{43ED0C124E5940E7}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{F4C645B427B3593C}" {
+   Name "CurrentTimeText"
+   Slot FrameWidgetSlot "{1FF7B2AAD1307B84}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -172
+    OffsetLeft -172
+    PositionY -340
+    OffsetTop -340
+    SizeX 509
+    OffsetRight -337
+    SizeY 44
+    OffsetBottom 296
+   }
+   Color 0.8632 0.8879 0.9301 1
+   Text "00:00"
+   "Font Size" 36
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{44FBB4ACF182CA6F}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  TextWidgetClass "{4A6D59B6B09512E0}" {
+   Name "SetTimeCaption"
+   Slot FrameWidgetSlot "{EF644C02668395DE}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -172
+    OffsetLeft -172
+    PositionY -284
+    OffsetTop -284
+    SizeX 509
+    OffsetRight -337
+    SizeY 18
+    OffsetBottom 266
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "Set time (24h)"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{4D6F3A7A89870441}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{582565E2C93E4268}" {
+   Name "HourInputBG"
+   Slot FrameWidgetSlot "{F862FBD145E335E9}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -172
+    OffsetLeft -172
+    PositionY -262
+    OffsetTop -262
+    SizeX 80
+    OffsetRight 92
+    SizeY 40
+    OffsetBottom 222
+   }
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  EditBoxWidgetClass "{362DF12B07A3CD18}" {
+   Name "HourInput"
+   Slot FrameWidgetSlot "{B0E8DF71584B0814}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -162
+    OffsetLeft -162
+    PositionY -262
+    OffsetTop -262
+    SizeX 60
+    OffsetRight 102
+    SizeY 40
+    OffsetBottom 222
+   }
+   "Font Size" 20
+   "Use placeholder text" 1
+   "Placeholder text" "HH"
+   Color 0.8632 0.8879 0.9301 1
+   FontProperties FontProperties "{40E285EFD569FF41}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{FF1914D1F2ACDAB0}" {
+   Name "TimeColon"
+   Slot FrameWidgetSlot "{303121E08EE39336}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -90
+    OffsetLeft -90
+    PositionY -262
+    OffsetTop -262
+    SizeX 16
+    OffsetRight 74
+    SizeY 40
+    OffsetBottom 222
+   }
+   Color 0.8632 0.8879 0.9301 1
+   Text ":"
+   "Font Size" 22
+   "Min Font Size" 10
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{DEEC76A3FC04C32C}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{3A57B3F15485018E}" {
+   Name "MinuteInputBG"
+   Slot FrameWidgetSlot "{D2BA8E65149A5C25}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -72
+    OffsetLeft -72
+    PositionY -262
+    OffsetTop -262
+    SizeX 80
+    OffsetRight -8
+    SizeY 40
+    OffsetBottom 222
+   }
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  EditBoxWidgetClass "{CB56D8BD3B92BEBF}" {
+   Name "MinuteInput"
+   Slot FrameWidgetSlot "{77AFBD666A33A5BD}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -62
+    OffsetLeft -62
+    PositionY -262
+    OffsetTop -262
+    SizeX 60
+    OffsetRight 2
+    SizeY 40
+    OffsetBottom 222
+   }
+   "Font Size" 20
+   "Use placeholder text" 1
+   "Placeholder text" "MM"
+   Color 0.8632 0.8879 0.9301 1
+   FontProperties FontProperties "{F77C22AFC24EDD97}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{EC241E51BA3D3AF1}" {
+   Name "SetTimeButtonBG"
+   Slot FrameWidgetSlot "{1D19C09C9905633E}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 24
+    OffsetLeft 24
+    PositionY -262
+    OffsetTop -262
+    SizeX 313
+    OffsetRight -337
+    SizeY 40
+    OffsetBottom 222
+   }
+   "Z Order" 1
+   Color 0.5841 0.0369 0.0369 1
+   style rounded_4px
+  }
+  ButtonWidgetClass "{CEBB98D371935DCE}" {
+   Name "SetTimeButton"
+   Slot FrameWidgetSlot "{761344FF064B1163}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 24
+    OffsetLeft 24
+    PositionY -262
+    OffsetTop -262
+    SizeX 313
+    OffsetRight -337
+    SizeY 40
+    OffsetBottom 222
+   }
+   Color 1 1 1 0
+   "Z Order" 2
+   components {
+    SCR_ButtonTextComponent "{13566C29EBB9BF9C}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{AF8EFC5B73F2A22A}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{51F782FA1D4F7BB4}" {
+     }
+     Text "Set time"
+     "Font Size" 15
+     "Min Font Size" 11
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{2F3DC331ABD34D5B}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+  TextWidgetClass "{F68083F56AFB4FDE}" {
+   Name "PresetCaption"
+   Slot FrameWidgetSlot "{39EB3E053A28D7E2}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -172
+    OffsetLeft -172
+    PositionY -208
+    OffsetTop -208
+    SizeX 509
+    OffsetRight -337
+    SizeY 18
+    OffsetBottom 190
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "Quick presets"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{71BDF02056A4D412}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{5AF88F5CC23F30C2}" {
+   Name "Preset_0530BG"
+   Slot FrameWidgetSlot "{102246D6CF3690F6}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -172
+    OffsetLeft -172
+    PositionY -186
+    OffsetTop -186
+    SizeX 95
+    OffsetRight 77
+    SizeY 36
+    OffsetBottom 150
+   }
+   "Z Order" 1
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  ButtonWidgetClass "{4541532A8D48BC4E}" {
+   Name "Preset_0530"
+   Slot FrameWidgetSlot "{3C8D88274E5D0126}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -172
+    OffsetLeft -172
+    PositionY -186
+    OffsetTop -186
+    SizeX 95
+    OffsetRight 77
+    SizeY 36
+    OffsetBottom 150
+   }
+   Color 1 1 1 0
+   "Z Order" 2
+   components {
+    SCR_ButtonTextComponent "{3D4C7E5F8A7CDB17}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{4DD57641EBD707EF}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{D7C45A41628B31B6}" {
+     }
+     Text "Dawn 05:30"
+     "Font Size" 14
+     "Min Font Size" 11
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{6B21210D07EB36ED}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+  SmartPanelWidgetClass "{B84ECB718A85F5BE}" {
+   Name "Preset_0800BG"
+   Slot FrameWidgetSlot "{0CFA530A91EAF1A1}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -69
+    OffsetLeft -69
+    PositionY -186
+    OffsetTop -186
+    SizeX 95
+    OffsetRight -26
+    SizeY 36
+    OffsetBottom 150
+   }
+   "Z Order" 1
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  ButtonWidgetClass "{9B13D3A9053ECA34}" {
+   Name "Preset_0800"
+   Slot FrameWidgetSlot "{52D73274F416276D}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -69
+    OffsetLeft -69
+    PositionY -186
+    OffsetTop -186
+    SizeX 95
+    OffsetRight -26
+    SizeY 36
+    OffsetBottom 150
+   }
+   Color 1 1 1 0
+   "Z Order" 2
+   components {
+    SCR_ButtonTextComponent "{AE14533DB930673A}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{86E50874B003BA0E}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{492D1241DE316BA1}" {
+     }
+     Text "Morning 08:00"
+     "Font Size" 14
+     "Min Font Size" 11
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{1E3897C54D907C41}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+  SmartPanelWidgetClass "{4E0B56073A10B7FC}" {
+   Name "Preset_1200BG"
+   Slot FrameWidgetSlot "{480043F0D8DAC6F0}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 34
+    OffsetLeft 34
+    PositionY -186
+    OffsetTop -186
+    SizeX 95
+    OffsetRight -129
+    SizeY 36
+    OffsetBottom 150
+   }
+   "Z Order" 1
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  ButtonWidgetClass "{F3BB9B3A7DA5E10C}" {
+   Name "Preset_1200"
+   Slot FrameWidgetSlot "{7D46BE075C0B8FF1}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 34
+    OffsetLeft 34
+    PositionY -186
+    OffsetTop -186
+    SizeX 95
+    OffsetRight -129
+    SizeY 36
+    OffsetBottom 150
+   }
+   Color 1 1 1 0
+   "Z Order" 2
+   components {
+    SCR_ButtonTextComponent "{6AF6C06BE40FE12E}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{F7686D04BA432317}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{A71597B81AAB0F34}" {
+     }
+     Text "Noon 12:00"
+     "Font Size" 14
+     "Min Font Size" 11
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{9C6A42A8D9AAB44D}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+  SmartPanelWidgetClass "{7D295D547736BC6C}" {
+   Name "Preset_1830BG"
+   Slot FrameWidgetSlot "{25975EECF0D67072}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 137
+    OffsetLeft 137
+    PositionY -186
+    OffsetTop -186
+    SizeX 95
+    OffsetRight -232
+    SizeY 36
+    OffsetBottom 150
+   }
+   "Z Order" 1
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  ButtonWidgetClass "{60D30FBBB549B348}" {
+   Name "Preset_1830"
+   Slot FrameWidgetSlot "{EF50F70FBB520F4A}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 137
+    OffsetLeft 137
+    PositionY -186
+    OffsetTop -186
+    SizeX 95
+    OffsetRight -232
+    SizeY 36
+    OffsetBottom 150
+   }
+   Color 1 1 1 0
+   "Z Order" 2
+   components {
+    SCR_ButtonTextComponent "{294465F4091C57EF}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{B775A6D1D13B1F55}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{244684EFB4A16056}" {
+     }
+     Text "Dusk 18:30"
+     "Font Size" 14
+     "Min Font Size" 11
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{FC132489F261F83B}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+  SmartPanelWidgetClass "{F4B7714726F55F86}" {
+   Name "Preset_2300BG"
+   Slot FrameWidgetSlot "{9F3FF5E9934C8FC1}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 240
+    OffsetLeft 240
+    PositionY -186
+    OffsetTop -186
+    SizeX 95
+    OffsetRight -335
+    SizeY 36
+    OffsetBottom 150
+   }
+   "Z Order" 1
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  ButtonWidgetClass "{46DF1EDB2ABC2D15}" {
+   Name "Preset_2300"
+   Slot FrameWidgetSlot "{0831BF9D690D55CC}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 240
+    OffsetLeft 240
+    PositionY -186
+    OffsetTop -186
+    SizeX 95
+    OffsetRight -335
+    SizeY 36
+    OffsetBottom 150
+   }
+   Color 1 1 1 0
+   "Z Order" 2
+   components {
+    SCR_ButtonTextComponent "{8E0D09D416B743D1}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{AC17F65FC371CB73}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{2C02EAAE88CE73C7}" {
+     }
+     Text "Night 23:00"
+     "Font Size" 14
+     "Min Font Size" 11
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{4879974FA9EF17F1}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+  TextWidgetClass "{457A5F657770B6BE}" {
+   Name "TimeStatusText"
+   Slot FrameWidgetSlot "{077FC5018965367B}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -172
+    OffsetLeft -172
+    PositionY -140
+    OffsetTop -140
+    SizeX 509
+    OffsetRight -337
+    SizeY 20
+    OffsetBottom 120
+   }
+   Color 0.8070 0.1170 0.1170 1
+   Text ""
+   "Font Size" 14
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{7D0FF4E0E4750621}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{7C1C8322E3B1869E}" {
+   Name "TimeNote"
+   Slot FrameWidgetSlot "{DEBC9DE2CCFE5C46}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -172
+    OffsetLeft -172
+    PositionY -116
+    OffsetTop -116
+    SizeX 509
+    OffsetRight -337
+    SizeY 44
+    OffsetBottom 72
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "Applies to everyone at once. The clock keeps running from the new time at the mission's time scale."
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Top
+   Wrap 1
+   FontProperties FontProperties "{7413A4D6693B6E19}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+ }
+}

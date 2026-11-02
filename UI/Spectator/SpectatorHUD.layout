@@ -2117,6 +2117,104 @@ FrameWidgetClass {
     }
    }
   }
+  ButtonWidgetClass "{BEBC3A654EC68370}" {
+   Name "RespawnStatus"
+   Slot FrameWidgetSlot "{50BE9486C779B008}" {
+    Anchor 0.5 0 0.5 0
+    PositionX -190
+    OffsetLeft -190
+    PositionY 52
+    OffsetTop 52
+    SizeX 380
+    OffsetRight -190
+    SizeY 58
+    OffsetBottom -110
+   }
+   "Z Order" 5
+   "Is Visible" 0
+   Color 1 1 1 0
+   components {
+    SCR_ButtonComponent "{FA89475568DBFBE4}" {
+     m_BackgroundDefault 0 0 0 0
+     m_BackgroundHovered 0.011 0.0137 0.0212 0.5
+     m_BackgroundSelected 0 0 0 0
+     m_BackgroundSelectedHovered 0.011 0.0137 0.0212 0.5
+     m_BackgroundClicked 0.0144 0.0168 0.0262 0.6
+     m_bShowBorderOnFocus 0
+    }
+   }
+   {
+    OverlayWidgetClass "{805BBE01380E3F24}" {
+     Name "RespawnStatusLayers"
+     Slot ButtonWidgetSlot "{CF52425CBA8274FC}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      SmartPanelWidgetClass "{9CB662D3C94AE6AF}" {
+       Name "RespawnStatusBG"
+       Slot OverlayWidgetSlot "{36D295E92939F87F}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0033 0.0037 0.0052 0.85
+       style rounded_6px
+      }
+      ImageWidgetClass "{D106CECF25E4D5CD}" {
+       Name "RespawnStatusPill"
+       Slot OverlayWidgetSlot "{173DA449C00B053A}" {
+        HorizontalAlign 0
+        VerticalAlign 1
+        Padding 10 0 0 0
+       }
+       Color 0.807 0.402 0.0648 1
+       Size 3 34
+      }
+      VerticalLayoutWidgetClass "{E12D15F0AA36E22D}" {
+       Name "RespawnStatusLines"
+       Slot OverlayWidgetSlot "{0F1BADDF7C09ECCC}" {
+        HorizontalAlign 3
+        VerticalAlign 1
+        Padding 22 0 14 0
+       }
+       {
+        TextWidgetClass "{D49AF71D438A65F5}" {
+         Name "RespawnStatusTitle"
+         Slot LayoutSlot "{C761D34F642E2466}" {
+          HorizontalAlign 3
+         }
+         Color 0.8632 0.8879 0.9301 1
+         Text "Respawning in 0:00"
+         "Font Size" 20
+         "Min Font Size" 14
+         "Horizontal Alignment" Center
+         "Vertical Alignment" Center
+         FontProperties FontProperties "{6D7981D0D33D6E01}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        RichTextWidgetClass "{80F162B7E025F7C8}" {
+         Name "RespawnStatusDetail"
+         Slot LayoutSlot "{3A56DCB668EEC9D0}" {
+          HorizontalAlign 3
+          Padding 0 2 0 0
+         }
+         Color 0.3968 0.4564 0.6038 1
+         Text ""
+         "Font Size" 13
+         "Min Font Size" 9
+         "Horizontal Alignment" Center
+         "Vertical Alignment" Center
+         FontProperties FontProperties "{5684F559224F3222}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
   FrameWidgetClass "{6A7114000000015D}" {
    Name "KillFeed"
    Slot FrameWidgetSlot "{6A7114000000015A}" {

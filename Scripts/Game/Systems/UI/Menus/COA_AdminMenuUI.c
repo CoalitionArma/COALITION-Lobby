@@ -54,6 +54,8 @@ class COA_AdminMenu : ChimeraMenuBase
 	protected SCR_ButtonTextComponent m_healMenuButton;
 	protected SCR_ButtonTextComponent m_ticketMenuButton;
 	protected SCR_ButtonTextComponent m_GamemodeMenuButton;
+	protected SCR_ButtonTextComponent m_EnvironmentMenuButton;
+	protected SCR_ButtonTextComponent m_GearFixMenuButton;
 	
 	// Action buttons
 	protected SCR_ButtonTextComponent m_actionButton;
@@ -79,6 +81,9 @@ class COA_AdminMenu : ChimeraMenuBase
 	protected ref COA_GearScriptConfigStruct m_gearsetlist;
 	
 	protected bool m_bGameModeMenuOpen = false;
+	protected bool m_bHintMenuOpen = false;
+	protected bool m_bEnvironmentMenuOpen = false;
+	protected ref COA_GearFixPanel m_GearFixPanel;
 	protected ref array<int> m_CachedTickets = {};
 	
 	//-----------------------------------------------------------------------------
@@ -131,6 +136,13 @@ class COA_AdminMenu : ChimeraMenuBase
 		filterLogHigh.m_OnToggled.Insert(ToggleLogLevelFilter);
 		filterLogMedium.m_OnToggled.Insert(ToggleLogLevelFilter);
 		filterLogLow.m_OnToggled.Insert(ToggleLogLevelFilter);
+
+		// The gear check's warning card opens the menu straight on the Gear Fix tab
+		if (COA_GearFixClient.HasPendingOpen())
+		{
+			GearFixButton();
+			return;
+		}
 
 		InitializeTicketMenu();
 		UpdateMenuButtonColors(m_ticketMenuButton);
@@ -195,6 +207,36 @@ class COA_AdminMenu : ChimeraMenuBase
 		
 		return EditBoxWidget.Cast(widget.FindAnyWidget(EditBox));
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Like GetListBox, but returns null instead of failing when the widget isn't in the layout
+	protected SCR_ListBoxComponent FindListBox(string listbox, Widget widget = null)
+	{
+		if (!widget)
+			widget = m_wMenuContent;
+
+		if (!widget)
+			return null;
+
+		Widget listRoot = widget.FindAnyWidget(listbox);
+		if (!listRoot)
+			return null;
+
+		return SCR_ListBoxComponent.Cast(listRoot.FindHandler(SCR_ListBoxComponent));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Text widget lookup that tolerates a missing widget
+	protected TextWidget FindText(string name, Widget widget = null)
+	{
+		if (!widget)
+			widget = m_wMenuContent;
+
+		if (!widget)
+			return null;
+
+		return TextWidget.Cast(widget.FindAnyWidget(name));
+	}
 	
 	//------------------------------------------------------------------------------------------------
 	//! Initialize menu navigation buttons
@@ -228,9 +270,19 @@ class COA_AdminMenu : ChimeraMenuBase
 		m_GamemodeMenuButton = SCR_ButtonTextComponent.GetButtonText("GamemodeButton", m_wRoot);
 		m_GamemodeMenuButton.m_OnClicked.Insert(GamemodeButton);
 
+		// Weather & time menu button
+		m_EnvironmentMenuButton = SCR_ButtonTextComponent.GetButtonText("EnvironmentButton", m_wRoot);
+		if (m_EnvironmentMenuButton)
+			m_EnvironmentMenuButton.m_OnClicked.Insert(EnvironmentButton);
+
+		// Gear Fix menu button
+		m_GearFixMenuButton = SCR_ButtonTextComponent.GetButtonText("GearFixButton", m_wRoot);
+		if (m_GearFixMenuButton)
+			m_GearFixMenuButton.m_OnClicked.Insert(GearFixButton);
+
 		// Nav rail hover: the item's own rounded fill fades in (it's transparent until selected), rather than
 		// the generic square overlay COA_MenuPolish would give the transparent button
-		array<SCR_ButtonTextComponent> navButtons = {m_ticketMenuButton, m_respawnMenuButton, m_teleportMenuButton, m_healMenuButton, m_resetGearMenuButton, m_hintMenuButton, m_GamemodeMenuButton};
+		array<SCR_ButtonTextComponent> navButtons = {m_ticketMenuButton, m_respawnMenuButton, m_teleportMenuButton, m_healMenuButton, m_resetGearMenuButton, m_hintMenuButton, m_GamemodeMenuButton, m_EnvironmentMenuButton, m_GearFixMenuButton};
 		foreach (SCR_ButtonTextComponent navButton : navButtons)
 		{
 			if (!navButton)
@@ -271,10 +323,13 @@ class COA_AdminMenu : ChimeraMenuBase
 		SCR_UISoundEntity.SoundEvent(SCR_SoundEvent.SOUND_FE_HUD_PAUSE_MENU_CLOSE);
 		GetGame().GetInputManager().RemoveActionListener("ChatToggle", EActionTrigger.DOWN, Action_OnCOA_ChatToggleAction);
 		
+		CleanupGearFixPanel();
+
 		if (m_wMenuContent)
 			delete m_wMenuContent;
 
 		CloseConfirmAction();
+		CloseEndMissionDialog();
 		CloseContextMenu();
 
 		if (m_ChatPanel)
@@ -343,13 +398,31 @@ class COA_AdminMenu : ChimeraMenuBase
 		ClearMenu();
 		InitializeGamemodeMenu();
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Activates the Weather & Time menu
+	void EnvironmentButton()
+	{
+		UpdateMenuButtonColors(m_EnvironmentMenuButton);
+		ClearMenu();
+		InitializeEnvironmentMenu();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Activates the Gear Fix menu
+	void GearFixButton()
+	{
+		UpdateMenuButtonColors(m_GearFixMenuButton);
+		ClearMenu();
+		InitializeGearFixMenu();
+	}
 	
 	//------------------------------------------------------------------------------------------------
 	//! Updates menu button colors to highlight the active menu
 	//! \param[in]  activeButton The button widget of the active menu button
 	protected void UpdateMenuButtonColors(SCR_ButtonTextComponent activeButton)
 	{
-		array<SCR_ButtonTextComponent> navButtons = {m_ticketMenuButton, m_respawnMenuButton, m_teleportMenuButton, m_healMenuButton, m_resetGearMenuButton, m_hintMenuButton, m_GamemodeMenuButton};
+		array<SCR_ButtonTextComponent> navButtons = {m_ticketMenuButton, m_respawnMenuButton, m_teleportMenuButton, m_healMenuButton, m_resetGearMenuButton, m_hintMenuButton, m_GamemodeMenuButton, m_EnvironmentMenuButton, m_GearFixMenuButton};
 		foreach (SCR_ButtonTextComponent navButton : navButtons)
 		{
 			if (navButton)
@@ -408,6 +481,7 @@ class COA_AdminMenu : ChimeraMenuBase
 	void ClearMenu()
 	{
 		CloseContextMenu();
+		CleanupGearFixPanel();
 
 		// Remove menu widget
 		if (m_wMenuContent)
@@ -421,6 +495,11 @@ class COA_AdminMenu : ChimeraMenuBase
 		m_factions.Clear();
 		m_selectableFactions.Clear();
 		m_bGameModeMenuOpen = false;
+		m_bHintMenuOpen = false;
+		m_bEnvironmentMenuOpen = false;
+		m_aWeatherStateNames.Clear();
+		m_aAnnouncementTemplates.Clear();
+		CloseEndMissionDialog();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -795,6 +874,12 @@ class COA_AdminMenu : ChimeraMenuBase
 		{
 			if (m_bGameModeMenuOpen)
 				GamemodeMenuUpdate();
+			if (m_bHintMenuOpen)
+				UpdateCountdownStatus();
+			if (m_bEnvironmentMenuOpen)
+				EnvironmentMenuUpdate();
+			if (m_GearFixPanel)
+				m_GearFixPanel.Update();
 			m_fUpdateBuffer = 0;
 		}
 		m_fUpdateBuffer += tDelta;
@@ -1957,6 +2042,12 @@ class COA_AdminMenu : ChimeraMenuBase
 		
 		// Populate faction list
 		PopulateFactionList(factionList);
+
+		// One-click templates and the HUD countdown (optional parts of the layout)
+		InitializeAnnouncementTemplates();
+		InitializeCountdownControls();
+		m_bHintMenuOpen = true;
+		UpdateCountdownStatus();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2024,7 +2115,194 @@ class COA_AdminMenu : ChimeraMenuBase
 			
 		COA_PlayerRplToAuthorityManager.GetInstance().SendHint(data, playerId);
 	}
-	
+
+	//-----------------------------------------------------------------------------
+	// Hint Menu: Announcement Templates & Countdown
+	//-----------------------------------------------------------------------------
+
+	protected ref array<string> m_aAnnouncementTemplates = {};
+	protected string m_sCountdownMessage;		// feedback shown in place of the countdown status for a moment
+	protected float m_fCountdownMessageUntil;	// world time (ms)
+
+	//------------------------------------------------------------------------------------------------
+	//! Fill the TEMPLATES list (COA_AdminAnnouncementTemplates); clicking one fills the message box,
+	//! which the usual Send to player / faction / everyone buttons then send
+	protected void InitializeAnnouncementTemplates()
+	{
+		SCR_ListBoxComponent templateList = FindListBox("TemplateListBox0");
+		if (!templateList)
+			return;
+
+		COA_AdminAnnouncementTemplates.GetTemplates(m_aAnnouncementTemplates);
+		foreach (string announcement : m_aAnnouncementTemplates)
+		{
+			templateList.AddItem(announcement);
+		}
+
+		templateList.m_OnChanged.Insert(ApplySelectedTemplate);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ApplySelectedTemplate()
+	{
+		SCR_ListBoxComponent templateList = FindListBox("TemplateListBox0");
+		MultilineEditBoxWidget hintBox = GetMultilineEditBox("HintBox0");
+		if (!templateList || !hintBox)
+			return;
+
+		int index = templateList.GetSelectedItem();
+		if (!m_aAnnouncementTemplates.IsIndexValid(index))
+			return;
+
+		hintBox.SetText(m_aAnnouncementTemplates[index]);
+		m_clientComponent.m_sHintText = m_aAnnouncementTemplates[index];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void InitializeCountdownControls()
+	{
+		SCR_ButtonTextComponent startAllButton = GetMenuButton("CountdownAllButton");
+		if (startAllButton)
+			startAllButton.m_OnClicked.Insert(StartCountdownAll);
+
+		SCR_ButtonTextComponent startFactionButton = GetMenuButton("CountdownFactionButton");
+		if (startFactionButton)
+			startFactionButton.m_OnClicked.Insert(StartCountdownFaction);
+
+		SCR_ButtonTextComponent cancelButton = GetMenuButton("CountdownCancelButton");
+		if (cancelButton)
+			cancelButton.m_OnClicked.Insert(CancelAdminCountdown);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Read the countdown label and duration fields
+	//! \return false (with feedback shown) if the duration isn't usable
+	protected bool ReadCountdownInput(out string label, out int seconds)
+	{
+		EditBoxWidget labelBox = GetEditBox("CountdownLabelBox");
+		EditBoxWidget minutesBox = GetEditBox("CountdownMinutesBox");
+		EditBoxWidget secondsBox = GetEditBox("CountdownSecondsBox");
+		if (!labelBox || !minutesBox || !secondsBox)
+			return false;
+
+		string labelText = labelBox.GetText();
+		string minutesText = minutesBox.GetText();
+		string secondsText = secondsBox.GetText();
+
+		label = labelText.Trim();
+		int minutes = minutesText.Trim().ToInt();
+		int extraSeconds = secondsText.Trim().ToInt();
+		seconds = minutes * 60 + extraSeconds;
+
+		if (minutes < 0 || extraSeconds < 0 || seconds <= 0)
+		{
+			ShowCountdownMessage("Enter a duration in minutes and/or seconds.");
+			return false;
+		}
+
+		if (seconds > COA_AdminMenuManager.COUNTDOWN_MAX_SECONDS)
+		{
+			ShowCountdownMessage("A countdown can run for 2 hours at most.");
+			return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void StartCountdownAll()
+	{
+		string label;
+		int seconds;
+		if (!ReadCountdownInput(label, seconds))
+			return;
+
+		COA_PlayerRplToAuthorityManager.GetInstance().StartAdminCountdown(label, seconds, string.Empty);
+		ShowCountdownMessage("Countdown started for everyone.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! For the faction selected in the FACTIONS list
+	void StartCountdownFaction()
+	{
+		SCR_ListBoxComponent factionList = FindListBox("FactionListBox0");
+		int factionIndex = -1;
+		if (factionList)
+			factionIndex = factionList.GetSelectedItem();
+
+		if (!m_selectableFactions.IsIndexValid(factionIndex))
+		{
+			ShowCountdownMessage("Select a faction in the Factions list first.");
+			return;
+		}
+
+		string label;
+		int seconds;
+		if (!ReadCountdownInput(label, seconds))
+			return;
+
+		string factionKey = m_selectableFactions[factionIndex];
+		COA_PlayerRplToAuthorityManager.GetInstance().StartAdminCountdown(label, seconds, factionKey);
+		ShowCountdownMessage(string.Format("Countdown started for %1.", factionKey));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void CancelAdminCountdown()
+	{
+		if (!m_AdminMenuManager || !m_AdminMenuManager.IsCountdownActive())
+		{
+			ShowCountdownMessage("No countdown is running.");
+			return;
+		}
+
+		COA_PlayerRplToAuthorityManager.GetInstance().CancelAdminCountdown();
+		ShowCountdownMessage("Countdown cancelled.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ShowCountdownMessage(string message)
+	{
+		m_sCountdownMessage = message;
+		m_fCountdownMessageUntil = GetGame().GetWorld().GetWorldTime() + 4000;
+		UpdateCountdownStatus();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Status line under the countdown buttons - refreshed every second while the Hints tab is open
+	protected void UpdateCountdownStatus()
+	{
+		TextWidget statusText = FindText("CountdownStatusText");
+		if (!statusText)
+			return;
+
+		if (!m_sCountdownMessage.IsEmpty() && GetGame().GetWorld().GetWorldTime() < m_fCountdownMessageUntil)
+		{
+			statusText.SetText(m_sCountdownMessage);
+			return;
+		}
+
+		m_sCountdownMessage = string.Empty;
+
+		if (!m_AdminMenuManager || !m_AdminMenuManager.IsCountdownActive())
+		{
+			statusText.SetText("No countdown running.");
+			return;
+		}
+
+		float remainingMs = m_AdminMenuManager.GetCountdownRemainingMs();
+		if (remainingMs <= 0)
+		{
+			statusText.SetText(string.Format("\"%1\" has finished.", m_AdminMenuManager.GetCountdownLabel()));
+			return;
+		}
+
+		string target = "everyone";
+		if (!m_AdminMenuManager.GetCountdownFaction().IsEmpty())
+			target = m_AdminMenuManager.GetCountdownFaction();
+
+		statusText.SetText(string.Format("Running for %1: \"%2\", %3 left.", target, m_AdminMenuManager.GetCountdownLabel(), COA_AdminCountdownDisplay.FormatRemaining(remainingMs)));
+	}
+
 	//-----------------------------------------------------------------------------
 	// Heal Menu Methods
 	//-----------------------------------------------------------------------------
@@ -2145,7 +2423,12 @@ class COA_AdminMenu : ChimeraMenuBase
 		
 		// Setup invokers
 		resetGearButton.m_OnClicked.Insert(ConfirmAction);
-		aarGearButton.m_OnClicked.Insert(EnterAAR);
+		aarGearButton.m_OnClicked.Insert(ConfirmEnterAAR);
+
+		// End with result: a winner or a draw plus a result line (EndMissionDialog.layout)
+		SCR_ButtonTextComponent endMissionButton = GetMenuButton("EndMissionButton");
+		if (endMissionButton)
+			endMissionButton.m_OnClicked.Insert(OpenEndMissionDialog);
 		
 		//	!!!!! Changing the time delta is done below and in the menu layout !!!!!
 		
@@ -2385,6 +2668,228 @@ class COA_AdminMenu : ChimeraMenuBase
 		COA_PlayerRplToAuthorityManager.GetInstance().RequestAdvanceGamemodeState(true);
 		CloseConfirmAction();
 	}
+
+	//-----------------------------------------------------------------------------
+	// End Mission With Result (Game Mode tab)
+	//-----------------------------------------------------------------------------
+
+	protected static const ResourceName CONFIRMATION_LAYOUT = "{905BF1B70A9A44AC}UI/layouts/Menus/PauseMenu/AdminMenuWidgets/ConfirmationMenu.layout";
+	protected static const ResourceName END_MISSION_DIALOG_LAYOUT = "{3CBAACA6BFBB04F8}UI/layouts/Menus/PauseMenu/AdminMenuWidgets/EndMissionDialog.layout";
+
+	protected Widget m_wEndMissionDialog;
+	protected ref array<string> m_aEndMissionOutcomes = {};	// outcome key per row of OutcomeListBox0
+	protected string m_sPendingEndOutcome;
+	protected string m_sPendingEndNote;
+
+	//------------------------------------------------------------------------------------------------
+	//! The confirmation popup (ConfirmationMenu.layout) with a custom question
+	//! \return its Execute button for the caller to hook, or null
+	protected SCR_ButtonTextComponent OpenConfirmation(string message)
+	{
+		CloseConfirmAction();
+
+		m_wConfirmationMenu = GetGame().GetWorkspace().CreateWidgets(CONFIRMATION_LAYOUT);
+		if (!m_wConfirmationMenu)
+			return null;
+
+		COA_UIPolish.AttachHoverEffects(m_wConfirmationMenu); // hover feedback - sub-menus are separate workspace roots
+
+		TextWidget messageText = TextWidget.Cast(m_wConfirmationMenu.FindAnyWidget("ConfirmMessage"));
+		if (messageText != null && !message.IsEmpty())
+			messageText.SetText(message);
+
+		SCR_ButtonTextComponent cancelButton = GetMenuButton("CancelButton", m_wConfirmationMenu);
+		if (cancelButton)
+			cancelButton.m_OnClicked.Insert(CloseConfirmAction);
+
+		return GetMenuButton("ExcuteButton", m_wConfirmationMenu);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "Enter AAR, no result" - it ends the mission, so it asks first
+	void ConfirmEnterAAR()
+	{
+		SCR_ButtonTextComponent runButton = OpenConfirmation("End the mission without a result?");
+		if (runButton)
+			runButton.m_OnClicked.Insert(EnterAAR);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! End with result: pick the winning side (the mission's playable factions) or a draw, plus an
+	//! optional result line. Confirmed, then sent to the server (RequestEndMission).
+	void OpenEndMissionDialog()
+	{
+		CloseEndMissionDialog();
+
+		m_wEndMissionDialog = GetGame().GetWorkspace().CreateWidgets(END_MISSION_DIALOG_LAYOUT);
+		if (!m_wEndMissionDialog)
+			return;
+
+		COA_UIPolish.AttachHoverEffects(m_wEndMissionDialog); // hover feedback - sub-menus are separate workspace roots
+
+		SCR_ButtonTextComponent cancelButton = GetMenuButton("EndMissionCancelButton", m_wEndMissionDialog);
+		if (cancelButton)
+			cancelButton.m_OnClicked.Insert(CloseEndMissionDialog);
+
+		SCR_ButtonTextComponent submitButton = GetMenuButton("EndMissionSubmitButton", m_wEndMissionDialog);
+		if (submitButton)
+			submitButton.m_OnClicked.Insert(SubmitEndMission);
+
+		m_aEndMissionOutcomes.Clear();
+		SCR_ListBoxComponent outcomeList = FindListBox("OutcomeListBox0", m_wEndMissionDialog);
+		if (outcomeList)
+		{
+			array<string> factionKeys = {};
+			GetPlayableFactionKeys(factionKeys);
+
+			FactionManager factionManager = GetGame().GetFactionManager();
+			foreach (string factionKey : factionKeys)
+			{
+				Faction faction;
+				if (factionManager)
+					faction = factionManager.GetFactionByKey(factionKey);
+
+				string rowText = COA_MissionResultHelper.GetOutcomeText(factionKey);
+				if (faction)
+					outcomeList.AddItemWithColor(string.Format("%1  (%2)", rowText, faction.GetFactionName()), faction.GetFactionColor());
+				else
+					outcomeList.AddItem(rowText);
+
+				m_aEndMissionOutcomes.Insert(factionKey);
+			}
+
+			outcomeList.AddItem("DRAW  (no winner)");
+			m_aEndMissionOutcomes.Insert(COA_MissionResultHelper.DRAW);
+		}
+
+		// The server checks both as well - saying so here beats a button that silently does nothing
+		if (!SCR_Global.IsAdmin())
+			SetEndMissionStatus("Only admins can end the mission.");
+		else if (!IsMissionRunning())
+			SetEndMissionStatus("The mission isn't running, so there's nothing to end.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The mission's playable sides, in BLUFOR/OPFOR/INDFOR/CIV order: those with slots, or - if
+	//! there's no slot data - those the faction manager knows
+	protected void GetPlayableFactionKeys(notnull array<string> outKeys)
+	{
+		array<string> candidates = {"BLUFOR", "OPFOR", "INDFOR", "CIV"};
+		array<string> slottedKeys = {};
+
+		COA_SlottingManager slottingManager = COA_SlottingManager.GetInstance();
+		if (slottingManager != null && slottingManager.GetSlotMap() != null)
+		{
+			foreach (int slotId, COA_SlotData slotData : slottingManager.GetSlotMap())
+			{
+				if (!slotData)
+					continue;
+
+				string slotFactionKey = slotData.GetSlotFactionKey();
+				if (!slottedKeys.Contains(slotFactionKey))
+					slottedKeys.Insert(slotFactionKey);
+			}
+		}
+
+		FactionManager factionManager = GetGame().GetFactionManager();
+		foreach (string candidate : candidates)
+		{
+			if (!slottedKeys.IsEmpty())
+			{
+				if (slottedKeys.Contains(candidate))
+					outKeys.Insert(candidate);
+			}
+			else if (factionManager != null && factionManager.GetFactionByKey(candidate) != null)
+			{
+				outKeys.Insert(candidate);
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool IsMissionRunning()
+	{
+		COA_Gamemode gamemode = COA_Gamemode.GetInstance();
+		return gamemode != null && gamemode.m_GamemodeState == COA_EGamemodeState.GAME;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Dialog's End mission button: validate, then ask for confirmation
+	void SubmitEndMission()
+	{
+		if (!m_wEndMissionDialog)
+			return;
+
+		if (!SCR_Global.IsAdmin())
+		{
+			SetEndMissionStatus("Only admins can end the mission.");
+			return;
+		}
+
+		if (!IsMissionRunning())
+		{
+			SetEndMissionStatus("The mission isn't running, so there's nothing to end.");
+			return;
+		}
+
+		SCR_ListBoxComponent outcomeList = FindListBox("OutcomeListBox0", m_wEndMissionDialog);
+		int index = -1;
+		if (outcomeList)
+			index = outcomeList.GetSelectedItem();
+
+		if (!m_aEndMissionOutcomes.IsIndexValid(index))
+		{
+			SetEndMissionStatus("Pick the winner, or Draw, first.");
+			return;
+		}
+
+		m_sPendingEndOutcome = m_aEndMissionOutcomes[index];
+		m_sPendingEndNote = string.Empty;
+
+		EditBoxWidget noteBox = GetEditBox("ResultNoteBox", m_wEndMissionDialog);
+		if (noteBox)
+			m_sPendingEndNote = COA_MissionResultHelper.SanitizeNote(noteBox.GetText());
+
+		SetEndMissionStatus(string.Empty);
+
+		SCR_ButtonTextComponent runButton = OpenConfirmation(string.Format("End the mission: %1?", COA_MissionResultHelper.GetOutcomeText(m_sPendingEndOutcome)));
+		if (runButton)
+			runButton.m_OnClicked.Insert(ExecuteEndMission);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Confirmed: the server records the result, announces it and advances to the AAR
+	void ExecuteEndMission()
+	{
+		CloseConfirmAction();
+
+		if (m_sPendingEndOutcome.IsEmpty())
+			return;
+
+		COA_PlayerRplToAuthorityManager.GetInstance().RequestEndMission(m_sPendingEndOutcome, m_sPendingEndNote);
+
+		m_sPendingEndOutcome = string.Empty;
+		m_sPendingEndNote = string.Empty;
+		CloseEndMissionDialog();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void CloseEndMissionDialog()
+	{
+		if (m_wEndMissionDialog)
+			delete m_wEndMissionDialog;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SetEndMissionStatus(string text)
+	{
+		if (!m_wEndMissionDialog)
+			return;
+
+		TextWidget statusText = TextWidget.Cast(m_wEndMissionDialog.FindAnyWidget("EndMissionStatusText"));
+		if (statusText)
+			statusText.SetText(text);
+	}
 	
 	//------------------------------------------------------------------------------------------------
 	//! Updates the UI Elements
@@ -2468,6 +2973,265 @@ class COA_AdminMenu : ChimeraMenuBase
 		}
 	}
 	
+	//-----------------------------------------------------------------------------
+	// Gear Fix Menu
+	//-----------------------------------------------------------------------------
+
+	protected static const ResourceName GEAR_FIX_MENU_LAYOUT = "{A3D95E17C2B8460D}UI/layouts/Menus/PauseMenu/AdminMenuWidgets/GearFixMenu.layout";
+
+	//------------------------------------------------------------------------------------------------
+	//! Session-wide gear overrides and the gear check. All of it lives in COA_GearFixPanel.
+	void InitializeGearFixMenu()
+	{
+		// Load menu content widget
+		m_wMenuContent = GetGame().GetWorkspace().CreateWidgets(GEAR_FIX_MENU_LAYOUT);
+		if (!m_wMenuContent)
+			return;
+
+		COA_UIPolish.AttachHoverEffects(m_wMenuContent); // hover feedback - sub-menus are separate workspace roots
+
+		// Change title of the menu
+		UpdateMenuTitle("Gear Fix");
+
+		m_GearFixPanel = new COA_GearFixPanel();
+		m_GearFixPanel.Init(m_wMenuContent);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void CleanupGearFixPanel()
+	{
+		if (m_GearFixPanel)
+			m_GearFixPanel.Cleanup();
+
+		m_GearFixPanel = null;
+	}
+
+	//-----------------------------------------------------------------------------
+	// Weather & Time Menu
+	//-----------------------------------------------------------------------------
+
+	protected static const ResourceName ENVIRONMENT_MENU_LAYOUT = "{B997328C23673A96}UI/layouts/Menus/PauseMenu/AdminMenuWidgets/EnvironmentMenu.layout";
+
+	//! In-game hours the Blend button's weather change takes (15 in-game minutes)
+	protected static const float WEATHER_BLEND_HOURS = 0.25;
+
+	protected ref array<string> m_aWeatherStateNames = {};	// state name per row of WeatherListBox0
+
+	//------------------------------------------------------------------------------------------------
+	//! Initialize the Weather & Time menu: weather states read from the world's own weather state
+	//! machine (so a mod's WeatherStates.conf override shows its states, not vanilla's), and the time of day
+	void InitializeEnvironmentMenu()
+	{
+		// Load menu content widget
+		m_wMenuContent = GetGame().GetWorkspace().CreateWidgets(ENVIRONMENT_MENU_LAYOUT);
+		if (!m_wMenuContent)
+			return;
+
+		COA_UIPolish.AttachHoverEffects(m_wMenuContent); // hover feedback - sub-menus are separate workspace roots
+
+		// Change title of the menu
+		UpdateMenuTitle("Weather & Time");
+
+		PopulateWeatherList();
+
+		SCR_ButtonTextComponent instantButton = GetMenuButton("WeatherInstantButton");
+		if (instantButton)
+			instantButton.m_OnClicked.Insert(ApplyWeatherInstant);
+
+		SCR_ButtonTextComponent blendButton = GetMenuButton("WeatherBlendButton");
+		if (blendButton)
+			blendButton.m_OnClicked.Insert(ApplyWeatherBlend);
+
+		SCR_ButtonTextComponent setTimeButton = GetMenuButton("SetTimeButton");
+		if (setTimeButton)
+			setTimeButton.m_OnClicked.Insert(SetTimeOfDayFromInput);
+
+		// Quick presets - the time is in the button's name, "Preset_HHMM" (see EnvironmentMenu.layout)
+		array<string> presetNames = {"Preset_0530", "Preset_0800", "Preset_1200", "Preset_1830", "Preset_2300"};
+		foreach (string presetName : presetNames)
+		{
+			SCR_ButtonTextComponent presetButton = GetMenuButton(presetName);
+			if (presetButton)
+				presetButton.m_OnClicked.Insert(SetTimeOfDayPreset);
+		}
+
+		// Start the time fields at the current in-game time
+		TimeAndWeatherManagerEntity weatherManager = FindTimeAndWeatherManager();
+		EditBoxWidget hourInput = GetEditBox("HourInput");
+		EditBoxWidget minuteInput = GetEditBox("MinuteInput");
+		if (weatherManager != null && hourInput != null && minuteInput != null)
+		{
+			int hours;
+			int minutes;
+			SplitTimeOfDay(weatherManager.GetTimeOfTheDay(), hours, minutes);
+			hourInput.SetText(hours.ToString(2));
+			minuteInput.SetText(minutes.ToString(2));
+		}
+
+		m_bEnvironmentMenuOpen = true;
+		EnvironmentMenuUpdate();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static TimeAndWeatherManagerEntity FindTimeAndWeatherManager()
+	{
+		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
+		if (!world)
+			return null;
+
+		return world.GetTimeAndWeatherManager();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param[in] timeOfDay24 Hours <0, 24) as from GetTimeOfTheDay
+	protected static void SplitTimeOfDay(float timeOfDay24, out int hours, out int minutes)
+	{
+		int totalMinutes = Math.Floor(timeOfDay24 * 60);
+		hours = (totalMinutes / 60) % 24;
+		minutes = totalMinutes % 60;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every state in the world's weather state machine, current one selected
+	protected void PopulateWeatherList()
+	{
+		SCR_ListBoxComponent weatherList = FindListBox("WeatherListBox0");
+		TimeAndWeatherManagerEntity weatherManager = FindTimeAndWeatherManager();
+		if (!weatherList || !weatherManager)
+			return;
+
+		weatherList.Clear();
+		m_aWeatherStateNames.Clear();
+
+		array<ref WeatherState> weatherStates = {};
+		weatherManager.GetWeatherStatesList(weatherStates);
+
+		foreach (WeatherState weatherState : weatherStates)
+		{
+			if (!weatherState)
+				continue;
+
+			string stateName = weatherState.GetStateName();
+			if (stateName.IsEmpty())
+				continue;
+
+			m_aWeatherStateNames.Insert(stateName);
+			weatherList.AddItem(stateName);
+		}
+
+		WeatherState currentState = weatherManager.GetCurrentWeatherState();
+		if (!currentState)
+			return;
+
+		int currentIndex = m_aWeatherStateNames.Find(currentState.GetStateName());
+		if (currentIndex >= 0)
+			weatherList.SetItemSelected(currentIndex, true, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void ApplyWeatherInstant()
+	{
+		ApplySelectedWeather(0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void ApplyWeatherBlend()
+	{
+		ApplySelectedWeather(WEATHER_BLEND_HOURS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param[in] transitionHours 0 = instant
+	protected void ApplySelectedWeather(float transitionHours)
+	{
+		SCR_ListBoxComponent weatherList = FindListBox("WeatherListBox0");
+		if (!weatherList)
+			return;
+
+		int index = weatherList.GetSelectedItem();
+		if (!m_aWeatherStateNames.IsIndexValid(index))
+		{
+			SetEnvironmentStatus("Select a weather state first.");
+			return;
+		}
+
+		COA_PlayerRplToAuthorityManager.GetInstance().RequestSetWeather(m_aWeatherStateNames[index], transitionHours);
+		SetEnvironmentStatus(string.Empty);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetTimeOfDayFromInput()
+	{
+		EditBoxWidget hourInput = GetEditBox("HourInput");
+		EditBoxWidget minuteInput = GetEditBox("MinuteInput");
+		if (!hourInput || !minuteInput)
+			return;
+
+		string hourText = hourInput.GetText();
+		string minuteText = minuteInput.GetText();
+		hourText = hourText.Trim();
+		minuteText = minuteText.Trim();
+
+		int hours = hourText.ToInt();
+		int minutes = minuteText.ToInt();
+		if (hourText.IsEmpty() || hours < 0 || hours > 23 || minutes < 0 || minutes > 59)
+		{
+			SetEnvironmentStatus("Enter a time from 00:00 to 23:59.");
+			return;
+		}
+
+		COA_PlayerRplToAuthorityManager.GetInstance().RequestSetTimeOfDay(hours, minutes);
+		SetEnvironmentStatus(string.Empty);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Preset buttons are named "Preset_HHMM"
+	void SetTimeOfDayPreset(SCR_ButtonBaseComponent button)
+	{
+		if (!button || !button.GetRootWidget())
+			return;
+
+		array<string> nameParts = {};
+		button.GetRootWidget().GetName().Split("_", nameParts, true);
+		if (nameParts.Count() < 2)
+			return;
+
+		int hhmm = nameParts[1].ToInt();
+		COA_PlayerRplToAuthorityManager.GetInstance().RequestSetTimeOfDay(hhmm / 100, hhmm % 100);
+		SetEnvironmentStatus(string.Empty);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SetEnvironmentStatus(string text)
+	{
+		TextWidget statusText = FindText("TimeStatusText");
+		if (statusText)
+			statusText.SetText(text);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Current weather and in-game time - every second while the tab is open
+	void EnvironmentMenuUpdate()
+	{
+		TimeAndWeatherManagerEntity weatherManager = FindTimeAndWeatherManager();
+		if (!weatherManager)
+			return;
+
+		TextWidget weatherText = FindText("CurrentWeatherText");
+		WeatherState currentState = weatherManager.GetCurrentWeatherState();
+		if (weatherText != null && currentState != null)
+			weatherText.SetText(currentState.GetStateName());
+
+		TextWidget timeText = FindText("CurrentTimeText");
+		if (timeText)
+		{
+			int hours;
+			int minutes;
+			SplitTimeOfDay(weatherManager.GetTimeOfTheDay(), hours, minutes);
+			timeText.SetText(string.Format("%1:%2", hours.ToString(2), minutes.ToString(2)));
+		}
+	}
+
 	//-----------------------------------------------------------------------------
 	// Chat Methods
 	//-----------------------------------------------------------------------------

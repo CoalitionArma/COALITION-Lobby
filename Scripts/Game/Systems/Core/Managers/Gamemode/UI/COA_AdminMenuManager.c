@@ -273,6 +273,182 @@ class COA_AdminMenuManager : ScriptComponent
 	{		
 		return m_mTickets.Contains(ticketID);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	// ADMIN COUNTDOWN (admin menu > Hints > Countdown)
+	// Replicated once per start/cancel: the label, who it's for and the server time it ends. Each
+	// client counts down locally against the replicated server clock (ChimeraWorld.GetServerTimestamp),
+	// so nothing is sent per second. Shown by COA_AdminCountdownDisplay.
+	//------------------------------------------------------------------------------------------------
+
+	static const int COUNTDOWN_MAX_SECONDS = 7200;
+	static const int COUNTDOWN_MAX_LABEL_LENGTH = 32;
+	// After it ends: clients show TIME for 5 s (COA_AdminCountdownDisplay), then the server clears it
+	protected static const int COUNTDOWN_EXPIRE_DELAY_MS = 6000;
+
+	// Bumped on every start/cancel so clients notice a restart with the same label
+	[RplProp(onRplName: "OnCountdownReplicated")]
+	protected int m_iCountdownSerial;
+
+	[RplProp()]
+	protected bool m_bCountdownActive;
+
+	[RplProp()]
+	protected string m_sCountdownLabel;
+
+	// Empty = everyone, else the faction key it's shown to
+	[RplProp()]
+	protected string m_sCountdownFaction;
+
+	[RplProp()]
+	protected WorldTimestamp m_CountdownEnd;
+
+	//------------------------------------------------------------------------------------------------
+	override void OnPostInit(IEntity owner)
+	{
+		super.OnPostInit(owner);
+
+		// Clients: a countdown already running when they join arrives with the initial snapshot;
+		// a slow check picks it up whether or not the replication callback fired for it
+		if (GetGame().InPlayMode() && !System.IsConsoleApp())
+			GetGame().GetCallqueue().CallLater(CheckCountdownDisplay, 1000, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnDelete(IEntity owner)
+	{
+		GetGame().GetCallqueue().Remove(CheckCountdownDisplay);
+		GetGame().GetCallqueue().Remove(ExpireCountdown);
+		super.OnDelete(owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: start (or restart) the countdown
+	//! \param[in] label Shown on the HUD, e.g. "Mission ending"
+	//! \param[in] seconds Duration, clamped to 1..COUNTDOWN_MAX_SECONDS
+	//! \param[in] factionKey Empty for everyone, else only that faction sees it
+	void StartCountdown(string label, int seconds, string factionKey)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
+		if (!world)
+			return;
+
+		seconds = Math.ClampInt(seconds, 1, COUNTDOWN_MAX_SECONDS);
+
+		m_sCountdownLabel = SanitizeCountdownLabel(label);
+		m_sCountdownFaction = factionKey;
+		m_CountdownEnd = world.GetServerTimestamp().PlusSeconds(seconds);
+		m_bCountdownActive = true;
+		m_iCountdownSerial++;
+		Replication.BumpMe();
+
+		// Clear it once every client has shown TIME, so late joiners and the admin menu see it as over
+		GetGame().GetCallqueue().Remove(ExpireCountdown);
+		GetGame().GetCallqueue().CallLater(ExpireCountdown, seconds * 1000 + COUNTDOWN_EXPIRE_DELAY_MS, false);
+
+		// The authority doesn't get its own RplProp callback (listen server / Workbench host)
+		OnCountdownReplicated();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the countdown ran out a little while ago
+	protected void ExpireCountdown()
+	{
+		if (!m_bCountdownActive)
+			return;
+
+		m_bCountdownActive = false;
+		Replication.BumpMe();
+		OnCountdownReplicated();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: stop the countdown early
+	//! \return false if none was running
+	bool CancelCountdown()
+	{
+		if (!Replication.IsServer() || !m_bCountdownActive)
+			return false;
+
+		GetGame().GetCallqueue().Remove(ExpireCountdown);
+
+		m_bCountdownActive = false;
+		m_iCountdownSerial++;
+		Replication.BumpMe();
+
+		OnCountdownReplicated();
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One line, capped, never empty
+	static string SanitizeCountdownLabel(string label)
+	{
+		label.Replace("\r", " ");
+		label.Replace("\n", " ");
+		label = label.Trim();
+
+		if (label.Length() > COUNTDOWN_MAX_LABEL_LENGTH)
+			label = label.Substring(0, COUNTDOWN_MAX_LABEL_LENGTH).Trim();
+
+		if (label.IsEmpty())
+			label = "Countdown";
+
+		return label;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnCountdownReplicated()
+	{
+		COA_AdminCountdownDisplay.Refresh();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void CheckCountdownDisplay()
+	{
+		if (m_bCountdownActive && !COA_AdminCountdownDisplay.IsRunning())
+			COA_AdminCountdownDisplay.Refresh();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return true while a countdown is started and not cancelled (it may already have run out - see GetCountdownRemainingMs)
+	bool IsCountdownActive()
+	{
+		return m_bCountdownActive;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetCountdownSerial()
+	{
+		return m_iCountdownSerial;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetCountdownLabel()
+	{
+		return m_sCountdownLabel;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return empty for everyone, else the faction key
+	string GetCountdownFaction()
+	{
+		return m_sCountdownFaction;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return milliseconds until the countdown ends on the server clock (negative once it has run out)
+	float GetCountdownRemainingMs()
+	{
+		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
+		if (!world)
+			return 0;
+
+		return m_CountdownEnd.DiffMilliseconds(world.GetServerTimestamp());
+	}
 	
 	//------------------------------------------------------------------------------------------------
 	protected static COA_AdminMenuManager m_sInstance;

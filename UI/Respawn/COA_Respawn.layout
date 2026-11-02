@@ -565,12 +565,12 @@ FrameWidgetClass {
     ButtonWidgetClass "{6504D1E976B0AD08}" {
      Name "ActionButton"
      Slot FrameWidgetSlot "{62992E477A603216}" {
-      PositionX 107.795
-      OffsetLeft 107.795
+      PositionX 45
+      OffsetLeft 45
       PositionY 199.245
       OffsetTop 199.245
       SizeX 100.001
-      OffsetRight -207.796
+      OffsetRight -145.001
       SizeY 30
       OffsetBottom -229.245
      }
@@ -587,6 +587,35 @@ FrameWidgetClass {
        Slot ButtonWidgetSlot "{62992E44F11398F5}" {
        }
        Text "Select Spawn"
+       "Font Size" 15
+       "Min Font Size" 15
+      }
+     }
+    }
+    ButtonWidgetClass "{5684F559224F3221}" {
+     Name "SpectateButton"
+     Slot FrameWidgetSlot "{FBD2EB1D881D9E2F}" {
+      PositionX 160
+      OffsetLeft 160
+      PositionY 199.245
+      OffsetTop 199.245
+      SizeX 100.001
+      OffsetRight -260.001
+      SizeY 30
+      OffsetBottom -229.245
+     }
+     Color 0.042 0.042 0.042 1
+     components {
+      SCR_ButtonTextComponent "{04103C0D7FB30BAC}" {
+       m_sTextWidgetName ""
+      }
+     }
+     {
+      TextWidgetClass "{CB0A2FC0EA2EA7F7}" {
+       Name "SpectateButtonText"
+       Slot ButtonWidgetSlot "{3A56DCB668EEC9CF}" {
+       }
+       Text "Spectate"
        "Font Size" 15
        "Min Font Size" 15
       }

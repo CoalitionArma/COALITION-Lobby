@@ -7,6 +7,9 @@ class COA_LoggingHelper
 	//! \param[in] itemType type of item to display (default is "ITEM")
 	static void LogItemError(IEntity item, IEntity entity, string itemType = "ITEM")
 	{
+		if (item != null && item.GetPrefabData() != null)
+			COA_GearFixManager.RecordSpawnFailure(entity, item.GetPrefabData().GetPrefabName(), itemType);
+
 		FactionAffiliationComponent facComp = FactionAffiliationComponent.Cast(entity.FindComponent(FactionAffiliationComponent));
 		
 		if (facComp)
@@ -24,7 +27,9 @@ class COA_LoggingHelper
 	//! \param[in] entity Entity that the item was being added to
 	//! \param[in] itemType type of item to display (default is "ITEM")
 	static void LogItemError(ResourceName itemResource, IEntity entity, string itemType = "ITEM")
-	{	
+	{
+		COA_GearFixManager.RecordSpawnFailure(entity, itemResource, itemType);
+	
 		FactionAffiliationComponent facComp = FactionAffiliationComponent.Cast(entity.FindComponent(FactionAffiliationComponent));
 		
 		if (facComp)
@@ -41,7 +46,9 @@ class COA_LoggingHelper
 	//! \param[in] entity Entity that is considered overweight
 	//! \param[in] kg The actual weight of the entity
 	static void LogWeightError(IEntity entity, int kg)
-	{	
+	{
+		COA_GearFixManager.RecordOverweight(entity, kg);
+	
 		FactionAffiliationComponent facComp = FactionAffiliationComponent.Cast(entity.FindComponent(FactionAffiliationComponent));
 		
 		if (facComp)

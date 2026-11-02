@@ -1,0 +1,411 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ {
+  ImageWidgetClass "{B5D5CA0F634E6508}" {
+   Name "Dim"
+   Slot FrameWidgetSlot "{A4D276282E405470}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+   }
+   Color 0.0033 0.0037 0.0052 0.6
+  }
+  SmartPanelWidgetClass "{0369F7986C706F51}" {
+   Name "DialogBG"
+   Slot FrameWidgetSlot "{5697F177F891E4C1}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -280
+    OffsetLeft -280
+    PositionY -260
+    OffsetTop -260
+    SizeX 560
+    OffsetRight -280
+    SizeY 512
+    OffsetBottom -252
+   }
+   "Z Order" 1
+   Color 0.0075 0.0086 0.0123 1
+   style rounded_12px
+  }
+  SmartPanelWidgetClass "{9E9D76EAFF49A557}" {
+   Name "DialogOutline"
+   Slot FrameWidgetSlot "{2ED4417CBD68DF33}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -280
+    OffsetLeft -280
+    PositionY -260
+    OffsetTop -260
+    SizeX 560
+    OffsetRight -280
+    SizeY 512
+    OffsetBottom -252
+   }
+   "Z Order" 2
+   Color 1 1 1 0.06
+   style outline_rounded_12px
+  }
+  ImageWidgetClass "{2CDA818004510E4B}" {
+   Name "DialogAccent"
+   Slot FrameWidgetSlot "{0405748421512E26}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -264
+    OffsetLeft -264
+    PositionY -244
+    OffsetTop -244
+    SizeX 28
+    OffsetRight 236
+    SizeY 3
+    OffsetBottom 241
+   }
+   "Z Order" 2
+   Color 0.5841 0.0369 0.0369 1
+  }
+  TextWidgetClass "{9C0826A078EE5B74}" {
+   Name "DialogTitle"
+   Slot FrameWidgetSlot "{64F227DFE667E863}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -264
+    OffsetLeft -264
+    PositionY -234
+    OffsetTop -234
+    SizeX 528
+    OffsetRight -264
+    SizeY 28
+    OffsetBottom 206
+   }
+   "Z Order" 2
+   Color 0.8632 0.8879 0.9301 1
+   Text "END MISSION"
+   "Font Size" 22
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{5BFDEE5BE67282C2}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  TextWidgetClass "{FDFA17217EE5AEAB}" {
+   Name "DialogHint"
+   Slot FrameWidgetSlot "{1311BAD9B13515DA}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -264
+    OffsetLeft -264
+    PositionY -202
+    OffsetTop -202
+    SizeX 528
+    OffsetRight -264
+    SizeY 40
+    OffsetBottom 162
+   }
+   "Z Order" 2
+   Color 0.3968 0.4564 0.6038 1
+   Text "Pick the result. It's announced to everyone, shown in the outro and the AAR, and recorded for the website and stats."
+   "Font Size" 14
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Top
+   Wrap 1
+   FontProperties FontProperties "{881E842AE6BA0124}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{9AA0AB1189D85FC2}" {
+   Name "OutcomeCaption"
+   Slot FrameWidgetSlot "{F460738E37BA53C5}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -264
+    OffsetLeft -264
+    PositionY -152
+    OffsetTop -152
+    SizeX 528
+    OffsetRight -264
+    SizeY 18
+    OffsetBottom 134
+   }
+   "Z Order" 2
+   Color 0.3968 0.4564 0.6038 1
+   Text "RESULT"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{B982DE27DD031F3E}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{3734871161A365E7}" {
+   Name "OutcomeListBox0BG"
+   Slot FrameWidgetSlot "{690EB12DEC3F24BE}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -264
+    OffsetLeft -264
+    PositionY -130
+    OffsetTop -130
+    SizeX 528
+    OffsetRight -264
+    SizeY 204
+    OffsetBottom -74
+   }
+   "Z Order" 2
+   Color 0.0033 0.0037 0.0052 1
+   style rounded_6px
+  }
+  TextWidgetClass "{CECF5ACA2DFD8F01}" {
+   Name "OutcomeListBox0Empty"
+   Slot FrameWidgetSlot "{D490CB3AC7BB72C6}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -264
+    OffsetLeft -264
+    PositionY -118
+    OffsetTop -118
+    SizeX 528
+    OffsetRight -264
+    SizeY 20
+    OffsetBottom 98
+   }
+   "Z Order" 2
+   Color 0.3968 0.4564 0.6038 1
+   Text "No factions"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{4B2901A9AF4A5D1A}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  OverlayWidgetClass "{F7CD2F487462E13E}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
+   Name "OutcomeListBox0"
+   Slot FrameWidgetSlot "{C41FCEBC082F3038}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -260
+    OffsetLeft -260
+    PositionY -126
+    OffsetTop -126
+    SizeX 520
+    OffsetRight -260
+    SizeY 196
+    OffsetBottom -70
+   }
+   "Z Order" 2
+   components {
+    SCR_ListBoxComponent "{379E7617173E5626}" {
+     m_sElementLayout "{6A6A0D0000000001}UI/Listbox/COA_AdminListRow.layout"
+    }
+   }
+   {
+    ScrollLayoutWidgetClass "{56691148E692435A}" {
+     Prefab "{56691148E692435A}"
+     {
+      VerticalLayoutWidgetClass "{56691148E013D981}" {
+       Prefab "{56691148E013D981}"
+      }
+     }
+    }
+    ImageWidgetClass "{5DB6D18100D38307}" {
+     Prefab "{5DB6D18100D38307}"
+     "Is Visible" 0
+    }
+   }
+  }
+  TextWidgetClass "{6804BE5CBB98FCA0}" {
+   Name "ResultNoteCaption"
+   Slot FrameWidgetSlot "{22AF920654D8FA46}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -264
+    OffsetLeft -264
+    PositionY 88
+    OffsetTop 88
+    SizeX 528
+    OffsetRight -264
+    SizeY 18
+    OffsetBottom -106
+   }
+   "Z Order" 2
+   Color 0.3968 0.4564 0.6038 1
+   Text "RESULT LINE (OPTIONAL)"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{AA146158330696C8}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{6FD3E680B00BF51B}" {
+   Name "ResultNoteBoxBG"
+   Slot FrameWidgetSlot "{C4D40EF1E7B129C0}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -264
+    OffsetLeft -264
+    PositionY 110
+    OffsetTop 110
+    SizeX 528
+    OffsetRight -264
+    SizeY 40
+    OffsetBottom -150
+   }
+   "Z Order" 2
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  EditBoxWidgetClass "{85B1924F6141114F}" {
+   Name "ResultNoteBox"
+   Slot FrameWidgetSlot "{F1B13C2A3D3A548A}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -254
+    OffsetLeft -254
+    PositionY 110
+    OffsetTop 110
+    SizeX 508
+    OffsetRight -254
+    SizeY 40
+    OffsetBottom -150
+   }
+   "Z Order" 2
+   "Font Size" 17
+   "Use placeholder text" 1
+   "Placeholder text" "e.g. Survivors extracted"
+   Color 0.8632 0.8879 0.9301 1
+   FontProperties FontProperties "{5C92A97F0CED5DB6}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{044150B9F1BE824C}" {
+   Name "EndMissionStatusText"
+   Slot FrameWidgetSlot "{381D8D1CDC0A0D6B}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -264
+    OffsetLeft -264
+    PositionY 158
+    OffsetTop 158
+    SizeX 528
+    OffsetRight -264
+    SizeY 22
+    OffsetBottom -180
+   }
+   "Z Order" 2
+   Color 0.8070 0.1170 0.1170 1
+   Text ""
+   "Font Size" 14
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{AFA1B5AA4038FC93}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{99DCEAF86C6C1781}" {
+   Name "EndMissionCancelButtonBG"
+   Slot FrameWidgetSlot "{49A4EACC085307AF}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -264
+    OffsetLeft -264
+    PositionY 196
+    OffsetTop 196
+    SizeX 160
+    OffsetRight 104
+    SizeY 40
+    OffsetBottom -236
+   }
+   "Z Order" 3
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  ButtonWidgetClass "{370DE444DF23AB32}" {
+   Name "EndMissionCancelButton"
+   Slot FrameWidgetSlot "{598DBF21A90004CB}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -264
+    OffsetLeft -264
+    PositionY 196
+    OffsetTop 196
+    SizeX 160
+    OffsetRight 104
+    SizeY 40
+    OffsetBottom -236
+   }
+   Color 1 1 1 0
+   "Z Order" 4
+   components {
+    SCR_ButtonTextComponent "{A4B7A1E8D805821F}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{F9A46CAEFCC44484}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{64351461B345DCE7}" {
+     }
+     Text "CANCEL"
+     "Font Size" 15
+     "Min Font Size" 11
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{F0D5859C3C3548D1}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+  SmartPanelWidgetClass "{DC4FDFD279FFE4EC}" {
+   Name "EndMissionSubmitButtonBG"
+   Slot FrameWidgetSlot "{60F8E244AF924AB6}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 24
+    OffsetLeft 24
+    PositionY 196
+    OffsetTop 196
+    SizeX 240
+    OffsetRight -264
+    SizeY 40
+    OffsetBottom -236
+   }
+   "Z Order" 3
+   Color 0.5841 0.0369 0.0369 1
+   style rounded_4px
+  }
+  ButtonWidgetClass "{555BC06D292EA199}" {
+   Name "EndMissionSubmitButton"
+   Slot FrameWidgetSlot "{67E312643872421D}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 24
+    OffsetLeft 24
+    PositionY 196
+    OffsetTop 196
+    SizeX 240
+    OffsetRight -264
+    SizeY 40
+    OffsetBottom -236
+   }
+   Color 1 1 1 0
+   "Z Order" 4
+   components {
+    SCR_ButtonTextComponent "{8C9B2C5B00B058C0}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{71EE9E741D84E356}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{0952279B20DCE0CC}" {
+     }
+     Text "END MISSION"
+     "Font Size" 15
+     "Min Font Size" 11
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{3E73EF0CC69367EC}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+ }
+}

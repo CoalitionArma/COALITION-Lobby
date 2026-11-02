@@ -11,6 +11,18 @@ class COA_KilledByCard
 
 	protected static Widget s_wRoot;
 	protected static int s_iShownForWorldTime = -1;
+	protected static ref ScriptInvoker s_OnShown;
+
+	//------------------------------------------------------------------------------------------------
+	//! Invoked with the COA_SpectatorDamageReportEntry once a card is up. Other mods add to the card through
+	//! this: OnFatalEvent's call to Show doesn't reach a modded class's override of it.
+	static ScriptInvoker GetOnShown()
+	{
+		if (!s_OnShown)
+			s_OnShown = new ScriptInvoker();
+
+		return s_OnShown;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! A damage report event was marked fatal - show the card if the victim is the local player.
@@ -73,6 +85,9 @@ class COA_KilledByCard
 
 		GetGame().GetCallqueue().Remove(FadeOut);
 		GetGame().GetCallqueue().CallLater(FadeOut, DISPLAY_MS, false);
+
+		if (s_OnShown)
+			s_OnShown.Invoke(entry);
 	}
 
 	//------------------------------------------------------------------------------------------------

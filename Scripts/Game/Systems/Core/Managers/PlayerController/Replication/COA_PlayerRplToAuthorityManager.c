@@ -423,6 +423,76 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Admin menu > Game Mode > End with result: record the result, announce it, advance to the AAR
+	//! \param[in] outcome Winning faction key (BLUFOR/OPFOR/INDFOR/CIV) or COA_MissionResultHelper.DRAW
+	//! \param[in] resultNote Optional short result line, e.g. "Survivors extracted"
+	void RequestEndMission(string outcome, string resultNote)
+	{
+		if (SCR_Global.IsAdmin())
+			Rpc(RpcAsk_RequestEndMission, outcome, resultNote);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Admin menu > Weather & Time: force one of the world's weather states
+	//! \param[in] stateName WeatherState.GetStateName() from the world's weather state machine
+	//! \param[in] transitionHours 0 = instant, else the in-game hours the change blends over
+	void RequestSetWeather(string stateName, float transitionHours)
+	{
+		Rpc(RpcAsk_RequestSetWeather, stateName, transitionHours);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Admin menu > Weather & Time: set the in-game time of day
+	void RequestSetTimeOfDay(int hours, int minutes)
+	{
+		Rpc(RpcAsk_RequestSetTimeOfDay, hours, minutes);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Admin menu > Hints > Countdown: put a countdown on players' screens
+	//! \param[in] factionKey Empty for everyone, else only that faction
+	void StartAdminCountdown(string label, int seconds, string factionKey)
+	{
+		Rpc(RpcAsk_StartAdminCountdown, label, seconds, factionKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void CancelAdminCountdown()
+	{
+		Rpc(RpcAsk_CancelAdminCountdown);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Admin menu > Gear Fix: current overrides and gear check results, sent back once
+	void RequestGearFixData()
+	{
+		Rpc(RpcAsk_RequestGearFixData);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Admin menu > Gear Fix: run the gearscript check again
+	void RequestGearCheckRun()
+	{
+		Rpc(RpcAsk_RequestGearCheckRun);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Admin menu > Gear Fix: set a session-wide override - see COA_GearFixManager.HandleApply
+	void RequestGearOverride(string faction, int role, int slot, int action, ResourceName primary, ResourceName secondary, int count, int assistantCount, bool regear, array<string> attachments, ResourceName launcherAmmo, int launcherCount)
+	{
+		// Rpc() takes eight parameters at most
+		array<int> values = {role, slot, action, count, assistantCount, launcherCount};
+		Rpc(RpcAsk_RequestGearOverride, faction, values, primary, secondary, regear, attachments, launcherAmmo);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Admin menu > Gear Fix: remove an override, optionally changing current holders back
+	void RequestGearOverrideRevert(int overrideId, bool regear)
+	{
+		Rpc(RpcAsk_RequestGearOverrideRevert, overrideId, regear);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void TogglePlayerListening(int playerId, bool input)
 	{
 		Rpc(RpcAsk_TogglePlayerLisntening, playerId, input);
@@ -1645,7 +1715,249 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		COA_RespawnManager.GetInstance().SetRespawnTime(seconds);
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! End the running mission with a winner or a draw (admin menu > Game Mode > End with result).
+	//! Same route as /aar <faction>: the result is recorded first (CRF: CRF_LoggingManager, which the
+	//! AAR transition's stats flush and outro read), then the gamemode advances to the AAR.
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_RequestEndMission(string outcome, string resultNote)
+	{
+		if (!IsCallerAdmin())
+			return;
+
+		// Telemetry: 2 strings
+		int bytes = COA_BandwidthTelemetryManager.EstimateSize_String(outcome);
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_String(resultNote);
+		LogTelemetry("RpcAsk_RequestEndMission", bytes);
+
+		// Only a running mission - from slotting, AdvanceGamemodeState would start it instead
+		if (!m_Gamemode || m_Gamemode.m_GamemodeState != COA_EGamemodeState.GAME)
+			return;
+
+		outcome.ToUpper();
+		if (!COA_MissionResultHelper.IsValidOutcome(outcome))
+			return;
+
+		resultNote = COA_MissionResultHelper.SanitizeNote(resultNote);
+		string resultLine = COA_MissionResultHelper.GetResultLine(outcome, resultNote);
+
+		RecordMissionResult(outcome, resultNote);
+
+		// A HUD countdown has nothing left to count down to
+		if (m_AdminMenuManager)
+			m_AdminMenuManager.CancelCountdown();
+
+		if (m_RplBroadcastManager)
+		{
+			m_RplBroadcastManager.SetPendingOutroResult(outcome, resultNote);
+			m_RplBroadcastManager.SendHint("[Mission Over] " + resultLine);
+
+			string adminName = GetGame().GetPlayerManager().GetPlayerName(GetCallerPlayerId());
+			m_RplBroadcastManager.LogAdminAction(string.Format("%1 Ended The Mission: %2", adminName, resultLine), -1, false, COA_EAdminLogLevel.High);
+		}
+
+		m_Gamemode.AdvanceGamemodeState(true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: store an admin-chosen mission result before the AAR starts. Nothing to store in the
+	//! Lobby on its own; CRF overrides this to log the winner/draw for the website and the stats.
+	//! \param[in] outcome Faction key or COA_MissionResultHelper.DRAW (validated)
+	//! \param[in] resultNote Sanitized result line, may be empty
+	protected void RecordMissionResult(string outcome, string resultNote)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return the world's time and weather manager, or null
+	protected TimeAndWeatherManagerEntity FindTimeAndWeatherManager()
+	{
+		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
+		if (!world)
+			return null;
+
+		return world.GetTimeAndWeatherManager();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Force a weather state. Only names the world's own state machine has are accepted (on the
+	//! server that's the Atmospheric Weather Mod's WeatherStates.conf override, not vanilla's 4).
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_RequestSetWeather(string stateName, float transitionHours)
+	{
+		if (!IsCallerStaff())
+			return;
+
+		// Telemetry: string + float
+		int bytes = COA_BandwidthTelemetryManager.EstimateSize_String(stateName);
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_Float();
+		LogTelemetry("RpcAsk_RequestSetWeather", bytes);
+
+		TimeAndWeatherManagerEntity weatherManager = FindTimeAndWeatherManager();
+		if (!weatherManager)
+			return;
+
+		array<ref WeatherState> weatherStates = {};
+		weatherManager.GetWeatherStatesList(weatherStates);
+
+		bool stateExists;
+		foreach (WeatherState weatherState : weatherStates)
+		{
+			if (weatherState != null && weatherState.GetStateName() == stateName)
+			{
+				stateExists = true;
+				break;
+			}
+		}
+
+		if (!stateExists)
+			return;
+
+		transitionHours = Math.Clamp(transitionHours, 0, 2);
+
+		// Looping: the new state holds instead of the state machine moving straight on from it (as Game
+		// Master's weather attribute does). Player ID 0: no Game Master notification.
+		weatherManager.ForceWeatherTo(true, stateName, transitionHours);
+
+		string how = "instantly";
+		if (transitionHours > 0)
+		{
+			int transitionMinutes = Math.Round(transitionHours * 60);
+			how = string.Format("over %1 in-game min", transitionMinutes);
+		}
+
+		string adminName = GetGame().GetPlayerManager().GetPlayerName(GetCallerPlayerId());
+		m_RplBroadcastManager.LogAdminAction(string.Format("%1 Set The Weather To %2 (%3)", adminName, stateName, how), -1, false, COA_EAdminLogLevel.Medium);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Set the in-game time of day - the time and weather manager replicates it to everyone
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_RequestSetTimeOfDay(int hours, int minutes)
+	{
+		if (!IsCallerStaff())
+			return;
+
+		// Telemetry: 2 ints
+		LogTelemetry("RpcAsk_RequestSetTimeOfDay", COA_BandwidthTelemetryManager.EstimateSize_Int() * 2);
+
+		if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59)
+			return;
+
+		TimeAndWeatherManagerEntity weatherManager = FindTimeAndWeatherManager();
+		if (!weatherManager)
+			return;
+
+		if (!weatherManager.SetHoursMinutesSeconds(hours, minutes, 0))
+			return;
+
+		string adminName = GetGame().GetPlayerManager().GetPlayerName(GetCallerPlayerId());
+		m_RplBroadcastManager.LogAdminAction(string.Format("%1 Set The Time Of Day To %2:%3", adminName, hours.ToString(2), minutes.ToString(2)), -1, false, COA_EAdminLogLevel.Medium);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Start (or replace) the HUD countdown. Replicated once through COA_AdminMenuManager's RplProps.
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_StartAdminCountdown(string label, int seconds, string factionKey)
+	{
+		if (!IsCallerStaff())
+			return;
+
+		// Telemetry: 2 strings + int
+		int bytes = COA_BandwidthTelemetryManager.EstimateSize_String(label);
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_String(factionKey);
+		bytes += COA_BandwidthTelemetryManager.EstimateSize_Int();
+		LogTelemetry("RpcAsk_StartAdminCountdown", bytes);
+
+		if (!m_AdminMenuManager || seconds <= 0)
+			return;
+
+		string target = "Everyone";
+		if (!factionKey.IsEmpty())
+		{
+			FactionManager factionManager = GetGame().GetFactionManager();
+			if (!factionManager || !factionManager.GetFactionByKey(factionKey))
+				return;
+
+			target = factionKey;
+		}
+
+		seconds = Math.ClampInt(seconds, 1, COA_AdminMenuManager.COUNTDOWN_MAX_SECONDS);
+		label = COA_AdminMenuManager.SanitizeCountdownLabel(label);
+		m_AdminMenuManager.StartCountdown(label, seconds, factionKey);
+
+		string adminName = GetGame().GetPlayerManager().GetPlayerName(GetCallerPlayerId());
+		string logMessage = string.Format("%1 Started A Countdown: %2 (%3, %4)", adminName, label, COA_AdminCountdownDisplay.FormatRemaining(seconds * 1000), target);
+		m_RplBroadcastManager.LogAdminAction(logMessage, -1, false, COA_EAdminLogLevel.Medium);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_CancelAdminCountdown()
+	{
+		if (!IsCallerStaff())
+			return;
+
+		// Telemetry: no parameters
+		LogTelemetry("RpcAsk_CancelAdminCountdown", 0);
+
+		if (!m_AdminMenuManager || !m_AdminMenuManager.CancelCountdown())
+			return;
+
+		string adminName = GetGame().GetPlayerManager().GetPlayerName(GetCallerPlayerId());
+		m_RplBroadcastManager.LogAdminAction(string.Format("%1 Cancelled The Countdown", adminName), -1, false, COA_EAdminLogLevel.Medium);
+	}
+
 	
+	//------------------------------------------------------------------------------------------------
+	//! Staff only, resolved from this controller's owner rather than anything the client sends
+	protected COA_GearFixManager GetGearFixManagerForCaller()
+	{
+		if (!IsCallerStaff())
+			return null;
+
+		return COA_GearFixManager.GetInstance();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_RequestGearFixData()
+	{
+		COA_GearFixManager manager = GetGearFixManagerForCaller();
+		if (manager)
+			manager.HandleDataRequest(GetCallerPlayerId());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_RequestGearCheckRun()
+	{
+		COA_GearFixManager manager = GetGearFixManagerForCaller();
+		if (manager)
+			manager.HandleRunCheck(GetCallerPlayerId());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_RequestGearOverride(string faction, array<int> values, ResourceName primary, ResourceName secondary, bool regear, array<string> attachments, ResourceName launcherAmmo)
+	{
+		if (!values || values.Count() < 6)
+			return;
+
+		COA_GearFixManager manager = GetGearFixManagerForCaller();
+		if (manager)
+			manager.HandleApply(GetCallerPlayerId(), faction, values[0], values[1], values[2], primary, secondary, values[3], values[4], regear, attachments, launcherAmmo, values[5]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_RequestGearOverrideRevert(int overrideId, bool regear)
+	{
+		COA_GearFixManager manager = GetGearFixManagerForCaller();
+		if (manager)
+			manager.HandleRevert(GetCallerPlayerId(), overrideId, regear);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_CleanUpBodies()

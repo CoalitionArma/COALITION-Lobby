@@ -15,7 +15,7 @@ FrameWidgetClass {
     OffsetBottom 414
    }
    Color 0.3968 0.4564 0.6038 1
-   Text "Show an on-screen hint to one player, a faction or everyone."
+   Text "Show an on-screen hint to one player, a faction or everyone - write one or pick a template - or put a countdown on players' screens."
    "Font Size" 14
    "Min Font Size" 10
    "Horizontal Alignment" Left
@@ -330,8 +330,8 @@ FrameWidgetClass {
     OffsetTop -400
     SizeX 355
     OffsetRight 18
-    SizeY 872
-    OffsetBottom -472
+    SizeY 236
+    OffsetBottom 164
    }
    Color 0.0075 0.0086 0.0123 1
    style rounded_6px
@@ -384,8 +384,8 @@ FrameWidgetClass {
     OffsetTop -356
     SizeX 323
     OffsetRight 34
-    SizeY 812
-    OffsetBottom -456
+    SizeY 180
+    OffsetBottom 176
    }
    Color 0.0033 0.0037 0.0052 1
    style rounded_6px
@@ -423,8 +423,8 @@ FrameWidgetClass {
     OffsetTop -352
     SizeX 315
     OffsetRight 38
-    SizeY 804
-    OffsetBottom -452
+    SizeY 172
+    OffsetBottom 180
    }
    components {
     SCR_ListBoxComponent "{566C9415BAA54E1B}" {
@@ -456,8 +456,8 @@ FrameWidgetClass {
     OffsetTop -400
     SizeX 355
     OffsetRight -353
-    SizeY 872
-    OffsetBottom -472
+    SizeY 436
+    OffsetBottom -36
    }
    Color 0.0075 0.0086 0.0123 1
    style rounded_6px
@@ -510,8 +510,8 @@ FrameWidgetClass {
     OffsetTop -356
     SizeX 323
     OffsetRight -337
-    SizeY 668
-    OffsetBottom -312
+    SizeY 236
+    OffsetBottom 120
    }
    Color 0.011 0.0137 0.0212 1
    style rounded_4px
@@ -526,8 +526,8 @@ FrameWidgetClass {
     OffsetTop -346
     SizeX 299
     OffsetRight -325
-    SizeY 648
-    OffsetBottom -302
+    SizeY 216
+    OffsetBottom 130
    }
    Text ""
    "Min Font Size" 12
@@ -543,12 +543,12 @@ FrameWidgetClass {
     Anchor 0.5 0.5 0.5 0.5
     PositionX 14
     OffsetLeft 14
-    PositionY 328
-    OffsetTop 328
+    PositionY -108
+    OffsetTop -108
     SizeX 323
     OffsetRight -337
     SizeY 36
-    OffsetBottom -364
+    OffsetBottom 72
    }
    "Z Order" 1
    Color 0.5841 0.0369 0.0369 1
@@ -560,12 +560,12 @@ FrameWidgetClass {
     Anchor 0.5 0.5 0.5 0.5
     PositionX 14
     OffsetLeft 14
-    PositionY 328
-    OffsetTop 328
+    PositionY -108
+    OffsetTop -108
     SizeX 323
     OffsetRight -337
     SizeY 36
-    OffsetBottom -364
+    OffsetBottom 72
    }
    Color 1 1 1 0
    "Z Order" 2
@@ -596,12 +596,12 @@ FrameWidgetClass {
     Anchor 0.5 0.5 0.5 0.5
     PositionX 14
     OffsetLeft 14
-    PositionY 374
-    OffsetTop 374
+    PositionY -62
+    OffsetTop -62
     SizeX 323
     OffsetRight -337
     SizeY 36
-    OffsetBottom -410
+    OffsetBottom 26
    }
    "Z Order" 1
    Color 0.011 0.0137 0.0212 1
@@ -613,12 +613,12 @@ FrameWidgetClass {
     Anchor 0.5 0.5 0.5 0.5
     PositionX 14
     OffsetLeft 14
-    PositionY 374
-    OffsetTop 374
+    PositionY -62
+    OffsetTop -62
     SizeX 323
     OffsetRight -337
     SizeY 36
-    OffsetBottom -410
+    OffsetBottom 26
    }
    Color 1 1 1 0
    "Z Order" 2
@@ -649,12 +649,12 @@ FrameWidgetClass {
     Anchor 0.5 0.5 0.5 0.5
     PositionX 14
     OffsetLeft 14
-    PositionY 420
-    OffsetTop 420
+    PositionY -16
+    OffsetTop -16
     SizeX 323
     OffsetRight -337
     SizeY 36
-    OffsetBottom -456
+    OffsetBottom -20
    }
    "Z Order" 1
    Color 0.011 0.0137 0.0212 1
@@ -666,12 +666,12 @@ FrameWidgetClass {
     Anchor 0.5 0.5 0.5 0.5
     PositionX 14
     OffsetLeft 14
-    PositionY 420
-    OffsetTop 420
+    PositionY -16
+    OffsetTop -16
     SizeX 323
     OffsetRight -337
     SizeY 36
-    OffsetBottom -456
+    OffsetBottom -20
    }
    Color 1 1 1 0
    "Z Order" 2
@@ -694,6 +694,613 @@ FrameWidgetClass {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
+   }
+  }
+  SmartPanelWidgetClass "{389219DF0F96911E}" {
+   Name "TemplatesCard"
+   Slot FrameWidgetSlot "{39BF4085FF38275C}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -373
+    OffsetLeft -373
+    PositionY -148
+    OffsetTop -148
+    SizeX 355
+    OffsetRight 18
+    SizeY 620
+    OffsetBottom -472
+   }
+   Color 0.0075 0.0086 0.0123 1
+   style rounded_6px
+  }
+  ImageWidgetClass "{A678FD3DD728C0BB}" {
+   Name "TemplatesCardPill"
+   Slot FrameWidgetSlot "{109C6C4BDEBFBF81}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -373
+    OffsetLeft -373
+    PositionY -133
+    OffsetTop -133
+    SizeX 3
+    OffsetRight 370
+    SizeY 14
+    OffsetBottom 119
+   }
+   Color 0.5841 0.0369 0.0369 1
+  }
+  TextWidgetClass "{62266AD2E968FCD9}" {
+   Name "TemplatesCardTitle"
+   Slot FrameWidgetSlot "{E88C30CCE34D9A6E}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -357
+    OffsetLeft -357
+    PositionY -136
+    OffsetTop -136
+    SizeX 323
+    OffsetRight 34
+    SizeY 20
+    OffsetBottom 116
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "TEMPLATES"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{A245094C1B1A9972}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  TextWidgetClass "{CCFBF38808D0D21E}" {
+   Name "TemplatesCardHint"
+   Slot FrameWidgetSlot "{9187E188EFAB556D}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -357
+    OffsetLeft -357
+    PositionY -136
+    OffsetTop -136
+    SizeX 323
+    OffsetRight 34
+    SizeY 20
+    OffsetBottom 116
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "Click one to fill the message"
+   "Font Size" 12
+   "Min Font Size" 10
+   "Horizontal Alignment" Right
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{0C4A4507A7485F6A}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{47581D4F1F92F0BF}" {
+   Name "TemplateListBox0BG"
+   Slot FrameWidgetSlot "{E744CAF0797713B5}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -357
+    OffsetLeft -357
+    PositionY -104
+    OffsetTop -104
+    SizeX 323
+    OffsetRight 34
+    SizeY 560
+    OffsetBottom -456
+   }
+   Color 0.0033 0.0037 0.0052 1
+   style rounded_6px
+  }
+  TextWidgetClass "{0217300938CE345E}" {
+   Name "TemplateListBox0Empty"
+   Slot FrameWidgetSlot "{626A4957BBB6983E}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -357
+    OffsetLeft -357
+    PositionY -92
+    OffsetTop -92
+    SizeX 323
+    OffsetRight 34
+    SizeY 20
+    OffsetBottom 72
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "No templates"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{290A776243AE5DF3}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  OverlayWidgetClass "{90D4F779BA396DD8}" : "{94CAAE4A601195D3}UI/layouts/ListBox/ListBox.layout" {
+   Name "TemplateListBox0"
+   Slot FrameWidgetSlot "{76C2AF75E1741C73}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -353
+    OffsetLeft -353
+    PositionY -100
+    OffsetTop -100
+    SizeX 315
+    OffsetRight 38
+    SizeY 552
+    OffsetBottom -452
+   }
+   components {
+    SCR_ListBoxComponent "{51CDB16677877124}" {
+     m_sElementLayout "{6A6A0D0000000001}UI/Listbox/COA_AdminListRow.layout"
+    }
+   }
+   {
+    ScrollLayoutWidgetClass "{56691148E692435A}" {
+     Prefab "{56691148E692435A}"
+     {
+      VerticalLayoutWidgetClass "{56691148E013D981}" {
+       Prefab "{56691148E013D981}"
+      }
+     }
+    }
+    ImageWidgetClass "{5DB6D18100D38307}" {
+     Prefab "{5DB6D18100D38307}"
+     "Is Visible" 0
+    }
+   }
+  }
+  SmartPanelWidgetClass "{E96CEB1D20F8AE29}" {
+   Name "CountdownCard"
+   Slot FrameWidgetSlot "{F4B47FECB452FD3E}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -2
+    OffsetLeft -2
+    PositionY 52
+    OffsetTop 52
+    SizeX 355
+    OffsetRight -353
+    SizeY 420
+    OffsetBottom -472
+   }
+   Color 0.0075 0.0086 0.0123 1
+   style rounded_6px
+  }
+  ImageWidgetClass "{0F472E51CF29A473}" {
+   Name "CountdownCardPill"
+   Slot FrameWidgetSlot "{0BAF893150A07DD6}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX -2
+    OffsetLeft -2
+    PositionY 67
+    OffsetTop 67
+    SizeX 3
+    OffsetRight -1
+    SizeY 14
+    OffsetBottom -81
+   }
+   Color 0.5841 0.0369 0.0369 1
+  }
+  TextWidgetClass "{FBD063029EB6A99A}" {
+   Name "CountdownCardTitle"
+   Slot FrameWidgetSlot "{4F06BF7B2D15A9C0}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 64
+    OffsetTop 64
+    SizeX 323
+    OffsetRight -337
+    SizeY 20
+    OffsetBottom -84
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "COUNTDOWN"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{F12829C719BFB96B}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  TextWidgetClass "{7BEB001190429042}" {
+   Name "CountdownCardHint"
+   Slot FrameWidgetSlot "{957D88881E048172}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 64
+    OffsetTop 64
+    SizeX 323
+    OffsetRight -337
+    SizeY 20
+    OffsetBottom -84
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "Shown on players' screens"
+   "Font Size" 12
+   "Min Font Size" 10
+   "Horizontal Alignment" Right
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{C80748671FBB31AF}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{8A2460310F7D9F90}" {
+   Name "CountdownLabelCaption"
+   Slot FrameWidgetSlot "{278A4DF43E149179}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 94
+    OffsetTop 94
+    SizeX 323
+    OffsetRight -337
+    SizeY 18
+    OffsetBottom -112
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "Label"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{AC705993D0F504CD}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{04C46AD6D646756A}" {
+   Name "CountdownLabelBoxBG"
+   Slot FrameWidgetSlot "{04C83BCBD5764A67}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 114
+    OffsetTop 114
+    SizeX 323
+    OffsetRight -337
+    SizeY 36
+    OffsetBottom -150
+   }
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  EditBoxWidgetClass "{2FE9C60ADF420590}" {
+   Name "CountdownLabelBox"
+   Slot FrameWidgetSlot "{D3FABA47E2604DDC}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 24
+    OffsetLeft 24
+    PositionY 114
+    OffsetTop 114
+    SizeX 303
+    OffsetRight -327
+    SizeY 36
+    OffsetBottom -150
+   }
+   "Font Size" 17
+   "Use placeholder text" 1
+   "Placeholder text" "e.g. Mission ending"
+   Color 0.8632 0.8879 0.9301 1
+   FontProperties FontProperties "{7B07FB4685858879}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{6302EED79628E8FC}" {
+   Name "CountdownMinutesCaption"
+   Slot FrameWidgetSlot "{A2421F4744B6F2BA}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 160
+    OffsetTop 160
+    SizeX 156
+    OffsetRight -170
+    SizeY 18
+    OffsetBottom -178
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "Minutes"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{4A806828B6DC585C}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{4EE7B9A78780A8CE}" {
+   Name "CountdownSecondsCaption"
+   Slot FrameWidgetSlot "{8F92C4DBA2F2D01B}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 181
+    OffsetLeft 181
+    PositionY 160
+    OffsetTop 160
+    SizeX 156
+    OffsetRight -337
+    SizeY 18
+    OffsetBottom -178
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "Seconds"
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{83219F6173B2DD60}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{1CC5F67FCDD77BCB}" {
+   Name "CountdownMinutesBoxBG"
+   Slot FrameWidgetSlot "{A65C6B0448EE3682}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 180
+    OffsetTop 180
+    SizeX 156
+    OffsetRight -170
+    SizeY 36
+    OffsetBottom -216
+   }
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  EditBoxWidgetClass "{42B684500FF0588F}" {
+   Name "CountdownMinutesBox"
+   Slot FrameWidgetSlot "{1A9FC69632E6BA30}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 24
+    OffsetLeft 24
+    PositionY 180
+    OffsetTop 180
+    SizeX 136
+    OffsetRight -160
+    SizeY 36
+    OffsetBottom -216
+   }
+   text "5"
+   "Font Size" 17
+   "Use placeholder text" 1
+   "Placeholder text" "0"
+   Color 0.8632 0.8879 0.9301 1
+   FontProperties FontProperties "{3C72C9A05DFB2954}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{994531BE9C37614A}" {
+   Name "CountdownSecondsBoxBG"
+   Slot FrameWidgetSlot "{1CD59FE5CCF7E76F}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 181
+    OffsetLeft 181
+    PositionY 180
+    OffsetTop 180
+    SizeX 156
+    OffsetRight -337
+    SizeY 36
+    OffsetBottom -216
+   }
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  EditBoxWidgetClass "{063002730A500A1E}" {
+   Name "CountdownSecondsBox"
+   Slot FrameWidgetSlot "{B6A38E6139101169}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 191
+    OffsetLeft 191
+    PositionY 180
+    OffsetTop 180
+    SizeX 136
+    OffsetRight -327
+    SizeY 36
+    OffsetBottom -216
+   }
+   text "0"
+   "Font Size" 17
+   "Use placeholder text" 1
+   "Placeholder text" "0"
+   Color 0.8632 0.8879 0.9301 1
+   FontProperties FontProperties "{5E955159FF66887E}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  SmartPanelWidgetClass "{B9B0A3BF02D842C7}" {
+   Name "CountdownAllButtonBG"
+   Slot FrameWidgetSlot "{BEB722D1D860E3BA}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 228
+    OffsetTop 228
+    SizeX 323
+    OffsetRight -337
+    SizeY 36
+    OffsetBottom -264
+   }
+   "Z Order" 1
+   Color 0.5841 0.0369 0.0369 1
+   style rounded_4px
+  }
+  ButtonWidgetClass "{36FA3B7CB106BD80}" {
+   Name "CountdownAllButton"
+   Slot FrameWidgetSlot "{F8B4E43896FD962B}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 228
+    OffsetTop 228
+    SizeX 323
+    OffsetRight -337
+    SizeY 36
+    OffsetBottom -264
+   }
+   Color 1 1 1 0
+   "Z Order" 2
+   components {
+    SCR_ButtonTextComponent "{2C667CB56F9DF4FD}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{FC93FFC163C51A91}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{DD2A8B3424DFC8DA}" {
+     }
+     Text "Start for everyone"
+     "Font Size" 15
+     "Min Font Size" 11
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{431404226A46145D}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+  SmartPanelWidgetClass "{1B7424ABEAA4DC49}" {
+   Name "CountdownFactionButtonBG"
+   Slot FrameWidgetSlot "{458136556468919C}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 272
+    OffsetTop 272
+    SizeX 323
+    OffsetRight -337
+    SizeY 36
+    OffsetBottom -308
+   }
+   "Z Order" 1
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  ButtonWidgetClass "{CCDE4A414ECAC9C0}" {
+   Name "CountdownFactionButton"
+   Slot FrameWidgetSlot "{C6C107ABE6E18E73}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 272
+    OffsetTop 272
+    SizeX 323
+    OffsetRight -337
+    SizeY 36
+    OffsetBottom -308
+   }
+   Color 1 1 1 0
+   "Z Order" 2
+   components {
+    SCR_ButtonTextComponent "{743ED153C93918D5}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{50D5F310EA711052}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{2D0F640CFB58610F}" {
+     }
+     Text "Start for selected faction"
+     "Font Size" 15
+     "Min Font Size" 11
+     Color 0.8632 0.8879 0.9301 1
+     FontProperties FontProperties "{883FF80102D32619}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+  SmartPanelWidgetClass "{4B2620E710551E46}" {
+   Name "CountdownCancelButtonBG"
+   Slot FrameWidgetSlot "{9776CBC3ECAF3ACB}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 316
+    OffsetTop 316
+    SizeX 323
+    OffsetRight -337
+    SizeY 36
+    OffsetBottom -352
+   }
+   "Z Order" 1
+   Color 0.011 0.0137 0.0212 1
+   style rounded_4px
+  }
+  ButtonWidgetClass "{69FD3D2A5AF6A33C}" {
+   Name "CountdownCancelButton"
+   Slot FrameWidgetSlot "{13F0C032A34714E1}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 316
+    OffsetTop 316
+    SizeX 323
+    OffsetRight -337
+    SizeY 36
+    OffsetBottom -352
+   }
+   Color 1 1 1 0
+   "Z Order" 2
+   components {
+    SCR_ButtonTextComponent "{63345E67368CC1EE}" {
+     m_bCanBeToggled 1
+     m_sTextWidgetName ""
+    }
+   }
+   {
+    TextWidgetClass "{CC26096F1FF0E064}" {
+     Name "ActionButtonText"
+     Slot ButtonWidgetSlot "{B6E2AB0D535ECB6E}" {
+     }
+     Text "Cancel countdown"
+     "Font Size" 15
+     "Min Font Size" 11
+     Color 0.8070 0.1170 0.1170 1
+     FontProperties FontProperties "{6DB8E36DD6BDF124}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+  SmartPanelWidgetClass "{13228A619F540070}" {
+   Name "CountdownStatusBG"
+   Slot FrameWidgetSlot "{45F1FD689590E2FF}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 14
+    OffsetLeft 14
+    PositionY 364
+    OffsetTop 364
+    SizeX 323
+    OffsetRight -337
+    SizeY 92
+    OffsetBottom -456
+   }
+   Color 0.0033 0.0037 0.0052 1
+   style rounded_6px
+  }
+  TextWidgetClass "{81B81E2835DC5F29}" {
+   Name "CountdownStatusText"
+   Slot FrameWidgetSlot "{9A11ED268266E594}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 26
+    OffsetLeft 26
+    PositionY 370
+    OffsetTop 370
+    SizeX 299
+    OffsetRight -325
+    SizeY 80
+    OffsetBottom -450
+   }
+   Color 0.3968 0.4564 0.6038 1
+   Text "No countdown running."
+   "Font Size" 14
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Top
+   Wrap 1
+   FontProperties FontProperties "{4C6EDC39F8CAD8E8}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
    }
   }
  }

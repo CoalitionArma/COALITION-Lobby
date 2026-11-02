@@ -13,6 +13,9 @@ class COA_GearscriptManager : ScriptComponent
 
 	protected COA_Gamemode m_Gamemode;
 
+	//! Admin gear overrides and the gearscript check (server). Owned here so it ends with the mission.
+	protected ref COA_GearFixManager m_GearFixManager;
+
 	// Parsed gearscript/identity config instances are static prefab-config data that never changes
 	// mid-mission, so cache them here rather than re-parsing the container from disk on every call
 	// (previously happened on every player spawn, every vehicle refit, and every inventory move).
@@ -36,6 +39,9 @@ class COA_GearscriptManager : ScriptComponent
 		m_ResourceCache = new COA_ResourceCache;
 		m_Gamemode = COA_Gamemode.GetInstance();
 		
+		m_GearFixManager = new COA_GearFixManager();
+		m_GearFixManager.Start();
+
 		// 10APR26 - Pat, this has started causing crashing as of today. No idea why. Commenting out for now.
 		// 3AUG26 - Believe this was simply a bad gearscript on your end. Did some efficency and NPE passes rq just in case.
 		#ifdef WORKBENCH
@@ -114,6 +120,10 @@ class COA_GearscriptManager : ScriptComponent
 		int weight = inventoryManager.GetTotalWeightOfAllStorages();
 		if (weight > 60) // We dont enjoy people being over 60kg
 			COA_LoggingHelper.LogWeightError(entity, weight);
+
+		// Session-wide admin overrides go on top of the gearscript
+		if (m_GearFixManager)
+			m_GearFixManager.OnGearApplied(entity, factionKey, role);
 		
 		// Initialize radios for player.
 		// Resolves the player from the entity, so this only does anything when the character is
@@ -767,6 +777,12 @@ class COA_GearscriptManager : ScriptComponent
 //	 ROLE CONFIG ACCESSORS/LOADERS
 //=============================================================================================================================================================================================================================================================================================================================================================
 	
+	//------------------------------------------------------------------------------------------------
+	COA_GearFixManager GetGearFixManager()
+	{
+		return m_GearFixManager;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	static COA_RolesConfig GetRolesConfig()
 	{

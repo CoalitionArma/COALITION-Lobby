@@ -1,0 +1,237 @@
+FrameWidgetClass {
+ Name "gearCheckCardRoot"
+ {
+  FrameWidgetClass "{C703BDFC04FF0A39}" {
+   Name "GearCard"
+   Slot FrameWidgetSlot "{48CBF32B27CD6D13}" {
+    Anchor 1 0.12 1 0.12
+    PositionX -440
+    OffsetLeft -440
+    PositionY 0
+    OffsetTop 0
+    SizeX 420
+    OffsetRight 20
+    SizeY 168
+    OffsetBottom -168
+   }
+   "Z Order" 200
+   {
+    SmartPanelWidgetClass "{3CC7C03B341E7640}" {
+     Name "GearCardBG"
+     Slot FrameWidgetSlot "{6A1F89BBF38A417D}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+     Color 0.0033 0.0037 0.0052 0.94
+     style rounded_12px
+    }
+    SmartPanelWidgetClass "{098A523337ED260C}" {
+     Name "GearCardOutline"
+     Slot FrameWidgetSlot "{76DEE3D46DDBA11F}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+     Color 1 1 1 0.06
+     style outline_rounded_12px
+    }
+    ImageWidgetClass "{05A33BDA1A6C073C}" {
+     Name "GearCardPill"
+     Slot FrameWidgetSlot "{BF8A71C1890337A8}" {
+      PositionX 14
+      OffsetLeft 14
+      PositionY 15
+      OffsetTop 15
+      SizeX 3
+      OffsetRight -17
+      SizeY 14
+      OffsetBottom -29
+     }
+     Color 0.5841 0.0369 0.0369 1
+    }
+    TextWidgetClass "{7FC83F94D86BEEC7}" {
+     Name "GearCardTitle"
+     Slot FrameWidgetSlot "{34F7D8D3D9C7E7F2}" {
+      PositionX 26
+      OffsetLeft 26
+      PositionY 12
+      OffsetTop 12
+      SizeX 380
+      OffsetRight -406
+      SizeY 20
+      OffsetBottom -32
+     }
+     Color 0.8632 0.8879 0.9301 1
+     Text "GEAR CHECK"
+     "Font Size" 14
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{1842C0A20A9C5596}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{FCFB46C27F071728}" {
+     Name "GearCardBody"
+     Slot FrameWidgetSlot "{2227E83EC7991484}" {
+      PositionX 14
+      OffsetLeft 14
+      PositionY 36
+      OffsetTop 36
+      SizeX 392
+      OffsetRight -406
+      SizeY 64
+      OffsetBottom -100
+     }
+     Color 0.8632 0.8879 0.9301 1
+     Text ""
+     "Font Size" 12
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Top
+     Wrap 1
+     FontProperties FontProperties "{2B5CB2E63CC92BED}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    TextWidgetClass "{27120000042D7F54}" {
+     Name "GearCardHint"
+     Slot FrameWidgetSlot "{20DE5394CEE92CE0}" {
+      PositionX 14
+      OffsetLeft 14
+      PositionY 100
+      OffsetTop 100
+      SizeX 392
+      OffsetRight -406
+      SizeY 18
+      OffsetBottom -118
+     }
+     Color 0.3968 0.4564 0.6038 1
+     Text "Staff only. Also under Admin Menu > Gear Fix."
+     "Font Size" 12
+     "Min Font Size" 10
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{369D6C66972790A3}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    SmartPanelWidgetClass "{0C4C831CF8F4BA6D}" {
+     Name "GearCardOpenButtonBG"
+     Slot FrameWidgetSlot "{9E39A137E6EE9151}" {
+      PositionX 14
+      OffsetLeft 14
+      PositionY 124
+      OffsetTop 124
+      SizeX 192
+      OffsetRight -206
+      SizeY 32
+      OffsetBottom -156
+     }
+     "Z Order" 1
+     Color 0.5841 0.0369 0.0369 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{C626354026F6D124}" {
+     Name "GearCardOpenButton"
+     Slot FrameWidgetSlot "{7E300D26A9F7F06D}" {
+      PositionX 14
+      OffsetLeft 14
+      PositionY 124
+      OffsetTop 124
+      SizeX 192
+      OffsetRight -206
+      SizeY 32
+      OffsetBottom -156
+     }
+     Color 1 1 1 0
+     "Z Order" 2
+     components {
+      SCR_ButtonTextComponent "{158C8D696DE35E73}" {
+       m_bCanBeToggled 1
+       m_sTextWidgetName ""
+      }
+     }
+     {
+      TextWidgetClass "{C179FFF3760CEBA0}" {
+       Name "ActionButtonText"
+       Slot ButtonWidgetSlot "{06754B847A0DC902}" {
+       }
+       Text "Open Gear Fix"
+       "Font Size" 14
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{562A6737D47873DF}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+     }
+    }
+    SmartPanelWidgetClass "{F46C9CDB721F37F9}" {
+     Name "GearCardDismissButtonBG"
+     Slot FrameWidgetSlot "{47F8C3ED685D2B19}" {
+      PositionX 214
+      OffsetLeft 214
+      PositionY 124
+      OffsetTop 124
+      SizeX 192
+      OffsetRight -406
+      SizeY 32
+      OffsetBottom -156
+     }
+     "Z Order" 1
+     Color 0.011 0.0137 0.0212 1
+     style rounded_4px
+    }
+    ButtonWidgetClass "{A83FD818D2C34281}" {
+     Name "GearCardDismissButton"
+     Slot FrameWidgetSlot "{FBF801A17D4CCF73}" {
+      PositionX 214
+      OffsetLeft 214
+      PositionY 124
+      OffsetTop 124
+      SizeX 192
+      OffsetRight -406
+      SizeY 32
+      OffsetBottom -156
+     }
+     Color 1 1 1 0
+     "Z Order" 2
+     components {
+      SCR_ButtonTextComponent "{55DF6BC5E17F10CE}" {
+       m_bCanBeToggled 1
+       m_sTextWidgetName ""
+      }
+     }
+     {
+      TextWidgetClass "{DD0219CEFFC20CAA}" {
+       Name "ActionButtonText"
+       Slot ButtonWidgetSlot "{387F78AF965CC010}" {
+       }
+       Text "Dismiss"
+       "Font Size" 14
+       "Min Font Size" 11
+       Color 0.8632 0.8879 0.9301 1
+       FontProperties FontProperties "{AD9C454F27EA0C37}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}
