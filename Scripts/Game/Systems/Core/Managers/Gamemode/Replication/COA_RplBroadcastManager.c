@@ -1924,6 +1924,13 @@ class COA_RplBroadcastManager : ScriptComponent
 				return;
 		}
 
+		ShowLocalHint(data, 8000);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Shows a hint on this machine only, replacing the one up now. "[Title] text" sets the card's title.
+	void ShowLocalHint(string data, float durationMs)
+	{
 		// Create hint widget
 		Widget widget = GetGame().GetWorkspace().CreateWidgets("{43FC66BA3D85E9C7}UI/layouts/Hint/hint.layout");
 		if (!widget)
@@ -1957,7 +1964,7 @@ class COA_RplBroadcastManager : ScriptComponent
 			return;
 		}
 
-		hint.ShowHint(data, 8000);
+		hint.ShowHint(data, durationMs);
 	}	
 
 	
