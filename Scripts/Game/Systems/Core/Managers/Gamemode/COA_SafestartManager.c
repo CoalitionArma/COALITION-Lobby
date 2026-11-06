@@ -9,7 +9,15 @@ class COA_SafestartManager : ScriptComponent
 
 	[RplProp(onRplName: "OnSafeStartChange")]
 	protected bool m_bSafeStartEnabled = false;
+	//! Fires with the new safestart status (bool) on the server and on clients
 	ref ScriptInvoker m_OnSafeStartChange = new ScriptInvoker();
+
+	//! True once the mission's safestart has ended (or, for a mission without safestart, once the mission has
+	//! started). Stays true for the rest of the mission, even if an admin turns safestart back on.
+	[RplProp(onRplName: "OnRoundLive")]
+	protected bool m_bRoundLive = false;
+	//! Fires once, on the server and on clients, when IsRoundLive() becomes true. Gamemodes start their round on it.
+	ref ScriptInvoker m_OnRoundLive = new ScriptInvoker();
 
 	[RplProp()]
 	protected ref array<string> m_aFactionsStatusArray;
@@ -97,6 +105,21 @@ class COA_SafestartManager : ScriptComponent
 		return m_bSafeStartEnabled;
 	};
 	
+	//------------------------------------------------------------------------------------------------
+	//! True once the round is live: safestart has ended, or the mission has none. Use this rather than
+	//! !GetSafestartStatus() to decide whether gameplay has started: safestart is briefly off when the mission
+	//! enters the game state, before it turns on.
+	bool IsRoundLive()
+	{
+		return m_bRoundLive;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnRoundLive()
+	{
+		m_OnRoundLive.Invoke();
+	}
+
 	//------------------------------------------------------------------------------------------------
 	bool GetCountdownMode()
 	{
@@ -658,6 +681,7 @@ class COA_SafestartManager : ScriptComponent
 			m_bUpdatePlayedFactions = true;
 
 			Replication.BumpMe();//Broadcast m_bSafeStartEnabled change
+			OnSafeStartChange(); // the RplProp callback only runs on clients
 
 		} else { // Turn off safestart
 			if (!m_bSafeStartEnabled)
@@ -717,7 +741,12 @@ class COA_SafestartManager : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	protected void DelayChangeSafeStartDisabled() {
 		m_bSafeStartEnabled = false;
+		bool goingLive = !m_bRoundLive;
+		m_bRoundLive = true;
 		Replication.BumpMe();//Broadcast m_bSafeStartEnabled change
+		OnSafeStartChange(); // the RplProp callbacks only run on clients
+		if (goingLive)
+			OnRoundLive();
 	};
 
 //=============================================================================================================================================================================================================================================================================================================================================================
