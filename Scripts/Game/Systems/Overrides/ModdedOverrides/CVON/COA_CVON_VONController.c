@@ -137,38 +137,21 @@ modded class SCR_VONController
 	//------------------------------------------------------------------------------------------------
 	override bool IsSameLanguage(int localPlayerId, int transmissionPlayerId)
 	{
-		// The mission is over - everyone understands everyone in the AAR
+		// Babble is only ever between two living players in the round. Outside the round (briefing,
+		// slotting, AAR) and whenever either side is spectating or waiting to respawn, everyone
+		// understands everyone. Faction separation for spectators is a volume rule (ComputeSpectatorLR
+		// mutes other factions' spectators); it never babbles anyone.
 		if (IsAARVoiceActive())
 			return true;
 
-		Faction localFaction = m_FactionManager.GetPlayerFaction(localPlayerId);
-		Faction transmissionFaction = m_FactionManager.GetPlayerFaction(transmissionPlayerId);
-
-		// When faction separation is active, players who are spectating or waiting in the respawn
-		// screen must not understand players from other factions, regardless of spectator status.
-		// This mirrors the volume silencing already done in ComputeSpectatorLR.
-		if (m_Gamemode && m_Gamemode.m_bSeperateSpectatorsByFaction)
-		{
-			bool localIsSpec = localFaction && localFaction.GetFactionKey() == "SPEC";
-			bool localIsListening = m_VONGameModeComponent.IsPlayerListening(localPlayerId);
-
-			if (localIsSpec || localIsListening)
-			{
-				if (!m_SlottingManager)
-					m_SlottingManager = COA_SlottingManager.GetInstance();
-
-				Faction localSlotFaction = m_SlottingManager.GetPlayerSlotFaction(localPlayerId);
-				Faction transSlotFaction = m_SlottingManager.GetPlayerSlotFaction(transmissionPlayerId);
-
-				if (localSlotFaction != transSlotFaction)
-					return false;
-			}
-		}
-
-		//If Local player is a spectator it will always be in the same language
-		if (localFaction.GetFactionKey() == "SPEC")
+		if (!m_Gamemode)
+			m_Gamemode = COA_Gamemode.GetInstance();
+		if (m_Gamemode && m_Gamemode.m_GamemodeState != COA_EGamemodeState.GAME)
 			return true;
-		
+
+		if (COA_IsSpectatingForVoice(localPlayerId) || COA_IsSpectatingForVoice(transmissionPlayerId))
+			return true;
+
 		//If the player or transmitting player is a zeus all should understand
 		IEntity player = m_PlayerController.GetControlledEntity();
 		IEntity otherPlayer = m_PlayerManager.GetPlayerControlledEntity(transmissionPlayerId);
@@ -181,6 +164,24 @@ modded class SCR_VONController
 				return true;
 		
 		return super.IsSameLanguage(localPlayerId, transmissionPlayerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Spectating for voice purposes: no faction yet, the spectator faction, a spectator character,
+	//! or listening in from the respawn screen
+	protected bool COA_IsSpectatingForVoice(int playerId)
+	{
+		if (!m_FactionManager)
+			return true;
+
+		Faction faction = m_FactionManager.GetPlayerFaction(playerId);
+		if (!faction || faction.GetFactionKey() == "SPEC")
+			return true;
+
+		if (m_VONGameModeComponent && m_VONGameModeComponent.IsPlayerListening(playerId))
+			return true;
+
+		return COA_EntityHelper.IsSpectator(m_PlayerManager.GetPlayerControlledEntity(playerId));
 	}
 
 	//------------------------------------------------------------------------------------------------
