@@ -150,7 +150,7 @@ class COA_HoverDrawer
 			return;
 
 		float currentX = GetPos();
-		bool open = IsHovered(m_fOpenX - currentX);
+		bool open = IsHovered(m_fOpenX - currentX, m_fClosedX - currentX);
 		if (open != m_bOpen)
 		{
 			m_bOpen = open;
@@ -173,8 +173,12 @@ class COA_HoverDrawer
 
 	//------------------------------------------------------------------------------------------------
 	//! Rectangle test with hysteresis (same as COA_AARMenu.IsDrawerHovered): closed, it opens when
-	//! the cursor touches the part on screen; open, it stays open anywhere the fully-open drawer covers
-	protected bool IsHovered(float toOpenX)
+	//! the cursor touches the part on screen; open, it stays open anywhere the fully-open drawer covers,
+	//! and anywhere between there and where it closes to. Without that span, a drawer that opens short
+	//! of its screen edge (the spectator controls bar stops 12 px above the bottom) closes again as soon
+	//! as it opens with the cursor on that strip, which is also where its closed tab is - so it flickers
+	//! between the two every frame.
+	protected bool IsHovered(float toOpenX, float toClosedX)
 	{
 		int mouseX, mouseY;
 		WidgetManager.GetMousePos(mouseX, mouseY);
@@ -194,16 +198,20 @@ class COA_HoverDrawer
 
 		if (m_bOpen)
 		{
-			float shift = GetGame().GetWorkspace().DPIScale(toOpenX);
+			WorkspaceWidget workspace = GetGame().GetWorkspace();
+			float openShift = workspace.DPIScale(toOpenX);
+			float closedShift = workspace.DPIScale(toClosedX);
+			float nearShift = Math.Min(openShift, closedShift);
+			float farShift = Math.Max(openShift, closedShift);
 			if (m_bVertical)
 			{
-				top += shift;
-				bottom += shift;
+				bottom += farShift;
+				top += nearShift;
 			}
 			else
 			{
-				left += shift;
-				right += shift;
+				right += farShift;
+				left += nearShift;
 			}
 		}
 		else
