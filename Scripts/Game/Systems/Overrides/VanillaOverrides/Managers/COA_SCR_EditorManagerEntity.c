@@ -14,19 +14,36 @@ modded class SCR_EditorManagerEntity
 
 	//----------------------------------------------------------------
 	// True when the local player is allowed unlimited editor access
-	// (spectators, moderators and admins). Used both to decide the
+	// (moderators, admins, and spectators who can't respawn - see
+	// COA_SpectatorMayRespawn). Used both to decide the
 	// limited state on open and to unlock the ArmaVision camera, see
 	// COA_SCR_CameraLimitedEditorComponent.
 	//----------------------------------------------------------------
 	static bool COA_HasUnlimitedEditorAccess()
 	{
-		if (COA_EntityHelper.IsSpectator())
-			return true;
-
 		if (COA_PermissionManager.GetInstance() && COA_PermissionManager.GetInstance().IsModerator())
 			return true;
 
-		return SCR_Global.IsAdmin(SCR_PlayerController.GetLocalPlayerId());
+		if (SCR_Global.IsAdmin(SCR_PlayerController.GetLocalPlayerId()))
+			return true;
+
+		return COA_EntityHelper.IsSpectator() && !COA_SpectatorMayRespawn();
+	}
+
+	//----------------------------------------------------------------
+	// While respawn is on during the game, a spectator is usually a
+	// dead player waiting to go back in - an unlimited ArmaVision camera
+	// would let them scout the whole map first. They keep the limited
+	// editor (ArmaVision locked) until respawn is turned off.
+	//----------------------------------------------------------------
+	static bool COA_SpectatorMayRespawn()
+	{
+		COA_Gamemode gamemode = COA_Gamemode.GetInstance();
+		if (!gamemode || gamemode.m_GamemodeState != COA_EGamemodeState.GAME)
+			return false;
+
+		COA_RespawnManager respawnManager = COA_RespawnManager.GetInstance();
+		return respawnManager && respawnManager.m_bCurrentRespawnEnabled;
 	}
 
 	//----------------------------------------------------------------
