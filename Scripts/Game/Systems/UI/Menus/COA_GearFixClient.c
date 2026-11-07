@@ -142,7 +142,10 @@ class COA_GearCheckCard
 	protected static const int MAX_LINE_CHARS = 90;
 
 	protected static ref COA_GearCheckCard s_Instance;
-	protected static int s_iDismissedTotal = -1;	// dismissed at this many issues; a different count shows it again
+	// Dismissed (or used to open the Gear Fix tab) in this mission: stays closed until the next one. It used to
+	// come back whenever the issue count changed, and the server sends a new count every time a spawning
+	// character turns up another runtime issue, so it kept reappearing through slotting and safe start. The
+	// Gear Fix tab still lists everything, kept up to date.
 	protected static COA_Gamemode s_DismissedIn;	// statics outlive the mission; a new mission shows it again
 
 	protected Widget m_wRoot;
@@ -155,7 +158,7 @@ class COA_GearCheckCard
 			return;
 
 		int total = COA_GearFixClient.s_iErrors + COA_GearFixClient.s_iWarnings;
-		if (total <= 0 || (total == s_iDismissedTotal && s_DismissedIn == COA_Gamemode.GetInstance()))
+		if (total <= 0 || IsDismissed())
 			return;
 
 		if (!s_Instance)
@@ -258,6 +261,7 @@ class COA_GearCheckCard
 			break;
 		}
 
+		s_DismissedIn = COA_Gamemode.GetInstance();
 		Close();
 		COA_GearFixClient.OpenTab(faction, role, slot, resource);
 	}
@@ -265,9 +269,15 @@ class COA_GearCheckCard
 	//------------------------------------------------------------------------------------------------
 	protected void OnDismissClicked()
 	{
-		s_iDismissedTotal = COA_GearFixClient.s_iErrors + COA_GearFixClient.s_iWarnings;
 		s_DismissedIn = COA_Gamemode.GetInstance();
 		Close();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool IsDismissed()
+	{
+		COA_Gamemode gamemode = COA_Gamemode.GetInstance();
+		return gamemode && s_DismissedIn == gamemode;
 	}
 
 	//------------------------------------------------------------------------------------------------
