@@ -2001,6 +2001,13 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		if (!playerEntity)
 			return;
 
+		// Never kill a spectator: borders don't apply to them, and the spectator character has its
+		// physics switched off (COA_SpectatorCharacter.DisablePhysicsAndDamage) - its death crashed the
+		// 1.9 server in the next physics step. A late request from a client whose countdown outlived
+		// the player's death lands here, so the client-side check isn't enough on its own.
+		if (COA_EntityHelper.IsSpectator(playerEntity))
+			return;
+
 		SCR_DamageManagerComponent damageManager = SCR_DamageManagerComponent.Cast(playerEntity.FindComponent(SCR_DamageManagerComponent));
 		if (!damageManager || damageManager.GetState() == EDamageState.DESTROYED)
 			return;

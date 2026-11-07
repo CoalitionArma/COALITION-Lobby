@@ -50,6 +50,14 @@ class COA_BorderCheckSystem : GameSystem
 		if (!player)
 			return;
 
+		// A countdown left running when the player dies outside a border must not carry over to the
+		// spectator they become: ForceKillBorderCheck below only stops it for a border marked active
+		// (inside), and leaving a border clears that mark, so the timer kept going and border-killed the
+		// spectator - which crashed the 1.9 server (physics step right after the spectator's death)
+		CharacterControllerComponent controller = player.GetCharacterController();
+		if (COA_EntityHelper.IsSpectator(player) || (controller && controller.GetLifeState() == ECharacterLifeState.DEAD))
+			ForceStopTimer();
+
 		// -------------------- Main Border Loop --------------------
 		foreach (COA_GameBorder border : m_aBorders)
 		{
