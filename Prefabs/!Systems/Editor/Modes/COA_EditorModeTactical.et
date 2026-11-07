@@ -77,7 +77,7 @@ SCR_EditorModeEntity : "{E56F54E533ACE527}Prefabs/Editor/Modes/EditorModeBase.et
      m_PredecessorState UNLOCKED
      m_bAutoAdd ALWAYS
     }
-    SCR_FriendlyEditableEntityFilter "{6A6612AB7E3CA042}" {
+    COA_TacticalFriendlyEditableEntityFilter "{6A6612AB7E3CA042}" {
      m_State ACTIVE
      m_PredecessorState VISIBLE
      m_bAutoAdd ALWAYS
