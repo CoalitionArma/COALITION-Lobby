@@ -284,6 +284,16 @@ class COA_Gamemode : SCR_BaseGameMode
 		if (RplSession.Mode() == RplMode.Dedicated)
 			COA_ModeratorConfig.LoadConfig();
 
+		// No vanilla save games: a round can't be resumed from one (slots, gear and the round state
+		// aren't in it), and leaving it on means a world save every 10 minutes plus per-player saves.
+		// Vanilla turns saving off the same way when a mission ends - see HandleOnGameModeEndSaveData.
+		if (IsMaster())
+		{
+			SaveGameManager saveGameManager = GetGame().GetSaveGameManager();
+			if (saveGameManager)
+				saveGameManager.SetSavingAllowed(false);
+		}
+
 		// Initialize all manager references
 		m_RespawnManager = COA_RespawnManager.GetInstance();
 		m_GamemodeManager = COA_GamemodeManager.GetInstance();
@@ -300,6 +310,17 @@ class COA_Gamemode : SCR_BaseGameMode
 	override void OnGameEnd()
 	{
 		super.OnGameEnd();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Vanilla treats POSTGAME as the end of the session: on a dedicated server it turns saving off and
+	//! purges the session save (persistence storage and the active save game) right there, inside the
+	//! AAR transition - which runs in the admin's /aar or End mission RPC. Here the AAR is just the end
+	//! of a round (the Lobby goes back to slotting in the same load), saving is already off from
+	//! EOnInit, and that native purge mid-RPC is the prime suspect for the 1.9 server crash on /aar
+	//! (6 Nov: crashed ~1 ms after "OnGameStateChanged = POSTGAME", before the outro went out).
+	override protected void HandleOnGameModeEndSaveData()
+	{
 	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================
