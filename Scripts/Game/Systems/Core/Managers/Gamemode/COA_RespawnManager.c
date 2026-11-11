@@ -185,9 +185,16 @@ class COA_RespawnManager : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	void ClearGroupSpawnPoints()
 	{
+		// Collect first: UnRegisterRespawnPoint removes from m_mSpawnPointMap, and removing while
+		// iterating skips entries - a group spawn left registered keeps pulling its squad's respawns
+		// back to the initial spawn (FindInitalFactionSpawnpoint prefers it over the default point)
+		array<int> tempSpawnPointIds = {};
 		foreach (int spawnPointId, COA_SpawnPointData spawnPointData : m_mSpawnPointMap)
 			if (spawnPointData && spawnPointData.GetIsTempSpawnPoint())
-				UnRegisterRespawnPoint(spawnPointId);
+				tempSpawnPointIds.Insert(spawnPointId);
+
+		foreach (int tempSpawnPointId : tempSpawnPointIds)
+			UnRegisterRespawnPoint(tempSpawnPointId);
 	}
 
 //=============================================================================================================================================================================================================================================================================================================================================================
