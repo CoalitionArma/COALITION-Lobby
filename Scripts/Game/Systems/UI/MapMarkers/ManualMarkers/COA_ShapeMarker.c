@@ -57,6 +57,14 @@ class COA_ShapeMarker : COA_ManualMarker
 		super.EOnInit(owner);
 	}
 
+	#ifdef WORKBENCH
+	// Drawn from m_eShapeType and m_fWorldSizeX/Y, not the icon fields the preview reads
+	override protected bool _WB_HasIconPreview()
+	{
+		return false;
+	}
+	#endif
+
 	override void CreateMapWidget(MapConfiguration mapConfig)
 	{
 		if (!m_bUseDrawApproach)

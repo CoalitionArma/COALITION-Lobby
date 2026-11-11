@@ -446,4 +446,45 @@ class COA_ManualMarker : GenericEntity
 				m_aVisibleForFactions.Insert(faction.GetFactionKey());
 		}
 	}
+
+#ifdef WORKBENCH
+	// World Editor only. Editing a property recreates the entity, so the preview is rebuilt from scratch.
+	protected ref COA_ManualMarkerPreview m_WBPreview;
+
+	//------------------------------------------------------------------------------------------------
+	override void _WB_OnInit(inout vector mat[4], IEntitySource src)
+	{
+		super._WB_OnInit(mat, src);
+		if (_WB_HasIconPreview())
+			m_WBPreview = new COA_ManualMarkerPreview(this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! false for subclasses that don't draw m_sImageSet / m_sQuadName on the map
+	protected bool _WB_HasIconPreview()
+	{
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override int _WB_GetAfterWorldUpdateSpecs(IEntitySource src)
+	{
+		return EEntityFrameUpdateSpecs.CALL_WHEN_ENTITY_VISIBLE | EEntityFrameUpdateSpecs.CALL_WHEN_ENTITY_SELECTED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void _WB_AfterWorldUpdate(float timeSlice)
+	{
+		super._WB_AfterWorldUpdate(timeSlice);
+		if (!m_WBPreview)
+			return;
+
+		bool selected;
+		WorldEditorAPI api = _WB_GetEditorAPI();
+		if (api)
+			selected = api.IsEntitySelected(api.EntityToSource(this));
+
+		m_WBPreview.Update(selected);
+	}
+#endif
 }
