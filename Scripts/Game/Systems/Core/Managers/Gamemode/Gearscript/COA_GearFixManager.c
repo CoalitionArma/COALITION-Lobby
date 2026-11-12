@@ -1123,7 +1123,7 @@ class COA_GearFixManager
 		int had;
 		int hadLauncher;
 		array<IEntity> carried = {};
-		inventoryManager.GetItems(carried);
+		GetCarriedItems(character, inventoryManager, carried);
 		foreach (IEntity item : carried)
 		{
 			if (!item || !ContainsPrefab(oldMagazines, GetPrefab(item)) || IsInsideWeapon(item))
@@ -1525,7 +1525,7 @@ class COA_GearFixManager
 			return null;
 
 		array<IEntity> items = {};
-		inventoryManager.GetItems(items);
+		GetCarriedItems(character, inventoryManager, items);
 		foreach (IEntity item : items)
 		{
 			if (item != null && item.FindComponent(BaseWeaponComponent) != null && ContainsPrefab(weapons, GetPrefab(item)))
@@ -1533,6 +1533,27 @@ class COA_GearFixManager
 		}
 
 		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! GetItems alone misses what's inside clothing (vest pouches, backpack compartments), so spare
+	//! magazines there were never swapped. ClearEntityGear collects items the same way.
+	protected void GetCarriedItems(IEntity character, SCR_InventoryStorageManagerComponent inventoryManager, notnull array<IEntity> items)
+	{
+		items.Clear();
+
+		array<IEntity> found = {};
+		inventoryManager.GetItems(found);
+
+		SCR_CharacterInventoryStorageComponent storage = SCR_CharacterInventoryStorageComponent.Cast(character.FindComponent(SCR_CharacterInventoryStorageComponent));
+		if (storage)
+			inventoryManager.GetAllItems(found, storage);
+
+		foreach (IEntity item : found)
+		{
+			if (item && !items.Contains(item))
+				items.Insert(item);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1657,7 +1678,7 @@ class COA_GearFixManager
 
 		// Swap/remove: everything of the old item they have (at most m_iItemCount if that's set)
 		array<IEntity> carried = {};
-		inventoryManager.GetItems(carried);
+		GetCarriedItems(character, inventoryManager, carried);
 
 		array<IEntity> matching = {};
 		foreach (IEntity item : carried)
