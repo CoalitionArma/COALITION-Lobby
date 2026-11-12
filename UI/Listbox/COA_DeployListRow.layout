@@ -1,0 +1,125 @@
+ButtonWidgetClass {
+ Name "rootFrame"
+ Slot AlignableSlot "{7D3E1A0000000010}" {
+  HorizontalAlign 3
+  Padding 0 0 0 3
+ }
+ components {
+  SCR_ListBoxElementComponent "{7D3E1A0000000011}" {
+   m_aEffects {
+    SCR_ButtonEffectColor "{7D3E1A0000000012}" {
+     m_eEvents 6159
+     m_sWidgetName "RowBG"
+     m_fAnimationTime 0.12
+     m_cDefault 0.011 0.0137 0.0212 1
+     m_cHovered 0.0144 0.0168 0.0262 1
+     m_cActivated 0.0144 0.0168 0.0262 1
+     m_cActivatedHovered 0.0185 0.0215 0.0335 1
+     m_cFocusGained 0.0144 0.0168 0.0262 1
+     m_cFocusLost 0.011 0.0137 0.0212 1
+    }
+    SCR_ButtonEffectColor "{7D3E1A0000000013}" {
+     m_eEvents 6159
+     m_sWidgetName "RowAccent"
+     m_fAnimationTime 0.12
+     m_cDefault 0.5841 0.0369 0.0369 0
+     m_cHovered 0.5841 0.0369 0.0369 0.45
+     m_cActivated 0.5841 0.0369 0.0369 1
+     m_cActivatedHovered 0.5841 0.0369 0.0369 1
+     m_cFocusGained 0.5841 0.0369 0.0369 0.45
+     m_cFocusLost 0.5841 0.0369 0.0369 0
+    }
+    SCR_ButtonEffectSound "{7D3E1A0000000014}" : "{F66E5F9DD84911A8}Configs/WLib/ModularButtonEffects/ModularButtonEffect_Sound_Hovered.conf" {
+     m_eEvents EVENT_MOUSE_ENTER
+     m_sSound "SOUND_FE_BUTTON_HOVER"
+    }
+   }
+   m_bCanBeToggled 1
+   m_bToggledOnlyThroughApi 1
+  }
+ }
+ style blank
+ {
+  SizeLayoutWidgetClass "{7D3E1A0000000015}" {
+   Name "SizeLayout"
+   Slot ButtonWidgetSlot "{7D3E1A0000000016}" {
+    HorizontalAlign 3
+   }
+   AllowHeightOverride 1
+   HeightOverride 42
+   {
+    OverlayWidgetClass "{7D3E1A0000000017}" {
+     Name "Overlay"
+     Slot AlignableSlot "{7D3E1A0000000018}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Clipping False
+     {
+      SmartPanelWidgetClass "{7D3E1A0000000019}" {
+       Name "RowBG"
+       Slot OverlayWidgetSlot "{7D3E1A000000001A}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.011 0.0137 0.0212 1
+       style rounded_4px
+      }
+      ImageWidgetClass "{7D3E1A000000001B}" {
+       Name "RowAccent"
+       Slot OverlayWidgetSlot "{7D3E1A000000001C}" {
+        HorizontalAlign 0
+        VerticalAlign 1
+       }
+       Color 0.5841 0.0369 0.0369 0
+       Size 3 20
+      }
+      TextWidgetClass "{7D3E1A000000001D}" {
+       Name "Text"
+       Slot OverlayWidgetSlot "{7D3E1A000000001E}" {
+        HorizontalAlign 3
+        VerticalAlign 1
+        Padding 14 0 132 0
+       }
+       Color 0.8632 0.8879 0.9301 1
+       Text "Entry"
+       "Font Size" 17
+       "Min Font Size" 11
+       "Vertical Alignment" Center
+       FontProperties FontProperties "{7D3E1A000000001F}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{7D3E1A0000000020}" {
+       Name "SubText"
+       Slot OverlayWidgetSlot "{7D3E1A0000000021}" {
+        HorizontalAlign 3
+        VerticalAlign 1
+        Padding 0 0 12 0
+       }
+       Color 0.3968 0.4564 0.6038 1
+       Text ""
+       "Font Size" 15
+       "Min Font Size" 10
+       "Horizontal Alignment" Right
+       "Vertical Alignment" Center
+       FontProperties FontProperties "{7D3E1A0000000022}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+      SmartPanelWidgetClass "{7D3E1A0000000023}" {
+       Name "Border"
+       Slot OverlayWidgetSlot "{7D3E1A0000000024}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       "Is Visible" 0
+       Color 0.5841 0.0369 0.0369 1
+       style outline_rounded_4px
+      }
+     }
+    }
+   }
+  }
+ }
+}

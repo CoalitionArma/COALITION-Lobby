@@ -1,5 +1,15 @@
 modded class SCR_ListBoxComponent
 {
+	//! The element (row) component at index, or null - lets menus style a row after adding it
+	SCR_ListBoxElementComponent COA_GetElementComponent(int index)
+	{
+		if (index < 0 || index >= m_aElementComponents.Count())
+			return null;
+
+		return m_aElementComponents[index];
+	}
+
+
 	/**
 	 * Adds an item with an icon to the listbox and associates it with a player.
 	 * 
