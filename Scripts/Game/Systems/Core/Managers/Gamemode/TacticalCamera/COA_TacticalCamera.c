@@ -120,18 +120,22 @@ class COA_TacticalCamera
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Client: is this squad on the local player's side
+	//! Client: is this squad in the local player's faction
 	static bool IsFriendlyToLocalPlayer(SCR_AIGroup group)
 	{
 		if (!group)
 			return false;
 
-		Faction localFaction = SCR_FactionManager.SGetLocalPlayerFaction();
-		Faction groupFaction = group.GetFaction();
-		if (!localFaction || !groupFaction)
-			return false;
+		return IsSameSide(SCR_FactionManager.SGetLocalPlayerFaction(), group.GetFaction());
+	}
 
-		return groupFaction == localFaction || localFaction.IsFactionFriendly(groupFaction);
+	//------------------------------------------------------------------------------------------------
+	//! The tactical camera's notion of "friendly": the same faction only. Allied factions don't
+	//! count - co-op TVTs ally BLUFOR and INDFOR (m_aFriendlyFactionsIds) while they are still
+	//! separate teams, so IsFactionFriendly would show one team's leaders the other's players.
+	static bool IsSameSide(Faction a, Faction b)
+	{
+		return a != null && a == b;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -204,33 +208,24 @@ class COA_TacticalCamera
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Client: every player squad on the local player's side (own faction and allies)
+	//! Client: every player squad in the local player's faction
 	static int GetFriendlySquads(notnull array<SCR_AIGroup> outSquads)
 	{
 		outSquads.Clear();
 
 		SCR_GroupsManagerComponent groupsManager = SCR_GroupsManagerComponent.GetInstance();
-		FactionManager factionManager = GetGame().GetFactionManager();
 		Faction localFaction = SCR_FactionManager.SGetLocalPlayerFaction();
-		if (!groupsManager || !factionManager || !localFaction)
+		if (!groupsManager || !localFaction)
 			return 0;
 
-		array<Faction> factions = {};
-		factionManager.GetFactionsList(factions);
-		foreach (Faction faction : factions)
+		array<SCR_AIGroup> factionGroups = groupsManager.GetPlayableGroupsByFaction(localFaction);
+		if (!factionGroups)
+			return 0;
+
+		foreach (SCR_AIGroup group : factionGroups)
 		{
-			if (faction != localFaction && !localFaction.IsFactionFriendly(faction))
-				continue;
-
-			array<SCR_AIGroup> factionGroups = groupsManager.GetPlayableGroupsByFaction(faction);
-			if (!factionGroups)
-				continue;
-
-			foreach (SCR_AIGroup group : factionGroups)
-			{
-				if (group && group.GetPlayerCount() > 0)
-					outSquads.Insert(group);
-			}
+			if (group && group.GetPlayerCount() > 0)
+				outSquads.Insert(group);
 		}
 
 		return outSquads.Count();

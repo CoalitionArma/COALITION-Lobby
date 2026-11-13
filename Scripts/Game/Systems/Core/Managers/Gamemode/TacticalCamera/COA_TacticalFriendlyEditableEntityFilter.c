@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------------
-//! The Tactical Camera's ACTIVE filter (COA_EditorModeTactical.et): only entities on the local player's
-//! side get through, always. The vanilla SCR_FriendlyEditableEntityFilter only filters while the whole
+//! The Tactical Camera's ACTIVE filter (COA_EditorModeTactical.et): only entities in the local player's
+//! faction get through, always - allied factions don't (COA_TacticalCamera.IsSameSide). The vanilla SCR_FriendlyEditableEntityFilter only filters while the whole
 //! editor is limited, and it isn't for staff - SCR_EditorManagerEntity.CanOpen (Lobby mod) unlimits
 //! admins, moderators and spectators, and any Game Master mode unlimits the editor too - so they saw every
 //! faction's players. It also took the side from whatever the player controlled when the editor opened;
@@ -26,11 +26,7 @@ class COA_TacticalFriendlyEditableEntityFilter : SCR_BaseEditableEntityFilter
 		if (!factionAffiliation)
 			return false;
 
-		Faction faction = factionAffiliation.GetAffiliatedFaction();
-		if (!faction)
-			return false;
-
-		return faction == localFaction || localFaction.IsFactionFriendly(faction);
+		return COA_TacticalCamera.IsSameSide(localFaction, factionAffiliation.GetAffiliatedFaction());
 	}
 
 	//------------------------------------------------------------------------------------------------

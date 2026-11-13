@@ -553,10 +553,9 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 		if (!group)
 			return;
 
-		// Own side only
+		// Own faction only
 		Faction callerFaction = m_SlottingManager.GetPlayerSlotFaction(callerId, true);
-		Faction groupFaction = group.GetFaction();
-		if (!callerFaction || !groupFaction || !callerFaction.IsFactionFriendly(groupFaction))
+		if (!COA_TacticalCamera.IsSameSide(callerFaction, group.GetFaction()))
 			return;
 
 		string issuerName = GetGame().GetPlayerManager().GetPlayerName(callerId);
@@ -604,8 +603,7 @@ class COA_PlayerRplToAuthorityManager : ScriptComponent
 			if (!COA_TacticalCamera.PlayerQualifies(leaderId))
 				continue;
 
-			Faction leaderFaction = m_SlottingManager.GetPlayerSlotFaction(leaderId, true);
-			if (!leaderFaction || (leaderFaction != callerFaction && !leaderFaction.IsFactionFriendly(callerFaction)))
+			if (!COA_TacticalCamera.IsSameSide(m_SlottingManager.GetPlayerSlotFaction(leaderId, true), callerFaction))
 				continue;
 
 			COA_PlayerRplToOwnerManager leaderManager = COA_PlayerRplToOwnerManager.GetForPlayer(leaderId);
