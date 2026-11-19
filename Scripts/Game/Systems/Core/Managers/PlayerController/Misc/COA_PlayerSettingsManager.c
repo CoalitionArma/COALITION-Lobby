@@ -5,29 +5,25 @@ class COA_PlayerSettingsManager : ScriptComponent
 	// Game Performance Settings
 	protected int m_iFPS = -1;              // Stored user FPS setting (-1 means uninitialized)
 	protected int m_iAudioSetting = -1;     // Stored audio volume (-1 means uninitialized)
-	protected bool m_bHoldingAudioLock;     // HoldAudioLock is running (briefing / slotting)
+	protected static bool s_bHoldingAudioLock;	// HoldAudioLock is running (any state but GAME)
+	protected static bool s_bGamemodeSeen;		// the gamemode entity has existed since the hold started
 
 //=============================================================================================================================================================================================================================================================================================================================================================
 //	 SETTINGS METHODS
 //=============================================================================================================================================================================================================================================================================================================================================================
-	
+
 	//------------------------------------------------------------------------------------------------
-	//! Client: start holding the mute as soon as this player controller exists. Waiting for
-	//! COA_PlayerController.UpdateLocalPlayerController isn't enough - it skips the audio lock when the
-	//! gamemode entity hasn't reached the client yet, and then nothing muted the game world at all.
+	//! Client: hold the mute from this player controller too, in case it exists before the gamemode
+	//! entity (COA_Gamemode.EOnInit starts it as soon as that loads, which is earlier)
 	override void OnPostInit(IEntity owner)
 	{
 		super.OnPostInit(owner);
-
-		if (!GetGame().InPlayMode() || System.IsConsoleApp())
-			return;
-
 		StartHoldingAudioLock();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Initializes audio lock by storing current volume and setting to 0. The game world stays silent
-	//! through briefing and slotting (HoldAudioLock) and gets its sound back when the game starts.
+	//! until the game starts (HoldAudioLock).
 	void InitAudioLock()
 	{
 		m_iAudioSetting = AudioSystem.GetMasterVolume(AudioSystem.SFX);
@@ -36,24 +32,36 @@ class COA_PlayerSettingsManager : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void StartHoldingAudioLock()
+	//! Client: mute the game world (SFX) until the gamemode is in GAME. Per machine, not per player
+	//! controller, so it can start before this player's controller arrives: started by COA_Gamemode
+	//! when its entity loads (the world's sound starts a few seconds before the controller exists) and
+	//! on every state change away from GAME (the next round's slotting after an AAR).
+	static void StartHoldingAudioLock()
 	{
-		if (m_bHoldingAudioLock)
+		if (s_bHoldingAudioLock || !GetGame() || !GetGame().InPlayMode() || System.IsConsoleApp() || RplSession.Mode() == RplMode.Dedicated)
 			return;
 
-		m_bHoldingAudioLock = true;
+		COA_Gamemode gamemode = COA_Gamemode.GetInstance();
+		if (gamemode && gamemode.m_GamemodeState == COA_EGamemodeState.GAME)
+			return;
+
+		s_bHoldingAudioLock = true;
+		s_bGamemodeSeen = gamemode != null;
+		AudioSystem.SetMasterVolume(AudioSystem.SFX, 0);
 		GetGame().GetCallqueue().CallLater(HoldAudioLock, 0, true);
 		Print("[Coalition Lobby] Game sound muted until the game starts");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void StopHoldingAudioLock()
+	protected static void StopHoldingAudioLock()
 	{
-		if (!m_bHoldingAudioLock)
+		if (!s_bHoldingAudioLock)
 			return;
 
-		GetGame().GetCallqueue().Remove(HoldAudioLock);
-		m_bHoldingAudioLock = false;
+		s_bHoldingAudioLock = false;
+		if (GetGame())
+			GetGame().GetCallqueue().Remove(HoldAudioLock);
+
 		Print("[Coalition Lobby] Game sound mute released");
 	}
 
@@ -61,34 +69,28 @@ class COA_PlayerSettingsManager : ScriptComponent
 	//! Every frame until the game starts: keep the game world's sound (SFX) muted. The wind, rain and
 	//! other 2D ambients go out through the SFX master (Sounds/FinalMix.afm: ENV_AMB_2D -> Output SFX).
 	//! Muting once isn't enough - the vanilla loading screen turns every master volume back on when it
-	//! closes (LoadingScreen.EnableSounds), and a user settings refresh can too. The AAR and outro hold
-	//! their mute the same way. While the gamemode hasn't replicated yet the state is unknown, so the
-	//! game world stays muted until it has.
-	protected void HoldAudioLock()
+	//! closes (LoadingScreen.EnableSounds), and a user settings refresh or the AAR closing can too.
+	//! While the gamemode hasn't replicated yet the state is unknown, so the game world stays muted
+	//! until it has. A single check per frame, no loops.
+	protected static void HoldAudioLock()
 	{
-		// Only the local player's own controller (a listen server holds everyone's)
-		PlayerController localController = GetGame().GetPlayerController();
-		if (localController && localController != GetOwner())
-		{
-			StopHoldingAudioLock();
-			return;
-		}
-
 		COA_Gamemode gamemode = COA_Gamemode.GetInstance();
-		if (gamemode && gamemode.m_GamemodeState != COA_EGamemodeState.BRIEFING && gamemode.m_GamemodeState != COA_EGamemodeState.SLOTTING)
-		{
-			StopHoldingAudioLock();
+		if (gamemode)
+			s_bGamemodeSeen = true;
 
+		// Left the server (the gamemode was here and is gone): the call queue outlives the world, so
+		// stop here or the main menu stays muted
+		if ((!gamemode && s_bGamemodeSeen) || (gamemode && gamemode.m_GamemodeState == COA_EGamemodeState.GAME))
+		{
 			// In game: sound back on (COA_PlayerControllerManager.InitilizePlayerClient does the same when
 			// the player's character arrives - whichever comes first)
-			if (gamemode.m_GamemodeState == COA_EGamemodeState.GAME)
-				ResetSettingsToStoredValues();
-
+			StopHoldingAudioLock();
+			AudioSystem.SetMasterVolume(AudioSystem.SFX, 100);
 			return;
 		}
 
 		if (AudioSystem.GetMasterVolume(AudioSystem.SFX) > 0)
-			SetSFXVolume(0);
+			AudioSystem.SetMasterVolume(AudioSystem.SFX, 0);
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -154,9 +156,6 @@ class COA_PlayerSettingsManager : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	void ~COA_PlayerSettingsManager()
 	{
-		if (m_bHoldingAudioLock && GetGame())
-			GetGame().GetCallqueue().Remove(HoldAudioLock);
-
 		if (m_sInstance == this)
 			m_sInstance = null;
 	}

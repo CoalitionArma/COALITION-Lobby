@@ -303,6 +303,11 @@ class COA_Gamemode : SCR_BaseGameMode
 		m_RplBroadcastManager = COA_RplBroadcastManager.GetInstance();
 		m_GarbageManager = COA_GarbageManager.GetInstance();
 
+		// Client: the game world is silent until the game starts. From here, not the player controller:
+		// this entity loads with the world, the controller only a few seconds after the world's sound
+		// has started (COA_PlayerSettingsManager.StartHoldingAudioLock skips dedicated servers and GAME).
+		COA_PlayerSettingsManager.StartHoldingAudioLock();
+
 		// Frame events enabled on-demand when batch processing starts
 	}
 
@@ -421,6 +426,10 @@ class COA_Gamemode : SCR_BaseGameMode
 			}	
 		}
 		
+		// Client: out of GAME (the AAR, the next round's briefing and slotting), the game world goes quiet again
+		if (m_GamemodeState != COA_EGamemodeState.GAME)
+			COA_PlayerSettingsManager.StartHoldingAudioLock();
+
 		COA_PlayerMenuManager playerMenuManager = COA_PlayerMenuManager.GetInstance();
 		if (playerMenuManager)
 			playerMenuManager.OpenCurrentStateMenu();
