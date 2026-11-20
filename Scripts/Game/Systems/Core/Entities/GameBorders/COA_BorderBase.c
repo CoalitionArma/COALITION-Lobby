@@ -124,7 +124,7 @@ class COA_BorderBase : PolylineShapeEntity
 		}
 		for (int i = 0; i < outPoints.Count() - 1; i++)
 		{
-			if ((Math.AbsFloat(outPoints[i][0] - outPoints[i+1][0]) + Math.AbsFloat(outPoints[i][1] - outPoints[i+1][1])) < 0.1)
+			if ((Math.AbsFloat(outPoints[i][0] - outPoints[i+1][0]) + Math.AbsFloat(outPoints[i][2] - outPoints[i+1][2])) < 0.1)
 			{
 				outPoints.RemoveOrdered(i);
 				i--;
